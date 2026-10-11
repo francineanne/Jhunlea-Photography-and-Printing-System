@@ -1,9 +1,25 @@
-@import 'tailwindcss';
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+:root {
+    --jhunlea-red: #C62828;
+    --jhunlea-black: #171717;
+    --jhunlea-white: #FFFFFF;
+    --jhunlea-gray: #6c757d;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+body {
+    font-family: "Inter", Arial, sans-serif;
+    background-color: #ffffff;
+    color: var(--jhunlea-black);
+}
+
+.btn-jhunlea {
+    background-color: var(--jhunlea-red);
+    color: white;
+    border: none;
+}
+
+.btn-jhunlea:hover {
+    background-color: #a51f1f;
+    color: white;
 }
