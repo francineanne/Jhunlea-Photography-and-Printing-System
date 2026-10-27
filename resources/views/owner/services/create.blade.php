@@ -9,7 +9,9 @@
     <h1 class="mt-2 font-display text-3xl font-semibold sm:text-4xl">New printing service</h1>
     <p class="mt-2 text-app-text-2">Save the service first, then add its options (paper sizes, finishes and so on).</p>
 
-    <div class="mt-8 max-w-4xl">
+    <div class="mt-8 max-w-6xl">
         @include('owner.services._form', ['action' => route('owner.services.store'), 'method' => 'POST', 'submitLabel' => 'Create service'])
+
+        <x-ui.notice variant="payment" class="mt-10" />
     </div>
 @endsection

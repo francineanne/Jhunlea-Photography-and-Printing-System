@@ -229,6 +229,15 @@ After login: owner → `/owner`, customer → `/my/dashboard`.
 - Currency: `₱1,250.00` with tabular numbers.
 - Never leave buttons or links that do nothing. If a feature is not built yet, do not show its button.
 
+### Designs are the visual and motion source of truth
+
+- The screens in `design/` (`screen.png` + `code.html`) are the visual **and animation** reference. Match layout, spacing, colors, type, effects and motion closely; read the `@keyframes`/transitions in `code.html` and reproduce the same timing and easing with CSS and small Alpine code (no GSAP until Phase 8).
+- Method per screen: read the design, list the differences, rebuild with components and `@theme` tokens, compare at the design's viewport, then check the other viewports and theme. Record MATCH / CLOSE / DIFFERENT.
+- Never copy: the Tailwind CDN script, hotlinked image URLs, invented data (camera specs, addresses, calibration IDs, fake statuses), or controls for features the system does not have (design-tool preview switchers, order tracking by slip, terms pages, etc.).
+- Project rules win over the design: 44px tap targets on phones, contrast, visible focus, reduced motion, light and dark, no horizontal scroll.
+- Images saved in `public/images/design-placeholders/` are **temporary Stitch placeholders**. Replace them with the shop's real photos before going live.
+- Done so far: login family and page loader, error pages, the public, customer and owner shells, the owner services screens, and the `ui` components (DESIGN.md values for buttons, cards, modal, pills, notice, checkbox). Remaining differences are listed in the fidelity report.
+
 ### UI building blocks (built in Phase 1)
 
 - **Components** live in `resources/views/components/ui/` (use as `<x-ui.name>`): logo, icon, button, input, select, textarea, checkbox, field, badge, status-badge, card, notice, modal, toast, empty-state, stepper, timeline, aperture-spinner, page-loader, theme-toggle. The page shells use `resources/views/components/layout/` (skip-link, nav, drawer, user-menu, error-card). Reuse them; do not copy markup.

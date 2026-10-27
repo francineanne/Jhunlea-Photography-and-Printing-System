@@ -6,11 +6,14 @@
     <div x-data="{ target: { name: '', action: '' } }">
         <div class="flex flex-wrap items-start justify-between gap-4">
             <div>
-                <h1 class="font-display text-3xl font-semibold sm:text-4xl">Printing services</h1>
+                <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="h-0.5 w-6 bg-brand" aria-hidden="true"></span>Printing catalog</p>
+                <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Printing services</h1>
                 <p class="mt-2 text-app-text-2">The services customers can request, and their options.</p>
             </div>
             <x-ui.button :href="route('owner.services.create')"><x-ui.icon name="add" :size="20" /> New service</x-ui.button>
         </div>
+
+        @include('owner.services._stats')
 
         <form method="GET" action="{{ route('owner.services.index') }}" class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end">
             <x-ui.input label="Search by name" name="search" type="search" icon="search" :value="$search" placeholder="Type a service name" />
@@ -48,42 +51,71 @@
                 </x-ui.card>
             @else
                 {{-- Table on large screens --}}
-                <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card lg:block">
+                <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
                     <table class="w-full text-left text-sm">
                         <caption class="sr-only">Printing services</caption>
-                        <thead class="border-b border-app-border text-xs uppercase tracking-wide text-app-text-2">
+                        <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">
                             <tr>
-                                <th scope="col" class="px-4 py-3 font-semibold">Service</th>
-                                <th scope="col" class="px-4 py-3 font-semibold">Pricing</th>
-                                <th scope="col" class="px-4 py-3 font-semibold">Options</th>
-                                <th scope="col" class="px-4 py-3 font-semibold">Status</th>
-                                <th scope="col" class="px-4 py-3 font-semibold"><span class="sr-only">Actions</span></th>
+                                <th scope="col" class="px-4 py-3 font-bold">Service</th>
+                                <th scope="col" class="px-4 py-3 font-bold">Category</th>
+                                <th scope="col" class="px-4 py-3 font-bold">Pricing model</th>
+                                <th scope="col" class="px-4 py-3 font-bold">Base rate</th>
+                                <th scope="col" class="px-4 py-3 font-bold">Options</th>
+                                <th scope="col" class="px-4 py-3 font-bold">File types</th>
+                                <th scope="col" class="px-4 py-3 font-bold">Published</th>
+                                <th scope="col" class="px-4 py-3 font-bold"><span class="sr-only">Actions</span></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-app-border">
                             @foreach ($services as $service)
-                                <tr>
+                                <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                     <td class="px-4 py-3">
-                                        <a href="{{ route('owner.services.edit', $service) }}" class="font-semibold hover:text-brand focus-ring rounded-control">{{ $service->name }}</a>
-                                        <p class="text-xs text-app-text-2">{{ $service->category }} · <span class="font-mono">{{ $service->slug }}</span></p>
+                                        <div class="flex items-center gap-3">
+                                            <span class="grid size-10 shrink-0 place-items-center rounded-control bg-status-red-bg text-brand" aria-hidden="true"><x-ui.icon name="print" :size="20" /></span>
+                                            <div class="min-w-0">
+                                                <a href="{{ route('owner.services.edit', $service) }}" class="font-semibold hover:text-brand focus-ring rounded-control">{{ $service->name }}</a>
+                                                <p class="font-mono text-[11px] text-app-text-2">{{ $service->slug }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3"><span class="inline-block rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">{{ $service->category }}</span></td>
+                                    <td class="px-4 py-3 text-app-text-2">{{ $service->pricing_type->label() }}</td>
+                                    <td class="px-4 py-3 font-semibold tabular-nums">{{ $service->base_price === null ? '—' : \App\Support\Money::format($service->base_price) }}</td>
+                                    <td class="px-4 py-3 tabular-nums text-app-text-2">{{ $service->options_count }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex flex-wrap gap-1">
+                                            @foreach ($service->allowed_file_types as $type)
+                                                <span class="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-[11px] uppercase dark:bg-white/10">{{ $type }}</span>
+                                            @endforeach
+                                        </div>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <p class="tabular-nums font-semibold">{{ $service->base_price === null ? $service->pricing_type->label() : \App\Support\Money::format($service->base_price) }}</p>
-                                        <p class="text-xs text-app-text-2">{{ $service->pricing_type->label() }}</p>
+                                        <form method="POST" action="{{ route('owner.services.publish', $service) }}">
+                                            @csrf
+                                            <button type="submit" role="switch" aria-checked="{{ $service->is_published ? 'true' : 'false' }}"
+                                                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control focus-ring">
+                                                <span @class(['relative h-6 w-11 rounded-full transition-colors duration-200', 'bg-status-green' => $service->is_published, 'bg-neutral-300 dark:bg-neutral-600' => ! $service->is_published])>
+                                                    <span @class(['absolute top-0.5 size-5 rounded-full bg-white shadow transition-[left] duration-200', 'left-[22px]' => $service->is_published, 'left-0.5' => ! $service->is_published])></span>
+                                                </span>
+                                                <span class="sr-only">{{ $service->is_published ? 'Published' : 'Not published' }}: {{ $service->name }}. Press to {{ $service->is_published ? 'unpublish' : 'publish' }}.</span>
+                                            </button>
+                                        </form>
                                     </td>
-                                    <td class="px-4 py-3 tabular-nums">{{ $service->options_count }}</td>
                                     <td class="px-4 py-3">
-                                        <x-ui.badge :tone="$service->is_published ? 'green' : 'gray'">{{ $service->is_published ? 'Published' : 'Not published' }}</x-ui.badge>
+                                        <div class="flex items-center justify-end gap-1">
+                                            <a href="{{ route('owner.services.edit', $service) }}" class="grid size-11 place-items-center rounded-control text-app-text-2 hover:bg-black/5 hover:text-brand focus-ring dark:hover:bg-white/10" aria-label="Edit {{ $service->name }}"><x-ui.icon name="edit" :size="20" /></a>
+                                            <button type="button" class="grid size-11 place-items-center rounded-control text-app-text-2 hover:bg-black/5 hover:text-status-red focus-ring dark:hover:bg-white/10" aria-label="Delete {{ $service->name }}"
+                                                x-on:click="target = { name: {{ \Illuminate\Support\Js::from($service->name) }}, action: {{ \Illuminate\Support\Js::from(route('owner.services.destroy', $service)) }} }; $dispatch('open-modal', 'delete-service')"><x-ui.icon name="delete" :size="20" /></button>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3">@include('owner.services._actions')</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                {{-- Stacked cards on phones and tablets --}}
-                <ul class="space-y-4 lg:hidden">
+                {{-- Stacked cards below 1280px, where the table would not fit beside the sidebar --}}
+                <ul class="space-y-4 xl:hidden">
                     @foreach ($services as $service)
                         <li>
                             <x-ui.card>

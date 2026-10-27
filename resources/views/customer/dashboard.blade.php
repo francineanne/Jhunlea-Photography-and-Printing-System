@@ -9,6 +9,4 @@
     <x-ui.card class="mt-8">
         <x-ui.empty-state icon="inbox" title="Nothing here yet" description="Your requests and bookings will show up here when they are available." />
     </x-ui.card>
-
-    <x-ui.notice variant="payment" class="mt-6" />
 @endsection

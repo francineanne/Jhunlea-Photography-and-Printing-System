@@ -2,15 +2,15 @@
 
 @php
     $variants = [
-        'primary' => 'btn-sweep text-white',
-        'secondary' => 'bg-ink text-white hover:bg-neutral-700 dark:bg-white dark:text-ink dark:hover:bg-neutral-200',
-        'outline' => 'border border-app-border bg-transparent text-app-text hover:border-brand hover:text-brand',
+        'primary' => 'btn-sweep text-white active:shadow-[inset_0_2px_4px_rgba(0,0,0,0.25)]',
+        'secondary' => 'bg-ink text-white hover:bg-neutral-800 dark:bg-white dark:text-ink dark:hover:bg-neutral-200',
+        'outline' => 'border border-neutral-200 bg-transparent text-app-text hover:bg-card dark:border-neutral-700 dark:hover:bg-white/10',
         'ghost' => 'bg-transparent text-app-text hover:bg-black/5 dark:hover:bg-white/10',
         'danger' => 'bg-red-700 text-white hover:bg-red-800',
     ];
 
     // The compact size is 36px on larger screens but stays 44px on phones for tap targets
-    $sizes = ['md' => 'h-11 px-5', 'sm' => 'h-11 px-4 sm:h-9'];
+    $sizes = ['md' => 'h-11 px-5', 'sm' => 'h-11 px-4 sm:h-9 sm:px-3.5'];
 
     $inactive = $loading || $disabled;
 

@@ -12,19 +12,14 @@
             <x-ui.badge :tone="$service->is_published ? 'green' : 'gray'">{{ $service->is_published ? 'Published' : 'Not published' }}</x-ui.badge>
         </div>
 
-        <div class="mt-8 max-w-4xl space-y-10">
-            @include('owner.services._form', ['action' => route('owner.services.update', $service), 'method' => 'PUT', 'submitLabel' => 'Save changes'])
+        <div class="mt-8 max-w-6xl space-y-10">
+            @include('owner.services._form', ['action' => route('owner.services.update', $service), 'method' => 'PUT', 'submitLabel' => 'Save changes', 'deleteTarget' => $service])
 
-            @include('owner.services._options')
+            <div class="max-w-4xl space-y-10">
+                @include('owner.services._options')
 
-            <x-ui.card>
-                <h2 class="font-display text-xl font-semibold">Delete this service</h2>
-                <p class="mt-1 text-sm text-app-text-2">Customers will no longer see it. Past requests keep their record of it.</p>
-                <x-ui.button type="button" variant="danger" class="mt-4"
-                    x-on:click="target = { name: {{ \Illuminate\Support\Js::from($service->name) }}, action: {{ \Illuminate\Support\Js::from(route('owner.services.destroy', $service)) }} }; $dispatch('open-modal', 'delete-service')">
-                    <x-ui.icon name="delete" :size="18" /> Delete service
-                </x-ui.button>
-            </x-ui.card>
+                <x-ui.notice variant="payment" />
+            </div>
         </div>
 
         <x-ui.modal name="delete-service" title="Delete this service?">

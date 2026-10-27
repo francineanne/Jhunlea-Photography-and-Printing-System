@@ -108,9 +108,39 @@ Alpine.data('uiToasts', (initial = []) => ({
 
 // Fills the address (slug) from the name until the owner edits the address by hand; an existing service keeps its address.
 Alpine.data('serviceForm', ({ name, slug, locked }) => ({
-    name,
-    slug,
+    // A new service has no name or address yet (the server passes null), so the live preview must not see null
+    name: name ?? '',
+    slug: slug ?? '',
     locked,
+
+    // What the live preview shows. Read from the form itself, so the preview never keeps a second copy of the data.
+    preview: { category: '', description: '', pricing: '', pricingLabel: '', price: '', types: [], published: false },
+
+    init() {
+        this.syncPreview();
+    },
+
+    syncPreview() {
+        const form = this.$root;
+        const pricing = form.querySelector('[name="pricing_type"]:checked');
+
+        this.preview = {
+            category: form.elements.category?.value.trim() ?? '',
+            description: form.elements.description?.value.trim() ?? '',
+            pricing: pricing?.value ?? '',
+            pricingLabel: pricing?.dataset.label ?? '',
+            price: form.elements.base_price?.value ?? '',
+            types: [...form.querySelectorAll('[name="allowed_file_types[]"]:checked')].map((box) => box.value),
+            published: form.elements.is_published?.checked ?? false,
+        };
+    },
+
+    // Display only. The server's App\Support\Money is the one place that formats stored money.
+    money(value) {
+        const amount = parseFloat(value);
+
+        return Number.isFinite(amount) ? new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount) : '';
+    },
 
     fillSlug() {
         if (this.locked) return;
@@ -124,8 +154,69 @@ Alpine.data('serviceForm', ({ name, slug, locked }) => ({
     },
 }));
 
+// Live password hints for the register and reset pages. The rules (ids, labels, minimum) come from the server
+// (App\Support\PasswordRules); only the checks are written here. Advisory only: the server still decides.
+// Reads the inputs by name instead of x-model, so a value filled by a password manager is picked up and never overwritten.
+Alpine.data('passwordStrength', (rules) => ({
+    rules,
+    password: '',
+    confirm: '',
+
+    // Same checks as Laravel's Password rule: length counts characters, letters and numbers are Unicode-aware
+    checks: {
+        length: (value, rule) => [...value].length >= rule.min,
+        lower: (value) => /\p{Ll}/u.test(value),
+        upper: (value) => /\p{Lu}/u.test(value),
+        number: (value) => /\p{N}/u.test(value),
+    },
+
+    init() {
+        const read = () => {
+            this.password = this.$root.querySelector('[name="password"]')?.value ?? '';
+            this.confirm = this.$root.querySelector('[name="password_confirmation"]')?.value ?? '';
+        };
+
+        this.$nextTick(read);
+        this.$root.addEventListener('input', read);
+        this.$root.addEventListener('change', read);
+    },
+
+    get results() {
+        // An id without a check here counts as not met, so a rule added on the server never looks satisfied by mistake
+        return this.rules.map((rule) => ({ ...rule, met: (this.checks[rule.id] ?? (() => false))(this.password, rule) }));
+    },
+
+    get metCount() {
+        return this.results.filter((rule) => rule.met).length;
+    },
+
+    get tier() {
+        if (this.metCount === this.rules.length) return 'strong';
+
+        return this.metCount >= this.rules.length - 1 ? 'medium' : 'weak';
+    },
+
+    get summary() {
+        const missing = this.rules.length - this.metCount;
+        const left = `${missing} ${missing === 1 ? 'requirement' : 'requirements'} missing`;
+
+        return { weak: `Weak password: ${left}`, medium: `Almost there: ${left}`, strong: 'Strong password: all requirements met' }[this.tier];
+    },
+
+    get matches() {
+        return this.confirm !== '' && this.confirm === this.password;
+    },
+}));
+
 Alpine.data('uiPageLoader', () => ({
     show: true,
+    pct: 0,
+    ticker: null,
+    hider: null,
+
+    get status() {
+        return this.pct >= 90 ? 'Almost ready...' : 'Preparing your page...';
+    },
 
     init() {
         // JS is running, so cancel the CSS failsafe that hides the loader when scripts fail
@@ -143,26 +234,28 @@ Alpine.data('uiPageLoader', () => ({
             // storage unavailable: the loader simply shows on every page
         }
 
-        const hide = () => setTimeout(() => (this.show = false), 700);
+        this.run(document.readyState === 'complete' ? Promise.resolve() : new Promise((done) => window.addEventListener('load', done, { once: true })));
+    },
 
-        if (document.readyState === 'complete') {
-            hide();
-        } else {
-            window.addEventListener('load', hide, { once: true });
-        }
+    // The bar eases toward 90% while the page loads, jumps to 100% when it has loaded, then the loader fades out
+    run(loaded) {
+        this.pct = 0;
+        clearInterval(this.ticker);
+        clearTimeout(this.hider);
+        this.ticker = setInterval(() => (this.pct += (90 - this.pct) * 0.1), 80);
+
+        // A stalled font or image must not keep the page covered: stop waiting after 4s
+        Promise.race([loaded, new Promise((done) => setTimeout(done, 4000))]).then(() => {
+            clearInterval(this.ticker);
+            this.pct = 100;
+            this.hider = setTimeout(() => (this.show = false), 600);
+        });
     },
 
     replay() {
         root.classList.remove('loader-seen');
-
-        // Restart the opening animation, which has already run once
-        this.$el.querySelectorAll('.animate-aperture-open, .animate-fade-up').forEach((el) => {
-            el.style.animation = 'none';
-            void el.offsetWidth;
-            el.style.animation = '';
-        });
         this.show = true;
-        setTimeout(() => (this.show = false), 1400);
+        this.run(new Promise((done) => setTimeout(done, 1200)));
     },
 }));
 

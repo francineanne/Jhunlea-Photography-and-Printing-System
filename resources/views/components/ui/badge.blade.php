@@ -11,7 +11,7 @@
     ];
 @endphp
 
-<span {{ $attributes->class(['inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold', $tones[$tone] ?? $tones['gray']]) }}>
+<span {{ $attributes->class(['inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold', $tones[$tone] ?? $tones['gray']]) }}>
     @if ($dot)
         <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
     @endif

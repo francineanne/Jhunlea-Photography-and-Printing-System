@@ -1,40 +1,42 @@
 @extends('layouts.app')
 
-{{-- Pages fill the `auth` section; `title` is picked up by layouts.app. --}}
+{{-- Login family shell (design/login/customer_login): studio photo backdrop, glass panel, payment note. Pages fill the `auth` section. --}}
 @section('content')
     <x-layout.skip-link />
     <x-ui.page-loader />
     <x-ui.toast />
 
-    <div class="min-h-dvh lg:grid lg:grid-cols-2">
-        {{-- Brand panel: desktop only, always dark --}}
-        <aside class="dark relative hidden overflow-hidden bg-gradient-to-br from-ink via-neutral-900 to-[#3a0d0d] p-12 text-app-text lg:flex lg:flex-col lg:justify-between">
-            <x-ui.logo size="lg" />
-
-            <div class="relative z-10 max-w-md">
-                <h2 class="font-display text-4xl font-semibold leading-tight">Prints and photoshoots, handled in one place.</h2>
-                <p class="mt-4 text-app-text-2">Send a printing request, book a photoshoot, and follow each step with your reference number.</p>
-            </div>
-
-            <x-ui.notice variant="payment" class="relative z-10 max-w-md border-white/10 bg-white/5" />
-
-            <x-ui.aperture-spinner :size="560" class="pointer-events-none absolute -bottom-40 -right-40 animate-none! text-brand/20" />
-        </aside>
-
-        <main id="main-content" tabindex="-1" class="relative flex min-h-dvh flex-col overflow-hidden px-4 py-4 focus:outline-none sm:px-8">
-            <div class="pointer-events-none absolute -left-24 top-1/4 size-72 rounded-full bg-brand/10 blur-3xl" aria-hidden="true"></div>
-            <div class="pointer-events-none absolute -bottom-24 right-0 size-72 rounded-full bg-status-violet/10 blur-3xl" aria-hidden="true"></div>
-
-            <div class="relative flex items-center justify-between lg:justify-end">
-                <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center rounded-control focus-ring lg:hidden" aria-label="Jhunlea Photography &amp; Printing"><x-ui.logo /></a>
-                <x-ui.theme-toggle />
-            </div>
-
-            <div class="relative flex flex-1 items-center justify-center py-8">
-                <div class="w-full max-w-md rounded-card border border-app-border bg-app-card/80 p-6 shadow-xl backdrop-blur-[16px] sm:p-8">
-                    @yield('auth')
-                </div>
-            </div>
-        </main>
+    {{-- Backdrop: temporary Stitch placeholder photo under a scrim; replace with a real studio photo before going live --}}
+    <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-app-bg" aria-hidden="true">
+        <div class="size-full scale-105 bg-cover bg-center" style="background-image: url('{{ asset('images/design-placeholders/auth-backdrop.jpg') }}')"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-white via-white/85 to-white/90 dark:from-[#0e0e0e] dark:via-[#141414]/75 dark:to-[#0b0b0b]/90"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(251,251,251,0.85)_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,rgba(10,10,10,0.85)_100%)]"></div>
     </div>
+
+    <main id="main-content" tabindex="-1" class="mx-auto flex min-h-dvh w-full max-w-[512px] flex-col items-center justify-center px-4 py-6 focus:outline-none">
+        <div class="mb-4 flex w-full items-center justify-between px-2">
+            <span class="flex items-center gap-1 font-mono text-[12px] uppercase tracking-wider text-app-text-2">
+                <x-ui.icon name="photo_camera" :size="15" class="text-brand dark:text-[#ffdad6]" />
+                Customer portal
+            </span>
+            <x-ui.theme-toggle />
+        </div>
+
+        <section class="auth-panel relative flex w-full flex-col rounded-card p-6 backdrop-blur-xl md:p-8">
+            <a href="{{ url('/') }}" class="group mx-auto mb-6 flex flex-col items-center rounded-control text-center focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
+                <span class="mb-2 flex items-center justify-center gap-1">
+                    <x-ui.aperture mark :size="28" :animate="false" class="transition-transform duration-500 group-hover:rotate-90" />
+                    <span class="text-[22px] font-bold leading-[30px] tracking-[0.22em] text-app-text">JHUNLEA</span>
+                </span>
+                <span class="text-[11px] font-bold uppercase tracking-[0.28em] text-app-text-2">Photography &amp; Printing</span>
+            </a>
+
+            @yield('auth')
+        </section>
+
+        <p class="mt-6 flex items-center justify-center gap-1.5 px-4 text-center text-xs text-app-text-2">
+            <x-ui.icon name="storefront" :size="15" class="shrink-0 text-brand dark:text-[#ffb4ac]" />
+            Payment is made face-to-face at Jhunlea Photography &amp; Printing.
+        </p>
+    </main>
 @endsection

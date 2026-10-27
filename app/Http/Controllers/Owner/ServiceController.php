@@ -8,6 +8,7 @@ use App\Enums\PrintFileType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\ServiceRequest;
 use App\Models\PrintingService;
+use App\Models\PrintingServiceOption;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,34 @@ class ServiceController extends Controller
             'category' => $category,
             'status' => $status,
             'hasFilters' => $search !== '' || $category !== '' || $status !== null,
+            'stats' => $this->catalogStats(),
         ]);
+    }
+
+    /**
+     * Totals for the tiles above the list, in one query. Always the whole catalog, never the current search or filter;
+     * soft-deleted services are left out by the model's scope, and so are their options.
+     *
+     * @return array<string, mixed>
+     */
+    private function catalogStats(): array
+    {
+        $row = PrintingService::query()
+            ->selectRaw('COUNT(*) as total, COALESCE(SUM(is_published), 0) as published, COUNT(base_price) as priced, AVG(base_price) as average_price, MIN(base_price) as min_price, MAX(base_price) as max_price')
+            ->selectSub(PrintingServiceOption::query()->selectRaw('COUNT(*)')->whereHas('service'), 'options_total')
+            ->toBase()
+            ->first();
+
+        return [
+            'total' => (int) $row->total,
+            'published' => (int) $row->published,
+            'unpublished' => (int) $row->total - (int) $row->published,
+            'options' => (int) $row->options_total,
+            'priced' => (int) $row->priced,
+            'average' => $row->average_price,
+            'min' => $row->min_price,
+            'max' => $row->max_price,
+        ];
     }
 
     public function create(): View

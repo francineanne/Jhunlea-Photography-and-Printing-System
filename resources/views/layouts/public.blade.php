@@ -15,10 +15,18 @@
     <x-ui.toast />
 
     <div class="flex min-h-dvh flex-col">
-    <header class="sticky top-0 z-40 border-b border-app-border bg-app-bg/80 backdrop-blur-[12px]">
-        <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-2 sm:px-6">
-            <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
-                <x-ui.logo />
+    {{-- Studio policy strip above the header, as in the landing design --}}
+    <div class="bg-neutral-100 px-4 py-1.5 dark:bg-white/5">
+        <p class="mx-auto flex max-w-[1280px] items-center justify-center gap-1.5 text-center text-[11px] font-bold uppercase leading-4 tracking-wider text-app-text-2">
+            <x-ui.icon name="storefront" :size="15" class="shrink-0 text-brand" />
+            Studio policy: payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.
+        </p>
+    </div>
+
+    <header class="sticky top-0 z-40 border-b border-app-border bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
+        <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-3 px-4 sm:h-20 sm:px-6">
+            <a href="{{ url('/') }}" class="group inline-flex min-h-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
+                <x-ui.logo mark compact />
             </a>
 
             <div class="flex items-center gap-2">
@@ -74,7 +82,7 @@
         @yield('main')
     </main>
 
-    <footer class="border-t border-app-border">
+    <footer class="border-t border-app-border bg-neutral-100 dark:bg-white/5">
         <div class="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
             <x-ui.logo />
             <div class="space-y-1 text-sm text-app-text-2 md:text-right">

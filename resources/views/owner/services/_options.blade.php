@@ -6,7 +6,7 @@
 @endphp
 
 <section id="options" aria-labelledby="options-heading" class="scroll-mt-24">
-    <h2 id="options-heading" class="font-display text-2xl font-semibold">Options</h2>
+    <h2 id="options-heading" class="font-display text-2xl font-semibold">4. Options</h2>
     <p class="mt-1 text-sm text-app-text-2">What customers can choose for this service, such as paper size or finish. The price is added to the base price.</p>
 
     <x-ui.card class="mt-5">

@@ -14,7 +14,7 @@
             {{ $attributes->class([
                 'block h-11 w-full appearance-none rounded-control border bg-app-card pl-3.5 pr-10 text-base text-app-text transition-[border-color,box-shadow] duration-150 sm:text-sm',
                 'field-focus disabled:cursor-not-allowed disabled:opacity-60',
-                'border-neutral-300 dark:border-neutral-700' => ! $error,
+                'border-neutral-200 dark:border-neutral-700' => ! $error,
                 'border-status-red' => $error,
             ]) }}>
             {{ $slot }}

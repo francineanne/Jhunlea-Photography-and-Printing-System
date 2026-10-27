@@ -13,7 +13,7 @@
         {{ $attributes->class([
             'block min-h-28 w-full resize-y rounded-control border bg-app-card px-3.5 py-3 text-base text-app-text transition-[border-color,box-shadow] duration-150 sm:text-sm',
             'placeholder:text-app-muted field-focus disabled:cursor-not-allowed disabled:opacity-60',
-            'border-neutral-300 dark:border-neutral-700' => ! $error,
+            'border-neutral-200 dark:border-neutral-700' => ! $error,
             'border-status-red' => $error,
         ]) }}>{{ $slot }}</textarea>
 </x-ui.field>

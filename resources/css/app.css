@@ -13,6 +13,7 @@
 @theme {
     --color-brand: #C62828;
     --color-brand-hover: #B71C1C;
+    --color-brand-deep: #93000E;
     --color-ink: #171717;
     --color-white: #FFFFFF;
     --color-surface: #FBFBFB;
@@ -56,6 +57,19 @@
     --animate-aperture-open: aperture-open 500ms var(--ease-brand) both;
     --animate-draw: draw-line 500ms var(--ease-brand) both;
     --animate-fade-up: fade-up 500ms var(--ease-brand) 300ms both;
+    --animate-aperture-turn: aperture-turn 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    --animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
+
+    @keyframes aperture-turn {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg) scale(0.92); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes ring-pulse {
+        0%, 100% { transform: scale(1); opacity: 0.2; }
+        50% { transform: scale(1.06); opacity: 0.45; }
+    }
 
     @keyframes aperture-spin {
         to { transform: rotate(360deg); }
@@ -170,18 +184,78 @@
     overflow: hidden;
 }
 
-/* Primary button: darker red sweeps in from the left on hover */
+/* Primary button: a darker red fill sweeps up from the bottom on hover (as in the design) */
 .btn-sweep {
     background-color: var(--color-brand);
-    background-image: linear-gradient(var(--color-brand-hover), var(--color-brand-hover));
+    background-image: linear-gradient(var(--color-brand-deep), var(--color-brand-deep));
     background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 0% 100%;
-    transition: background-size var(--duration-base) var(--ease-brand);
+    background-position: center bottom;
+    background-size: 100% 0%;
+    transition: background-size 300ms ease-out, transform var(--duration-base) var(--ease-brand);
 }
 
 .btn-sweep:hover {
     background-size: 100% 100%;
+}
+
+/* Login family: glass panel over the studio photo. Dark glass in dark mode, light glass in light mode. */
+.auth-panel {
+    background: rgb(255 255 255 / 0.85);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.25), inset 0 1px 0 0 rgb(255 255 255 / 0.6);
+}
+
+.dark .auth-panel {
+    background: rgb(23 23 23 / 0.85);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.7), inset 0 1px 0 0 rgb(255 255 255 / 0.12);
+}
+
+.auth-panel input:not([type='checkbox']) {
+    border-color: rgb(0 0 0 / 0.3);
+    background: rgb(0 0 0 / 0.05);
+    border-radius: 8px;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.12);
+}
+
+.dark .auth-panel input:not([type='checkbox']) {
+    border-color: transparent;
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.4);
+}
+
+.auth-panel input:not([type='checkbox']):focus {
+    background: rgb(0 0 0 / 0.08);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px rgb(198 40 40 / 0.2);
+}
+
+.dark .auth-panel input:not([type='checkbox']):focus {
+    background: rgb(255 255 255 / 0.15);
+}
+
+.auth-panel input[aria-invalid='true'],
+.dark .auth-panel input[aria-invalid='true'] {
+    box-shadow: 0 0 0 1.5px #ba1a1a, inset 0 1px 2px rgb(0 0 0 / 0.3);
+}
+
+.auth-panel label[for]:not(.flex) {
+    font-size: 15px;
+}
+
+.auth-panel [id$='-error'] {
+    border-radius: 6px;
+    background: rgb(186 26 26 / 0.12);
+    padding: 0.5rem;
+}
+
+.dark .auth-panel [id$='-error'] {
+    background: rgb(255 218 214 / 0.12);
+    color: #ffdad6;
+}
+
+.dark .auth-panel .ui-checkbox:not(:checked) {
+    border-color: rgb(255 255 255 / 0.5);
+    background-color: rgb(255 255 255 / 0.15);
 }
 
 .ui-checkbox {
@@ -190,13 +264,14 @@
     width: 1.25rem;
     height: 1.25rem;
     border: 1.5px solid var(--app-muted);
-    border-radius: 6px;
-    background: var(--app-card) no-repeat center / 75%;
-    transition: background-color var(--duration-fast), border-color var(--duration-fast);
+    border-radius: 4px;
+    background: var(--app-card) no-repeat center / 0;
+    transition: background-color var(--duration-fast), border-color var(--duration-fast), background-size var(--duration-fast) var(--ease-brand);
     cursor: pointer;
 }
 
 .ui-checkbox:checked {
+    background-size: 75%;
     border-color: var(--color-brand);
     background-color: var(--color-brand);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l3 3 6-7'/%3E%3C/svg%3E");

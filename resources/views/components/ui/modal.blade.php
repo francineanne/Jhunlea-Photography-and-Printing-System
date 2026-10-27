@@ -10,7 +10,7 @@
         x-transition:enter="transition duration-[280ms] ease-brand" x-transition:enter-start="translate-y-4 opacity-0"
         x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition duration-150 ease-brand"
         x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-        {{ $attributes->class('relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col rounded-card border border-app-border bg-app-card/95 shadow-2xl backdrop-blur-[16px] focus:outline-none') }}>
+        {{ $attributes->class('relative flex max-h-[calc(100dvh-2rem)] w-full max-w-lg flex-col rounded-card border border-app-border bg-app-card/95 shadow-[0_24px_48px_-12px_rgba(23,23,23,0.16)] dark:shadow-2xl backdrop-blur-[16px] focus:outline-none') }}>
         <div class="flex items-start justify-between gap-3 border-b border-app-border py-3 pl-5 pr-2 sm:pl-6">
             <h2 id="modal-title-{{ $name }}" class="py-2 font-display text-xl font-semibold">{{ $title }}</h2>
             <button type="button" x-on:click="hide()" aria-label="Close dialog"

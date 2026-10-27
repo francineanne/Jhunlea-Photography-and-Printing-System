@@ -24,7 +24,7 @@
                 'placeholder:text-app-muted field-focus disabled:cursor-not-allowed disabled:opacity-60',
                 'pl-10' => $icon,
                 'pr-12' => $isPassword,
-                'border-neutral-300 dark:border-neutral-700' => ! $error,
+                'border-neutral-200 dark:border-neutral-700' => ! $error,
                 'border-status-red' => $error,
             ]) }}>
 
