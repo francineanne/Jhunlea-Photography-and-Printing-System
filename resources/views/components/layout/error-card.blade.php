@@ -7,7 +7,7 @@
     $signedIn = $userHome !== null;
     $home = $userHome ?? url('/');
 
-    $labels = ['403' => 'Access denied', '404' => 'Not found', '405' => 'Not allowed', '419' => 'Page expired', '429' => 'Too many requests'];
+    $labels = ['403' => 'Access denied', '404' => 'Not found', '405' => 'Not allowed', '413' => 'Too large', '419' => 'Page expired', '429' => 'Too many requests'];
     $art = ['404' => 'camera', '403' => 'lock'][$code] ?? 'aperture';
 @endphp
 

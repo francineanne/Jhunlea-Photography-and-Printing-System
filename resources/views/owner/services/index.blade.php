@@ -90,16 +90,7 @@
                                         </div>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <form method="POST" action="{{ route('owner.services.publish', $service) }}">
-                                            @csrf
-                                            <button type="submit" role="switch" aria-checked="{{ $service->is_published ? 'true' : 'false' }}"
-                                                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control focus-ring">
-                                                <span @class(['relative h-6 w-11 rounded-full transition-colors duration-200', 'bg-status-green' => $service->is_published, 'bg-neutral-300 dark:bg-neutral-600' => ! $service->is_published])>
-                                                    <span @class(['absolute top-0.5 size-5 rounded-full bg-white shadow transition-[left] duration-200', 'left-[22px]' => $service->is_published, 'left-0.5' => ! $service->is_published])></span>
-                                                </span>
-                                                <span class="sr-only">{{ $service->is_published ? 'Published' : 'Not published' }}: {{ $service->name }}. Press to {{ $service->is_published ? 'unpublish' : 'publish' }}.</span>
-                                            </button>
-                                        </form>
+                                        <x-ui.switch :action="route('owner.services.publish', $service)" :on="$service->is_published" :name="$service->name" />
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center justify-end gap-1">

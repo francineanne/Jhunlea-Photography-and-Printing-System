@@ -106,6 +106,14 @@ Alpine.data('uiToasts', (initial = []) => ({
     },
 }));
 
+// The address (slug) for a name, as the server's Str::slug would make it (accents removed)
+const slugify = (text) => text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 // Fills the address (slug) from the name until the owner edits the address by hand; an existing service keeps its address.
 Alpine.data('serviceForm', ({ name, slug, locked }) => ({
     // A new service has no name or address yet (the server passes null), so the live preview must not see null
@@ -145,12 +153,87 @@ Alpine.data('serviceForm', ({ name, slug, locked }) => ({
     fillSlug() {
         if (this.locked) return;
 
-        this.slug = this.name
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[̀-ͯ]/g, '')
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '');
+        this.slug = slugify(this.name);
+    },
+}));
+
+// Same idea as serviceForm, for the package form: fills the address from the name and drives the live preview
+// from the form's own fields. Display only: the server validates and stores everything.
+Alpine.data('packageForm', ({ name, slug, locked, coverUrl, coverAlt }) => ({
+    name: name ?? '',
+    slug: slug ?? '',
+    locked,
+    coverUrl,
+    coverAlt,
+    preview: { category: '', shortDescription: '', price: '', requiresConfirmation: false, duration: '', people: '', inclusions: [], themes: [], published: false, featured: false },
+
+    init() {
+        this.syncPreview();
+    },
+
+    syncPreview() {
+        const form = this.$root;
+
+        this.preview = {
+            category: form.elements.category?.value.trim() ?? '',
+            shortDescription: form.elements.short_description?.value.trim() ?? '',
+            price: form.elements.price?.value ?? '',
+            requiresConfirmation: form.elements.price_requires_confirmation?.checked ?? false,
+            duration: form.elements.duration_minutes?.value ?? '',
+            people: form.elements.max_people?.value ?? '',
+            inclusions: (form.elements.inclusions?.value ?? '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
+            themes: [...form.querySelectorAll('[name="theme_ids[]"]:checked')].map((box) => ({ name: box.dataset.name, swatches: JSON.parse(box.dataset.swatches || '[]') })),
+            published: form.elements.is_published?.checked ?? false,
+            featured: form.elements.is_featured?.checked ?? false,
+        };
+    },
+
+    // Display only. The wording mirrors PhotographyPackage::priceText() on the server, which is what customers see;
+    // the peso format here is Intl, while the server's App\Support\Money formats stored money.
+    priceText() {
+        const amount = parseFloat(this.preview.price);
+
+        if (! Number.isFinite(amount)) return 'Price on request';
+
+        const price = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(amount);
+
+        return this.preview.requiresConfirmation ? `From ${price} — final price confirmed after review` : price;
+    },
+
+    fillSlug() {
+        if (this.locked) return;
+
+        this.slug = slugify(this.name);
+    },
+}));
+
+// The theme form: the color slots and the live preview of the swatches. The color picker and the hex field of a slot
+// stay in step; blank slots are ignored by the server. Display only: the server validates every color.
+Alpine.data('themeForm', ({ name, colors, imageUrl }) => ({
+    name: name ?? '',
+    colors,
+    imageUrl,
+    description: '',
+    published: false,
+
+    init() {
+        this.sync();
+    },
+
+    sync() {
+        const form = this.$root;
+
+        this.description = form.elements.description?.value.trim() ?? '';
+        this.published = form.elements.is_published?.checked ?? false;
+    },
+
+    // A hex field that is not a full #RRGGBB yet shows nothing in the preview and gives the picker a neutral value
+    valid(color) {
+        return /^#[0-9a-fA-F]{6}$/.test((color ?? '').trim());
+    },
+
+    get swatches() {
+        return this.colors.filter((color) => this.valid(color)).map((color) => color.trim().toUpperCase());
     },
 }));
 

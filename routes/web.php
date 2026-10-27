@@ -6,8 +6,11 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
+use App\Http\Controllers\Owner\PackageController;
+use App\Http\Controllers\Owner\PackageImageController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
+use App\Http\Controllers\Owner\ThemeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -54,6 +57,34 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/services')->name('owner
         Route::put('/{service}/options/{option}', [ServiceOptionController::class, 'update'])->name('options.update');
         Route::delete('/{service}/options/{option}', [ServiceOptionController::class, 'destroy'])->name('options.destroy');
     });
+});
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner/packages')->name('owner.packages.')->group(function () {
+    Route::get('/', [PackageController::class, 'index'])->name('index');
+    Route::get('/create', [PackageController::class, 'create'])->name('create');
+    Route::post('/', [PackageController::class, 'store'])->name('store');
+    Route::get('/{package}/edit', [PackageController::class, 'edit'])->name('edit');
+    Route::put('/{package}', [PackageController::class, 'update'])->name('update');
+    Route::delete('/{package}', [PackageController::class, 'destroy'])->name('destroy');
+    Route::post('/{package}/publish', [PackageController::class, 'publish'])->name('publish');
+    Route::post('/{package}/feature', [PackageController::class, 'feature'])->name('feature');
+
+    Route::scopeBindings()->group(function () {
+        Route::post('/{package}/images', [PackageImageController::class, 'store'])->name('images.store');
+        Route::put('/{package}/images/{image}', [PackageImageController::class, 'update'])->name('images.update');
+        Route::post('/{package}/images/{image}/cover', [PackageImageController::class, 'cover'])->name('images.cover');
+        Route::delete('/{package}/images/{image}', [PackageImageController::class, 'destroy'])->name('images.destroy');
+    });
+});
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner/themes')->name('owner.themes.')->group(function () {
+    Route::get('/', [ThemeController::class, 'index'])->name('index');
+    Route::get('/create', [ThemeController::class, 'create'])->name('create');
+    Route::post('/', [ThemeController::class, 'store'])->name('store');
+    Route::get('/{theme}/edit', [ThemeController::class, 'edit'])->name('edit');
+    Route::put('/{theme}', [ThemeController::class, 'update'])->name('update');
+    Route::delete('/{theme}', [ThemeController::class, 'destroy'])->name('destroy');
+    Route::post('/{theme}/publish', [ThemeController::class, 'publish'])->name('publish');
 });
 
 // Component gallery for developers. Hidden outside the local environment.

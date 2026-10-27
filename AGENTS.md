@@ -16,7 +16,7 @@
 |---|---|---|---|
 | 0 | Repo cleanup and docs | Dev (Her) | Done (Bootstrap removed, Tailwind 4 setup) |
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
-| 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Not started |
+| 2 | Catalog: services, packages, themes, public pages | Dev (Her) | In progress: 2A services and 2B packages, gallery and themes built (owner side); 2C public pages not started |
 | 3 | Printing orders | Dev (Her) | Not started |
 | 4 | Photography bookings and schedule | Dev (Her) | Not started |
 | 5 | Payments, notifications, dashboards | BF | Not started |
