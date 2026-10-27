@@ -1,8 +1,9 @@
 {{-- Place once per layout. Fire with $dispatch('toast', { message, variant: 'success|error|info' }). Also shows the `status` and `error` session flashes. --}}
 @php
     $flashes = array_values(array_filter([
-        session('status') ? ['message' => session('status'), 'variant' => 'success'] : null,
-        session('error') ? ['message' => session('error'), 'variant' => 'error'] : null,
+        // Flashes stay a little longer than a button-triggered toast, because they confirm a whole page action
+        session('status') ? ['message' => session('status'), 'variant' => 'success', 'timeout' => 8000] : null,
+        session('error') ? ['message' => session('error'), 'variant' => 'error', 'timeout' => 8000] : null,
     ]));
 @endphp
 

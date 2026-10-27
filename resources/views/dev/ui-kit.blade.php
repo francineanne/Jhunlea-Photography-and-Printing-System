@@ -13,10 +13,7 @@
             <x-ui.logo />
             <div class="flex items-center gap-2">
                 <span class="hidden font-mono text-xs text-app-text-2 sm:inline">UI kit (local only)</span>
-                <button type="button" data-theme-toggle aria-label="Toggle light and dark theme"
-                    class="grid size-11 place-items-center rounded-control border border-app-border bg-app-card focus-ring">
-                    <x-ui.icon name="contrast" />
-                </button>
+                <x-ui.theme-toggle />
             </div>
         </div>
     </header>

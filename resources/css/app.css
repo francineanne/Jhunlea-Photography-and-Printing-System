@@ -99,6 +99,14 @@
     --app-muted: #737373;
     color-scheme: dark;
 
+    /* Re-resolve the semantic colors here too, so a nested `.dark` wrapper (not only <html>) gets dark values */
+    --color-app-bg: var(--app-bg);
+    --color-app-card: var(--app-card);
+    --color-app-border: var(--app-border);
+    --color-app-text: var(--app-text);
+    --color-app-text-2: var(--app-text-2);
+    --color-app-muted: var(--app-muted);
+
     /* Status pills: lighter text on translucent fill so they read on dark surfaces */
     --color-status-amber: #FBBF24;
     --color-status-amber-bg: rgb(217 119 6 / 0.18);
