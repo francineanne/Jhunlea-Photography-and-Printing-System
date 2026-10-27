@@ -5,6 +5,7 @@
     // One entry = label, icon, route name
     $nav = [
         ['label' => 'Overview', 'icon' => 'space_dashboard', 'route' => 'owner.dashboard'],
+        ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
     ];
 @endphp
 

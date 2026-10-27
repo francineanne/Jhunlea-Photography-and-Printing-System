@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -15,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['role' => EnsureRole::class]);
+
+        // Check the role before route model binding, so a customer gets 403 (not 404) for an id that does not exist
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureRole::class);
 
         // Signs out other sessions of a user as soon as their password changes (for example after a reset)
         $middleware->web(append: [AuthenticateSession::class]);

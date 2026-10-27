@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
+use App\Http\Controllers\Owner\ServiceController;
+use App\Http\Controllers\Owner\ServiceOptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,6 +39,22 @@ Route::get('/my/dashboard', CustomerDashboardController::class)
 Route::get('/owner', OwnerDashboardController::class)
     ->middleware(['auth', 'role:owner'])
     ->name('owner.dashboard');
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner/services')->name('owner.services.')->group(function () {
+    Route::get('/', [ServiceController::class, 'index'])->name('index');
+    Route::get('/create', [ServiceController::class, 'create'])->name('create');
+    Route::post('/', [ServiceController::class, 'store'])->name('store');
+    Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
+    Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+    Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
+    Route::post('/{service}/publish', [ServiceController::class, 'publish'])->name('publish');
+
+    Route::scopeBindings()->group(function () {
+        Route::post('/{service}/options', [ServiceOptionController::class, 'store'])->name('options.store');
+        Route::put('/{service}/options/{option}', [ServiceOptionController::class, 'update'])->name('options.update');
+        Route::delete('/{service}/options/{option}', [ServiceOptionController::class, 'destroy'])->name('options.destroy');
+    });
+});
 
 // Component gallery for developers. Hidden outside the local environment.
 Route::get('/ui-kit', function () {

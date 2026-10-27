@@ -106,6 +106,24 @@ Alpine.data('uiToasts', (initial = []) => ({
     },
 }));
 
+// Fills the address (slug) from the name until the owner edits the address by hand; an existing service keeps its address.
+Alpine.data('serviceForm', ({ name, slug, locked }) => ({
+    name,
+    slug,
+    locked,
+
+    fillSlug() {
+        if (this.locked) return;
+
+        this.slug = this.name
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[̀-ͯ]/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    },
+}));
+
 Alpine.data('uiPageLoader', () => ({
     show: true,
 

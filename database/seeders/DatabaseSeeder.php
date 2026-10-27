@@ -9,10 +9,13 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      *
-     * Intentionally empty for now: no default users. The owner account is created with `php artisan jhunlea:create-owner`.
+     * No users are ever created here: the owner account is made with `php artisan jhunlea:create-owner`.
      */
     public function run(): void
     {
-        //
+        // Placeholder catalog for development only, never on a real (production) database
+        if (app()->environment('local')) {
+            $this->call(SampleCatalogSeeder::class);
+        }
     }
 }
