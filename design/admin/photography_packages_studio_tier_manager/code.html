@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<div class="px-space-lg py-space-xl max-w-[1360px] mx-auto w-full space-y-space-xl">
+<!-- Top Context & Header Hub -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+<div class="space-y-space-xs max-w-2xl">
+<div class="flex items-center gap-space-xs text-primary font-label-caps text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>ATELIER SUITE CATALOG CONTROL</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Photography Packages &amp; Studio Tier Builder</h1>
+<p class="font-body-lg text-body-lg text-secondary">Manage studio packages, inclusions, duration, pricing logic, and client-facing moodboards with live storefront synchronization.</p>
+</div>
+<div class="flex items-center gap-space-sm self-start lg:self-end">
+<button class="h-11 px-space-md bg-surface-container-high text-on-surface hover:bg-surface-variant font-title-sm text-title-sm text-xs rounded-xl flex items-center gap-space-xs shadow-sm transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Export Catalog PDF</span>
+</button>
+<button class="h-11 px-space-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-title-sm text-xs rounded-xl flex items-center gap-space-xs shadow-md shadow-primary-container/20 hover:shadow-lg transition-all duration-200" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Create New Package</span>
+</button>
+</div>
+</div>
+<!-- Category Filters & Live Search Filter Bar -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md">
+<!-- Filter Chips -->
+<div class="flex items-center gap-space-xs overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
+<button class="h-9 px-space-md rounded-full bg-inverse-surface text-inverse-on-surface font-title-sm text-title-sm text-xs whitespace-nowrap shadow-sm" type="button">
+          All (14)
+        </button>
+<button class="h-9 px-space-md rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-title-sm text-title-sm text-xs whitespace-nowrap transition-colors" type="button">
+          Portrait &amp; Solo (4)
+        </button>
+<button class="h-9 px-space-md rounded-full bg-primary-container/10 text-primary font-title-sm text-title-sm text-xs whitespace-nowrap flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          Academic &amp; Graduation (3)
+        </button>
+<button class="h-9 px-space-md rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-title-sm text-title-sm text-xs whitespace-nowrap transition-colors" type="button">
+          Family &amp; Group (4)
+        </button>
+<button class="h-9 px-space-md rounded-full bg-surface-container-low text-on-surface-variant hover:text-on-surface hover:bg-surface-container font-title-sm text-title-sm text-xs whitespace-nowrap transition-colors" type="button">
+          Creative &amp; Editorial (3)
+        </button>
+</div>
+<!-- Search Input and Status Toggle -->
+<div class="flex items-center gap-space-sm w-full md:w-auto">
+<div class="relative w-full md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" placeholder="Search tier, code, deliverables..." type="text" value="Graduation"/>
+</div>
+<button class="h-9 w-9 flex items-center justify-center rounded-lg bg-surface-container-low text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</div>
+<!-- SECTION 1: PACKAGES CARD GRID (Management Matrix) -->
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Active Studio Packages</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-code text-label-code text-xs">4 showing</span>
+</div>
+<div class="font-label-code text-label-code text-xs text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+          Syncs realtime with counter tablet
+        </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1: Graduation Prestige (Active Edit state) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md shadow-primary-container/10 flex flex-col justify-between group transition-all duration-300 relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-primary-container"></div>
+<div>
+<div class="relative rounded-lg overflow-hidden h-44 mb-space-sm bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Sophisticated academic graduation photography portrait in a high-end Manila photo studio, wearing an elegant black gown and deep crimson sash, styled barong undergarment, gentle warm Rembrandt lighting, fine art studio background with crimson warm accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1TtTyVYoB_-hxbscymHmIKmE9ORPWOmNw71f8s8NA9WgSDxGGyLJSafMGcFF7LcqjhMItfhCWW1txebjT5_cxwywDfbLpyihFKrZIZ0wFrGPP78FLmxMsq0dRo1mtKsg0DfJ223QQ0bC4FEOm4czrX4msYJz1b0ZE8gwAAPo-Px6Rycfu7Ubx_Cq1Gjj1UXrtHYdCzrttKV7CpR9ajbfRUoZKCmtaCrKoEB16rioJL1neY2Ph0F7I"/>
+<div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-caps text-[10px] tracking-wider uppercase">
+                ACADEMIC MILESTONE
+              </div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-primary-container text-on-primary font-label-code text-xs font-bold shadow-sm">
+                ₱1,850 est.
+              </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-md text-title-md text-on-surface font-bold group-hover:text-primary transition-colors">Graduation Prestige</h3>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-title-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                Active
+              </div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-2 mb-space-sm">Full regalia portrait session, family formal framing, velvet diploma cover pose, and heirloom lustre prints.</p>
+<div class="space-y-1 py-space-xs font-label-code text-label-code text-xs text-on-surface-variant">
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> Duration:</span>
+<span class="font-semibold text-on-surface">60 mins</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> Capacity:</span>
+<span class="font-semibold text-on-surface">1 grad + 2 guests</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event_available</span> Activity:</span>
+<span class="font-semibold text-primary">12 Bookings this month</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between gap-space-xs">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container relative"></div>
+<span class="font-label-caps text-[10px] text-secondary peer-checked:text-on-surface font-semibold uppercase">Published</span>
+</label>
+<button class="px-space-sm py-1.5 bg-primary-container/10 text-primary hover:bg-primary-container hover:text-on-primary rounded-lg font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Editing</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Essential Studio Portrait -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md flex flex-col justify-between group transition-all duration-300">
+<div>
+<div class="relative rounded-lg overflow-hidden h-44 mb-space-sm bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Chic solo studio portrait of a young professional Filipino creative with sharp monochromatic lighting, minimalist black mock neck sweater, neutral gray background, confident modern editorial aesthetic in Manila studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQpaIglpd6iysls5K-tkfAimGAX7zv85HN9LF-WTv3FmlTTtDzt7cB4ShsxJPQR0zJ9Nhp5dtxi6guwfuZnnZX-FEhgk2gxhTSdQEaMYXd5l2rlWY6GQa24KoVXsLSVhys6KFFDb-wnb2zu1g2pb1iep8C7Ax_YQGtqE7R7EWeVT07GAFfmHL5BqBU_BMUb_4g7eRyWod2IV2gzgr2TzOA3obaSZjwyHuw_alDOTWwwL_AUGGYgmoq"/>
+<div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-caps text-[10px] tracking-wider uppercase">
+                SOLO / HEADSHOT
+              </div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-inverse-surface text-inverse-on-surface font-label-code text-xs font-bold shadow-sm">
+                ₱1,200 est.
+              </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Essential Studio Portrait</h3>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-title-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                Active
+              </div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-2 mb-space-sm">Clean, timeless individual portraiture for creative portfolios, LinkedIn, passport credentials, or artists.</p>
+<div class="space-y-1 py-space-xs font-label-code text-label-code text-xs text-on-surface-variant">
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> Duration:</span>
+<span class="font-semibold text-on-surface">30 mins</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> Capacity:</span>
+<span class="font-semibold text-on-surface">1 pax</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event_available</span> Activity:</span>
+<span class="font-semibold text-on-surface">18 Bookings</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between gap-space-xs">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container relative"></div>
+<span class="font-label-caps text-[10px] text-secondary peer-checked:text-on-surface font-semibold uppercase">Published</span>
+</label>
+<button class="px-space-sm py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-lg font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Edit</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Family Warmth & Milestone -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md flex flex-col justify-between group transition-all duration-300">
+<div>
+<div class="relative rounded-lg overflow-hidden h-44 mb-space-sm bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Multigenerational warm Filipino family sitting together in a photography atelier, laughing naturally, soft beige and linen modern wardrobe, diffused warm spotlight, high aesthetic heirloom framing portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmHilpC2y6MF9KEDFRcA0quYcNIUFSpkvaADMZgtDlRMG26fOOKAeMPZYuUE5hVd69ns3YjSR83nBokA-vr_9EUih-Eed96Qh8Z8O7muY5CmcRTep2uw4EoqIt0vGOjVDzyrG078FlxpFCNoMRU5n9YTO87-OeIMvlnACaW2rEcFArzcHm5D3y9y2iawRaz7diw_qXX92gPkme8HE6b8q9WOozGclobxmCltwaANkLL9CAWxciOE1R"/>
+<div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-caps text-[10px] tracking-wider uppercase">
+                FAMILY &amp; GROUP
+              </div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-inverse-surface text-inverse-on-surface font-label-code text-xs font-bold shadow-sm">
+                ₱3,500 est.
+              </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Family Warmth</h3>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-title-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                Active
+              </div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-2 mb-space-sm">Heartfelt generational staging, full group portraits, sibling pairs, and heirloom 12R canvas included.</p>
+<div class="space-y-1 py-space-xs font-label-code text-label-code text-xs text-on-surface-variant">
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> Duration:</span>
+<span class="font-semibold text-on-surface">90 mins</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> Capacity:</span>
+<span class="font-semibold text-on-surface">Up to 6 pax</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event_available</span> Activity:</span>
+<span class="font-semibold text-on-surface">8 Bookings</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between gap-space-xs">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container relative"></div>
+<span class="font-label-caps text-[10px] text-secondary peer-checked:text-on-surface font-semibold uppercase">Published</span>
+</label>
+<button class="px-space-sm py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-lg font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Edit</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Creative & Editorial Portfolio -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm hover:shadow-md flex flex-col justify-between group transition-all duration-300">
+<div>
+<div class="relative rounded-lg overflow-hidden h-44 mb-space-sm bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-fashion Filipino editorial photoshoot with dramatic shadows, red color gel illumination accents, stylish tailored avant-garde clothing, dramatic magazine cover lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWoWYSShkql6_imLzbXz9sh5CHxkzAk8QR0nD-F6b7kA-G5ryty-rz_jcuLM2TN12PiNL6RbCRqUpAuoqQzPizelm4XvUusea1cDdpUu3Hh3wkvPlf17S6siC-ICvuKeWkceqyAHyFMQWF9c-HbUzaPhBd3-CU6sl3jOByeXt1JnQfSsDYh9XiL4zphMW5w97j_36EvDGHKAN_wbHQ9lf0NIxFhikL63KX5bGBlPSiMFNL0NwUNLQG"/>
+<div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface font-label-caps text-[10px] tracking-wider uppercase">
+                ART DIRECTION
+              </div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-full bg-inverse-surface text-inverse-on-surface font-label-code text-xs font-bold shadow-sm">
+                ₱2,400 est.
+              </div>
+</div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Creative &amp; Editorial</h3>
+<div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-title-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                Active
+              </div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary line-clamp-2 mb-space-sm">Art-directed lighting setups, creative gels, cinematic framing, and magazine-quality retouching.</p>
+<div class="space-y-1 py-space-xs font-label-code text-label-code text-xs text-on-surface-variant">
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> Duration:</span>
+<span class="font-semibold text-on-surface">75 mins</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> Capacity:</span>
+<span class="font-semibold text-on-surface">1-2 pax</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">event_available</span> Activity:</span>
+<span class="font-semibold text-on-surface">5 Bookings</span>
+</div>
+</div>
+</div>
+<div class="pt-space-md flex items-center justify-between gap-space-xs">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container relative"></div>
+<span class="font-label-caps text-[10px] text-secondary peer-checked:text-on-surface font-semibold uppercase">Published</span>
+</label>
+<button class="px-space-sm py-1.5 bg-surface-container text-on-surface hover:bg-surface-container-high rounded-lg font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+<span>Edit</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: INTERACTIVE STUDIO TIER BUILDER (Editing 'Graduation Prestige') -->
+<div class="space-y-space-md">
+<div class="flex items-center justify-between bg-surface-container-low px-space-md py-space-sm rounded-xl">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center font-bold text-sm">
+            01
+          </div>
+<div>
+<div class="font-title-sm text-title-sm text-on-surface">Package Architecture &amp; Live Mirroring</div>
+<div class="font-body-sm text-body-sm text-secondary">Currently editing: <strong class="text-primary font-semibold">Graduation Prestige</strong> (PR-PKG-GRAD01)</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-xs font-label-code text-secondary">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Auto-saved 2 mins ago
+        </div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- COLUMN 1: FORM INPUTS (8 Cols) -->
+<div class="lg:col-span-7 xl:col-span-8 space-y-space-lg">
+<!-- Box 1: General Info -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+<h3 class="font-title-md text-title-md text-on-surface">General Information</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">CORE METADATA</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Package Title</label>
+<input class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all font-semibold" type="text" value="Graduation Prestige"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Category Classification</label>
+<div class="relative">
+<select class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 appearance-none cursor-pointer">
+<option selected="">Academic &amp; Graduation</option>
+<option>Portrait &amp; Solo</option>
+<option>Family &amp; Group</option>
+<option>Creative &amp; Editorial</option>
+<option>Commercial Product</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-3 text-secondary pointer-events-none text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Short Summary (Storefront Cards)</label>
+<input class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" type="text" value="Premium graduation portraits with formal attire styling, family companion inclusion, and archival lustre frames."/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Full Promotional Description</label>
+<textarea class="w-full p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" rows="3">Celebrate your collegiate achievement under our signature 120cm Octabox lighting. Designed specifically for graduates seeking academic dignity alongside heartfelt family portraits with parents and mentors.</textarea>
+</div>
+</div>
+<!-- Box 2: Pricing, Duration & Capacity -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+<h3 class="font-title-md text-title-md text-on-surface">Pricing &amp; Studio Time Parameters</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">TRANSACTION LOGIC</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Base Estimated Price (PHP)</label>
+<div class="relative">
+<span class="absolute left-3.5 top-2.5 font-label-code text-on-surface-variant font-bold">₱</span>
+<input class="w-full h-11 pl-8 pr-3 bg-surface-container-low rounded-lg font-label-code text-body-md text-on-surface font-bold focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20" type="text" value="1,850.00"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Session Duration (Minutes)</label>
+<div class="flex items-center h-11 bg-surface-container-low rounded-lg px-2">
+<button class="w-7 h-7 rounded bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="flex-1 text-center font-label-code font-bold text-on-surface text-sm">60 mins</span>
+<button class="w-7 h-7 rounded bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">People Included</label>
+<div class="flex items-center h-11 bg-surface-container-low rounded-lg px-2">
+<button class="w-7 h-7 rounded bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="flex-1 text-center font-title-sm text-xs text-on-surface truncate">1 Grad + 2 Pax</span>
+<button class="w-7 h-7 rounded bg-surface-container-lowest flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors shadow-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- In-store Settlement notice switch -->
+<div class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">storefront</span>
+<div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface">Price requires in-store confirmation flag</div>
+<div class="font-body-sm text-body-sm text-xs text-secondary">Displays as 'Estimated Price' to client. Exact total finalized over counter.</div>
+</div>
+</div>
+<label class="flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-9 h-5 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-container relative"></div>
+</label>
+</div>
+</div>
+<!-- Box 3: Output Deliverables (Digital & Print) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">photo_prints</span>
+<h3 class="font-title-md text-title-md text-on-surface">Deliverables &amp; Output Specs</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">CLIENT TAKE-HOME</span>
+</div>
+<div class="space-y-space-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">cloud_download</span>
+                  Digital Outputs &amp; Proof Delivery
+                </label>
+<div class="relative">
+<input class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20" type="text" value="10 High-Res Master Retouched JPEG files via cloud link + Full private proof gallery (watermarked)"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">filter_frames</span>
+                  Physical Fine Art Printed Outputs
+                </label>
+<div class="relative">
+<input class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20" type="text" value="1x Framed 8R Archival Lustre Print + 8x Wallet Keepsake Prints (2x3 in.)"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Box 4: Inclusions List Builder (Reorderable) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">checklist</span>
+<h3 class="font-title-md text-title-md text-on-surface">Studio Inclusions Builder</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">REORDERABLE BULLETS</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg group">
+<span class="material-symbols-outlined text-secondary hover:text-on-surface cursor-grab text-[20px]">drag_indicator</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<input class="flex-1 bg-transparent border-0 font-body-sm text-body-sm text-on-surface focus:outline-none" type="text" value="Pro Strobe &amp; 120cm Octabox Lighting with soft backlight"/>
+<button class="text-secondary hover:text-error transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg group">
+<span class="material-symbols-outlined text-secondary hover:text-on-surface cursor-grab text-[20px]">drag_indicator</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<input class="flex-1 bg-transparent border-0 font-body-sm text-body-sm text-on-surface focus:outline-none" type="text" value="2 Outfit Changes (Toga / Academic Cap + Formal Barong / Dress)"/>
+<button class="text-secondary hover:text-error transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg group">
+<span class="material-symbols-outlined text-secondary hover:text-on-surface cursor-grab text-[20px]">drag_indicator</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<input class="flex-1 bg-transparent border-0 font-body-sm text-body-sm text-on-surface focus:outline-none" type="text" value="Dedicated Hair &amp; Grooming Touchup Bar access prior to shoot"/>
+<button class="text-secondary hover:text-error transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm p-space-sm bg-surface-container-low rounded-lg group">
+<span class="material-symbols-outlined text-secondary hover:text-on-surface cursor-grab text-[20px]">drag_indicator</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<input class="flex-1 bg-transparent border-0 font-body-sm text-body-sm text-on-surface focus:outline-none" type="text" value="Poblacion Bay 02 Priority Staging and Diploma Prop staging"/>
+<button class="text-secondary hover:text-error transition-colors p-1" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<button class="w-full py-2.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high font-title-sm text-title-sm text-xs flex items-center justify-center gap-2 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Add Inclusion Item</span>
+</button>
+</div>
+<!-- Box 5: Custom Add-Ons & Rates -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">add_box</span>
+<h3 class="font-title-md text-title-md text-on-surface">A La Carte Add-Ons &amp; Upgrade Rates</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">UPSELL CATALOG</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col justify-between space-y-2">
+<div>
+<div class="font-title-sm text-xs text-on-surface">Hair &amp; Light Grooming Touchup</div>
+<div class="font-body-sm text-[11px] text-secondary">Salon assistant prep on-site</div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="font-label-code text-xs font-bold text-primary">+₱350</span>
+<span class="material-symbols-outlined text-emerald-600 text-[18px]">check_circle</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col justify-between space-y-2">
+<div>
+<div class="font-title-sm text-xs text-on-surface">Additional 12R Large Canvas</div>
+<div class="font-body-sm text-[11px] text-secondary">Archival gallery wrap frame</div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="font-label-code text-xs font-bold text-primary">+₱650</span>
+<span class="material-symbols-outlined text-emerald-600 text-[18px]">check_circle</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg flex flex-col justify-between space-y-2">
+<div>
+<div class="font-title-sm text-xs text-on-surface">Rush 24h Digital Turnaround</div>
+<div class="font-body-sm text-[11px] text-secondary">High priority queue delivery</div>
+</div>
+<div class="flex items-center justify-between pt-2">
+<span class="font-label-code text-xs font-bold text-primary">+₱250</span>
+<span class="material-symbols-outlined text-emerald-600 text-[18px]">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Box 6: Linked Studio Backdrops & Image Gallery -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">palette</span>
+<h3 class="font-title-md text-title-md text-on-surface">Linked Studio Themes &amp; Moodboards</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">4 ATELIER BACKDROPS</span>
+</div>
+<!-- Chips -->
+<div class="flex flex-wrap gap-2">
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-container text-on-primary font-title-sm text-xs cursor-pointer shadow-xs">
+<span class="w-3 h-3 rounded-full bg-red-900"></span>
+<span>Classic Crimson [Default]</span>
+<span class="material-symbols-outlined text-[14px]">star</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-title-sm text-xs cursor-pointer">
+<span class="w-3 h-3 rounded-full bg-amber-100"></span>
+<span>Warm Cream</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-title-sm text-xs cursor-pointer">
+<span class="w-3 h-3 rounded-full bg-zinc-800"></span>
+<span>Dark Charcoal</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface font-title-sm text-xs cursor-pointer">
+<span class="w-3 h-3 rounded-full bg-amber-800"></span>
+<span>Library Grad Bookshelf</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-container text-secondary hover:text-on-surface font-title-sm text-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span>
+<span>Link Another Theme</span>
+</button>
+</div>
+<!-- Image Gallery Upload Grid -->
+<div class="space-y-space-sm pt-space-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Client Sample Moodboard Photos (Drag to Reorder)</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
+<!-- Image 1 Cover -->
+<div class="relative rounded-lg overflow-hidden h-32 group bg-surface-container shadow-xs ring-2 ring-primary-container">
+<img class="w-full h-full object-cover" data-alt="Close up photograph of a graduate in Manila studio wearing black toga, regal neck hood embroidery, confident serene expression, warm dramatic directional studio strobe light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6jMeY8svRFur9XTpKQO8hhm453kXkXEG15wDBJglfd4TmS3qMk3-733zia8bEXSCcktnyjnqLWRhG7a9jUnpl_y7m4fqYbYMln8r9VGY1WxxWc-B1Ogh4KonGkdy4KSrJCDaNZ45szGBxRNveFneQR8JUdUskA5rirFe6XAaJASt0BFiUOXuzr_-StsMS8MermYw2WzZHRB1_og2tj37hHcsEsI9ZSU4ZMs7Cm0MY46FQZb63u5sg"/>
+<span class="absolute top-1.5 left-1.5 bg-primary-container text-on-primary font-label-code text-[10px] px-1.5 py-0.5 rounded flex items-center gap-0.5 font-bold">
+<span class="material-symbols-outlined text-[12px]">star</span> COVER
+                  </span>
+<div class="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-on-primary">
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">drag_indicator</span>
+</button>
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-error flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Image 2 -->
+<div class="relative rounded-lg overflow-hidden h-32 group bg-surface-container shadow-xs">
+<img class="w-full h-full object-cover" data-alt="Family pose during graduation studio shoot, proud mother and father embracing the newly graduated son in toga, radiant soft studio lighting, crisp archival detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcA7aJdd6tns3hgqCqfCUQTggjIQxC68yaZpdmnSeYqvUo2Z6tULAjHHjCLkCLUQTCTe7Lr_Od8288wdOgxH9OGNYUfBBxR2hl8hizYCrOoj_fMwSnrTbaY0wVSgCSCzZgb7ZwALVkW551BliN-lfLYWT_PZH1PMKEoay7pM_PYEWG96zAuvYrPP5VRdScrv7b9wcj3kBTaPuQwb_tX7ZeUb2WmbH_DoSvVt2-j0iBuQzTQ95AfwsH"/>
+<div class="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-on-primary">
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">star</span>
+</button>
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-error flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Image 3 -->
+<div class="relative rounded-lg overflow-hidden h-32 group bg-surface-container shadow-xs">
+<img class="w-full h-full object-cover" data-alt="Formal barong tagalog solo portrait of a university honors graduate holding rolled parchment diploma, clean warm charcoal studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2l0pkxfD5Uu1CxE3sCC-8SAMvA7aQFlnKSeXRsXwLh4I0XakyrfhLhKkPT70a70Nsb9GY0wl2IKj8JAGaSDxZ4PMOk6RxOAZDTO7Ca0wRw-bzggA8-qaItQjAxthiRiLnalOPlWbw7yK0xopqkXXXD5XJzdFPsfN5GmRs41rl2da9bILjcr-yrct4nD2U0eEEYmU7zhwLCSYnEuSqkU9hnNXYkT_wRh_NMx_y_JG7x2XHslWk2wb0"/>
+<div class="absolute inset-0 bg-inverse-surface/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1 text-on-primary">
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">star</span>
+</button>
+<button class="w-7 h-7 rounded-full bg-surface-container-lowest/80 text-error flex items-center justify-center hover:bg-surface-container-lowest" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Upload Drop Target -->
+<div class="h-32 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer text-secondary hover:text-primary">
+<span class="material-symbols-outlined text-[24px]">cloud_upload</span>
+<span class="font-title-sm text-xs font-semibold">Upload Photo</span>
+<span class="font-label-code text-[9px] text-secondary">Up to 25MB RAW/JPEG</span>
+</div>
+</div>
+</div>
+<!-- Studio Terms & Notes -->
+<div class="space-y-1 pt-space-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Studio Staging &amp; Client Preparation Notes</label>
+<textarea class="w-full p-space-md bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container/20 transition-all" rows="2">Arrive 15 minutes prior to session. Toga and hood steaming provided complimentary in dressing bay. Maximum 2 companions inside shooting bay to ensure proper lighting setup.</textarea>
+</div>
+</div>
+</div>
+<!-- COLUMN 2: STICKY LIVE CUSTOMER BOOKING PREVIEW (4-5 Cols) -->
+<div class="lg:col-span-5 xl:col-span-4 sticky top-24 space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 font-label-caps text-label-caps text-on-surface font-bold uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Storefront Preview
+            </div>
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-label-code text-[11px] text-secondary">Client View</span>
+</div>
+<!-- Phone / Card Visual Canvas -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden">
+<!-- Simulated Client Booking Header Card -->
+<div class="relative h-60 bg-surface-container-low overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Cinematic graduation studio hero photograph, Filipino student smiling proudly with embroidered academic sash, golden strobe hair light, high-end warm atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf_79ntQ2r27oNeMb59GqQg2N_JEhF86dHEizYfzKQFmmb5EtKl4e7ZQpjpvlpw2LM_bo7MW4THNU5tUqrKaSvtg27HTZ01jv81zaGsTHTaT7seFYWXMhJvtN4kkBmM1EHxXrFq3LHjXUHPMZgLJ6xPOqndZ_an2xxvBJys7u4VA-y7TZfaWBZJd6SxB-7xzaZ_nokutNUvmVpHja8l0ri3QOCbPm81tAFF0YcGCiXMOE_u2bH-ox0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+<div class="absolute top-3 left-3 flex gap-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md font-label-caps text-[10px] text-on-surface font-bold">
+                  ACADEMIC TIER
+                </span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-white">
+<div class="font-headline-sm text-headline-sm font-bold text-surface-container-lowest">Graduation Prestige</div>
+<div class="flex items-center gap-2 text-xs font-label-code text-surface-container-low mt-0.5">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 60 mins</span>
+<span>•</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">group</span> 1 Grad + 2 Guests</span>
+</div>
+</div>
+</div>
+<!-- Preview Card Body -->
+<div class="p-space-lg space-y-space-md">
+<!-- Pricing Row -->
+<div class="flex items-baseline justify-between">
+<div>
+<div class="font-label-caps text-[10px] text-secondary uppercase font-bold tracking-wider">Studio Package Rate</div>
+<div class="font-price-display text-price-display text-primary font-bold">₱1,850.00 <span class="font-body-sm text-xs font-normal text-secondary">est.</span></div>
+</div>
+<div class="px-2 py-1 rounded-md bg-primary-container/10 text-primary font-label-caps text-[10px] font-bold uppercase">
+                  POPULAR CHOICE
+                </div>
+</div>
+<!-- Mandatory Atelier Notice -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-start gap-space-xs text-on-surface border-l-4 border-primary-container">
+<span class="material-symbols-outlined text-primary-container text-[18px] shrink-0 mt-0.5">storefront</span>
+<span class="font-body-sm text-[11px] leading-tight text-on-surface-variant">Payment is settled face-to-face at Jhunlea counter upon session day. No advance online checkout required.</span>
+</div>
+<!-- Key Inclusions Preview -->
+<div class="space-y-space-xs">
+<div class="font-label-caps text-[11px] text-on-surface uppercase font-bold">What's Included:</div>
+<ul class="space-y-1.5 font-body-sm text-xs text-on-surface-variant">
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>10 Retouched JPEGs + Private Cloud Gallery</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>1x Framed 8R Archival Print + 8x Wallet Keepsakes</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>2 Outfit Changes (Toga + Formal Attire)</span>
+</li>
+<li class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+<span>Full Hair &amp; Grooming Prep Station Access</span>
+</li>
+</ul>
+</div>
+<!-- Backdrop Swatches -->
+<div class="space-y-1.5">
+<div class="font-label-caps text-[11px] text-secondary uppercase font-bold">Selectable Studio Backdrops:</div>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-red-900 ring-2 ring-primary-container cursor-pointer" title="Classic Crimson"></div>
+<div class="w-6 h-6 rounded-full bg-amber-100 ring-1 ring-surface-variant cursor-pointer" title="Warm Cream"></div>
+<div class="w-6 h-6 rounded-full bg-zinc-800 ring-1 ring-surface-variant cursor-pointer" title="Charcoal"></div>
+<div class="w-6 h-6 rounded-full bg-amber-800 ring-1 ring-surface-variant cursor-pointer" title="Library"></div>
+</div>
+</div>
+<!-- Interactive Simulated Client CTA -->
+<div class="pt-space-xs">
+<button class="w-full h-11 bg-primary-container hover:bg-primary text-on-primary rounded-xl font-title-sm text-title-sm text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-primary-container/25 transition-all" type="button">
+<span>Book this package</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<div class="text-center font-label-code text-[10px] text-secondary mt-2">
+                  Session held at Poblacion Atelier Bay 02
+                </div>
+</div>
+</div>
+</div>
+<!-- Preview Info helper -->
+<div class="bg-surface-container-low rounded-xl p-space-md text-xs space-y-1 font-body-sm text-secondary">
+<div class="font-title-sm text-on-surface text-xs flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">visibility</span>
+              Live Sync Diagnostic
+            </div>
+<div>Edits made on the left form update this storefront preview instantly. Once published, this configuration is served to self-service kiosk terminals and the client web portal.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM ACTION BAR (Save & Publish, Draft, Duplicate, Discard) -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-md shadow-lg flex flex-col sm:flex-row items-center justify-between gap-space-md sticky bottom-4 z-30">
+<div class="flex items-center gap-space-sm w-full sm:w-auto">
+<button class="h-11 px-space-md rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+<span>Duplicate Package</span>
+</button>
+<button class="h-11 px-space-md rounded-xl bg-surface-container-low hover:bg-error-container hover:text-error text-secondary font-title-sm text-title-sm text-xs transition-colors flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Discard Changes</span>
+</button>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<button class="h-11 px-space-lg rounded-xl bg-surface-container text-on-surface hover:bg-surface-container-high font-title-sm text-title-sm text-xs transition-colors" type="button">
+          Save as Draft
+        </button>
+<button class="h-11 px-space-xl rounded-xl bg-primary-container hover:bg-primary text-on-primary font-title-sm text-title-sm text-sm font-semibold flex items-center gap-2 shadow-md shadow-primary-container/20 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span>Save &amp; Publish Package</span>
+</button>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></button><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<!-- Top Decorative Ambient Aura -->
+<div class="relative w-full max-w-[1280px] mx-auto px-margin overflow-hidden pointer-events-none">
+<div class="absolute -top-16 left-1/4 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl"></div>
+<div class="absolute -top-20 right-1/3 w-80 h-80 bg-surface-container-high/50 rounded-full blur-2xl"></div>
+</div>
+<div class="w-full max-w-[1280px] mx-auto px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- Header Block: Title & Primary Action -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md pt-space-xs">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-code text-label-code uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>Archival Lab &amp; Atelier Services</span>
+<span class="text-tertiary">/</span>
+<span class="text-on-surface">Client: Clara Santos</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight leading-none mt-1">
+          My Printing Requests &amp; Orders
+        </h1>
+<p class="font-body-lg text-body-lg text-secondary max-w-2xl mt-1">
+          Manage your active print runs, view lab proofing status, and reorder past archival prints with atelier color fidelity.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="inline-flex items-center justify-center gap-space-xs px-space-md h-11 rounded-xl bg-surface-container-low text-on-surface font-title-sm text-body-md hover:bg-surface-container transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+<span>Billing History</span>
+</button>
+<button class="inline-flex items-center justify-center gap-space-xs px-space-lg h-11 rounded-xl bg-primary-container text-on-primary font-title-sm text-body-md hover:bg-primary shadow-sm transition-all transform active:scale-98" type="button">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+<span>New Print Request</span>
+</button>
+</div>
+</div>
+<!-- Active Pickup Notification Card (Gallery Mat Framing Style) -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-600"></div>
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pl-space-xs">
+<div class="flex items-start sm:items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[26px]">storefront</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-title-sm text-body-md text-on-surface font-semibold">1 Order is currently waiting for in-store pickup</span>
+<span class="inline-flex items-center gap-1 font-label-code text-label-code bg-surface-container px-2 py-0.5 rounded text-on-surface font-bold">
+                PR-0012
+              </span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                Boxed &amp; Stamped
+              </span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-1">
+              Poblacion Atelier Counter: Present any government ID or mention slip <strong class="text-on-surface font-semibold">PR-0012</strong>. Hours: Mon–Sat 8:30 AM – 6:30 PM.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm pl-space-xl lg:pl-0 shrink-0">
+<button class="inline-flex items-center gap-space-xs px-space-md h-9 rounded-xl bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">qr_code_2</span>
+<span>View Claim QR</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md h-9 rounded-xl bg-on-surface text-surface-container-lowest font-title-sm text-body-sm hover:bg-tertiary transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">directions</span>
+<span>Studio Location</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Mandatory Face-to-Face Transaction Policy Banner -->
+<div class="rounded-xl bg-surface-container-low p-space-md relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-container"></div>
+<div class="flex items-center gap-space-md pl-space-xs">
+<div class="w-9 h-9 rounded-xl bg-surface-container-lowest text-primary-container flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface">Payment Policy Notice</span>
+<p class="font-body-md text-body-sm text-secondary">
+            Payment is made face-to-face at Jhunlea Photography &amp; Printing atelier counter. No online checkout required for digital proof releases.
+          </p>
+</div>
+</div>
+<div class="shrink-0 pl-space-xs sm:pl-0">
+<span class="inline-flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-lowest px-3 py-1 rounded-lg shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-primary-container">verified</span>
+<span>PAY-ON-CLAIM</span>
+</span>
+</div>
+</div>
+<!-- Filter, Tabs, and Search Bar Area -->
+<div class="flex flex-col gap-space-md">
+<!-- Status Tabs with Counts -->
+<div class="flex items-center justify-between overflow-x-auto pb-1 scrollbar-none">
+<div class="flex items-center gap-space-xs shrink-0" id="statusFilterGroup">
+<!-- All Tab (Active default) -->
+<button class="relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-semibold text-primary-container bg-surface-container-lowest shadow-sm flex items-center gap-space-xs transition-all" data-filter="all" type="button">
+<span>All Requests</span>
+<span class="font-label-code text-label-code px-1.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold">6</span>
+<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-primary-container rounded-full"></span>
+</button>
+<!-- Active Tab -->
+<button class="relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-medium text-secondary hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-space-xs" data-filter="active" type="button">
+<span>Active</span>
+<span class="font-label-code text-label-code px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-semibold">2</span>
+</button>
+<!-- Ready for Pickup Tab -->
+<button class="relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-medium text-secondary hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-space-xs" data-filter="ready" type="button">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Ready for Pickup</span>
+<span class="font-label-code text-label-code px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">1</span>
+</button>
+<!-- Completed Tab -->
+<button class="relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-medium text-secondary hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-space-xs" data-filter="completed" type="button">
+<span>Completed</span>
+<span class="font-label-code text-label-code px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-semibold">2</span>
+</button>
+<!-- Cancelled Tab -->
+<button class="relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-medium text-secondary hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-space-xs" data-filter="cancelled" type="button">
+<span>Cancelled</span>
+<span class="font-label-code text-label-code px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-semibold">1</span>
+</button>
+</div>
+<div class="hidden xl:flex items-center gap-space-sm text-secondary font-body-sm text-body-sm shrink-0">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+<span>Live Lab Sync: 1 min ago</span>
+</div>
+</div>
+<!-- Controls Row: Search, Sort, Date Filter -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-sm items-center">
+<!-- Search Field -->
+<div class="md:col-span-6 relative">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-secondary">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="w-full h-11 pl-10 pr-space-md bg-surface-container-lowest rounded-xl font-body-md text-body-md text-on-surface placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-primary-container/20 shadow-sm transition-all" id="orderSearchInput" placeholder="Search by reference number (PR-XXXX) or file name..." type="text"/>
+</div>
+<!-- Sort Select -->
+<div class="md:col-span-3 relative">
+<div class="relative bg-surface-container-lowest rounded-xl shadow-sm">
+<select class="w-full h-11 pl-3.5 pr-8 bg-transparent appearance-none font-body-md text-body-md text-on-surface focus:outline-none cursor-pointer">
+<option value="newest">Sort: Newest first</option>
+<option value="oldest">Sort: Oldest first</option>
+<option value="status">Sort: Status urgency</option>
+<option value="price-high">Sort: Price (High to Low)</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-secondary">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Date Range Button -->
+<div class="md:col-span-3">
+<button class="w-full h-11 px-3.5 bg-surface-container-lowest rounded-xl shadow-sm font-body-md text-body-md text-on-surface hover:bg-surface-container flex items-center justify-between transition-colors" type="button">
+<div class="flex items-center gap-2 truncate">
+<span class="material-symbols-outlined text-secondary text-[18px]">calendar_today</span>
+<span class="truncate">Past 90 Days (All)</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-[16px]">tune</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Orders Data View -->
+<div class="w-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse" id="ordersDataTable">
+<thead>
+<tr class="bg-surface-container-low text-secondary font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-space-md px-space-lg font-bold" scope="col">Reference No.</th>
+<th class="py-space-md px-space-md font-bold" scope="col">Service &amp; File Asset</th>
+<th class="py-space-md px-space-md font-bold" scope="col">Date Submitted</th>
+<th class="py-space-md px-space-md font-bold" scope="col">Quantity &amp; Specs</th>
+<th class="py-space-md px-space-md font-bold" scope="col">Lab Status</th>
+<th class="py-space-md px-space-md font-bold" scope="col">Total (Atelier)</th>
+<th class="py-space-md px-space-lg font-bold text-right" scope="col">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<!-- ORDER 1: Ready for Pickup (PR-0012) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-surface-container px-2.5 py-1 rounded text-on-surface group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                    PR-0012
+                  </span>
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-on-surface group-hover:text-primary-container transition-colors">Fine Art Giclée Prints</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">picture_as_pdf</span>
+<span class="truncate font-label-code text-xs">Clara_Graduation_Portraits.pdf</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-on-surface">May 18, 2025</span>
+<span class="block font-label-code text-xs text-secondary">09:30 AM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">10 pcs</span>
+<span class="font-body-sm text-body-sm text-secondary">8R Lustre • Full Color Pigment</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  Ready for Pickup
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-on-surface">₱1,850.00</span>
+<span class="font-label-code text-xs text-emerald-700 font-semibold uppercase tracking-wider">Confirmed</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View Details</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-700 text-on-primary font-title-sm text-body-sm hover:bg-emerald-800 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">pin_drop</span>
+<span>Track Slip</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ORDER 2: In Lab Production (PR-0018) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-surface-container px-2.5 py-1 rounded text-on-surface group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                    PR-0018
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-on-surface group-hover:text-primary-container transition-colors">Thesis Hardbinding &amp; Stamping</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">description</span>
+<span class="truncate font-label-code text-xs">BS_Arch_Thesis_Final_v3.pdf</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-on-surface">May 21, 2025</span>
+<span class="block font-label-code text-xs text-secondary">02:15 PM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">2 books</span>
+<span class="font-body-sm text-body-sm text-secondary">Buckram Maroon • Gold Foil Deboss</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-purple-800 font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-purple-600 animate-pulse"></span>
+                  In Lab Production
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-on-surface">₱1,400.00</span>
+<span class="font-label-code text-xs text-purple-700 font-semibold uppercase tracking-wider">Confirmed</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>View Details</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container-high text-on-surface font-title-sm text-body-sm hover:bg-surface-dim transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">hourglass_top</span>
+<span>Track Proof</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ORDER 3: Action Required (PR-0021) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group bg-red-50/20">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-error-container text-error px-2.5 py-1 rounded">
+                    PR-0021
+                  </span>
+<span class="material-symbols-outlined text-error text-[16px]">warning</span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-on-surface group-hover:text-error transition-colors">Canvas Gallery Wrap Mount</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-error font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px]">hide_image</span>
+<span class="truncate font-label-code text-xs">Family_Retrato_Master_RAW.tif</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-on-surface">May 22, 2025</span>
+<span class="block font-label-code text-xs text-secondary">11:04 AM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">1 frame (24×36 in)</span>
+<span class="font-body-sm text-body-sm text-error">Low DPI Resolution Warning (&lt;150dpi)</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-100 text-red-800 font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+                  Action Required
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-on-surface">₱3,200.00</span>
+<span class="font-label-code text-xs text-secondary font-semibold uppercase tracking-wider">Est. Quote</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Details</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-title-sm text-body-sm hover:bg-primary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">file_upload</span>
+<span>Resolve Issue</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ORDER 4: Completed (PR-0009) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-surface-container px-2.5 py-1 rounded text-on-surface group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                    PR-0009
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-on-surface group-hover:text-primary-container transition-colors">Passport &amp; Visa Studio Bundle</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">photo</span>
+<span class="truncate font-label-code text-xs">Clara_US_Visa_Spec.jpg</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-on-surface">Apr 29, 2025</span>
+<span class="block font-label-code text-xs text-secondary">03:40 PM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">12 cuts</span>
+<span class="font-body-sm text-body-sm text-secondary">2×2 US Format • Matte Archival Cut</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  Completed
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-on-surface">₱210.00</span>
+<span class="font-label-code text-xs text-secondary font-semibold uppercase tracking-wider">Paid In-Store</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" title="Download Official Atelier Receipt" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Receipt</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-on-surface text-surface-container-lowest font-title-sm text-body-sm hover:bg-tertiary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">replay</span>
+<span>Reorder</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ORDER 5: Completed (PR-0004) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-surface-container px-2.5 py-1 rounded text-on-surface group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+                    PR-0004
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-on-surface group-hover:text-primary-container transition-colors">Exhibition Postcard Sets</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">folder_zip</span>
+<span class="truncate font-label-code text-xs">Santos_Solo_Series_A6.zip</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-on-surface">Apr 12, 2025</span>
+<span class="block font-label-code text-xs text-secondary">10:12 AM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">50 cards</span>
+<span class="font-body-sm text-body-sm text-secondary">300gsm Cotton Rag • Rounded Corners</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  Completed
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-on-surface">₱760.00</span>
+<span class="font-label-code text-xs text-secondary font-semibold uppercase tracking-wider">Paid In-Store</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-sm hover:bg-surface-container-high transition-colors" title="Download Official Atelier Receipt" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Receipt</span>
+</button>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-on-surface text-surface-container-lowest font-title-sm text-body-sm hover:bg-tertiary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">replay</span>
+<span>Reorder</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- ORDER 6: Cancelled (PR-0002) -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group opacity-75">
+<td class="py-space-md px-space-lg whitespace-nowrap">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold bg-surface-container px-2.5 py-1 rounded text-secondary">
+                    PR-0002
+                  </span>
+</div>
+</td>
+<td class="py-space-md px-space-md max-w-[280px]">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-semibold text-secondary line-through">Architectural Blueprints (Large A1)</span>
+<div class="flex items-center gap-1.5 mt-0.5 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">draft</span>
+<span class="truncate font-label-code text-xs">Elevation_Scheme_04.dwg</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="block font-body-md text-body-sm text-secondary">Mar 30, 2025</span>
+<span class="block font-label-code text-xs text-secondary">08:00 AM PST</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-sm font-semibold text-secondary">4 sets</span>
+<span class="font-body-sm text-body-sm text-secondary">Bond 80gsm • Folded Blueprint</span>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-secondary font-title-sm text-body-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  Cancelled
+                </span>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md font-bold text-secondary line-through">₱480.00</span>
+<span class="font-label-code text-xs text-secondary font-semibold uppercase tracking-wider">Cancelled by Client</span>
+</div>
+</td>
+<td class="py-space-md px-space-lg text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container text-secondary font-title-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">info</span>
+<span>Details</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Pagination & Summary -->
+<div class="p-space-md bg-surface-container-low/60 flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<span class="font-body-sm text-body-sm text-secondary">
+            Showing <strong class="text-on-surface font-semibold">1–6</strong> of <strong class="text-on-surface font-semibold">6</strong> orders
+          </span>
+<span class="hidden sm:inline text-secondary font-label-code">•</span>
+<a class="hidden sm:inline font-title-sm text-body-sm text-primary-container hover:text-primary transition-colors" href="#">
+            Need a custom bulk quotation? Contact studio desk
+          </a>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary opacity-40 cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-label-code text-label-code px-3 py-1 rounded-lg bg-surface-container-lowest text-on-surface font-bold shadow-sm">
+            1 of 1
+          </span>
+<button class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center text-secondary opacity-40 cursor-not-allowed" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Editorial Atelier Showcase & Quality Commitment Bento -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mt-space-sm">
+<!-- Box 1: Paper Stock Library -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary-container mb-space-sm">
+<span class="material-symbols-outlined text-[22px]">photo_album</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Certified Mediums</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Archival Cotton &amp; Fine Art Canvas</h3>
+<p class="font-body-md text-body-sm text-secondary mt-2">
+            Every file printed through Jhunlea undergoes strict ICC profiling using genuine archival pigment inks rated for 100+ years display life.
+          </p>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">300gsm Hahnemühle Ready</span>
+<span class="material-symbols-outlined text-primary-container text-[20px]">arrow_forward</span>
+</div>
+</div>
+<!-- Box 2: Calibration Status Live Widget -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-on-surface mb-space-sm">
+<span class="material-symbols-outlined text-[22px]">tune</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Lab Hardware Diagnostics</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Pro Lab Calibration Status</h3>
+<div class="mt-3 flex flex-col gap-2">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-secondary font-body-sm">Epson SureColor P9000 (Fine Art)</span>
+<span class="font-label-code text-xs text-emerald-700 font-bold">OPTIMAL</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[98%]"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm mt-1">
+<span class="text-secondary font-body-sm">Canon imagePROGRAF Deboss Unit</span>
+<span class="font-label-code text-xs text-emerald-700 font-bold">READY</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-emerald-600 h-full w-[100%]"></div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<span class="font-label-code text-label-code text-secondary">Delta-E Color Tolerance &lt; 1.2</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">verified</span>
+</div>
+</div>
+<!-- Box 3: Physical Studio Contact & Face-to-Face Assistance -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center text-primary-container mb-space-sm">
+<span class="material-symbols-outlined text-[22px]">contact_support</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Atelier Concierge</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Visit The Printmaking Bench</h3>
+<p class="font-body-md text-body-sm text-secondary mt-2">
+            Need physical proofing on Japanese Kozo paper or custom matting? Consult our master printmaker directly at the Poblacion counter.
+          </p>
+</div>
+<div class="mt-space-md pt-space-sm flex items-center justify-between">
+<button class="font-title-sm text-body-sm font-semibold text-primary-container hover:text-primary transition-colors flex items-center gap-1" type="button">
+<span>Studio Queue &amp; Directions</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+<span class="font-label-code text-label-code text-secondary font-bold">DESK 02</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Interactive Tab Filtering Simulation
+    const filterButtons = document.querySelectorAll('#statusFilterGroup button');
+    const tableRows = document.querySelectorAll('#ordersDataTable tbody tr');
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Reset styling on tabs
+        filterButtons.forEach(b => {
+          b.className = "relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-medium text-secondary hover:text-on-surface hover:bg-surface-container transition-all flex items-center gap-space-xs";
+          const underline = b.querySelector('span.absolute.bottom-0');
+          if (underline) underline.remove();
+        });
+
+        // Activate clicked tab
+        btn.className = "relative group px-space-md py-space-sm rounded-xl font-title-sm text-body-md font-semibold text-primary-container bg-surface-container-lowest shadow-sm flex items-center gap-space-xs transition-all";
+        const indicator = document.createElement('span');
+        indicator.className = "absolute bottom-0 left-3 right-3 h-0.5 bg-primary-container rounded-full";
+        btn.appendChild(indicator);
+
+        const filterType = btn.getAttribute('data-filter');
+
+        // Simple row display toggles based on status text
+        tableRows.forEach(row => {
+          const rowText = row.innerText.toLowerCase();
+          if (filterType === 'all') {
+            row.style.display = '';
+          } else if (filterType === 'active') {
+            if (rowText.includes('in lab production') || rowText.includes('action required') || rowText.includes('ready for pickup')) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          } else if (filterType === 'ready') {
+            if (rowText.includes('ready for pickup')) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          } else if (filterType === 'completed') {
+            if (rowText.includes('completed')) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          } else if (filterType === 'cancelled') {
+            if (rowText.includes('cancelled')) {
+              row.style.display = '';
+            } else {
+              row.style.display = 'none';
+            }
+          }
+        });
+      });
+    });
+
+    // Real-time Search Input filtering
+    const searchInput = document.getElementById('orderSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        tableRows.forEach(row => {
+          const content = row.innerText.toLowerCase();
+          if (content.includes(query)) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    }
+  })();
+</script></main><div class="fixed bottom-6 right-6 z-40"><button aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02]" type="button"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></button></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

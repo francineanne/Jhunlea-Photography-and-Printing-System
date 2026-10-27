@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffdad6", "outline-variant": "#e4beba", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "primary-container": "#c62828", "secondary-container": "#e2dfde", "surface-container-high": "#e8e8e8", "error-container": "#ffdad6", "on-error": "#ffffff", "inverse-surface": "#2f3131", "on-primary-fixed-variant": "#93000e", "secondary-fixed-dim": "#c8c6c5", "on-primary-container": "#ffe0dd", "surface-container-low": "#f3f3f3", "secondary-fixed": "#e5e2e1", "surface-container-highest": "#e2e2e2", "on-background": "#1a1c1c", "tertiary-container": "#676767", "primary": "#a20513", "secondary": "#5f5e5e", "surface": "#f9f9f9", "on-secondary": "#ffffff", "surface-bright": "#f9f9f9", "tertiary-fixed-dim": "#c8c6c6", "tertiary-fixed": "#e4e2e2", "primary-fixed-dim": "#ffb4ac", "on-secondary-fixed": "#1c1b1b", "on-secondary-container": "#636262", "on-secondary-fixed-variant": "#474746", "inverse-primary": "#ffb4ac", "inverse-on-surface": "#f1f1f1", "surface-variant": "#e2e2e2", "outline": "#8f706c", "on-tertiary-container": "#e8e6e6", "on-tertiary-fixed-variant": "#474747", "on-tertiary-fixed": "#1b1c1c", "surface-dim": "#dadada", "surface-container": "#eeeeee", "on-error-container": "#93000a", "surface-tint": "#b91d20", "on-primary-fixed": "#410003", "surface-container-lowest": "#ffffff", "tertiary": "#4f4f4f", "background": "#f9f9f9", "on-surface": "#1a1c1c", "error": "#ba1a1a", "on-surface-variant": "#5b403d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-mobile": "1rem", "gutter": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "space-md": "1rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "2rem" }, "fontFamily": { "label-code": ["JetBrains Mono"], "label-caps": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-hero": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"] }, "fontSize": { "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] cursor-pointer hover:text-surface-container-lowest transition-colors">menu_open</span></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-210px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></div></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="printing-orders" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">print</span><span class="font-body-md text-body-md">Printing Orders</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-primary-container text-on-primary">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">photo_camera</span><span class="font-body-md text-body-md">Photo Bookings</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-surface-container-high/20 text-secondary-fixed">8</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Services Catalog</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">package_2</span><span class="font-body-md text-body-md">Photo Packages</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">palette</span><span class="font-body-md text-body-md">Themes &amp; Backdrops</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="schedule-and-availability" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-body-md text-body-md">Studio Calendar</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Client Directory</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Counter Payments</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="font-body-md text-body-md">Notifications</span></div><span class="w-2 h-2 rounded-full bg-primary-container"></span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-body-md text-body-md">Studio Reports</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Atelier Settings</span></div></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payments settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="max-w-[1280px] mx-auto px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Status & Priority Banner -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md mb-space-lg shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="flex flex-wrap items-center gap-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">PR-0012</span>
+<span class="font-label-code text-label-code text-primary bg-primary-fixed/60 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">Pigment Print Master</span>
+</div>
+<div class="h-4 w-px bg-surface-container-highest hidden sm:block"></div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+<span class="font-title-sm text-title-sm text-amber-700 text-xs font-bold tracking-wide uppercase">Prepress Revision Verified</span>
+</div>
+<div class="h-4 w-px bg-surface-container-highest hidden sm:block"></div>
+<span class="font-label-code text-label-code text-secondary text-xs">Submitted: Oct 24, 2024 • 14:18 PHT</span>
+</div>
+<!-- Atelier Action Controls -->
+<div class="flex flex-wrap items-center gap-2">
+<!-- Accept -->
+<button class="h-9 px-3.5 rounded-lg bg-surface-container text-on-surface hover:bg-emerald-600 hover:text-white transition-all flex items-center gap-1.5 font-title-sm text-xs font-semibold shadow-sm" onclick="alert('Order PR-0012 formally accepted into darkroom production queue.')">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+<span>Accept Request</span>
+</button>
+<!-- Set Confirmed Price -->
+<button class="h-9 px-3.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-1.5 font-title-sm text-xs font-semibold shadow-sm" onclick="document.getElementById('modal-price').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px] text-primary">sell</span>
+<span>Set Price (₱1,850.00 Locked)</span>
+</button>
+<!-- Request More Info -->
+<button class="relative h-9 px-3.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-1.5 font-title-sm text-xs font-semibold shadow-sm" onclick="document.getElementById('modal-inquiry').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px] text-amber-600">contact_support</span>
+<span>Request Info</span>
+<span class="bg-amber-100 text-amber-800 text-[10px] font-label-code px-1.5 py-0.2 rounded-full font-bold ml-1">Inquiry Pending</span>
+</button>
+<!-- Reject -->
+<button class="h-9 px-3 rounded-lg bg-surface-container text-error hover:bg-error hover:text-on-error transition-all flex items-center gap-1 font-title-sm text-xs font-semibold shadow-sm" onclick="document.getElementById('modal-reject').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Reject</span>
+</button>
+<!-- Update Status (Primary Dropdown/Action) -->
+<div class="relative group">
+<button class="h-9 px-4 rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-all flex items-center gap-2 font-title-sm text-xs font-bold shadow-md">
+<span class="material-symbols-outlined text-[16px]">sync_alt</span>
+<span>Update Status</span>
+<span class="material-symbols-outlined text-[14px]">expand_more</span>
+</button>
+<div class="absolute right-0 mt-1 w-56 bg-surface-container-lowest rounded-xl shadow-xl py-1.5 z-30 hidden group-hover:block border-0 text-left">
+<div class="px-3 py-1 font-label-caps text-[10px] text-secondary tracking-wider uppercase">Advance Atelier Pipeline</div>
+<button class="w-full px-3 py-2 text-left font-body-sm text-xs text-on-surface hover:bg-surface-container flex items-center gap-2" onclick="alert('Status updated: In Pigment Printing')">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+            In Pigment Printing (Canon Lucia PRO)
+          </button>
+<button class="w-full px-3 py-2 text-left font-body-sm text-xs text-on-surface hover:bg-surface-container flex items-center gap-2" onclick="alert('Status updated: Packaged &amp; Bin Stored')">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            Packaged &amp; Bin Stored (Bin #04-A)
+          </button>
+<button class="w-full px-3 py-2 text-left font-body-sm text-xs text-on-surface hover:bg-surface-container flex items-center gap-2" onclick="alert('Status updated: Released to Client')">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            Released to Client (Counter Handoff)
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Mandatory In-Store Counter Policy Banner -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md mb-space-lg shadow-sm flex items-start gap-space-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="w-10 h-10 rounded-lg bg-primary-fixed/40 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">point_of_sale</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2">
+<span class="font-title-sm text-title-sm text-on-surface text-sm">Face-to-Face Settlement Policy Enforced</span>
+<span class="bg-primary/10 text-primary font-label-code text-[11px] px-2 py-0.5 rounded font-bold">ATELIER COUNTER PROTOCOL</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">
+        Payment is collected in-person upon print inspection at the Jhunlea atelier front desk. No remote payment or online gateway checkout allowed. Digital tax receipt and verification slips generate at physical handover.
+      </p>
+</div>
+<div class="hidden md:flex flex-col text-right font-label-code text-xs text-secondary shrink-0">
+<span class="font-bold text-on-surface">Terminal #01 (Poblacion)</span>
+<span>Clerk: Master Jhunlea</span>
+</div>
+</div>
+<!-- 2-Column Balanced Master Grid (60% / 40%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- LEFT COLUMN (60% -> 7 cols on lg) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- Customer Dossier Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center font-headline-sm text-primary font-bold shadow-inner">
+              CS
+            </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-title-md text-title-md text-on-surface">Clara Marie Santos</h3>
+<span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-label-caps font-bold px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                  Verified Client
+                </span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary mt-0.5">Academic &amp; Fine Art Collector • Member since Mar 2023</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-code text-label-code text-xs text-secondary block">Trust Factor</span>
+<span class="font-title-sm text-title-sm text-emerald-700 text-xs font-bold">14 Runs • 0 Flags</span>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md mt-space-md pt-space-md bg-surface-container-low/60 p-space-md rounded-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">phone</span>
+<span class="font-label-code text-label-code text-on-surface text-xs font-medium">+63 917 842 1904</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">mail</span>
+<span class="font-label-code text-label-code text-on-surface text-xs font-medium">clara.santos@gmail.com</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-space-md">
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1 font-body-sm text-xs font-semibold" onclick="alert('Initiating cellular dispatch call to +63 917 842 1904...')">
+<span class="material-symbols-outlined text-[15px] text-primary">call</span> Call
+          </button>
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1 font-body-sm text-xs font-semibold" onclick="alert('Opening SMS draft via Studio Gateway...')">
+<span class="material-symbols-outlined text-[15px] text-secondary">sms</span> SMS
+          </button>
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1 font-body-sm text-xs font-semibold" onclick="alert('Displaying 14 previous print orders for Clara Marie Santos.')">
+<span class="material-symbols-outlined text-[15px] text-secondary">history</span> Client History (14)
+          </button>
+</div>
+</div>
+<!-- File Preview & Prepress Inspection Panel -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">photo_library</span>
+<h3 class="font-title-md text-title-md text-on-surface">File Prepress &amp; Proof Inspection</h3>
+</div>
+<span class="bg-emerald-100 text-emerald-800 text-[11px] font-label-code font-bold px-2 py-0.5 rounded">300 DPI CMYK VALID</span>
+</div>
+<!-- Visual Prepress Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-md">
+<!-- Thumbnail Mockup with Crop/Bleed Indicators -->
+<div class="md:col-span-5 relative group rounded-lg overflow-hidden bg-surface-container-high flex flex-col items-center justify-center p-3 shadow-inner">
+<div class="relative w-full aspect-[4/5] bg-surface-container-highest rounded overflow-hidden shadow-md">
+<img class="w-full h-full object-cover" data-alt="High resolution studio graduation portrait of a young Filipina scholar wearing a black academic gown and formal crimson sash, neutral warm studio backdrop, soft cinematic rim lighting, perfect fine art photographic framing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFKpwMUGTd_lGnoqvza6Pvie4O6-LITsdoV-i_Yg3KB0RS0yYIIeam7n9XE2wwo0DjvnJZeVHtClvIXu3_f0xN4aUA8ITCGPT_5YgpCwkIjXvPFJPywHpUKt-g53TdAbMZe7RGhdCU6GLMHHpaWAch5S6FA5ul6kUUfvkfEzLuwENJX9LWwDVxVzzswdjeUlFpXzcq9BkSMRGrtLop7BvrvPgiEuwy8x1dtP5FivANpL8jVTR0PG-5"/>
+<!-- Bleed Overlay Indicator -->
+<div class="absolute inset-1.5 pointer-events-none border border-dashed border-primary/70 rounded-xs flex items-end justify-end p-1">
+<span class="bg-primary/90 text-on-primary font-label-code text-[9px] px-1 rounded">2.1mm Bleed</span>
+</div>
+</div>
+<div class="w-full flex items-center justify-between mt-2 font-label-code text-[11px] text-secondary">
+<span>Preview: Page 01 of 10</span>
+<span class="text-primary font-bold">100% Scale</span>
+</div>
+</div>
+<!-- Prepress Diagnostics -->
+<div class="md:col-span-7 flex flex-col justify-between">
+<div class="space-y-space-sm font-label-code text-xs">
+<div class="p-2.5 rounded bg-surface-container-low">
+<div class="text-secondary text-[11px]">Primary Asset</div>
+<div class="font-bold text-on-surface truncate">Clara_Grad_8R_Portraits_v2.pdf</div>
+<div class="text-secondary text-[11px] mt-0.5">18.4 MB • 10 Pages Multi-artboard</div>
+</div>
+<div class="grid grid-cols-2 gap-2 text-[11px]">
+<div class="p-2 rounded bg-surface-container-low">
+<span class="text-secondary block">Color Profile</span>
+<span class="font-bold text-on-surface">Adobe RGB (1998)</span>
+</div>
+<div class="p-2 rounded bg-surface-container-low">
+<span class="text-secondary block">Resolution Check</span>
+<span class="font-bold text-emerald-700">300 DPI Native</span>
+</div>
+<div class="p-2 rounded bg-surface-container-low">
+<span class="text-secondary block">Print Canvas Area</span>
+<span class="font-bold text-on-surface">8.00 × 10.00 in</span>
+</div>
+<div class="p-2 rounded bg-surface-container-low">
+<span class="text-secondary block">Physical Bleed</span>
+<span class="font-bold text-on-surface">+2.1 mm Symmetric</span>
+</div>
+</div>
+<div class="p-2 rounded bg-amber-50 text-amber-900 text-[11px]">
+<div class="font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">tune</span> Prepress Note from Lab:
+                </div>
+<div>Contrast bumped +2% to compensate for satin lustre micro-porous absorption.</div>
+</div>
+</div>
+<!-- Action buttons -->
+<div class="flex flex-wrap items-center gap-2 mt-space-md pt-2">
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1.5 font-title-sm text-xs font-semibold" onclick="alert('Downloading master prepress asset PDF (18.4 MB)...')">
+<span class="material-symbols-outlined text-[16px] text-primary">download</span>
+<span>Download Master PDF</span>
+</button>
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1.5 font-title-sm text-xs font-semibold" onclick="alert('Generating calibrated proof slip slip with lab barcode...')">
+<span class="material-symbols-outlined text-[16px] text-secondary">receipt</span>
+<span>Generate Proof Slip</span>
+</button>
+<button class="h-8 px-3 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1.5 font-title-sm text-xs font-semibold" onclick="alert('Rendering Lucia PRO ICC Color Soft-Proof simulation...')">
+<span class="material-symbols-outlined text-[16px] text-secondary">palette</span>
+<span>ICC Simulation</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Order Specifications Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center gap-2 mb-space-md">
+<span class="material-symbols-outlined text-primary text-[20px]">layers</span>
+<h3 class="font-title-md text-title-md text-on-surface">Substrate &amp; Chemistry Specifications</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md font-body-sm text-body-sm">
+<div class="p-space-md bg-surface-container-low rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Archival Substrate</span>
+<div class="font-title-sm text-title-sm text-on-surface text-sm">260gsm Archival Satin Lustre</div>
+<div class="text-secondary text-xs mt-1">Micro-porous coating, zero optical brightener degradation, 100+ year Wilhelm lightfastness rating.</div>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Dimensions &amp; Quantity</span>
+<div class="font-title-sm text-title-sm text-on-surface text-sm">8R Portrait (8 × 10 inches)</div>
+<div class="text-secondary text-xs mt-1">10 Finished Master Prints + 10 Acid-Free Archival Polypropylene Sleeves included.</div>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Ink Technology</span>
+<div class="font-title-sm text-title-sm text-on-surface text-sm">Canon Lucia PRO 12-Color Setup</div>
+<div class="text-secondary text-xs mt-1">Atelier calibrated with Chroma Optimizer for bronze-free specular highlights.</div>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Finishing &amp; Storage</span>
+<div class="font-title-sm text-title-sm text-on-surface text-sm">Cold Flatbed Press &amp; Curing</div>
+<div class="text-secondary text-xs mt-1">45-minute solvent off-gas staging before archival sleeve boxing.</div>
+</div>
+</div>
+<div class="mt-space-md p-space-md bg-primary-fixed/20 rounded-xl">
+<div class="flex items-center gap-2 text-primary font-bold text-xs uppercase font-label-caps">
+<span class="material-symbols-outlined text-[16px]">record_voice_over</span>
+            Client Specific Instruction
+          </div>
+<p class="font-body-sm text-body-sm text-on-surface-variant italic mt-1">
+            “Handled for graduation framing. No fingerprints on borders, leave exact margins for dark wood bevel mats.”
+          </p>
+</div>
+</div>
+<!-- Internal Notes vs Customer-Visible Remarks -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">speaker_notes</span>
+<h3 class="font-title-md text-title-md text-on-surface">Dual Annotation Center</h3>
+</div>
+<span class="font-label-code text-label-code text-secondary text-xs">Separate Client &amp; Atelier Channels</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Customer-Visible Remark -->
+<div class="flex flex-col bg-surface-container-low rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="font-title-sm text-title-sm text-on-surface text-xs font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-emerald-600 text-[16px]">visibility</span>
+                Customer-Visible Remark
+              </span>
+<span class="bg-emerald-100 text-emerald-800 text-[10px] font-label-code px-1.5 py-0.5 rounded font-semibold">Live on Portal</span>
+</div>
+<textarea class="w-full bg-surface-container-lowest p-2.5 rounded-lg text-xs font-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary resize-none shadow-inner" placeholder="Notes seen by customer during track status..." rows="4">Bleed confirmed trimmed to 2mm with 3% margin scale. Packaging safely in Atelier Bin #04-A.</textarea>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[11px] text-secondary font-label-code">Updated 10m ago</span>
+<button class="px-2.5 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-title-sm text-[11px] font-semibold" onclick="alert('Public tracking remark updated.')">Save Remark</button>
+</div>
+</div>
+<!-- Internal Atelier Staff Note -->
+<div class="flex flex-col bg-amber-50/70 rounded-xl p-space-md">
+<div class="flex items-center justify-between mb-2">
+<span class="font-title-sm text-title-sm text-amber-900 text-xs font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-amber-700 text-[16px]">lock</span>
+                Internal Atelier Darkroom Note
+              </span>
+<span class="bg-amber-200 text-amber-900 text-[10px] font-label-code px-1.5 py-0.5 rounded font-bold">Lab Eyes Only</span>
+</div>
+<textarea class="w-full bg-surface-container-lowest p-2.5 rounded-lg text-xs font-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none shadow-inner" placeholder="Staff technical instructions..." rows="4">Use roll lot #LC-994. Ensure drying for at least 45 minutes before cold-mount sleeve insertion. Master Jhunlea signature on verso.</textarea>
+<div class="flex justify-between items-center mt-2">
+<span class="text-[11px] text-amber-800/80 font-label-code">Signed: J. Arceo</span>
+<button class="px-2.5 py-1 rounded bg-amber-200 hover:bg-amber-300 text-amber-950 font-title-sm text-[11px] font-semibold" onclick="alert('Internal technical note locked.')">Lock Note</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Status History & Audit Log -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">history_toggle_off</span>
+<h3 class="font-title-md text-title-md text-on-surface">Chrono Audit Log</h3>
+</div>
+<span class="font-label-code text-label-code text-secondary text-xs">Immutable Ledger</span>
+</div>
+<div class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-highest">
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1 w-3 h-3 rounded-full bg-emerald-600 ring-4 ring-surface-container-lowest"></div>
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface text-xs font-bold">Quotation &amp; Prepress Approved</span>
+<span class="font-label-code text-label-code text-secondary text-[11px]">Today • 15:42</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">Price confirmed at ₱1,850.00 by <strong class="text-on-surface">Jhunlea P. Arceo</strong>. Paper changed to 260gsm Lustre.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1 w-3 h-3 rounded-full bg-amber-500 ring-4 ring-surface-container-lowest"></div>
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface text-xs font-bold">Proof Verified by Lab Assistant</span>
+<span class="font-label-code text-label-code text-secondary text-[11px]">Today • 14:55</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">CMYK profile verified. Bleed box cropped symmetrically. Verified by <strong class="text-on-surface">Mark (Print Technician)</strong>.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1 w-3 h-3 rounded-full bg-secondary ring-4 ring-surface-container-lowest"></div>
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface text-xs font-bold">Order Submitted by Clara Marie Santos</span>
+<span class="font-label-code text-label-code text-secondary text-[11px]">Today • 14:18</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">Uploaded Clara_Grad_8R_Portraits_v2.pdf via portal web service.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (40% -> 5 cols on lg) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Price & Quotation Panel -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">payments</span>
+<h3 class="font-title-md text-title-md text-on-surface">Price &amp; Quotation Breakdown</h3>
+</div>
+<span class="material-symbols-outlined text-secondary text-[18px]">lock</span>
+</div>
+<div class="space-y-3 font-body-sm text-sm">
+<div class="flex items-center justify-between text-secondary">
+<span>Customer Initial Estimate (10x 8R)</span>
+<span class="font-label-code font-medium text-on-surface">₱1,650.00</span>
+</div>
+<div class="flex items-center justify-between text-secondary">
+<div class="flex items-center gap-1.5">
+<span>260gsm Lustre + Archival Sleeves</span>
+<span class="material-symbols-outlined text-primary text-[14px]">add_circle</span>
+</div>
+<span class="font-label-code font-medium text-primary">+₱200.00</span>
+</div>
+<div class="h-px bg-surface-container-high my-2"></div>
+<div class="p-3 bg-surface-container-low rounded-lg flex items-center justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-secondary block uppercase">Confirmed Atelier Price</span>
+<span class="text-[11px] text-secondary">Locked by Jhunlea P. Arceo</span>
+</div>
+<span class="font-price-display text-price-display text-primary font-bold text-2xl">₱1,850.00</span>
+</div>
+</div>
+<button class="w-full mt-space-md h-10 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-title-sm text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm" onclick="document.getElementById('modal-price').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px] text-primary">edit</span>
+<span>Adjust Quotation / Price</span>
+</button>
+</div>
+<!-- Payment Panel (In-Store Face-to-Face Settlement) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
+<h3 class="font-title-md text-title-md text-on-surface">In-Store Settlement</h3>
+</div>
+<span class="bg-error-container text-on-error-container font-label-code text-[11px] font-bold px-2 py-0.5 rounded uppercase">UNPAID</span>
+</div>
+<!-- Ledger balance visual -->
+<div class="grid grid-cols-2 gap-2 mb-space-md text-center">
+<div class="p-3 rounded-lg bg-surface-container-low">
+<span class="font-label-caps text-[10px] text-secondary uppercase block">Total Due at Counter</span>
+<span class="font-price-display text-xl font-bold text-on-surface">₱1,850.00</span>
+</div>
+<div class="p-3 rounded-lg bg-surface-container-low">
+<span class="font-label-caps text-[10px] text-secondary uppercase block">Collected</span>
+<span class="font-price-display text-xl font-bold text-secondary">₱0.00</span>
+</div>
+</div>
+<!-- Big CTA Button to open Cashier Modal -->
+<button class="w-full h-12 rounded-xl bg-primary-container text-on-primary hover:bg-primary transition-all font-title-sm text-sm font-bold flex items-center justify-center gap-2 shadow-lg" onclick="document.getElementById('modal-payment').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+<span>Record In-Store Payment</span>
+</button>
+<!-- Settlement Options Badges -->
+<div class="mt-space-md pt-space-md bg-surface-container-low/50 p-space-md rounded-lg">
+<span class="font-label-caps text-[10px] text-secondary uppercase block mb-2 font-bold tracking-wider">Accepted Front-Desk Channels</span>
+<div class="flex flex-wrap gap-1.5 font-label-code text-[11px]">
+<span class="px-2 py-1 bg-surface-container-lowest rounded text-on-surface font-semibold shadow-xs">Cash Desk</span>
+<span class="px-2 py-1 bg-surface-container-lowest rounded text-on-surface font-semibold shadow-xs">GCash QR Stand</span>
+<span class="px-2 py-1 bg-surface-container-lowest rounded text-on-surface font-semibold shadow-xs">Maya Stand</span>
+<span class="px-2 py-1 bg-surface-container-lowest rounded text-on-surface font-semibold shadow-xs">BDO / BPI POS Debit</span>
+</div>
+</div>
+<div class="mt-space-sm flex items-center gap-2 text-[11px] text-secondary font-label-code">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+<span>Digital receipt dispatches instantly upon physical counter settlement.</span>
+</div>
+</div>
+<!-- Pickup Logistics & Storage Allocation -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">inventory</span>
+<h3 class="font-title-md text-title-md text-on-surface">Atelier Staging &amp; Claim Pass</h3>
+</div>
+<span class="bg-surface-container text-on-surface font-label-code text-xs px-2 py-0.5 rounded font-bold">POBLACION</span>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-center justify-between mb-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase block mb-0.5">Assigned Flatbed Tray</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">Bin #04-A</span>
+<span class="font-label-code text-[11px] text-secondary block">Flatbed Drying &amp; Staging Rack</span>
+</div>
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[28px]">shelves</span>
+</div>
+</div>
+<!-- Claim Pass Code & QR simulation -->
+<div class="p-space-md bg-surface-container-lowest rounded-xl shadow-inner text-center">
+<div class="font-label-caps text-[10px] text-secondary uppercase tracking-widest mb-1">Counter Claim Verification Code</div>
+<div class="font-label-code text-sm font-bold text-on-surface tracking-wider bg-surface-container-low py-1.5 px-3 rounded inline-block mb-3">
+            PASS-PR0012-CLARA
+          </div>
+<!-- Synthetic High Contrast Barcode/QR Visual -->
+<div class="flex flex-col items-center justify-center p-3 bg-white rounded-lg">
+<svg class="w-48 h-12 text-black" preserveaspectratio="none" viewbox="0 0 100 25">
+<!-- Stylized Barcode pattern -->
+<rect fill="currentColor" height="25" width="2" x="0" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="3" y="0"></rect>
+<rect fill="currentColor" height="25" width="3" x="6" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="11" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="15" y="0"></rect>
+<rect fill="currentColor" height="25" width="4" x="18" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="24" y="0"></rect>
+<rect fill="currentColor" height="25" width="3" x="27" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="32" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="36" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="39" y="0"></rect>
+<rect fill="currentColor" height="25" width="4" x="43" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="49" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="52" y="0"></rect>
+<rect fill="currentColor" height="25" width="3" x="56" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="61" y="0"></rect>
+<rect fill="currentColor" height="25" width="4" x="64" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="70" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="74" y="0"></rect>
+<rect fill="currentColor" height="25" width="3" x="77" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="82" y="0"></rect>
+<rect fill="currentColor" height="25" width="3" x="86" y="0"></rect>
+<rect fill="currentColor" height="25" width="1" x="91" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="94" y="0"></rect>
+<rect fill="currentColor" height="25" width="2" x="98" y="0"></rect>
+</svg>
+<span class="font-label-code text-[10px] text-secondary tracking-widest mt-1">SCAN AT FRONT DESK SCANNER</span>
+</div>
+</div>
+<div class="mt-space-md flex gap-2">
+<button class="flex-1 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors font-title-sm text-xs font-semibold flex items-center justify-center gap-1" onclick="alert('Printing thermal bin ticket for Bin #04-A...')">
+<span class="material-symbols-outlined text-[16px]">print</span> Print Bin Ticket
+          </button>
+<button class="flex-1 h-9 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors font-title-sm text-xs font-semibold flex items-center justify-center gap-1" onclick="alert('Dispatching ready-for-pickup SMS notification to Clara Marie Santos (+63 917 842 1904)...')">
+<span class="material-symbols-outlined text-[16px]">send</span> Notify Ready
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- MODALS (Inline vanilla preview overlays) -->
+<!-- ========================================================================= -->
+<!-- 1. SET CONFIRMED PRICE MODAL -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" id="modal-price">
+<div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-space-lg shadow-2xl relative">
+<div class="flex items-center justify-between pb-space-md">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed/40 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">sell</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Lock Confirmed Order Price</h3>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-secondary" onclick="document.getElementById('modal-price').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="space-y-space-md font-body-sm text-body-sm">
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Base Print Price (10x 8R Prints)</label>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-label-code text-on-surface focus:outline-none" readonly="" type="text" value="₱1,650.00"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Prepress &amp; Archival Premium Add-on</label>
+<input class="w-full h-11 px-3 bg-surface-container-lowest rounded-lg font-label-code text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-inner" type="text" value="200.00"/>
+<p class="text-[11px] text-secondary mt-1">260gsm Satin Lustre + 10 Acid-Free Sleeves</p>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center justify-between">
+<span class="font-bold text-on-surface">Final Locked Amount:</span>
+<span class="font-price-display text-2xl text-primary font-bold">₱1,850.00</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<input checked="" class="rounded accent-primary" id="client-notify-price" type="checkbox"/>
+<label class="text-xs text-on-surface cursor-pointer" for="client-notify-price">Notify client of updated price via SMS and update web tracking badge</label>
+</div>
+</div>
+<div class="flex justify-end gap-2 mt-space-lg">
+<button class="h-10 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-title-sm text-xs font-semibold" onclick="document.getElementById('modal-price').classList.add('hidden')">Cancel</button>
+<button class="h-10 px-5 rounded-lg bg-primary-container text-on-primary hover:bg-primary font-title-sm text-xs font-bold shadow-md" onclick="alert('Price officially locked at ₱1,850.00'); document.getElementById('modal-price').classList.add('hidden')">Confirm &amp; Lock Price</button>
+</div>
+</div>
+</div>
+<!-- 2. REQUEST MORE INFO MODAL -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" id="modal-inquiry">
+<div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-space-lg shadow-2xl relative">
+<div class="flex items-center justify-between pb-space-md">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">contact_support</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Request Technical Clarification</h3>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-secondary" onclick="document.getElementById('modal-inquiry').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="space-y-space-md font-body-sm text-body-sm">
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Inquiry Category</label>
+<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-sm text-on-surface focus:outline-none">
+<option selected="">Bleed &amp; Crop Boundary Verification</option>
+<option>Color Calibration / Gamut Compression Concern</option>
+<option>Resolution DPI Insufficient (&lt; 200 DPI)</option>
+<option>Aspect Ratio Discrepancy (Not 8:10)</option>
+</select>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Pre-filled Technical Note to Customer</label>
+<textarea class="w-full bg-surface-container-lowest p-3 rounded-lg text-xs font-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-amber-500 shadow-inner resize-none" rows="4">Hi Clara, your graduation portrait file has tight 2.1mm bleed on Page 3 and Page 7 that may graze the scholar cap tassel during mat framing. Shall we scale inward by 3% or maintain edge-to-edge full frame?</textarea>
+</div>
+<div class="p-3 bg-amber-50 text-amber-900 rounded-lg text-xs">
+          This inquiry places order PR-0012 into <strong>"Inquiry Pending: Bleed Crop"</strong> status until client responds via SMS or portal.
+        </div>
+</div>
+<div class="flex justify-end gap-2 mt-space-lg">
+<button class="h-10 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-title-sm text-xs font-semibold" onclick="document.getElementById('modal-inquiry').classList.add('hidden')">Cancel</button>
+<button class="h-10 px-5 rounded-lg bg-amber-600 text-white hover:bg-amber-700 font-title-sm text-xs font-bold shadow-md" onclick="alert('Inquiry dispatched via SMS to Clara (+63 917 842 1904).'); document.getElementById('modal-inquiry').classList.add('hidden')">Send Technical Inquiry</button>
+</div>
+</div>
+</div>
+<!-- 3. REJECT ORDER MODAL (RED STRUCTURED REASON) -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" id="modal-reject">
+<div class="bg-surface-container-lowest rounded-2xl max-w-lg w-full p-space-lg shadow-2xl relative">
+<div class="flex items-center justify-between pb-space-md">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+</div>
+<h3 class="font-title-md text-title-md text-error">Reject Print Order PR-0012</h3>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-secondary" onclick="document.getElementById('modal-reject').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-3 bg-error-container/40 rounded-xl mb-space-md text-xs text-on-surface">
+<strong>Atelier Quality Guarantee Policy:</strong> Rejecting an order cancels darkroom prepress allocation and requires a structured laboratory reason sent to the client.
+      </div>
+<div class="space-y-space-md font-body-sm text-body-sm">
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Rejection Primary Reason *</label>
+<select class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-body-sm text-on-surface focus:outline-none">
+<option>Severe Pixelation / Low Source DPI (&lt; 150 DPI)</option>
+<option>Substrate Incompatibility (Paper stock out of cycle)</option>
+<option>Corrupted or Password Protected PDF Asset</option>
+<option>Copyright or Sensitive Authorization Missing</option>
+<option>Customer Cancellation Request</option>
+</select>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Detailed Explanation for Client Notification *</label>
+<textarea class="w-full bg-surface-container-lowest p-3 rounded-lg text-xs font-body-sm text-on-surface focus:outline-none focus:ring-2 focus:ring-error shadow-inner resize-none" placeholder="Provide clear technical instruction on how client can rectify the file..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex justify-end gap-2 mt-space-lg">
+<button class="h-10 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-title-sm text-xs font-semibold" onclick="document.getElementById('modal-reject').classList.add('hidden')">Cancel</button>
+<button class="h-10 px-5 rounded-lg bg-error text-on-error hover:bg-error/90 font-title-sm text-xs font-bold shadow-md" onclick="alert('Order PR-0012 rejected. Client notified.'); document.getElementById('modal-reject').classList.add('hidden')">Confirm Order Rejection</button>
+</div>
+</div>
+</div>
+<!-- 4. RECORD IN-STORE PAYMENT MODAL (CASHIER SETTLEMENT) -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" id="modal-payment">
+<div class="bg-surface-container-lowest rounded-2xl max-w-xl w-full p-space-lg shadow-2xl relative">
+<div class="flex items-center justify-between pb-space-md">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Record Atelier Face-to-Face Settlement</h3>
+<span class="font-label-code text-label-code text-secondary text-xs">Poblacion Counter POS • Order PR-0012</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full hover:bg-surface-container flex items-center justify-center text-secondary" onclick="document.getElementById('modal-payment').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-center justify-between mb-space-md">
+<div>
+<span class="text-xs text-secondary font-label-caps uppercase">Balance Due to Cashier</span>
+<div class="font-price-display text-3xl font-bold text-primary">₱1,850.00</div>
+</div>
+<div class="text-right font-label-code text-xs text-secondary">
+<div>Client: <strong>Clara Marie Santos</strong></div>
+<div>Quantity: <strong>10 Prints (8R)</strong></div>
+</div>
+</div>
+<div class="space-y-space-md">
+<!-- Settlement Method Selection -->
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-2">Select In-Store Payment Channel</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="pay-method" type="radio"/>
+<div class="p-3 rounded-lg bg-surface-container-low peer-checked:bg-primary peer-checked:text-on-primary transition-all text-center">
+<span class="material-symbols-outlined text-[22px] block mb-1">payments</span>
+<span class="font-title-sm text-xs font-bold block">Cash Drawer</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="pay-method" type="radio"/>
+<div class="p-3 rounded-lg bg-surface-container-low peer-checked:bg-primary peer-checked:text-on-primary transition-all text-center">
+<span class="material-symbols-outlined text-[22px] block mb-1">qr_code_scanner</span>
+<span class="font-title-sm text-xs font-bold block">GCash QR</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="pay-method" type="radio"/>
+<div class="p-3 rounded-lg bg-surface-container-low peer-checked:bg-primary peer-checked:text-on-primary transition-all text-center">
+<span class="material-symbols-outlined text-[22px] block mb-1">qr_code_2</span>
+<span class="font-title-sm text-xs font-bold block">Maya QR</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="pay-method" type="radio"/>
+<div class="p-3 rounded-lg bg-surface-container-low peer-checked:bg-primary peer-checked:text-on-primary transition-all text-center">
+<span class="material-symbols-outlined text-[22px] block mb-1">credit_card</span>
+<span class="font-title-sm text-xs font-bold block">POS Terminal</span>
+</div>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Amount Tendered</label>
+<input class="w-full h-11 px-3 bg-surface-container-lowest rounded-lg font-label-code text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-inner" type="text" value="₱2,000.00"/>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Cash Change Returned</label>
+<input class="w-full h-11 px-3 bg-surface-container-low rounded-lg font-label-code font-bold text-emerald-700 focus:outline-none" readonly="" type="text" value="₱150.00"/>
+</div>
+</div>
+<div>
+<label class="block font-label-caps text-label-caps text-secondary uppercase mb-1">Reference / Cash Drawer Slip Code</label>
+<input class="w-full h-11 px-3 bg-surface-container-lowest rounded-lg font-label-code text-xs text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-inner" placeholder="e.g. POS-TRACE-88421 or CASH-REG-01" type="text" value="CASH-REG01-0941"/>
+</div>
+</div>
+<div class="flex items-center justify-between mt-space-lg pt-space-md">
+<button class="h-10 px-4 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high font-title-sm text-xs font-semibold" onclick="document.getElementById('modal-payment').classList.add('hidden')">Dismiss</button>
+<button class="h-11 px-6 rounded-xl bg-primary-container text-on-primary hover:bg-primary font-title-sm text-sm font-bold flex items-center gap-2 shadow-lg" onclick="alert('Payment of ₱1,850.00 recorded successfully. Digital tax invoice dispatched to clara.santos@gmail.com.'); document.getElementById('modal-payment').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Complete Counter Settlement</span>
+</button>
+</div>
+</div>
+</div>
+</div></div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

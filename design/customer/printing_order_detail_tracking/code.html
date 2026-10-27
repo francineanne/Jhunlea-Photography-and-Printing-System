@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></button><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<!-- Top Navigation & Breadcrumbs Bar -->
+<div class="w-full bg-surface-container-lowest shadow-[0_1px_4px_rgba(0,0,0,0.03)] mb-space-lg">
+<div class="max-w-[1280px] mx-auto px-margin py-space-sm flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm text-secondary font-body-sm text-body-sm">
+<a class="inline-flex items-center gap-space-xs text-on-surface hover:text-primary transition-colors font-medium" data-path="my-requests" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back to Requests</span>
+</a>
+<span class="text-tertiary-fixed-dim">/</span>
+<span class="text-secondary">My Requests</span>
+<span class="text-tertiary-fixed-dim">/</span>
+<span class="text-secondary">Printing Orders</span>
+<span class="text-tertiary-fixed-dim">/</span>
+<span class="font-label-code text-label-code text-primary font-semibold">PR-0012</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-code text-label-code text-secondary flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+          LIVE ATELIER SYNC
+        </span>
+<span class="text-tertiary-fixed-dim">•</span>
+<span class="font-label-code text-label-code text-on-surface font-semibold">UPDATED 14 MIN AGO</span>
+</div>
+</div>
+</div>
+<!-- Main Viewport Content -->
+<div class="max-w-[1280px] mx-auto px-margin w-full pb-space-xl">
+<!-- Header Block -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm mb-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="space-y-space-xs">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="font-label-code text-label-code bg-surface-container-high text-on-surface px-space-sm py-0.5 rounded font-semibold tracking-wider">
+              ORDER #PR-0012
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#DCFCE7] text-[#16A34A]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span>
+              Ready for Pickup
+            </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#FEF3C7] text-[#D97706]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse"></span>
+              Action Required: Studio Inquiry Pending
+            </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight mt-space-xs">
+            Fine Art Archival Lustre Prints
+            <span class="block font-title-sm text-title-sm text-secondary font-normal mt-0.5">
+              Client: Clara Santos • Graduation Commemorative Portfolio Set (8R Edition)
+            </span>
+</h1>
+</div>
+<!-- Fast Header Summary Stats -->
+<div class="flex items-center gap-space-lg bg-surface-container-low p-space-md rounded-xl shrink-0">
+<div class="text-right">
+<span class="block font-label-caps text-label-caps text-secondary uppercase tracking-widest">Atelier Counter Total</span>
+<span class="font-price-display text-price-display text-on-surface font-bold">₱1,850.00</span>
+</div>
+<div class="w-px h-10 bg-surface-container-highest"></div>
+<div class="flex flex-col items-start">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Pickup Bin</span>
+<span class="font-label-code text-title-sm text-primary font-bold">BIN #04-A</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Two-Column Master Grid (8 cols Left / 4 cols Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: 8 Columns on Desktop -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- 1. ALERT BANNER: Owner Needs Information -->
+<section class="bg-[#FFF5F5] rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex flex-col sm:flex-row items-start gap-space-md">
+<div class="w-11 h-11 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[24px]">contact_support</span>
+</div>
+<div class="flex-1 space-y-space-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest block">Action Required</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Inquiry from Master Printmaker Jhunlea P. Arceo</h3>
+</div>
+<span class="font-label-code text-body-sm text-secondary bg-surface-container-lowest px-space-xs py-0.5 rounded">
+                  Today • 01:45 PM
+                </span>
+</div>
+<!-- Owner Quotation Box -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-[inset_0_1px_2px_rgba(0,0,0,0.02)]">
+<p class="font-body-md text-body-md text-on-surface italic leading-relaxed">
+                  “Hello Clara, your cover file bleed is trimmed close to 2mm. Would you like us to scale down 3% to preserve your framing border, or keep 1:1 original cropping? Please confirm so we can run the Lucia pigment press.”
+                </p>
+<div class="mt-space-sm pt-space-xs flex items-center gap-space-xs text-secondary font-label-code text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span>Jhunlea P. Arceo • Laboratory Director &amp; Master Finisher</span>
+</div>
+</div>
+<!-- Interactive Reply Form -->
+<div class="space-y-space-sm pt-space-xs" id="replyInteractiveContainer">
+<label class="block font-title-sm text-body-md font-semibold text-on-surface" for="owner-reply">
+                  Your Instructions &amp; Preference:
+                </label>
+<div class="relative">
+<textarea class="w-full bg-surface-container-lowest rounded-xl p-space-md text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container transition-shadow resize-none shadow-sm placeholder:text-secondary" id="owner-reply" placeholder="E.g., Please apply the 3% scale-down. Preserving the 1.5-inch white bevel frame border is our top priority." rows="3"></textarea>
+</div>
+<!-- Action Controls Row -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-sm">
+<button class="inline-flex items-center gap-space-xs bg-primary-container hover:bg-primary text-on-primary px-space-md py-space-xs rounded-xl font-title-sm text-body-md font-semibold transition-all shadow-sm active:scale-98" id="submitReplyBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span>Send Reply to Studio</span>
+</button>
+<button class="hidden sm:inline-flex items-center gap-space-xs bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-space-sm py-space-xs rounded-xl font-body-md text-body-sm font-medium transition-colors" id="quickScaleBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>Approve 3% Scale-Down</span>
+</button>
+</div>
+<!-- Re-upload Corrected File Chip -->
+<div class="relative">
+<input accept=".pdf,.tif,.tiff,.psd,.jpg" class="hidden" id="reuploadFileInput" type="file"/>
+<button class="inline-flex items-center gap-space-xs bg-surface-container-lowest hover:bg-surface-container-high text-on-surface-variant px-space-md py-space-xs rounded-xl font-title-sm text-body-sm transition-all shadow-sm group" onclick="document.getElementById('reuploadFileInput').click()" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary group-hover:scale-110 transition-transform">cloud_upload</span>
+<span>Re-upload Corrected File (PDF/TIFF)</span>
+</button>
+</div>
+</div>
+<div class="hidden mt-space-sm p-space-sm bg-surface-container-lowest rounded-xl text-primary font-body-md text-body-sm flex items-center gap-space-xs" id="replySuccessToast">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+<span>Confirmation dispatched directly to prepress terminal. Jhunlea has been notified.</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. VERTICAL STATUS TIMELINE -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-lg">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Real-Time Progression</span>
+<h2 class="font-title-md text-title-md text-on-surface font-bold">Archival Laboratory Timeline</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary bg-surface-container-low px-space-sm py-1 rounded">
+              5/6 STAGES COMPLETED
+            </span>
+</div>
+<div class="relative pl-6 space-y-space-lg">
+<!-- Continuous vertical background guideline -->
+<div class="absolute left-[19px] top-3 bottom-6 w-0.5 bg-surface-container-highest"></div>
+<!-- Milestone 1 -->
+<div class="relative flex items-start gap-space-md group">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center shrink-0 shadow-sm z-10 font-label-code text-label-code">
+<span class="material-symbols-outlined text-[16px] text-primary">check</span>
+</div>
+<div class="flex-1 bg-surface-container-low/60 hover:bg-surface-container-low p-space-md rounded-xl transition-colors">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<h4 class="font-title-sm text-body-md text-on-surface font-bold">Request Submitted &amp; Asset Staged</h4>
+<span class="font-label-code text-body-sm text-secondary">May 18, 2025 • 09:15 AM</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                  10-page master PDF portrait set uploaded securely by client Clara Santos. Initial asset integrity verified at intake server.
+                </p>
+</div>
+</div>
+<!-- Milestone 2 -->
+<div class="relative flex items-start gap-space-md group">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center shrink-0 shadow-sm z-10">
+<span class="material-symbols-outlined text-[16px] text-primary">check</span>
+</div>
+<div class="flex-1 bg-surface-container-low/60 hover:bg-surface-container-low p-space-md rounded-xl transition-colors">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<h4 class="font-title-sm text-body-md text-on-surface font-bold">Laboratory Prepress Inspection Completed</h4>
+<span class="font-label-code text-body-sm text-secondary">May 18, 2025 • 10:45 AM</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                  Prepress check by Jhunlea P. Arceo. 300 DPI resolution, tone range, and edge bleed analyzed for 8R frame margins.
+                </p>
+</div>
+</div>
+<!-- Milestone 3 -->
+<div class="relative flex items-start gap-space-md group">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center shrink-0 shadow-sm z-10">
+<span class="material-symbols-outlined text-[16px] text-primary">check</span>
+</div>
+<div class="flex-1 bg-surface-container-low/60 hover:bg-surface-container-low p-space-md rounded-xl transition-colors">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<h4 class="font-title-sm text-body-md text-on-surface font-bold">Color Proofing &amp; Customer Alignment Verified</h4>
+<span class="font-label-code text-body-sm text-secondary">May 18, 2025 • 01:20 PM</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                  Spectral ICC soft-proofing confirmed. Customer approved paper upgrade to 260gsm Archival Satin Lustre via studio note.
+                </p>
+</div>
+</div>
+<!-- Milestone 4 -->
+<div class="relative flex items-start gap-space-md group">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center shrink-0 shadow-sm z-10">
+<span class="material-symbols-outlined text-[16px] text-primary">check</span>
+</div>
+<div class="flex-1 bg-surface-container-low/60 hover:bg-surface-container-low p-space-md rounded-xl transition-colors">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<h4 class="font-title-sm text-body-md text-on-surface font-bold">Pigment Printing &amp; Precision Trimming Completed</h4>
+<span class="font-label-code text-body-sm text-secondary">May 19, 2025 • 11:00 AM</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                  Printed on Canon Lucia PRO 12-Color archival setup. Cured under dust-free atelier chambers, laser blade trimmed to 8.00×10.00 inches.
+                </p>
+</div>
+</div>
+<!-- Milestone 5 (Current active state) -->
+<div class="relative flex items-start gap-space-md group">
+<div class="w-8 h-8 rounded-full bg-[#16A34A] text-on-primary flex items-center justify-center shrink-0 shadow-[0_0_0_4px_rgba(22,163,74,0.2)] z-10">
+<span class="material-symbols-outlined text-[18px]">inventory_2</span>
+</div>
+<div class="flex-1 bg-[#F0FDF4] p-space-md rounded-xl shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-[#16A34A] animate-ping"></span>
+<h4 class="font-title-sm text-body-md text-on-surface font-bold">Packaged &amp; Ready for In-Store Pickup</h4>
+</div>
+<span class="font-label-code text-body-sm text-[#16A34A] font-semibold">May 19, 2025 • 02:30 PM (CURRENT)</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-space-xs">
+                  Secured inside acid-free preservation envelopes with protective chipboard. Lodged at Poblacion Counter Bin #04-A awaiting customer walk-in inspection.
+                </p>
+</div>
+</div>
+<!-- Milestone 6 (Impending Future Step) -->
+<div class="relative flex items-start gap-space-md opacity-60">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-secondary flex items-center justify-center shrink-0 z-10">
+<span class="material-symbols-outlined text-[16px]">storefront</span>
+</div>
+<div class="flex-1 bg-surface-container-low/40 p-space-md rounded-xl">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<h4 class="font-title-sm text-body-md text-secondary font-medium">Order Inspection &amp; Final Physical Handover</h4>
+<span class="font-label-code text-body-sm text-secondary">Awaiting Arrival</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                  Final step: Face-to-face counter inspection, cash/digital settlement, and release of print packaging.
+                </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. FILE PREVIEW & PREPRESS SPECS CARD -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Production Asset</span>
+<h2 class="font-title-md text-title-md text-on-surface font-bold">File Preview &amp; Prepress Verification</h2>
+</div>
+<span class="font-label-code text-label-code bg-surface-container-high text-on-surface px-space-sm py-1 rounded">
+              COLOR PROFILE: ADOBE RGB (1998)
+            </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-space-md items-center bg-surface-container-low p-space-md rounded-xl">
+<!-- Visual Thumbnail -->
+<div class="md:col-span-4 relative group overflow-hidden rounded-xl shadow-sm bg-surface-container-highest aspect-[4/5] flex items-center justify-center">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Editorial graduation portrait fine art photograph of a young woman in academic gown holding a diploma, warm cinematic natural lighting, soft studio shadow, archival matte print tone, crisp high resolution 8x10 composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT2DrO2M6x1OAArUODsshpgctC9VnNH9IRkKgqoAh75A34jONYH7_YPacWQyhmlxjXFo_ZZc2GtpcL2ex08CsXRlvBEUbqzmi79V_9qT3Knf8zp9TKr6Rm6K7shcNRWG2BTje-rOwGMl2HNQMJZSHxhPnLqdPO2ZKyoej25mL1AMmIJYD_r6W0DVbjMVXiTM3pylwGBgCaa5LtdyaUer67XQ0E0ckC6hvgERiN03TSizlBZH1s557O"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/80 via-transparent to-transparent opacity-80"></div>
+<div class="absolute bottom-2 left-2 right-2 text-on-primary">
+<span class="font-label-code text-[11px] block font-semibold">PAGE 1 OF 10 PROOF</span>
+<span class="font-body-sm text-[11px] text-tertiary-fixed">8R • Satin Lustre</span>
+</div>
+<button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface/90 text-on-surface flex items-center justify-center shadow-md hover:bg-surface transition-transform hover:scale-110" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+</div>
+<!-- Technical Specifications Data -->
+<div class="md:col-span-8 space-y-space-sm">
+<div class="flex items-start justify-between gap-space-sm">
+<div>
+<h4 class="font-title-sm text-body-md text-on-surface font-bold flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">picture_as_pdf</span>
+<span>Clara_Grad_8R_Portraits_v2.pdf</span>
+</h4>
+<p class="font-label-code text-body-sm text-secondary mt-0.5">
+                    18.4 MB • 10 Pages • 300 DPI CMYK Raw Press Standard
+                  </p>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#DCFCE7] text-[#16A34A] shrink-0">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                  Verified
+                </span>
+</div>
+<!-- Prepress badges -->
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-space-xs pt-space-xs">
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="block font-label-caps text-[10px] text-secondary uppercase">Ink Technology</span>
+<span class="font-label-code text-body-sm text-on-surface font-semibold">Canon Lucia PRO 12</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="block font-label-caps text-[10px] text-secondary uppercase">Resolution</span>
+<span class="font-label-code text-body-sm text-on-surface font-semibold">300 DPI Uncompressed</span>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<span class="block font-label-caps text-[10px] text-secondary uppercase">Bleed Safety</span>
+<span class="font-label-code text-body-sm text-[#D97706] font-semibold">2.1mm (Review Needed)</span>
+</div>
+</div>
+<!-- Button actions -->
+<div class="flex flex-wrap items-center gap-space-sm pt-space-sm">
+<button class="inline-flex items-center gap-space-xs bg-surface-container-lowest hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-xl font-title-sm text-body-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download Submitted Copy</span>
+</button>
+<button class="inline-flex items-center gap-space-xs bg-surface-container-lowest hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-xl font-title-sm text-body-sm transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span>View High-Res Proof (PDF)</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. SPECIFICATIONS BREAKDOWN -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Craft &amp; Materials</span>
+<h2 class="font-title-md text-title-md text-on-surface font-bold">Print Order Configuration</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]">aspect_ratio</span>
+<span class="font-label-caps text-label-caps uppercase">Dimensions &amp; Quantity</span>
+</div>
+<p class="font-title-sm text-body-md text-on-surface font-semibold">
+                10 Prints • 8R (8 × 10 inches / 203 × 254 mm)
+              </p>
+<p class="font-body-md text-body-sm text-secondary">
+                Standard academic frame orientation with 0.5-inch internal natural margin mat.
+              </p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]">layers</span>
+<span class="font-label-caps text-label-caps uppercase">Paper Stock &amp; Weight</span>
+</div>
+<p class="font-title-sm text-body-md text-on-surface font-semibold">
+                260gsm Archival Satin Lustre
+              </p>
+<p class="font-body-md text-body-sm text-secondary">
+                Fibre base microporous coating with anti-glare micro-texture and 100+ year longevity rating.
+              </p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span class="font-label-caps text-label-caps uppercase">Color Calibration</span>
+</div>
+<p class="font-title-sm text-body-md text-on-surface font-semibold">
+                Custom ICC Darkroom Graded
+              </p>
+<p class="font-body-md text-body-sm text-secondary">
+                Shadow detail boosted in midtones to preserve graduation hood embroidery and skin gradients.
+              </p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase">Finishing &amp; Protection</span>
+</div>
+<p class="font-title-sm text-body-md text-on-surface font-semibold">
+                Acid-Free Sleeve + Stiffener Mount
+              </p>
+<p class="font-body-md text-body-sm text-secondary">
+                Each print individually sleeved in archival mylar with 2-ply backing backing board.
+              </p>
+</div>
+</div>
+<!-- Special instructions quote -->
+<div class="mt-space-md p-space-md bg-surface-container-low/70 rounded-xl flex items-start gap-space-md">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">speaker_notes</span>
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Client Instruction Note</span>
+<p class="font-body-md text-body-md text-on-surface font-medium italic mt-0.5">
+                “Handled for graduation framing. No fingerprints on borders, please leave exact margins for dark wood bevel mats.”
+              </p>
+</div>
+</div>
+</section>
+<!-- 5. ORDER LIFECYCLE ACTION (Cancellation State Behavior) -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Order Lifecycle &amp; Governance</span>
+<h2 class="font-title-md text-title-md text-on-surface font-bold">Cancellation &amp; Change Policy</h2>
+</div>
+<span class="material-symbols-outlined text-secondary text-[20px]">lock</span>
+</div>
+<!-- Current Locked State Demonstration -->
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="space-y-0.5">
+<span class="font-title-sm text-body-md text-on-surface font-semibold block">Order Cancellation Locked</span>
+<p class="font-body-md text-body-sm text-secondary max-w-xl">
+                  (Notice: Printing orders can only be cancelled freely while in the <span class="font-label-code text-on-surface font-semibold">“Submitted / Under Review”</span> state. This order is currently completed and ready for pickup at our physical atelier).
+                </p>
+</div>
+<!-- Disabled button with tooltip indicator -->
+<button class="inline-flex items-center gap-space-xs bg-surface-container-highest text-tertiary-fixed-dim px-space-md py-space-xs rounded-xl font-title-sm text-body-md font-semibold cursor-not-allowed shrink-0" disabled="" type="button">
+<span class="material-symbols-outlined text-[18px]">block</span>
+<span>Cancel Request</span>
+</button>
+</div>
+</div>
+<!-- Sub-Reference: How it looks when order is under 'Submitted' review -->
+<div class="mt-space-md pt-space-md border-t-0 bg-surface-container-low/40 p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider block">
+                Reference: When Order Status is “Submitted / Pending Review”
+              </span>
+<span class="font-label-code text-[11px] text-secondary">ACTIVE WINDOW PREVIEW</span>
+</div>
+<div class="mt-space-sm flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<p class="font-body-md text-body-sm text-secondary">
+                If the laboratory has not begun chemical ink dispersion, you can immediately cancel your request without penalty.
+              </p>
+<button class="inline-flex items-center gap-space-xs bg-surface-container-lowest hover:bg-error hover:text-on-error text-error px-space-md py-space-xs rounded-xl font-title-sm text-body-sm font-semibold transition-colors shadow-sm shrink-0" id="demoCancelTrigger" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Cancel Request (Modal Demo)</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- RIGHT COLUMN: 4 Columns on Desktop -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg sticky top-28">
+<!-- 1. PRICE ESTIMATED VS CONFIRMED -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Price Verification</span>
+<span class="font-label-code text-label-code text-primary bg-[#FEE2E2] px-space-xs py-0.5 rounded font-bold">ATELIER CONFIRMED</span>
+</div>
+<div class="space-y-space-sm pt-space-xs">
+<div class="flex items-center justify-between text-secondary font-body-md text-body-sm">
+<span>Initial Estimated Quote</span>
+<span class="font-label-code line-through">₱1,650.00</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="font-title-sm text-title-sm text-on-surface font-bold">Confirmed Total Price</span>
+<span class="font-price-display text-price-display text-primary font-bold">₱1,850.00</span>
+</div>
+<!-- Difference Note -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex items-start gap-space-xs text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-primary shrink-0 mt-0.5">info</span>
+<span>+₱200.00 adjustment for 260gsm Archival Satin Lustre upgrade approved via atelier notes.</span>
+</div>
+</div>
+</section>
+<!-- 2. PAYMENT CARD & BREAKDOWN (Mandatory Face-to-Face Policy) -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Counter Settlement</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">Payment Summary</h3>
+</div>
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between font-body-md text-body-sm">
+<span class="text-secondary">Gross Archival Printing (10x 8R)</span>
+<span class="font-label-code text-on-surface font-medium">₱1,650.00</span>
+</div>
+<div class="flex items-center justify-between font-body-md text-body-sm">
+<span class="text-secondary">Satin Lustre 260gsm Upgrade</span>
+<span class="font-label-code text-on-surface font-medium">+ ₱200.00</span>
+</div>
+<div class="flex items-center justify-between font-body-md text-body-sm">
+<span class="text-secondary">Protective Archival Sleeves (10 pcs)</span>
+<span class="font-label-code text-primary font-semibold">FREE (INCLUDED)</span>
+</div>
+<div class="pt-space-xs flex items-center justify-between font-body-md text-body-sm">
+<span class="text-secondary">Amount Paid Online</span>
+<span class="font-label-code text-on-surface font-bold">₱0.00</span>
+</div>
+<!-- Visual Emphasis Box on Balance -->
+<div class="bg-surface-container-low p-space-md rounded-xl mt-space-sm">
+<div class="flex items-baseline justify-between">
+<div>
+<span class="block font-label-caps text-label-caps text-secondary uppercase tracking-widest">Remaining Balance</span>
+<span class="font-body-sm text-body-sm text-secondary">Due at Counter</span>
+</div>
+<span class="font-price-display text-price-display text-on-surface font-bold">₱1,850.00</span>
+</div>
+</div>
+<!-- Payment status pill -->
+<div class="pt-space-xs">
+<div class="inline-flex items-center gap-space-xs w-full justify-center bg-[#FEF3C7] text-[#B45309] py-space-xs px-space-md rounded-full font-title-sm text-body-sm font-bold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-[#B45309]"></span>
+<span>Unpaid • Face-to-Face Settlement Upon Pickup</span>
+</div>
+</div>
+<!-- Accepted Payment Methods -->
+<div class="pt-space-sm space-y-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">
+                Accepted Counter Methods
+              </span>
+<div class="flex flex-wrap gap-1.5">
+<span class="bg-surface-container-high text-on-surface font-label-code text-[11px] px-2.5 py-1 rounded">Cash</span>
+<span class="bg-surface-container-high text-on-surface font-label-code text-[11px] px-2.5 py-1 rounded">GCash QR</span>
+<span class="bg-surface-container-high text-on-surface font-label-code text-[11px] px-2.5 py-1 rounded">Maya QR</span>
+<span class="bg-surface-container-high text-on-surface font-label-code text-[11px] px-2.5 py-1 rounded">Debit POS</span>
+<span class="bg-surface-container-high text-on-surface font-label-code text-[11px] px-2.5 py-1 rounded">Credit Card</span>
+</div>
+</div>
+<!-- MANDATORY TRANSACTION POLICY NOTICE BANNER -->
+<div class="mt-space-md bg-surface-container-low rounded-xl p-space-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary-container"></div>
+<div class="flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<div class="text-left">
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface">Payment is made face-to-face at Jhunlea Photography &amp; Printing.</span>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                    Inspect your physical prints first at the counter before completing settlement. No online checkout.
+                  </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. IN-STORE PICKUP PASS CARD -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest block">Counter Fast-Pass</span>
+<h3 class="font-title-md text-title-md text-on-surface font-bold">In-Store Pickup Pass</h3>
+</div>
+<span class="font-label-code text-body-sm text-primary font-bold bg-[#FEE2E2] px-space-xs py-0.5 rounded">TERMINAL MNL-01</span>
+</div>
+<!-- Stylized QR Code Component -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col items-center justify-center text-center">
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm mb-space-sm">
+<!-- Crisp SVG QR Code Representation -->
+<svg class="text-on-surface" fill="none" height="140" viewbox="0 0 140 140" width="140" xmlns="http://www.w3.org/2000/svg">
+<!-- Outer Corners -->
+<rect fill="currentColor" height="36" rx="4" width="36" x="10" y="10"></rect>
+<rect fill="white" height="24" rx="2" width="24" x="16" y="16"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="22" y="22"></rect>
+<rect fill="currentColor" height="36" rx="4" width="36" x="94" y="10"></rect>
+<rect fill="white" height="24" rx="2" width="24" x="100" y="16"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="106" y="22"></rect>
+<rect fill="currentColor" height="36" rx="4" width="36" x="10" y="94"></rect>
+<rect fill="white" height="24" rx="2" width="24" x="16" y="100"></rect>
+<rect fill="currentColor" height="12" rx="1" width="12" x="22" y="106"></rect>
+<!-- Body Data Grid Elements -->
+<rect fill="currentColor" height="12" width="6" x="52" y="14"></rect>
+<rect fill="currentColor" height="6" width="12" x="64" y="14"></rect>
+<rect fill="currentColor" height="8" width="8" x="80" y="24"></rect>
+<rect fill="currentColor" height="6" width="16" x="52" y="32"></rect>
+<rect fill="currentColor" height="6" width="12" x="14" y="52"></rect>
+<rect fill="currentColor" height="8" width="14" x="32" y="52"></rect>
+<rect fill="currentColor" height="18" width="6" x="14" y="66"></rect>
+<rect fill="currentColor" height="8" width="16" x="26" y="74"></rect>
+<rect fill="#C62828" height="36" rx="4" width="36" x="52" y="52"></rect>
+<circle cx="70" cy="70" fill="white" r="10"></circle>
+<circle cx="70" cy="70" fill="#C62828" r="4"></circle>
+<rect fill="currentColor" height="6" width="14" x="94" y="52"></rect>
+<rect fill="currentColor" height="12" width="16" x="114" y="52"></rect>
+<rect fill="currentColor" height="16" width="8" x="94" y="66"></rect>
+<rect fill="currentColor" height="8" width="18" x="110" y="74"></rect>
+<rect fill="currentColor" height="16" width="10" x="52" y="94"></rect>
+<rect fill="currentColor" height="8" width="18" x="68" y="94"></rect>
+<rect fill="currentColor" height="14" width="24" x="52" y="116"></rect>
+<rect fill="currentColor" height="20" width="6" x="82" y="110"></rect>
+<rect fill="currentColor" height="12" width="12" x="94" y="94"></rect>
+<rect fill="currentColor" height="6" width="16" x="112" y="94"></rect>
+<rect fill="currentColor" height="16" width="16" x="100" y="112"></rect>
+<rect fill="currentColor" height="22" width="8" x="122" y="106"></rect>
+</svg>
+</div>
+<span class="font-label-code text-label-code text-on-surface font-bold tracking-widest">
+              PASS-PR0012-CLARA
+            </span>
+<span class="font-body-sm text-body-sm text-secondary mt-0.5">
+              Scan directly on the POS scanner at the pickup counter
+            </span>
+</div>
+<!-- Pickup logistics details -->
+<div class="mt-space-md space-y-space-sm font-body-md text-body-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">pin_drop</span>
+<div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface block">Atelier Location</span>
+<span class="text-secondary">Poblacion District, Makati / Manila, Philippines</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">shelves</span>
+<div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface block">Storage Ready Bin</span>
+<span class="font-label-code text-on-surface font-semibold">Bin #04-A (Climate-Controlled Flat Tray)</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">call</span>
+<div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface block">Direct Atelier Hotline</span>
+<span class="font-label-code text-on-surface">+63 (02) 8924 1102</span>
+</div>
+</div>
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">schedule</span>
+<div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface block">Operating Studio Hours</span>
+<span class="text-secondary">Mon – Sat: 9:00 AM – 7:30 PM • Sun: By Appointment</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-sm">
+<a class="w-full inline-flex items-center justify-center gap-space-xs bg-surface-container-high hover:bg-surface-container-highest text-on-surface py-space-xs rounded-xl font-title-sm text-body-sm font-semibold transition-colors" href="tel:+63289241102">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span>Call Counter Ahead</span>
+</a>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Cancellation Confirmation Modal (Demo interaction) -->
+<div class="fixed inset-0 z-50 bg-on-surface/50 backdrop-blur-sm hidden items-center justify-center p-4" id="cancelConfirmModal">
+<div class="bg-surface-container-lowest rounded-xl max-w-md w-full p-space-lg shadow-xl relative animate-in fade-in duration-200">
+<div class="w-12 h-12 rounded-xl bg-error-container text-on-error-container flex items-center justify-center mb-space-sm">
+<span class="material-symbols-outlined text-[24px]">warning</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Cancel Print Request?</h3>
+<p class="font-body-md text-body-md text-secondary mt-space-xs">
+        Are you sure you want to cancel order <span class="font-label-code font-bold text-on-surface">PR-0012</span>? If this request was still in review, raw assets would be permanently unlinked from the queue.
+      </p>
+<div class="bg-surface-container-low p-space-sm rounded-lg mt-space-md text-secondary font-body-sm text-body-sm">
+<span class="font-bold text-on-surface">Production Protection:</span> Because this order is already printed and waiting in Bin #04-A, cancellation requires counter staff authorization.
+      </div>
+<div class="flex items-center justify-end gap-space-sm mt-space-lg">
+<button class="px-space-md py-space-xs rounded-xl font-title-sm text-body-md text-on-surface hover:bg-surface-container-high transition-colors" id="closeCancelModalBtn" type="button">
+          Keep Order Active
+        </button>
+<button class="bg-error hover:bg-[#93000a] text-on-error px-space-md py-space-xs rounded-xl font-title-sm text-body-md font-semibold transition-colors shadow-sm" onclick="alert('Contact counter supervisor at +63 (02) 8924 1102 to process in-production returns.'); document.getElementById('cancelConfirmModal').classList.add('hidden');" type="button">
+          Confirm Invalidation
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Client-side Scripting -->
+<script>
+  // Reply submission interaction
+  const submitReplyBtn = document.getElementById('submitReplyBtn');
+  const replyInput = document.getElementById('owner-reply');
+  const successToast = document.getElementById('replySuccessToast');
+  const quickScaleBtn = document.getElementById('quickScaleBtn');
+
+  if (submitReplyBtn && replyInput && successToast) {
+    submitReplyBtn.addEventListener('click', () => {
+      const val = replyInput.value.trim();
+      if (!val) {
+        replyInput.focus();
+        replyInput.placeholder = "Please enter your decision or scale approval here...";
+        return;
+      }
+      submitReplyBtn.disabled = true;
+      submitReplyBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Transmitting...</span>';
+
+      setTimeout(() => {
+        submitReplyBtn.disabled = false;
+        submitReplyBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">done</span><span>Dispatched</span>';
+        submitReplyBtn.classList.remove('bg-primary-container', 'hover:bg-primary');
+        submitReplyBtn.classList.add('bg-[#16A34A]', 'hover:bg-[#15803D]');
+        successToast.classList.remove('hidden');
+        replyInput.value = "";
+      }, 700);
+    });
+  }
+
+  if (quickScaleBtn && replyInput) {
+    quickScaleBtn.addEventListener('click', () => {
+      replyInput.value = "Approved: Please proceed with the 3% scale-down to preserve the white border margins for our graduation frames.";
+      replyInput.focus();
+    });
+  }
+
+  // File reupload simulation
+  const fileInput = document.getElementById('reuploadFileInput');
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        alert('File "' + e.target.files[0].name + '" staged for prepress queue replacement. Master printer Jhunlea will inspect the new file bleed.');
+      }
+    });
+  }
+
+  // Cancel Modal Demo
+  const demoCancelTrigger = document.getElementById('demoCancelTrigger');
+  const cancelConfirmModal = document.getElementById('cancelConfirmModal');
+  const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
+
+  if (demoCancelTrigger && cancelConfirmModal && closeCancelModalBtn) {
+    demoCancelTrigger.addEventListener('click', () => {
+      cancelConfirmModal.classList.remove('hidden');
+      cancelConfirmModal.classList.add('flex');
+    });
+
+    closeCancelModalBtn.addEventListener('click', () => {
+      cancelConfirmModal.classList.add('hidden');
+      cancelConfirmModal.classList.remove('flex');
+    });
+
+    cancelConfirmModal.addEventListener('click', (e) => {
+      if (e.target === cancelConfirmModal) {
+        cancelConfirmModal.classList.add('hidden');
+        cancelConfirmModal.classList.remove('flex');
+      }
+    });
+  }
+</script></main><div class="fixed bottom-6 right-6 z-40"><button aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02]" type="button"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></button></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

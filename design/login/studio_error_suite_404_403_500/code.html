@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&amp;family=Playfair+Display:ital,wght@0,500;0,600;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"secondary-container":"#e2dfde","on-secondary-fixed-variant":"#474746","surface-dim":"#dadada","secondary":"#5f5e5e","outline-variant":"#e4beba","primary-fixed-dim":"#ffb4ac","error":"#ba1a1a","inverse-primary":"#ffb4ac","tertiary":"#4f4f4f","tertiary-fixed-dim":"#c8c6c6","on-secondary":"#ffffff","surface-container-lowest":"#ffffff","primary-fixed":"#ffdad6","tertiary-fixed":"#e4e2e2","on-tertiary":"#ffffff","on-tertiary-fixed-variant":"#474747","outline":"#8f706c","on-primary-fixed":"#410003","on-tertiary-fixed":"#1b1c1c","on-primary-container":"#ffe0dd","secondary-fixed":"#e5e2e1","surface-container-low":"#f3f3f3","surface-container-high":"#e8e8e8","on-background":"#1a1c1c","on-tertiary-container":"#e8e6e6","surface":"#f9f9f9","secondary-fixed-dim":"#c8c6c5","on-error":"#ffffff","surface-bright":"#f9f9f9","tertiary-container":"#676767","on-primary-fixed-variant":"#93000e","on-secondary-container":"#636262","surface-container":"#eeeeee","error-container":"#ffdad6","inverse-on-surface":"#f1f1f1","background":"#f9f9f9","primary-container":"#c62828","surface-container-highest":"#e2e2e2","primary":"#a20513","surface-variant":"#e2e2e2","on-surface":"#1a1c1c","surface-tint":"#b91d20","on-error-container":"#93000a","inverse-surface":"#2f3131","on-primary":"#ffffff","on-secondary-fixed":"#1c1b1b","on-surface-variant":"#5b403d"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter-mobile":"1rem","margin":"2rem","space-md":"1rem","margin-mobile":"1rem","space-lg":"1.5rem","space-xs":"0.25rem","space-xl":"2.5rem","gutter":"1.5rem","space-sm":"0.5rem"},"fontFamily":{"price-display":["Plus Jakarta Sans"],"headline-md":["Playfair Display"],"display-hero":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"label-code":["JetBrains Mono"],"title-sm":["Plus Jakarta Sans"],"display-hero-mobile":["Playfair Display"],"headline-sm":["Playfair Display"],"title-md":["Plus Jakarta Sans"],"label-caps":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"headline-lg":["Playfair Display"],"body-lg":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"]},"fontSize":{"price-display":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"700"}],"headline-md":["28px",{"lineHeight":"36px","fontWeight":"500"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"600"}],"label-code":["13px",{"lineHeight":"18px","letterSpacing":"0.04em","fontWeight":"500"}],"title-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-sm":["22px",{"lineHeight":"30px","fontWeight":"500"}],"title-md":["18px",{"lineHeight":"26px","fontWeight":"600"}],"label-caps":["11px",{"lineHeight":"16px","letterSpacing":"0.08em","fontWeight":"700"}],"body-md":["14px",{"lineHeight":"22px","fontWeight":"400"}],"headline-lg":["40px",{"lineHeight":"48px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"26px","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"18px","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col justify-between selection:bg-primary selection:text-on-primary"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin-mobile md:px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><a class="flex flex-col group" data-path="client-portal" href="#"><span class="font-title-md text-title-md tracking-[0.22em] text-on-surface uppercase group-hover:text-primary transition-colors">JHUNLEA</span><span class="font-label-caps text-label-caps text-on-surface-variant tracking-[0.25em] uppercase -mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></a><div class="hidden lg:flex items-center gap-space-xs py-space-xs px-space-md bg-surface-container rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span><span class="font-body-sm text-body-sm text-on-surface-variant">Mon–Sat: 8:30 AM – 6:30 PM PHT</span></div></div><div class="flex items-center gap-space-lg"><nav class="hidden md:flex items-center gap-space-lg" data-active-classes="text-primary font-bold"><a aria-current="page" class="transition-colors text-primary font-bold" data-path="client-portal" href="#">Portal Home</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="order-tracking" href="#">Track Job</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="studio-services" href="#">Services &amp; Rates</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="direct-assistance" href="#">Studio Support</a></nav><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" data-path="studio-showcase" href="#"><span class="material-symbols-outlined text-[18px]">arrow_back</span><span>Back to Studio Website</span></a><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCodcLz1guMGGjIgCN18CeTb5dLn9JYrlkVHlf8Lexih9I3Q1yp5e0Tzt82gfsPIJMDrKm8hM8RK0KHLt6QbMmixrtM8LTQ3f172MP13oTIxGpxYdA01ybxER_ovbAyMPJbkNvzKlrMTp3IDjnt1EUy-OJg9ANFL9CuwkwPJD6Xb_iziMaJn0VauVUzZTY80hgsJClGCzvXh4G2at6If7iAdqAzn85Y7joh3hA_iTqMF3wNXIoaJkzB"/></div></div></div></header><main class="w-full pt-20 bg-surface flex-1 flex flex-col justify-center"><div class="flex flex-col w-full">
+<div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin py-space-xl">
+<!-- Atelier Context Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between pb-space-lg gap-space-md">
+<div class="flex items-center gap-space-md">
+<span class="font-label-code text-label-code text-primary uppercase tracking-[0.2em] bg-primary-fixed/40 px-3 py-1 rounded-full">SYSTEM DIAGNOSTIC • SUITE V2.4</span>
+<div class="hidden sm:flex items-center gap-space-xs text-on-surface-variant font-body-sm text-body-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span>Calibrated for Desktop 1440px Reference View</span>
+</div>
+</div>
+<!-- Diagnostic Mode Selector / Switcher Tabs -->
+<div class="flex items-center p-1 bg-surface-container-high rounded-xl gap-1 self-start lg:self-auto" id="errorModeSelector">
+<button class="error-tab px-4 py-2 rounded-lg font-title-sm text-title-sm transition-all duration-200 bg-surface-container-lowest text-primary shadow-sm flex items-center gap-2" id="tab-404" onclick="switchErrorState('404')">
+<span class="font-label-code text-label-code text-primary">404</span>
+<span>Frame Missing</span>
+</button>
+<button class="error-tab px-4 py-2 rounded-lg font-title-sm text-title-sm transition-all duration-200 text-on-surface-variant hover:text-on-surface flex items-center gap-2" id="tab-403" onclick="switchErrorState('403')">
+<span class="font-label-code text-label-code opacity-70">403</span>
+<span>Darkroom Locked</span>
+</button>
+<button class="error-tab px-4 py-2 rounded-lg font-title-sm text-title-sm transition-all duration-200 text-on-surface-variant hover:text-on-surface flex items-center gap-2" id="tab-500" onclick="switchErrorState('500')">
+<span class="font-label-code text-label-code opacity-70">500</span>
+<span>Shutter Jam</span>
+</button>
+</div>
+</div>
+<!-- Active Error Visual Stage -->
+<div class="relative w-full rounded-2xl bg-surface-container-lowest shadow-sm overflow-hidden p-6 md:p-12 mb-space-xl">
+<!-- Subtle Matting / Gallery Watermark Background -->
+<div class="absolute -right-8 -bottom-10 pointer-events-none select-none opacity-[0.03] text-on-surface font-headline-lg text-[220px] font-bold tracking-tighter" id="backdropErrorCode">
+        404
+      </div>
+<!-- STATE 1: 404 Exposure Missing (Default Active) -->
+<div class="error-panel flex flex-col lg:flex-row items-center justify-between gap-12 relative z-10 transition-opacity duration-300" id="state-404">
+<!-- Visual Column: Vintage Rangefinder with Open Back & Fallen Cap -->
+<div class="w-full lg:w-1/2 flex justify-center items-center relative">
+<div class="w-full max-w-[440px] aspect-[4/3] bg-surface-container-low rounded-2xl p-6 flex items-center justify-center relative overflow-hidden">
+<!-- Subtle Darkroom Safe-Light Ambient Halo -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Custom Photography Illustration: Vintage Rangefinder -->
+<svg class="w-full h-full max-h-[280px]" fill="none" viewbox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<!-- Grid / Alignment Guide Crosshairs -->
+<line class="text-surface-variant opacity-60" stroke="currentColor" stroke-dasharray="3 6" x1="20" x2="380" y1="150" y2="150"></line>
+<line class="text-surface-variant opacity-60" stroke="currentColor" stroke-dasharray="3 6" x1="200" x2="200" y1="20" y2="280"></line>
+<!-- Camera Body Drop shadow -->
+<rect class="fill-surface-dim opacity-40" height="136" rx="16" width="248" x="76" y="96"></rect>
+<!-- Rangefinder Chassis -->
+<rect class="fill-surface-container-highest" height="130" rx="14" width="250" x="70" y="90"></rect>
+<!-- Top Metal Plate -->
+<path class="fill-surface-container-high" d="M70 104C70 96.268 76.268 90 84 90H306C313.732 90 320 96.268 320 104V124H70V104Z"></path>
+<line class="text-outline-variant/40" stroke="currentColor" stroke-width="1.5" x1="70" x2="320" y1="124" y2="124"></line>
+<!-- Knurled Dials / Levers on Top Deck -->
+<rect class="fill-secondary" height="12" rx="3" width="30" x="90" y="78"></rect>
+<rect class="fill-tertiary" height="4" rx="1" width="22" x="94" y="74"></rect>
+<!-- Shutter Speed Dial with Crimson Accent Ring -->
+<rect class="fill-secondary" height="10" rx="2" width="36" x="250" y="80"></rect>
+<rect class="fill-primary" height="4" rx="1" width="28" x="254" y="76"></rect>
+<!-- Shutter Release Button -->
+<circle class="fill-surface-dim" cx="218" cy="85" r="7"></circle>
+<circle class="fill-primary-container" cx="218" cy="85" r="4"></circle>
+<!-- Rangefinder Viewfinder Glass -->
+<rect class="fill-inverse-surface" height="16" rx="4" width="26" x="92" y="98"></rect>
+<circle class="fill-primary/60" cx="105" cy="106" r="3"></circle>
+<!-- Red Framing Indicator Line -->
+<line class="text-primary" stroke="currentColor" stroke-width="2" x1="70" x2="320" y1="140" y2="140"></line>
+<!-- Open Film Back Hatch Swung to Left -->
+<g transform="rotate(-32 68 150)">
+<rect class="fill-secondary-container" height="112" rx="6" width="50" x="24" y="104"></rect>
+<rect class="fill-surface-container-high" height="96" rx="4" width="38" x="30" y="112"></rect>
+<!-- Pressure Plate -->
+<rect class="fill-on-surface-variant opacity-80" height="68" rx="2" width="26" x="36" y="126"></rect>
+<circle class="fill-outline" cx="49" cy="160" r="3"></circle>
+</g>
+<!-- Interior Film Gate Cavity (Blank & Exposed) -->
+<rect class="fill-on-background" height="80" rx="6" width="190" x="100" y="132"></rect>
+<rect class="fill-inverse-surface" height="64" rx="4" width="170" x="110" y="140"></rect>
+<!-- Empty Film Track Sprockets (Blank missing frame) -->
+<g class="fill-surface-container-lowest opacity-30">
+<rect height="8" rx="1" width="6" x="114" y="142"></rect>
+<rect height="8" rx="1" width="6" x="126" y="142"></rect>
+<rect height="8" rx="1" width="6" x="138" y="142"></rect>
+<rect height="8" rx="1" width="6" x="150" y="142"></rect>
+<rect height="8" rx="1" width="6" x="162" y="142"></rect>
+<rect height="8" rx="1" width="6" x="174" y="142"></rect>
+<rect height="8" rx="1" width="6" x="186" y="142"></rect>
+<rect height="8" rx="1" width="6" x="198" y="142"></rect>
+<rect height="8" rx="1" width="6" x="210" y="142"></rect>
+<rect height="8" rx="1" width="6" x="222" y="142"></rect>
+<rect height="8" rx="1" width="6" x="234" y="142"></rect>
+<rect height="8" rx="1" width="6" x="246" y="142"></rect>
+<rect height="8" rx="1" width="6" x="258" y="142"></rect>
+<rect height="8" rx="1" width="6" x="270" y="142"></rect>
+<rect height="8" rx="1" width="6" x="114" y="194"></rect>
+<rect height="8" rx="1" width="6" x="126" y="194"></rect>
+<rect height="8" rx="1" width="6" x="138" y="194"></rect>
+<rect height="8" rx="1" width="6" x="150" y="194"></rect>
+<rect height="8" rx="1" width="6" x="162" y="194"></rect>
+<rect height="8" rx="1" width="6" x="174" y="194"></rect>
+<rect height="8" rx="1" width="6" x="186" y="194"></rect>
+<rect height="8" rx="1" width="6" x="198" y="194"></rect>
+<rect height="8" rx="1" width="6" x="210" y="194"></rect>
+<rect height="8" rx="1" width="6" x="222" y="194"></rect>
+<rect height="8" rx="1" width="6" x="234" y="194"></rect>
+<rect height="8" rx="1" width="6" x="246" y="194"></rect>
+<rect height="8" rx="1" width="6" x="258" y="194"></rect>
+<rect height="8" rx="1" width="6" x="270" y="194"></rect>
+</g>
+<!-- Central Empty Negative Stencil Marked [EMPTY EXPOSURE] -->
+<rect class="stroke-primary stroke-1 fill-primary/5" height="40" rx="3" stroke-dasharray="4 4" width="98" x="146" y="152"></rect>
+<text class="font-label-code text-[10px] fill-primary tracking-widest font-bold" text-anchor="middle" x="195" y="176">FRAME UNEXPOSED</text>
+<!-- Fallen Lens Cap Resting on Surface -->
+<g transform="translate(260, 210) rotate(18)">
+<ellipse class="fill-surface-dim" cx="40" cy="30" rx="34" ry="16"></ellipse>
+<ellipse class="fill-on-background" cx="38" cy="26" rx="32" ry="14"></ellipse>
+<ellipse class="fill-inverse-surface" cx="38" cy="26" rx="28" ry="11"></ellipse>
+<text class="fill-surface-variant font-label-caps text-[8px] tracking-[0.2em] font-semibold" text-anchor="middle" x="38" y="29">JHUNLEA</text>
+<!-- Retaining cord dangling loose -->
+<path class="text-primary-container" d="M12 26 C-10 35, 10 70, -25 50" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
+</g>
+</svg>
+</div>
+</div>
+<!-- Copy & Interactive Resolution Column -->
+<div class="w-full lg:w-1/2 flex flex-col items-start space-y-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-primary font-title-sm text-title-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-code text-label-code font-bold">404</span>
+<span class="text-xs uppercase tracking-wider font-semibold">Not Found</span>
+</span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Aperture Slip #00404</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">
+            This frame didn't develop.
+          </h1>
+<p class="font-body-lg text-body-lg text-secondary max-w-lg leading-relaxed">
+            The studio page or client proofing gallery you are looking for has been moved, archived, or was never exposed to light. Double check your URL or verify your work order slip.
+          </p>
+<!-- Interactive Action Suite -->
+<div class="flex flex-wrap items-center gap-3 pt-space-sm w-full">
+<a class="inline-flex items-center justify-center px-6 h-11 bg-primary text-on-primary rounded-lg font-title-sm text-title-sm shadow-sm hover:bg-[#8e0410] active:scale-[0.98] transition-all duration-150" data-path="client-portal" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">home</span>
+              Go Back Home
+            </a>
+<a class="inline-flex items-center justify-center px-5 h-11 bg-surface-container text-on-surface rounded-lg font-title-sm text-title-sm hover:bg-surface-container-high transition-colors" data-path="studio-services" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">photo_library</span>
+              Studio Packages &amp; Rates
+            </a>
+<button class="inline-flex items-center justify-center px-4 h-11 text-primary hover:bg-primary/5 rounded-lg font-title-sm text-title-sm transition-colors" onclick="focusTrackingSlip()">
+<span class="material-symbols-outlined text-[18px] mr-1.5">receipt_long</span>
+              Track Order (PR-XXXX)
+            </button>
+</div>
+<!-- Quick Slip Search Inline Assist -->
+<div class="w-full pt-space-sm">
+<div class="bg-surface-container-low rounded-xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+<div class="flex items-center gap-2 text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">search</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Direct Frame Lookup</span>
+</div>
+<div class="relative flex-1">
+<input class="w-full h-10 px-3 bg-surface-container-lowest text-on-surface placeholder:text-outline/70 rounded-lg text-sm font-label-code text-label-code focus:outline-none focus:ring-2 focus:ring-primary/40" id="slipInput" placeholder="e.g. PR-8942 or Client Access Code" type="text"/>
+</div>
+<button class="h-10 px-4 bg-on-surface text-surface rounded-lg font-title-sm text-title-sm hover:bg-inverse-surface transition-colors shrink-0" onclick="handleSlipSearch()">
+                Verify
+              </button>
+</div>
+<p class="hidden text-xs text-primary font-body-sm text-body-sm mt-2 flex items-center gap-1" id="searchFeedback">
+<span class="material-symbols-outlined text-[14px]">info</span>
+              Enter 4 to 8 characters matching your receipt stub.
+            </p>
+</div>
+</div>
+</div>
+<!-- STATE 2: 403 Forbidden / Darkroom Restricted (Switched View) -->
+<div class="error-panel hidden flex-col lg:flex-row items-center justify-between gap-12 relative z-10 transition-opacity duration-300" id="state-403">
+<!-- Visual Column: Film Canister with Studio Padlock -->
+<div class="w-full lg:w-1/2 flex justify-center items-center relative">
+<div class="w-full max-w-[440px] aspect-[4/3] bg-surface-container-low rounded-2xl p-6 flex items-center justify-center relative overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+<svg class="w-full h-full max-h-[280px]" fill="none" viewbox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<!-- Darkroom Safe Light Glow -->
+<circle class="fill-surface-container-high" cx="200" cy="150" r="110"></circle>
+<!-- Vintage 35mm Metal Canister Shell -->
+<rect class="fill-inverse-surface" height="150" rx="14" width="130" x="130" y="80"></rect>
+<!-- Top & Bottom Metal Caps -->
+<rect class="fill-tertiary" height="18" rx="5" width="150" x="120" y="70"></rect>
+<rect class="fill-tertiary" height="16" rx="5" width="142" x="124" y="222"></rect>
+<!-- Spindle Top Extension -->
+<rect class="fill-on-surface-variant" height="16" rx="4" width="40" x="175" y="56"></rect>
+<!-- Film Label: JHUNLEA 400 ARCHIVAL -->
+<rect class="fill-surface-container-lowest" height="96" rx="6" width="110" x="140" y="104"></rect>
+<rect class="fill-primary" height="26" width="110" x="140" y="104"></rect>
+<text class="font-title-sm text-[11px] font-bold fill-on-primary tracking-widest uppercase" text-anchor="middle" x="195" y="122">RESTRICTED</text>
+<text class="font-headline-sm text-[16px] font-serif fill-on-surface" text-anchor="middle" x="195" y="152">JHUNLEA</text>
+<text class="font-label-code text-[10px] fill-secondary" text-anchor="middle" x="195" y="174">ISO 400 • VAULT</text>
+<!-- Archival Heavy Brass Padlock Encasing Canister Film Tongue -->
+<g transform="translate(195, 140)">
+<!-- Shackle -->
+<path class="text-primary-container" d="M-22 -16 V-40 C-22 -56 22 -56 22 -40 V-16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="10"></path>
+<!-- Padlock Body -->
+<rect class="fill-primary" height="64" rx="12" width="72" x="-36" y="-18"></rect>
+<rect class="fill-[#8e0410]" height="52" rx="8" width="60" x="-30" y="-12"></rect>
+<!-- Keyhole -->
+<circle class="fill-surface-container-lowest" cx="0" cy="10" r="6"></circle>
+<path class="fill-surface-container-lowest" d="M-3 12 L3 12 L5 24 L-5 24 Z"></path>
+</g>
+</svg>
+</div>
+</div>
+<!-- Copy Column for 403 -->
+<div class="w-full lg:w-1/2 flex flex-col items-start space-y-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary font-title-sm text-title-sm">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-code text-label-code font-bold">403</span>
+<span class="text-xs uppercase tracking-wider font-semibold">Access Forbidden</span>
+</span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Vault Perimeter</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">
+            Darkroom locked. Studio pass required.
+          </h2>
+<p class="font-body-lg text-body-lg text-secondary max-w-lg leading-relaxed">
+            This private shoot gallery, laboratory work-in-progress, or administrator workstation is strictly reserved for verified clients with personalized shoot PINs or authorized print staff.
+          </p>
+<div class="flex flex-wrap items-center gap-3 pt-space-sm w-full">
+<a class="inline-flex items-center justify-center px-6 h-11 bg-primary text-on-primary rounded-lg font-title-sm text-title-sm shadow-sm hover:bg-[#8e0410] active:scale-[0.98] transition-all duration-150" data-path="client-portal" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">key</span>
+              Sign in with Client Pass
+            </a>
+<a class="inline-flex items-center justify-center px-5 h-11 bg-surface-container text-on-surface rounded-lg font-title-sm text-title-sm hover:bg-surface-container-high transition-colors" data-path="direct-assistance" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">badge</span>
+              Request Laboratory Access
+            </a>
+</div>
+<div class="p-4 bg-surface-container-low rounded-xl w-full flex items-center gap-3 text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-outline text-[20px]">lock_clock</span>
+<span>Shooting credentials and proof gallery tokens expire 90 days after shoot completion. Contact lab desk for vault archival retrieval.</span>
+</div>
+</div>
+</div>
+<!-- STATE 3: 500 Atelier Server Error (Switched View) -->
+<div class="error-panel hidden flex-col lg:flex-row items-center justify-between gap-12 relative z-10 transition-opacity duration-300" id="state-500">
+<!-- Visual Column: Jammed Mechanical Camera Shutter Blades -->
+<div class="w-full lg:w-1/2 flex justify-center items-center relative">
+<div class="w-full max-w-[440px] aspect-[4/3] bg-surface-container-low rounded-2xl p-6 flex items-center justify-center relative overflow-hidden">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-error/10 rounded-full blur-3xl pointer-events-none"></div>
+<svg class="w-full h-full max-h-[280px]" fill="none" viewbox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+<!-- Camera Lens Barrel Outer Ring -->
+<circle class="fill-surface-dim" cx="200" cy="150" r="115"></circle>
+<circle class="fill-surface-container-highest" cx="200" cy="150" r="102"></circle>
+<!-- Calibrated Aperture Markings -->
+<circle class="text-outline-variant" cx="200" cy="150" r="92" stroke="currentColor" stroke-dasharray="2 12" stroke-width="4"></circle>
+<circle class="fill-inverse-surface" cx="200" cy="150" r="80"></circle>
+<!-- Jammed Shutter Iris Blades in Disarray -->
+<g transform="translate(200, 150)">
+<!-- Blade 1 -->
+<path class="fill-tertiary" d="M-60 -40 C-20 -70, 30 -50, 50 -10 L10 10 Z"></path>
+<!-- Blade 2 Overlapping & Stalled -->
+<path class="fill-on-surface-variant" d="M20 -60 C60 -30, 65 30, 25 55 L0 0 Z"></path>
+<!-- Blade 3 Misaligned with crimson hazard mark -->
+<path class="fill-secondary" d="M40 30 C10 65, -45 50, -55 15 L-5 -10 Z"></path>
+<!-- Blade 4 Blocking Central Axis -->
+<path class="fill-tertiary-container" d="M-55 25 C-65 -20, -25 -55, 10 -45 L-15 0 Z"></path>
+<!-- Mechanical Jam Icon / Spark -->
+<circle class="fill-primary" cx="0" cy="0" r="16"></circle>
+<path d="M-6 0 L6 0 M0 -6 L0 6" stroke="white" stroke-linecap="round" stroke-width="3"></path>
+</g>
+<!-- Calibration Gauge Needle at Critical Red -->
+<g transform="translate(290, 80) rotate(35)">
+<rect class="fill-surface-container-lowest shadow-md" height="36" rx="8" width="36" x="-18" y="-18"></rect>
+<path class="text-outline" d="M-10 6 A12 12 0 0 1 10 6" fill="none" stroke="currentColor" stroke-width="2"></path>
+<line class="text-primary" stroke="currentColor" stroke-linecap="round" stroke-width="2" x1="0" x2="8" y1="6" y2="-4"></line>
+</g>
+<!-- Mini Service Wrench Overlay -->
+<g transform="translate(100, 210) rotate(-24)">
+<rect class="fill-surface-dim" height="10" rx="3" width="46" x="0" y="4"></rect>
+<circle class="fill-surface-dim" cx="4" cy="9" r="10"></circle>
+<circle class="fill-surface-container-low" cx="4" cy="9" r="4"></circle>
+</g>
+</svg>
+</div>
+</div>
+<!-- Copy Column for 500 -->
+<div class="w-full lg:w-1/2 flex flex-col items-start space-y-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-container text-error font-title-sm text-title-sm">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-label-code text-label-code font-bold">500</span>
+<span class="text-xs uppercase tracking-wider font-semibold">Laboratory Malfunction</span>
+</span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-wider">Calibration Delay</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold tracking-tight">
+            Shutter malfunction. We're recalibrating.
+          </h2>
+<p class="font-body-lg text-body-lg text-secondary max-w-lg leading-relaxed">
+            Our atelier image render pipeline experienced a momentary mechanical stall. Take comfort knowing that no active booking schedules, RAW negatives, or physical print orders were lost.
+          </p>
+<div class="flex flex-wrap items-center gap-3 pt-space-sm w-full">
+<button class="inline-flex items-center justify-center px-6 h-11 bg-primary text-on-primary rounded-lg font-title-sm text-title-sm shadow-sm hover:bg-[#8e0410] active:scale-[0.98] transition-all duration-150" onclick="window.location.reload()">
+<span class="material-symbols-outlined text-[18px] mr-2">refresh</span>
+              Reload Page &amp; Retry
+            </button>
+<a class="inline-flex items-center justify-center px-5 h-11 bg-surface-container text-on-surface rounded-lg font-title-sm text-title-sm hover:bg-surface-container-high transition-colors" data-path="direct-assistance" href="#">
+<span class="material-symbols-outlined text-[18px] mr-2">support_agent</span>
+              Call Studio Hotline
+            </a>
+</div>
+<!-- Lab Incident Health Indicator -->
+<div class="p-4 bg-surface-container-low rounded-xl w-full flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-[20px]">build_circle</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Lab Cluster Manila-01: Auto-diagnostic recovery in progress</span>
+</div>
+<span class="font-label-code text-label-code text-xs text-primary font-bold">99.8% UPTIME</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3-Part Error Suite Interactive Cards Overview -->
+<div class="flex flex-col space-y-space-md mb-space-xl">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-medium">Diagnostic Error Reference Catalog</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Click any studio state to inspect full viewport presentation &amp; recovery steps</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+<!-- Showcase Card 1: 404 -->
+<div class="group cursor-pointer rounded-xl bg-surface-container-lowest p-6 shadow-sm hover:shadow-md transition-all duration-200 ring-2 ring-primary" id="card-404" onclick="switchErrorState('404')">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-code text-label-code px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold">HTTP 404</span>
+<span class="material-symbols-outlined text-primary text-[20px]">no_photography</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Exposure Missing</h4>
+<p class="font-body-sm text-body-sm text-secondary mt-1.5 line-clamp-2">
+            Frame not found on studio roll. Clean redirects back to gallery index or custom tracking code queries.
+          </p>
+<div class="mt-4 pt-3 flex items-center justify-between text-xs font-title-sm text-primary">
+<span>Inspect 404 Layout</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Showcase Card 2: 403 -->
+<div class="group cursor-pointer rounded-xl bg-surface-container-lowest p-6 shadow-sm hover:shadow-md transition-all duration-200" id="card-403" onclick="switchErrorState('403')">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-code text-label-code px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-bold">HTTP 403</span>
+<span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Darkroom Restricted</h4>
+<p class="font-body-sm text-body-sm text-secondary mt-1.5 line-clamp-2">
+            Private proofs &amp; internal print technician stations guarded by authentication &amp; shoot code check.
+          </p>
+<div class="mt-4 pt-3 flex items-center justify-between text-xs font-title-sm text-on-surface-variant group-hover:text-primary transition-colors">
+<span>Inspect 403 Layout</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+<!-- Showcase Card 3: 500 -->
+<div class="group cursor-pointer rounded-xl bg-surface-container-lowest p-6 shadow-sm hover:shadow-md transition-all duration-200" id="card-500" onclick="switchErrorState('500')">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-code text-label-code px-2.5 py-0.5 rounded-full bg-error-container text-error font-bold">HTTP 500</span>
+<span class="material-symbols-outlined text-error text-[20px]">camera</span>
+</div>
+<h4 class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Shutter Malfunction</h4>
+<p class="font-body-sm text-body-sm text-secondary mt-1.5 line-clamp-2">
+            Transient render cluster or darkroom lab calibration glitch with verified client data protection reassurance.
+          </p>
+<div class="mt-4 pt-3 flex items-center justify-between text-xs font-title-sm text-on-surface-variant group-hover:text-primary transition-colors">
+<span>Inspect 500 Layout</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mandatory Studio Transaction Policy & Direct Assistance Notice -->
+<div class="bg-surface-container-low rounded-xl p-5 shadow-sm relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pl-2">
+<div class="flex items-start sm:items-center gap-3">
+<div class="p-2 rounded-lg bg-surface-container-highest text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<div>
+<span class="font-title-sm text-title-sm text-on-surface block font-semibold">Physical Studio Policy &amp; Cash Desk</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout. If a web error interrupted your booking, your reservation slot is held safely for 24 hours.
+            </span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+<a class="px-4 py-2 bg-surface-container-highest hover:bg-surface-container text-on-surface font-title-sm text-title-sm rounded-lg text-xs transition-colors" data-path="direct-assistance" href="#">
+            Contact Front Desk
+          </a>
+</div>
+</div>
+</div>
+<!-- Atelier Studio Footer Quick Sitemap for Lost Visitors -->
+<div class="mt-space-lg grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-surface-container-lowest rounded-xl">
+<div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant block mb-2">Portraiture &amp; Shoots</span>
+<ul class="space-y-1 text-sm font-body-sm text-body-sm text-secondary">
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Graduation &amp; Academic</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Corporate Headshots</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Family &amp; Clan Sessions</a></li>
+</ul>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant block mb-2">Fine Art Printing</span>
+<ul class="space-y-1 text-sm font-body-sm text-body-sm text-secondary">
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Archival Giclée Prints</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Custom Matte Framing</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="studio-services" href="#">Canvas Stretched Mounts</a></li>
+</ul>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant block mb-2">Order Recovery</span>
+<ul class="space-y-1 text-sm font-body-sm text-body-sm text-secondary">
+<li><a class="hover:text-primary transition-colors" data-path="order-tracking" href="#">Track PR- Order Status</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="client-portal" href="#">Client Gallery Login</a></li>
+<li><a class="hover:text-primary transition-colors" data-path="direct-assistance" href="#">File Resubmission Help</a></li>
+</ul>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant block mb-2">Studio Hours &amp; Lab</span>
+<p class="font-body-sm text-body-sm text-secondary">
+          Mon – Sat: 8:30 AM – 6:30 PM<br/>
+          Sun: Private Booking Only<br/>
+<span class="font-label-code text-label-code text-xs text-primary font-medium">+63 (02) 8920-4100</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function switchErrorState(code) {
+    // Hide all panels
+    const panels = ['404', '403', '500'];
+    panels.forEach(p => {
+      const el = document.getElementById('state-' + p);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+      }
+      
+      // Update Tab Buttons
+      const tab = document.getElementById('tab-' + p);
+      if (tab) {
+        tab.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+        tab.classList.add('text-on-surface-variant');
+      }
+
+      // Update Card Rings
+      const card = document.getElementById('card-' + p);
+      if (card) {
+        card.classList.remove('ring-2', 'ring-primary');
+      }
+    });
+
+    // Reveal active panel
+    const activePanel = document.getElementById('state-' + code);
+    if (activePanel) {
+      activePanel.classList.remove('hidden');
+      activePanel.classList.add('flex');
+    }
+
+    // Activate Tab
+    const activeTab = document.getElementById('tab-' + code);
+    if (activeTab) {
+      activeTab.classList.remove('text-on-surface-variant');
+      activeTab.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+    }
+
+    // Activate Card
+    const activeCard = document.getElementById('card-' + code);
+    if (activeCard) {
+      activeCard.classList.add('ring-2', 'ring-primary');
+    }
+
+    // Update faint backdrop code
+    const backdrop = document.getElementById('backdropErrorCode');
+    if (backdrop) {
+      backdrop.textContent = code;
+    }
+  }
+
+  function focusTrackingSlip() {
+    const input = document.getElementById('slipInput');
+    if (input) {
+      input.focus();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function handleSlipSearch() {
+    const input = document.getElementById('slipInput');
+    const feedback = document.getElementById('searchFeedback');
+    if (!input || !feedback) return;
+
+    const val = input.value.trim();
+    if (val.length < 3) {
+      feedback.classList.remove('hidden');
+      feedback.textContent = 'Please enter a valid format such as PR-8942.';
+      input.focus();
+    } else {
+      feedback.classList.remove('hidden');
+      feedback.classList.remove('text-primary');
+      feedback.classList.add('text-on-surface');
+      feedback.innerHTML = '<span class="material-symbols-outlined text-[14px] text-green-600">check_circle</span> Querying studio catalog for #' + val.toUpperCase() + '...';
+      setTimeout(() => {
+        feedback.innerHTML = '<span class="material-symbols-outlined text-[14px] text-primary">error</span> Record #' + val.toUpperCase() + ' archived. Visit Front Desk or call hotline.';
+        feedback.classList.add('text-primary');
+      }, 1200);
+    }
+  }
+</script></main><footer class="w-full bg-surface-container-low mt-space-xl"><div class="max-w-[1280px] mx-auto px-margin-mobile md:px-margin py-space-xl flex flex-col md:flex-row items-center justify-between gap-space-lg"><div class="flex flex-col sm:flex-row items-center gap-space-md text-center sm:text-left"><div class="p-space-sm bg-surface-container-highest rounded-lg text-primary"><span class="material-symbols-outlined">support_agent</span></div><div><span class="font-label-caps text-label-caps text-on-surface-variant block uppercase">Direct Studio Assistance</span><span class="font-label-code text-label-code text-on-surface font-medium">Hotline: +63 (02) 8920-4100 / +63 917 555 4865</span></div></div><div class="flex items-center gap-space-md text-center md:text-right"><div class="font-body-sm text-body-sm text-on-surface-variant"><span>Physical Studio &amp; Fine Art Printing Lab</span><span class="block">Bespoke mount framing, commercial photography &amp; archival prints</span></div></div><div class="flex items-center gap-space-md"><span class="font-body-sm text-body-sm text-on-surface-variant">© JHUNLEA Atelier. Mon-Sat 8:30AM–6:30PM.</span></div></div></footer></body></html>

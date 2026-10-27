@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="book-photoshoot" href="#">Book photoshoot</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="notifications" href="#">Notifications</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><a aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></a><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<div class="max-w-[1280px] w-full mx-auto px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md border-b-0 pb-space-xs">
+<div>
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-primary tracking-widest uppercase mb-1">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span>Studio Booking Atelier • Session 2025</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Book a Photoshoot</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">Configure your atelier session, aesthetic backdrop, and optional fine art print deliverables.</p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto bg-surface-container-low px-space-md py-space-xs rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-primary">storefront</span>
+<span class="font-label-code text-label-code text-on-surface">Poblacion Atelier • Bay 02 Available</span>
+</div>
+</div>
+<!-- Stepper Navigation -->
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-space-sm" id="wizard-steps-nav">
+<!-- Step 1 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-primary-container text-on-primary" id="step-nav-1" onclick="setStep(1)" type="button">
+<span class="w-6 h-6 rounded-full bg-on-primary text-primary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">1</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider opacity-80">Phase 01</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Package</span>
+</div>
+</button>
+<!-- Step 2 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface" id="step-nav-2" onclick="setStep(2)" type="button">
+<span class="w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">2</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider text-secondary">Phase 02</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Details</span>
+</div>
+</button>
+<!-- Step 3 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface" id="step-nav-3" onclick="setStep(3)" type="button">
+<span class="w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">3</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider text-secondary">Phase 03</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Schedule</span>
+</div>
+</button>
+<!-- Step 4 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface" id="step-nav-4" onclick="setStep(4)" type="button">
+<span class="w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">4</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider text-secondary">Phase 04</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Moodboard</span>
+</div>
+</button>
+<!-- Step 5 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface" id="step-nav-5" onclick="setStep(5)" type="button">
+<span class="w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">5</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider text-secondary">Phase 05</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Printing</span>
+</div>
+</button>
+<!-- Step 6 -->
+<button class="step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface" id="step-nav-6" onclick="setStep(6)" type="button">
+<span class="w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0">6</span>
+<div class="min-w-0">
+<span class="block font-label-caps text-[10px] uppercase tracking-wider text-secondary">Phase 06</span>
+<span class="block font-title-sm text-body-sm font-semibold truncate">Review</span>
+</div>
+</button>
+</div>
+<!-- Linear Micro Progress -->
+<div class="w-full bg-surface-container-highest h-1 rounded-full mt-space-md overflow-hidden">
+<div class="bg-primary-container h-full transition-all duration-300" id="step-progress-fill" style="width: 16.66%;"></div>
+</div>
+</div>
+<!-- Main Content Area: 2-Column Split -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Form Wizard Flow (approx 65% on desktop = 8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- ================= STEP 1: CHOOSE PACKAGE ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-1">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 01</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Select Atelier Package</h2>
+</div>
+<span class="font-label-code text-label-code bg-surface-container px-space-sm py-1 rounded text-secondary">3 CURATED TIERS</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Package Card 1: Graduation Prestige (Selected Default) -->
+<div class="pkg-card cursor-pointer p-space-md rounded-xl transition-all relative flex flex-col justify-between bg-surface-container-lowest shadow-md ring-2 ring-primary-container" id="pkg-card-1" onclick="selectPackage('Graduation Prestige', 1850)">
+<span class="absolute -top-3 right-3 bg-primary-container text-on-primary font-label-caps text-label-caps px-space-sm py-0.5 rounded-full uppercase shadow-sm">Selected Tier</span>
+<div>
+<div class="w-10 h-10 rounded-lg bg-primary-fixed flex items-center justify-center text-primary mb-space-sm">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Graduation Prestige</h3>
+<div class="flex items-baseline gap-1 mt-1 mb-space-sm">
+<span class="font-price-display text-price-display text-primary">₱1,850</span>
+<span class="font-body-sm text-body-sm text-secondary">Estimated</span>
+</div>
+<ul class="space-y-2 text-secondary font-body-sm text-body-sm mb-space-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">schedule</span> 60 Mins Private Bay</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">camera</span> 10 Retouched Masters</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px] text-primary">photo_album</span> 1 Framed 8R + 8 Wallets</li>
+</ul>
+</div>
+<div class="pt-space-sm border-t-0 bg-surface-container-low p-space-xs rounded-lg text-center font-label-caps text-label-caps text-on-surface font-semibold">
+                  Most Popular For Grads
+                </div>
+</div>
+<!-- Package Card 2: Essential Studio Portrait -->
+<div class="pkg-card cursor-pointer p-space-md rounded-xl transition-all relative flex flex-col justify-between bg-surface-container-low hover:bg-surface-container shadow-sm" id="pkg-card-2" onclick="selectPackage('Essential Studio Portrait', 1200)">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary mb-space-sm">
+<span class="material-symbols-outlined">portrait</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Essential Studio Portrait</h3>
+<div class="flex items-baseline gap-1 mt-1 mb-space-sm">
+<span class="font-price-display text-price-display text-on-surface">₱1,200</span>
+<span class="font-body-sm text-body-sm text-secondary">Estimated</span>
+</div>
+<ul class="space-y-2 text-secondary font-body-sm text-body-sm mb-space-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">schedule</span> 30 Mins Focused Session</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">camera</span> 5 Retouched Masters</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">photo_album</span> 2 5R Archival Prints</li>
+</ul>
+</div>
+<div class="pt-space-sm bg-surface-container-highest/60 p-space-xs rounded-lg text-center font-label-caps text-label-caps text-secondary font-medium">
+                  Ideal For Individual Headshots
+                </div>
+</div>
+<!-- Package Card 3: Family & Milestone -->
+<div class="pkg-card cursor-pointer p-space-md rounded-xl border-none transition-all relative flex flex-col justify-between bg-surface-container-low hover:bg-surface-container shadow-sm" id="pkg-card-3" onclick="selectPackage('Family &amp; Milestone', 3500)">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-secondary mb-space-sm">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">Family &amp; Milestone</h3>
+<div class="flex items-baseline gap-1 mt-1 mb-space-sm">
+<span class="font-price-display text-price-display text-on-surface">₱3,500</span>
+<span class="font-body-sm text-body-sm text-secondary">Estimated</span>
+</div>
+<ul class="space-y-2 text-secondary font-body-sm text-body-sm mb-space-md">
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">schedule</span> 90 Mins Multi-Setup</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">camera</span> 15 Retouched Masters</li>
+<li class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">photo_album</span> 12R Fine Canvas Wrap</li>
+</ul>
+</div>
+<div class="pt-space-sm bg-surface-container-highest/60 p-space-xs rounded-lg text-center font-label-caps text-label-caps text-secondary font-medium">
+                  Groups Up To 8 Pax
+                </div>
+</div>
+</div>
+<!-- Banner Link / Package Finder -->
+<div class="mt-space-md bg-surface-container-low p-space-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">help_center</span>
+<span class="font-body-md text-body-sm text-on-surface">Not sure which to choose? Try our interactive Package Finder</span>
+</div>
+<button class="font-label-caps text-label-caps text-primary hover:underline flex items-center gap-1" type="button">
+                Explore Finder <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ================= STEP 2: DETAILS ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-2">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 02</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Session Particulars</h2>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">Specify participants, atelier venue requirements, and creative preferences.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Contact Number -->
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Contact Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[20px]">phone</span>
+<input class="w-full h-11 bg-surface-container-low rounded-xl pl-10 pr-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]" type="text" value="+63 917 842 1904"/>
+</div>
+</div>
+<!-- Photoshoot Type Dropdown -->
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Photoshoot Type</label>
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low rounded-xl px-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container appearance-none shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
+<option selected="">Commencement / Academic Graduation</option>
+<option>Executive Corporate Headshot</option>
+<option>Debut / Editorial Portrait</option>
+<option>Family Legacy Session</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-secondary">expand_more</span>
+</div>
+</div>
+<!-- Number of People Stepper -->
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Number of People in Frame</label>
+<div class="flex items-center justify-between h-11 bg-surface-container-low rounded-xl px-space-md shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">group</span>
+<span class="font-body-md text-body-md text-on-surface" id="pax-count-label">1 Graduate + 2 Companions (3 total)</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-7 h-7 rounded-lg bg-surface-container-highest hover:bg-surface-container-high flex items-center justify-center font-bold text-on-surface" onclick="adjustPax(-1)" type="button">-</button>
+<span class="font-label-code text-label-code px-1" id="pax-number">3</span>
+<button class="w-7 h-7 rounded-lg bg-surface-container-highest hover:bg-surface-container-high flex items-center justify-center font-bold text-on-surface" onclick="adjustPax(1)" type="button">+</button>
+</div>
+</div>
+</div>
+<!-- Location / Venue Radio Options -->
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Location / Venue</label>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-xs">
+<label class="flex items-center gap-2 p-2.5 bg-surface-container rounded-xl cursor-pointer ring-1 ring-primary-container">
+<input checked="" class="accent-primary" name="venue_opt" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Studio Bay 02 (Poblacion)</span>
+</label>
+<label class="flex items-center gap-2 p-2.5 bg-surface-container-low rounded-xl cursor-pointer hover:bg-surface-container">
+<input class="accent-primary" name="venue_opt" type="radio"/>
+<span class="font-body-sm text-body-sm text-secondary">On-location (+quote)</span>
+</label>
+</div>
+</div>
+<!-- Client Notes Textarea -->
+<div class="md:col-span-2">
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Client Notes &amp; Wardrobe Details</label>
+<textarea class="w-full bg-surface-container-low rounded-xl p-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]" rows="3">Bringing academic hood, university toga, and Filipiniana top. Requesting classic studio lighting with rim hair light.</textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= STEP 3: SCHEDULE ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-3">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 03</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Select Atelier Date &amp; Slot</h2>
+</div>
+<!-- Prominent pill -->
+<div class="flex items-center gap-1.5 bg-secondary-container text-on-secondary-container px-space-md py-1 rounded-full self-start">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wide">Requested — not yet confirmed by studio owner</span>
+</div>
+</div>
+<!-- Month Calendar Header -->
+<div class="bg-surface-container-low p-space-md rounded-xl">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">May 2025</span>
+<span class="font-label-code text-label-code bg-surface-container-highest px-space-xs py-0.5 rounded text-secondary">ATELIER CALENDAR</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center hover:bg-surface-container text-secondary" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center hover:bg-surface-container text-secondary" type="button">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Days Header -->
+<div class="grid grid-cols-7 text-center font-label-caps text-[11px] text-secondary uppercase pb-2">
+<span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+</div>
+<!-- Calendar Grid Matrix -->
+<div class="grid grid-cols-7 gap-1.5 text-center font-body-md text-body-sm">
+<!-- Row 1 -->
+<span class="p-2 text-surface-dim opacity-40">27</span>
+<span class="p-2 text-surface-dim opacity-40">28</span>
+<span class="p-2 text-surface-dim opacity-40">29</span>
+<span class="p-2 text-surface-dim opacity-40">30</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">1</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">2 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">3 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<!-- Row 2 -->
+<span class="p-2 rounded-lg bg-surface-container-lowest">4</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">5</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">6 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">7</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">8 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">9 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">10 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<!-- Row 3 -->
+<span class="p-2 rounded-lg bg-surface-container-lowest">11</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">12</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">13 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">14</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">15 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">16 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">17 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<!-- Row 4 -->
+<span class="p-2 rounded-lg bg-surface-container-lowest">18</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">19</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">20 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">21</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">22 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">23 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<!-- Saturday May 24 Selected -->
+<span class="p-2 rounded-lg bg-primary-container text-on-primary font-bold shadow-md cursor-pointer ring-2 ring-primary">24</span>
+<!-- Row 5 -->
+<span class="p-2 rounded-lg bg-surface-container-lowest">25</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">26</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">27</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">28 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest">29</span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">30 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+<span class="p-2 rounded-lg bg-surface-container-lowest relative">31 <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 absolute bottom-1 left-1/2 -translate-x-1/2"></span></span>
+</div>
+</div>
+<!-- Timeslot Chips -->
+<div class="mt-space-md">
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface mb-2">Available Timeslots for Saturday, May 24</span>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm" id="timeslot-container">
+<button class="timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm font-semibold bg-primary-container text-on-primary shadow-sm flex items-center justify-center gap-1.5" onclick="selectSlot(this, '10:00 AM')" type="button">
+<span class="material-symbols-outlined text-[16px]">check_circle</span> 10:00 AM
+                </button>
+<button class="timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-1.5" onclick="selectSlot(this, '1:30 PM')" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> 1:30 PM
+                </button>
+<button class="timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-1.5" onclick="selectSlot(this, '3:30 PM')" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> 3:30 PM
+                </button>
+<button class="timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-1.5" onclick="selectSlot(this, '5:00 PM')" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> 5:00 PM
+                </button>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-space-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">info</span>
+                Studio owner reviews and confirms equipment &amp; bay availability before schedule locking.
+              </p>
+</div>
+</div>
+</div>
+<!-- ================= STEP 4: THEME & MOODBOARD ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-4">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 04</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Theme &amp; Visual Direction</h2>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">Define backdrop atmosphere, color motifs, and upload inspiration references.</p>
+</div>
+<!-- Backdrop Options -->
+<div class="mb-space-md">
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-2">Backdrop Selection</label>
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-space-sm" id="backdrop-selector">
+<button class="backdrop-btn p-space-sm rounded-xl text-center bg-surface-container-lowest ring-2 ring-primary-container shadow-sm" onclick="selectBackdrop(this, 'Classic Crimson')" type="button">
+<div class="w-full h-12 rounded-lg bg-[#a20513] mb-1.5 shadow-inner"></div>
+<span class="block font-title-sm text-body-sm text-on-surface font-semibold">Classic Crimson</span>
+<span class="block font-label-caps text-[10px] text-primary font-bold">ACTIVE</span>
+</button>
+<button class="backdrop-btn p-space-sm rounded-xl text-center bg-surface-container-low hover:bg-surface-container shadow-sm" onclick="selectBackdrop(this, 'Warm Cream')" type="button">
+<div class="w-full h-12 rounded-lg bg-[#f4ede4] mb-1.5 shadow-inner"></div>
+<span class="block font-title-sm text-body-sm text-on-surface">Warm Cream</span>
+<span class="block font-label-caps text-[10px] text-secondary">SEAMLESS</span>
+</button>
+<button class="backdrop-btn p-space-sm rounded-xl text-center bg-surface-container-low hover:bg-surface-container shadow-sm" onclick="selectBackdrop(this, 'Dark Charcoal')" type="button">
+<div class="w-full h-12 rounded-lg bg-[#2b2b2b] mb-1.5 shadow-inner"></div>
+<span class="block font-title-sm text-body-sm text-on-surface">Dark Charcoal</span>
+<span class="block font-label-caps text-[10px] text-secondary">MATTE</span>
+</button>
+<button class="backdrop-btn p-space-sm rounded-xl text-center bg-surface-container-low hover:bg-surface-container shadow-sm" onclick="selectBackdrop(this, 'Library Grad')" type="button">
+<div class="w-full h-12 rounded-lg bg-[#533e2d] mb-1.5 shadow-inner"></div>
+<span class="block font-title-sm text-body-sm text-on-surface">Library Grad</span>
+<span class="block font-label-caps text-[10px] text-secondary">TEXTURED</span>
+</button>
+<button class="backdrop-btn p-space-sm rounded-xl text-center bg-surface-container-low hover:bg-surface-container shadow-sm" onclick="selectBackdrop(this, 'Pure White')" type="button">
+<div class="w-full h-12 rounded-lg bg-[#ffffff] mb-1.5 shadow-inner"></div>
+<span class="block font-title-sm text-body-sm text-on-surface">Pure White</span>
+<span class="block font-label-caps text-[10px] text-secondary">HI-KEY</span>
+</button>
+</div>
+</div>
+<!-- Color Motif & Outfit Notes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md mb-space-md">
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-2">Color Motif Swatches</label>
+<div class="flex flex-wrap gap-2">
+<span class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container font-label-code text-body-sm text-on-surface">
+<span class="w-3.5 h-3.5 rounded-full bg-[#d4af37]"></span> Gold (UP/UST)
+                  </span>
+<span class="flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-surface-container font-label-code text-body-sm text-on-surface">
+<span class="w-3.5 h-3.5 rounded-full bg-[#002147]"></span> Navy Blue
+                  </span>
+<button class="px-space-sm py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary font-label-caps text-label-caps flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span> Custom Swatch
+                  </button>
+</div>
+</div>
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Outfit Notes</label>
+<input class="w-full h-11 bg-surface-container-low rounded-xl px-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]" type="text" value="Formal academic gown + traditional barong tagalog"/>
+</div>
+</div>
+<!-- Upload Grid -->
+<div class="mb-space-md">
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-2">Inspiration References</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
+<!-- Preview 1 -->
+<div class="relative group rounded-xl overflow-hidden aspect-square bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Warm studio portrait of an Asian graduate wearing an academic cap and toga, subtle warm crimson rim light, cinematic chiaroscuro tone, professional atelier framing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCs0ZHZF9Ow0VOpFrusAY4tQC8NigdAGtPAJT9i4cMEC319U3Yqp-NIh394hrLMTfVc7KB4WjipBTxEVOXzVfeMz1xI87h9umAmwL0v04fz9cgjH8OcOQ-oo28XuwnGkvJLaYVHF-aMZNEqBt_657FedGjJuNXauHScVOawm2v3hUBnCFFHEDQESMiUBYyeRmDumFe9zq_iB94PsKy9M7Ctl6kDH5dHHOYmHIG6w_ONR529hsPcPG6i"/>
+<div class="absolute inset-0 bg-on-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+</div>
+<!-- Preview 2 -->
+<div class="relative group rounded-xl overflow-hidden aspect-square bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Refined Filipino portrait in traditional embroidered Barong Tagalog under soft studio strobe lighting, elegant minimalist studio backdrop, high contrast shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6YTlXWHkwfI1QvTGCVvTmCsxS__XpVHCOjuvPcTG5wOXehGAlsd3r2VyqCDYSSgxFq0PyB2ejLBJdpbuYJJOwyvUIRnBDtyF-94Ydc5JlOzbh2Ur8-mFKLc5t8eekJpMAWxnH_aKnGXI-5cUNI8wHnzovVnPYTcK2kE3kpjn2opOayT-uz1-cR2XAM-0-grXrq8boZ_gHTVXeQNSvXE7blmuAQKzZ1K51gfl48VCA-Nzx8ZuviCnj"/>
+<div class="absolute inset-0 bg-on-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+</div>
+<!-- Preview 3 -->
+<div class="relative group rounded-xl overflow-hidden aspect-square bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover" data-alt="Classic library aesthetic photoshoot mood with antique books, warm walnut wood textures, deep crimson shadows, vintage fine art portraiture lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYFeUVfH2gLRmaNgKWDFM7_AUPCfJcBB067Argk3wG-33EGJD8QfpQrl9IjcRj7465Hr0yXF5rhT-OsZ-CcF21YVqI_OTI5ysXx53tj1Q0znNjJCDFA5sp_VGUGz7ueZv9P1Q90A_0TmcMsQxu_eouMvlw6v1ge6xWXkCQF0IhW_mMxLGDC9ggYYlw-rZMhXIkAaclVbzHV2ihuQsnTeChm41OKG4M3Y6rrPV-FkRgu3HbkqEZphWM"/>
+<div class="absolute inset-0 bg-on-background/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</div>
+</div>
+<!-- Add Slot -->
+<div class="border-2 border-dashed border-outline-variant/60 rounded-xl aspect-square flex flex-col items-center justify-center text-secondary hover:bg-surface-container cursor-pointer transition-colors p-2 text-center">
+<span class="material-symbols-outlined text-[28px] text-primary">add_photo_alternate</span>
+<span class="font-label-caps text-[10px] mt-1 uppercase font-semibold">Add Image</span>
+<span class="font-body-sm text-[10px] text-secondary">PNG, JPG up to 10MB</span>
+</div>
+</div>
+</div>
+<!-- Custom Theme Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl">
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Custom / Atelier Stylist Instructions</span>
+<input class="w-full h-11 bg-surface-container-lowest rounded-lg px-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]" type="text" value="Custom vintage darkroom library look with warm mahogany accents"/>
+</div>
+</div>
+</div>
+<!-- ================= STEP 5: PHOTO PRINTING ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-5">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 05</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Fine Art Printing Add-on</h2>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">Do you also want to have your photos printed at our laboratory?</p>
+</div>
+<!-- Printing Choice Radio Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md mb-space-md">
+<!-- Yes Print (Selected) -->
+<div class="cursor-pointer p-space-md rounded-xl transition-all relative bg-surface-container-lowest shadow-md ring-2 ring-primary-container" id="print-card-yes" onclick="togglePrintAddon(true)">
+<div class="flex items-center gap-space-sm mb-2">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md font-semibold text-on-surface">Yes, add fine art prints</h3>
+<span class="font-label-caps text-label-caps text-primary">LABORATORY BUNDLE ACTIVE</span>
+</div>
+</div>
+<p class="font-body-md text-body-sm text-secondary">Take advantage of bundled studio pigment printing produced with archival Lucia EX inks.</p>
+</div>
+<!-- No Prints -->
+<div class="cursor-pointer p-space-md rounded-xl transition-all relative bg-surface-container-low hover:bg-surface-container shadow-sm" id="print-card-no" onclick="togglePrintAddon(false)">
+<div class="flex items-center gap-space-sm mb-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md font-semibold text-on-surface">No, digital files only</h3>
+<span class="font-label-caps text-label-caps text-secondary">CLOUD DOWNLOAD ONLY</span>
+</div>
+</div>
+<p class="font-body-md text-body-sm text-secondary">Receive high-resolution calibrated JPEG &amp; TIFF masters via secured client cloud gallery.</p>
+</div>
+</div>
+<!-- Sub-configuration for Printing (Active when Yes) -->
+<div class="flex flex-col gap-space-md bg-surface-container-low p-space-md rounded-xl" id="print-addon-options">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Print Size</label>
+<select class="w-full h-11 bg-surface-container-lowest rounded-xl px-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm">
+<option selected="">8R Gallery Frame (8" x 10")</option>
+<option>5R Matte Lustre (5" x 7")</option>
+<option>Wallet Sets (Pack of 16)</option>
+<option>12R Fine Canvas Wrap</option>
+</select>
+</div>
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Quantity</label>
+<div class="flex items-center justify-between h-11 bg-surface-container-lowest rounded-xl px-space-md shadow-sm">
+<span class="font-body-md text-body-md text-on-surface">1 Frame Unit</span>
+<div class="flex items-center gap-2">
+<button class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center font-bold text-secondary hover:text-on-surface" type="button">-</button>
+<span class="font-label-code text-label-code">1</span>
+<button class="w-6 h-6 rounded bg-surface-container-highest flex items-center justify-center font-bold text-secondary hover:text-on-surface" type="button">+</button>
+</div>
+</div>
+</div>
+<div>
+<label class="block font-title-sm text-body-sm font-semibold text-on-surface mb-1">Paper Finish</label>
+<select class="w-full h-11 bg-surface-container-lowest rounded-xl px-space-md font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm">
+<option selected="">260gsm Satin Lustre</option>
+<option>310gsm 100% Cotton Rag (+₱150)</option>
+<option>German Etching Matte</option>
+</select>
+</div>
+</div>
+<!-- Real-time Price Line Item Block -->
+<div class="pt-space-sm flex flex-col gap-1.5 font-body-md text-body-sm">
+<div class="flex justify-between text-secondary">
+<span>Photography session fee</span>
+<span class="font-label-code text-label-code text-on-surface">₱1,850.00</span>
+</div>
+<div class="flex justify-between text-primary">
+<span>Laboratory printing fee (1x 8R Archival Lustre)</span>
+<span class="font-label-code text-label-code font-bold">+₱450.00</span>
+</div>
+<div class="flex justify-between font-title-md text-title-md text-on-surface pt-2 border-t border-surface-container-highest">
+<span>Combined Estimated Total</span>
+<span class="font-price-display text-price-display text-primary">₱2,300.00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ================= STEP 6: REVIEW & SUBMIT ================= -->
+<div class="wizard-pane flex flex-col gap-space-md" id="wizard-pane-6">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="mb-space-md">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest">Step 06</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Review &amp; Submit Request</h2>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">Please inspect your studio schedule parameters before lodging the atelier queue.</p>
+</div>
+<!-- Summary Table -->
+<div class="bg-surface-container-low rounded-xl overflow-hidden mb-space-md">
+<table class="w-full text-left font-body-md text-body-sm">
+<thead class="bg-surface-container font-label-caps text-label-caps text-secondary uppercase">
+<tr>
+<th class="p-space-md">Service Component</th>
+<th class="p-space-md">Specification</th>
+<th class="p-space-md text-right">Estimated Fee</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface">
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-space-md font-semibold">Graduation Prestige Session</td>
+<td class="p-space-md text-secondary">60 Mins • Bay 02 • 1 Grad + 2 Companions</td>
+<td class="p-space-md text-right font-label-code text-label-code">₱1,850.00</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-space-md font-semibold">Fine Art Print Deliverable</td>
+<td class="p-space-md text-secondary">1x 8R Gallery Lustre + 8 Wallet Prints</td>
+<td class="p-space-md text-right font-label-code text-label-code">₱450.00</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-space-md font-semibold">Scheduled Timeslot</td>
+<td class="p-space-md text-secondary">Saturday, May 24, 2025 @ 10:00 AM</td>
+<td class="p-space-md text-right text-secondary font-label-caps text-label-caps uppercase">Included</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-space-md font-semibold">Backdrop &amp; Styling</td>
+<td class="p-space-md text-secondary">Classic Crimson Seamless • Gold/Navy Motifs</td>
+<td class="p-space-md text-right text-secondary font-label-caps text-label-caps uppercase">Included</td>
+</tr>
+</tbody>
+<tfoot class="bg-surface-container-highest/60 font-semibold">
+<tr>
+<td class="p-space-md text-on-surface" colspan="2">Estimated Atelier Total (Tax Inclusive)</td>
+<td class="p-space-md text-right font-price-display text-price-display text-primary">₱2,300.00</td>
+</tr>
+</tfoot>
+</table>
+</div>
+<!-- MANDATORY STUDIO TRANSACTION NOTICE BANNER -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-start gap-space-md shadow-sm mb-space-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-md font-bold text-on-surface">Mandatory Studio Transaction Policy</span>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
+<div class="mt-2 flex items-center gap-space-sm text-secondary font-label-code text-[11px]">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Cash / GCash Counter</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-emerald-600">check_circle</span> Physical Card POS</span>
+</div>
+</div>
+</div>
+<!-- Primary Action Button -->
+<div class="flex items-center justify-between pt-space-xs">
+<button class="font-title-sm text-body-sm text-secondary hover:text-on-surface flex items-center gap-1" onclick="setStep(5)" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span> Return to Printing
+              </button>
+<button class="h-11 px-space-xl bg-primary-container hover:bg-primary text-on-primary rounded-xl font-title-sm text-body-md font-semibold shadow-md transition-all flex items-center gap-2" onclick="openSuccessModal()" type="button">
+<span>Submit Photoshoot Request</span>
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Wizard Navigation Controls (Next/Prev) -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm">
+<button class="h-10 px-space-md rounded-xl font-title-sm text-body-sm text-secondary bg-surface-container hover:bg-surface-container-high transition-colors flex items-center gap-1 opacity-50 cursor-not-allowed" id="prev-btn" onclick="navStep(-1)" type="button">
+<span class="material-symbols-outlined text-[16px]">west</span> Previous Phase
+          </button>
+<div class="font-label-code text-label-code text-secondary" id="step-indicator-text">
+            Step 1 of 6: Package
+          </div>
+<button class="h-10 px-space-md rounded-xl font-title-sm text-body-sm text-on-primary bg-primary-container hover:bg-primary transition-colors flex items-center gap-1 shadow-sm" id="next-btn" onclick="navStep(1)" type="button">
+            Next Phase <span class="material-symbols-outlined text-[16px]">east</span>
+</button>
+</div>
+</div>
+<!-- Right Column: Sticky Summary Panel (approx 35% on desktop = 4 cols) -->
+<div class="lg:col-span-4 sticky top-28 flex flex-col gap-space-md">
+<!-- Live Booking Estimator Card -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b border-surface-container-highest">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+<h3 class="font-title-sm text-body-md font-bold text-on-surface">Atelier Reservation</h3>
+</div>
+<span class="font-label-caps text-[10px] bg-primary-fixed text-on-primary-fixed font-bold px-2 py-0.5 rounded-full">IN PROGRESS</span>
+</div>
+<!-- Summary Items -->
+<div class="space-y-space-sm font-body-md text-body-sm">
+<div class="flex justify-between items-start">
+<div>
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface" id="summary-pkg-name">Graduation Prestige</span>
+<span class="block text-secondary text-body-sm font-label-code">60 Mins • 10 retouched</span>
+</div>
+<span class="font-label-code text-label-code font-semibold text-on-surface" id="summary-pkg-price">₱1,850.00</span>
+</div>
+<div class="flex justify-between items-center bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">event</span>
+<span>Date:</span>
+</div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface" id="summary-date">Sat, May 24, 2025</span>
+</div>
+<div class="flex justify-between items-center bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span>Timeslot:</span>
+</div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface" id="summary-slot">10:00 AM</span>
+</div>
+<div class="flex justify-between items-center bg-surface-container-low p-space-xs rounded-lg">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">domain</span>
+<span>Studio Bay:</span>
+</div>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Manila Bay 02</span>
+</div>
+<!-- Add-on Line -->
+<div class="pt-space-xs flex justify-between items-start" id="summary-print-row">
+<div>
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface">Laboratory Prints</span>
+<span class="block text-secondary text-body-sm font-label-code">1x 8R Archival Lustre</span>
+</div>
+<span class="font-label-code text-label-code font-semibold text-primary" id="summary-print-price">+₱450.00</span>
+</div>
+<!-- Price Breakdown Calculation -->
+<div class="pt-space-sm border-t border-surface-container-highest space-y-1">
+<div class="flex justify-between items-baseline">
+<span class="font-body-md text-body-sm text-secondary">Estimated Total</span>
+<span class="font-price-display text-price-display text-primary" id="summary-total-price">₱2,300.00</span>
+</div>
+<div class="flex justify-between items-center text-secondary font-label-code text-body-sm">
+<span>Confirmed Total:</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-[11px] text-secondary">Pending Studio Review</span>
+</div>
+</div>
+<!-- Settlement policy card in right panel -->
+<div class="bg-surface-container-low p-space-sm rounded-xl space-y-1 text-secondary mt-space-sm">
+<div class="flex items-center gap-1.5 font-label-caps text-label-caps text-primary uppercase font-bold">
+<span class="material-symbols-outlined text-[16px]">payments</span> In-Store Settlement
+              </div>
+<p class="text-body-sm leading-snug">₱0.00 due online today. Cash, GCash, or Card accepted upon physical arrival at the studio.</p>
+</div>
+<!-- Contact Hotline -->
+<div class="flex items-center justify-between text-secondary font-body-sm text-body-sm pt-space-xs">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">call</span> Direct Hotline:
+              </span>
+<a class="font-label-code text-label-code text-on-surface hover:text-primary font-medium" href="tel:+630289241102">+63 (02) 8924 1102</a>
+</div>
+</div>
+</div>
+<!-- Studio Bay Feature Highlight Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center gap-space-sm mb-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">verified</span>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Bay 02 Equipment Included</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Profoto D2 strobes, 150cm octabox softbox, Tethered Capture One Pro review display monitor on rolling cart.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- SUCCESS MODAL / PREVIEW DRAWER -->
+<div class="fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm hidden flex items-center justify-center p-margin" id="success-modal">
+<div class="bg-surface-container-lowest max-w-lg w-full rounded-xl p-space-lg shadow-xl relative animate-in fade-in zoom-in-95 duration-200">
+<!-- Close Button -->
+<button class="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-secondary" onclick="closeSuccessModal()" type="button">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="flex items-center gap-space-md mb-space-md">
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-md">
+<span class="material-symbols-outlined text-[28px]">mark_email_read</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-widest font-bold">Booking Request Lodged</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Photoshoot Reserved</h3>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-sm mb-space-md">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-sm text-secondary">Booking Reference</span>
+<div class="flex items-center gap-1.5">
+<span class="font-label-code text-body-md font-bold text-on-surface" id="booking-reference-code">PB-0007</span>
+<button class="p-1 rounded bg-surface-container-highest hover:bg-surface-container text-secondary" onclick="copyRefCode()" title="Copy Reference" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-sm text-secondary">Approval Status</span>
+<span class="font-label-caps text-label-caps bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Pending Owner Review
+          </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-sm text-secondary">Estimated Total</span>
+<span class="font-price-display text-title-md text-primary">₱2,300.00</span>
+</div>
+</div>
+<p class="font-body-md text-body-sm text-secondary mb-space-md">
+        Our studio master will inspect the bay roster and confirm your booking within 2 business hours. You will receive an SMS and portal notification once schedule locking occurs.
+      </p>
+<div class="flex flex-col sm:flex-row items-center gap-space-sm">
+<button class="w-full sm:w-1/2 h-11 bg-surface-container hover:bg-surface-container-high rounded-xl font-title-sm text-body-sm font-semibold text-on-surface transition-colors" onclick="closeSuccessModal()" type="button">
+          Track This Booking
+        </button>
+<button class="w-full sm:w-1/2 h-11 bg-primary-container hover:bg-primary rounded-xl font-title-sm text-body-sm font-semibold text-on-primary transition-colors" onclick="window.location.reload()" type="button">
+          Return To Portal
+        </button>
+</div>
+</div>
+</div>
+<!-- Inline Vanilla Script for Wizard Steps and Micro-interactions -->
+<script>
+    let currentStep = 1;
+    let selectedPkgName = 'Graduation Prestige';
+    let pkgPrice = 1850;
+    let printFee = 450;
+    let paxCount = 3;
+
+    function setStep(step) {
+      if (step < 1 || step > 6) return;
+      currentStep = step;
+
+      // Update panes visibility
+      for (let i = 1; i <= 6; i++) {
+        const pane = document.getElementById(`wizard-pane-${i}`);
+        const navBtn = document.getElementById(`step-nav-${i}`);
+        if (!pane || !navBtn) continue;
+
+        if (i === currentStep) {
+          pane.classList.remove('hidden');
+          pane.classList.add('flex');
+          navBtn.className = 'step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-primary-container text-on-primary';
+          navBtn.querySelector('span:first-child').className = 'w-6 h-6 rounded-full bg-on-primary text-primary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0';
+        } else if (i < currentStep) {
+          pane.classList.add('hidden');
+          pane.classList.remove('flex');
+          navBtn.className = 'step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container-high text-on-surface';
+          navBtn.querySelector('span:first-child').className = 'w-6 h-6 rounded-full bg-primary-container text-on-primary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0';
+        } else {
+          pane.classList.add('hidden');
+          pane.classList.remove('flex');
+          navBtn.className = 'step-nav-btn text-left p-space-xs rounded-lg transition-all flex items-center gap-space-xs bg-surface-container hover:bg-surface-container-high text-on-surface';
+          navBtn.querySelector('span:first-child').className = 'w-6 h-6 rounded-full bg-surface-container-highest text-secondary font-label-caps text-label-caps flex items-center justify-center font-bold shrink-0';
+        }
+      }
+
+      // Update Progress Bar
+      const progressPercent = (currentStep / 6) * 100;
+      document.getElementById('step-progress-fill').style.width = `${progressPercent}%`;
+
+      // Update Footer Indicator Text
+      const stepNames = ['Package', 'Details', 'Schedule', 'Moodboard', 'Printing', 'Review & Submit'];
+      document.getElementById('step-indicator-text').innerText = `Step ${currentStep} of 6: ${stepNames[currentStep - 1]}`;
+
+      // Update prev/next buttons
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+
+      if (currentStep === 1) {
+        prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+
+      if (currentStep === 6) {
+        nextBtn.classList.add('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+      }
+    }
+
+    function navStep(delta) {
+      setStep(currentStep + delta);
+    }
+
+    function selectPackage(name, price) {
+      selectedPkgName = name;
+      pkgPrice = price;
+
+      document.getElementById('summary-pkg-name').innerText = name;
+      document.getElementById('summary-pkg-price').innerText = `₱${price.toLocaleString()}.00`;
+
+      // Update active card styling
+      const pkgCards = document.querySelectorAll('.pkg-card');
+      pkgCards.forEach(c => {
+        c.classList.remove('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        c.classList.add('bg-surface-container-low');
+      });
+
+      if (name.includes('Graduation')) {
+        document.getElementById('pkg-card-1').classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        document.getElementById('pkg-card-1').classList.remove('bg-surface-container-low');
+      } else if (name.includes('Essential')) {
+        document.getElementById('pkg-card-2').classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        document.getElementById('pkg-card-2').classList.remove('bg-surface-container-low');
+      } else {
+        document.getElementById('pkg-card-3').classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        document.getElementById('pkg-card-3').classList.remove('bg-surface-container-low');
+      }
+
+      updateTotals();
+    }
+
+    function adjustPax(delta) {
+      paxCount = Math.max(1, paxCount + delta);
+      document.getElementById('pax-number').innerText = paxCount;
+      if (paxCount === 1) {
+        document.getElementById('pax-count-label').innerText = '1 Graduate solo';
+      } else {
+        document.getElementById('pax-count-label').innerText = `1 Graduate + ${paxCount - 1} Companions (${paxCount} total)`;
+      }
+    }
+
+    function selectSlot(btn, timeStr) {
+      document.querySelectorAll('.timeslot-btn').forEach(b => {
+        b.className = 'timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center gap-1.5';
+        b.innerHTML = `<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span> ${b.innerText.trim()}`;
+      });
+      btn.className = 'timeslot-btn py-2.5 px-space-md rounded-xl font-label-code text-body-sm font-semibold bg-primary-container text-on-primary shadow-sm flex items-center justify-center gap-1.5';
+      btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">check_circle</span> ${timeStr}`;
+      document.getElementById('summary-slot').innerText = timeStr;
+    }
+
+    function selectBackdrop(btn, name) {
+      document.querySelectorAll('.backdrop-btn').forEach(b => {
+        b.classList.remove('ring-2', 'ring-primary-container', 'bg-surface-container-lowest');
+        b.classList.add('bg-surface-container-low');
+        const cap = b.querySelector('.font-label-caps');
+        if (cap && cap.innerText === 'ACTIVE') cap.innerText = 'SELECT';
+      });
+      btn.classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest');
+      btn.classList.remove('bg-surface-container-low');
+      const cap = btn.querySelector('.font-label-caps');
+      if (cap) cap.innerText = 'ACTIVE';
+    }
+
+    function togglePrintAddon(hasPrint) {
+      const yesCard = document.getElementById('print-card-yes');
+      const noCard = document.getElementById('print-card-no');
+      const addonOptions = document.getElementById('print-addon-options');
+      const printRow = document.getElementById('summary-print-row');
+
+      if (hasPrint) {
+        printFee = 450;
+        yesCard.classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        yesCard.classList.remove('bg-surface-container-low');
+        noCard.classList.remove('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        noCard.classList.add('bg-surface-container-low');
+        addonOptions.classList.remove('hidden');
+        printRow.classList.remove('hidden');
+      } else {
+        printFee = 0;
+        noCard.classList.add('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        noCard.classList.remove('bg-surface-container-low');
+        yesCard.classList.remove('ring-2', 'ring-primary-container', 'bg-surface-container-lowest', 'shadow-md');
+        yesCard.classList.add('bg-surface-container-low');
+        addonOptions.classList.add('hidden');
+        printRow.classList.add('hidden');
+      }
+      updateTotals();
+    }
+
+    function updateTotals() {
+      const total = pkgPrice + printFee;
+      document.getElementById('summary-total-price').innerText = `₱${total.toLocaleString()}.00`;
+    }
+
+    function openSuccessModal() {
+      document.getElementById('success-modal').classList.remove('hidden');
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('success-modal').classList.add('hidden');
+    }
+
+    function copyRefCode() {
+      navigator.clipboard?.writeText('PB-0007');
+      alert('Reference code PB-0007 copied to clipboard.');
+    }
+
+    // Initialize step 1
+    window.addEventListener('DOMContentLoaded', () => {
+      setStep(1);
+    });
+  </script>
+</div></main><div class="fixed bottom-6 right-6 z-40"><a aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02] cursor-pointer" data-path="ai-assistant" href="#"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></a></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

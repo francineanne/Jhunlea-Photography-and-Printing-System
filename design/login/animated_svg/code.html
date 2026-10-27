@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+<!-- STITCH_SVG_START:ANIMATION_14 class="fixed inset-0 w-full h-full" --><div class="fixed inset-0 w-full h-full" id="animated-svg-ANIMATION_14" style="display:block;"><svg class="mx-auto" height="240" viewbox="0 0 240 240" width="240" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="apertureGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#C62828"></stop>
+<stop offset="100%" stop-color="#8E0000"></stop>
+</lineargradient>
+<filter height="140%" id="softGlow" width="140%" x="-20%" y="-20%">
+<fegaussianblur result="blur" stddeviation="3"></fegaussianblur>
+<fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite>
+</filter>
+</defs>
+<style>
+    @keyframes apertureRotate {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg) scale(0.92); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes bladePulse {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(0.85); opacity: 0.8; }
+    }
+    @keyframes pulseRing {
+      0%, 100% { transform: scale(1); opacity: 0.2; }
+      50% { transform: scale(1.06); opacity: 0.45; }
+    }
+    .aperture-group {
+      transform-origin: 120px 120px;
+      animation: apertureRotate 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    .ring-pulse {
+      transform-origin: 120px 120px;
+      animation: pulseRing 3s ease-in-out infinite;
+    }
+  </style>
+<!-- Outer lens housing rings -->
+<circle cx="120" cy="120" fill="none" r="110" stroke="#262626" stroke-width="2"></circle>
+<circle cx="120" cy="120" fill="none" r="102" stroke="#333333" stroke-dasharray="4 6" stroke-width="1.5"></circle>
+<circle class="ring-pulse" cx="120" cy="120" fill="#141414" r="94" stroke="#C62828" stroke-width="2"></circle>
+<circle cx="120" cy="120" fill="#171717" r="90"></circle>
+<!-- Rotating Aperture Blades -->
+<g class="aperture-group">
+<!-- Blade 1 -->
+<path d="M120 38 C 145 38, 175 60, 185 85 L 140 105 C 130 90, 115 80, 100 80 Z" fill="url(#apertureGrad)" opacity="0.95"></path>
+<!-- Blade 2 -->
+<path d="M185 85 C 198 105, 198 140, 185 165 L 145 135 C 150 120, 145 105, 138 95 Z" fill="#b71c1c" opacity="0.92"></path>
+<!-- Blade 3 -->
+<path d="M185 165 C 165 190, 135 202, 110 198 L 125 150 C 135 150, 148 142, 152 130 Z" fill="#c62828" opacity="0.95"></path>
+<!-- Blade 4 -->
+<path d="M110 198 C 80 198, 55 178, 48 152 L 95 132 C 102 145, 115 152, 128 150 Z" fill="#991b1b" opacity="0.9"></path>
+<!-- Blade 5 -->
+<path d="M48 152 C 40 125, 45 95, 60 72 L 100 102 C 92 115, 95 130, 102 140 Z" fill="#c62828" opacity="0.95"></path>
+<!-- Blade 6 -->
+<path d="M60 72 C 80 48, 105 38, 120 38 L 110 88 C 98 88, 88 95, 82 105 Z" fill="#d32f2f" opacity="0.92"></path>
+<!-- Central diaphragm opening -->
+<polygon fill="#0d0d0d" points="120,78 154,98 154,142 120,162 86,142 86,98" stroke="#c62828" stroke-width="1.5"></polygon>
+</g>
+<!-- Center lens optic catchlight -->
+<circle cx="120" cy="120" fill="#C62828" filter="url(#softGlow)" opacity="0.15" r="16"></circle>
+<circle cx="120" cy="120" fill="#C62828" r="7"></circle>
+<circle cx="117" cy="117" fill="#ffffff" opacity="0.8" r="2.5"></circle>
+</svg></div><!-- STITCH_SVG_END:ANIMATION_14 -->
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffdad6", "outline-variant": "#e4beba", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "primary-container": "#c62828", "secondary-container": "#e2dfde", "surface-container-high": "#e8e8e8", "error-container": "#ffdad6", "on-error": "#ffffff", "inverse-surface": "#2f3131", "on-primary-fixed-variant": "#93000e", "secondary-fixed-dim": "#c8c6c5", "on-primary-container": "#ffe0dd", "surface-container-low": "#f3f3f3", "secondary-fixed": "#e5e2e1", "surface-container-highest": "#e2e2e2", "on-background": "#1a1c1c", "tertiary-container": "#676767", "primary": "#a20513", "secondary": "#5f5e5e", "surface": "#f9f9f9", "on-secondary": "#ffffff", "surface-bright": "#f9f9f9", "tertiary-fixed-dim": "#c8c6c6", "tertiary-fixed": "#e4e2e2", "primary-fixed-dim": "#ffb4ac", "on-secondary-fixed": "#1c1b1b", "on-secondary-container": "#636262", "on-secondary-fixed-variant": "#474746", "inverse-primary": "#ffb4ac", "inverse-on-surface": "#f1f1f1", "surface-variant": "#e2e2e2", "outline": "#8f706c", "on-tertiary-container": "#e8e6e6", "on-tertiary-fixed-variant": "#474747", "on-tertiary-fixed": "#1b1c1c", "surface-dim": "#dadada", "surface-container": "#eeeeee", "on-error-container": "#93000a", "surface-tint": "#b91d20", "on-primary-fixed": "#410003", "surface-container-lowest": "#ffffff", "tertiary": "#4f4f4f", "background": "#f9f9f9", "on-surface": "#1a1c1c", "error": "#ba1a1a", "on-surface-variant": "#5b403d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-mobile": "1rem", "gutter": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "space-md": "1rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "2rem" }, "fontFamily": { "label-code": ["JetBrains Mono"], "label-caps": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-hero": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"] }, "fontSize": { "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] cursor-pointer hover:text-surface-container-lowest transition-colors">menu_open</span></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-210px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">print</span><span class="font-body-md text-body-md">Printing Orders</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-primary-container text-on-primary">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">photo_camera</span><span class="font-body-md text-body-md">Photo Bookings</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-surface-container-high/20 text-secondary-fixed">8</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Services Catalog</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">package_2</span><span class="font-body-md text-body-md">Photo Packages</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">palette</span><span class="font-body-md text-body-md">Themes &amp; Backdrops</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="schedule-and-availability" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-body-md text-body-md">Studio Calendar</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Client Directory</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Counter Payments</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="font-body-md text-body-md">Notifications</span></div><span class="w-2 h-2 rounded-full bg-primary-container"></span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-body-md text-body-md">Studio Reports</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Atelier Settings</span></div></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payments settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="max-w-[1280px] mx-auto px-space-lg py-space-lg"><div class="flex flex-col w-full relative">
+<!-- Underlying Owner Studio Dashboard Context (Dimmed + Blurred for authentic atelier depth) -->
+<div class="w-full opacity-40 select-none pointer-events-none filter blur-sm">
+<!-- Studio Header Metric Bar -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-space-md mb-space-lg">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="font-label-caps text-label-caps text-secondary uppercase mb-space-xs">Daily Print Intake</div>
+<div class="font-price-display text-price-display text-on-surface">₱14,280.00</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1">9 Fine-art runs queued</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="font-label-caps text-label-caps text-secondary uppercase mb-space-xs">Studio Sessions Today</div>
+<div class="font-price-display text-price-display text-on-surface">4 of 6 Booked</div>
+<div class="font-body-sm text-body-sm text-primary font-bold mt-1">Bay 1 &amp; Cyclorama Live</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="font-label-caps text-label-caps text-secondary uppercase mb-space-xs">Awaiting Counter Settlement</div>
+<div class="font-price-display text-price-display text-primary">₱6,420.00</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1">5 client pickups today</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="font-label-caps text-label-caps text-secondary uppercase mb-space-xs">Lab Paper Stock</div>
+<div class="font-price-display text-price-display text-on-surface">Hahnemühle 92%</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1">Roll calibration normal</div>
+</div>
+</div>
+<!-- Active Production Grid in Background -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+<div class="lg:col-span-2 bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="font-title-md text-title-md text-on-surface">Live Darkroom Queue &amp; Terminal Status</div>
+<span class="font-label-code text-label-code text-secondary">CALIBRATION ICC v4</span>
+</div>
+<div class="space-y-space-sm">
+<div class="p-space-md bg-surface-container-low rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-secondary">print</span>
+<div>
+<div class="font-title-sm text-title-sm">PR-0009 — Architectural Portfolios 310gsm</div>
+<div class="font-body-sm text-body-sm text-secondary">Archival Cotton Smooth • Client: Ar. Rafael Tan</div>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-surface-container text-on-surface-variant font-label-caps text-label-caps rounded-full">IN DRYING</span>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<span class="material-symbols-outlined text-secondary">photo_camera</span>
+<div>
+<div class="font-title-sm text-title-sm">PB-0004 — Executive Editorial Portraiture</div>
+<div class="font-body-sm text-body-sm text-secondary">Studio Bay 2 • 3-Point Profoto Setup</div>
+</div>
+</div>
+<span class="px-space-sm py-1 bg-surface-container text-on-surface-variant font-label-caps text-label-caps rounded-full">IN SESSION</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="font-title-md text-title-md text-on-surface mb-space-sm">Counter Reception Policy</div>
+<div class="p-space-md bg-surface-container rounded-lg mb-space-md">
+<div class="flex items-center gap-space-sm text-primary font-title-sm text-title-sm mb-1">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>No Remote Gateways</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">All payments verified and cleared at counter terminal prior to print release.</p>
+</div>
+<div class="h-32 bg-surface-container-low rounded-lg flex items-center justify-center">
+<span class="font-label-code text-label-code text-secondary">TELEMETRY PREVIEW</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Command Palette Modal Scrim / Backdrop (16px blur) -->
+<div class="fixed inset-0 top-16 left-0 lg:left-72 z-50 bg-inverse-surface/40 backdrop-blur-md flex items-start justify-center pt-8 md:pt-14 px-4 overflow-y-auto">
+<!-- Command Palette Dialog Box (640px Studio Minimal Glass) -->
+<div class="relative w-full max-w-[640px] bg-surface-container-lowest/95 backdrop-blur-2xl rounded-xl shadow-2xl overflow-hidden flex flex-col mb-12 animate-in fade-in zoom-in-95 duration-150">
+<!-- Input Search Header -->
+<div class="relative flex items-center px-space-lg py-space-md bg-surface-container-lowest">
+<span class="material-symbols-outlined text-primary text-[24px] mr-space-md animate-pulse">search</span>
+<div class="relative flex-1 flex items-center">
+<input autofocus="" class="w-full bg-transparent font-title-md text-title-md text-on-surface placeholder:text-secondary focus:outline-none tracking-tight font-medium" id="palette-input" placeholder="Type command, order PR-code, or client name..." type="text" value="PR-0012"/>
+<!-- Blinking Caret Simulation Accent -->
+<span class="inline-block w-0.5 h-6 bg-primary ml-0.5 animate-pulse"></span>
+</div>
+<div class="flex items-center gap-space-xs ml-space-sm">
+<button class="w-7 h-7 rounded-lg flex items-center justify-center text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="Clear search">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+<kbd class="px-2 py-1 rounded bg-surface-container-high font-label-code text-label-code text-[11px] text-on-surface-variant">ESC</kbd>
+</div>
+</div>
+<!-- Live Search Query Summary Sub-header -->
+<div class="px-space-lg py-1.5 bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Query Scope:</span>
+<span class="font-label-code text-label-code text-xs px-2 py-0.5 bg-primary-container text-on-primary rounded font-bold">PR-0012</span>
+<span class="font-body-sm text-body-sm text-secondary">• 4 Direct Matches Found</span>
+</div>
+<div class="font-label-code text-label-code text-[11px] text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">tune</span> All Atelier Archives
+        </div>
+</div>
+<!-- Scrollable Action & Results Container -->
+<div class="max-h-[593px] overflow-y-auto px-space-md py-space-sm space-y-space-md">
+<!-- SECTION 2: MATCHING ORDERS & BOOKINGS (Promoted to top due to direct match) -->
+<div>
+<div class="px-space-sm py-1 flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-wider">Matching Orders &amp; Studio Bookings (3)</span>
+<span class="font-label-code text-label-code text-[11px] text-secondary">Auto-selected Top Hit</span>
+</div>
+<div class="space-y-1.5">
+<!-- Active / Highlighted Hit: PR-0012 -->
+<div class="group relative bg-surface-container-high/40 hover:bg-surface-container-high/70 p-space-md rounded-xl cursor-pointer transition-all duration-150">
+<div class="absolute left-0 top-3 bottom-3 w-1 bg-primary rounded-r-full"></div>
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">print</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-code text-label-code text-xs font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">PR-0012</span>
+<span class="font-title-sm text-title-sm text-on-surface truncate">Fine Art Giclée Prints</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-caps text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                        Bin #04-A
+                      </span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1 flex items-center gap-2 flex-wrap">
+<span class="font-medium text-on-surface">Clara Santos</span>
+<span>•</span>
+<span>310gsm German Etching (3x A2 Sheets)</span>
+<span>•</span>
+<span class="font-label-code text-label-code font-bold text-on-surface">₱1,850.00</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 gap-1.5">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                    Ready for Pickup
+                  </span>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container text-[10px] font-label-code">↵</kbd>
+<span class="font-label-code text-[11px]">Inspect</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Result 2: PB-0005 Graduation Prestige Session -->
+<div class="group bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl cursor-pointer transition-colors duration-150">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-code text-label-code text-xs text-secondary bg-surface-container px-1.5 py-0.5 rounded">PB-0005</span>
+<span class="font-title-sm text-title-sm text-on-surface truncate">Graduation Prestige Session</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1 flex items-center gap-2 flex-wrap">
+<span class="text-on-surface">Clara Santos</span>
+<span>•</span>
+<span>May 24, 11:30 AM</span>
+<span>•</span>
+<span>Bay 1 (Onyx Velvet Backdrop)</span>
+</div>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    Reschedule Proposed
+                  </span>
+</div>
+</div>
+</div>
+<!-- Result 3: PR-0021 Canvas Gallery Wrap Mount -->
+<div class="group bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl cursor-pointer transition-colors duration-150">
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-label-code text-label-code text-xs text-secondary bg-surface-container px-1.5 py-0.5 rounded">PR-0021</span>
+<span class="font-title-sm text-title-sm text-on-surface truncate">Canvas Gallery Wrap Mount</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary mt-1 flex items-center gap-2 flex-wrap">
+<span class="text-on-surface">Clara Santos</span>
+<span>•</span>
+<span>24x36 Hardwood Stretcher</span>
+</div>
+</div>
+</div>
+<div class="shrink-0 flex items-center">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-primary font-label-caps text-label-caps">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+                    Action: Low DPI Asset
+                  </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 3: MATCHING CLIENT DIRECTORY (1) -->
+<div>
+<div class="px-space-sm py-1 flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Matching Client Directory (1)</span>
+<span class="font-label-code text-label-code text-[11px] text-secondary">Client Ledger</span>
+</div>
+<div class="bg-surface-container-low hover:bg-surface-container p-space-md rounded-xl cursor-pointer transition-colors flex items-center justify-between">
+<div class="flex items-center gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-full bg-inverse-surface text-inverse-on-surface flex items-center justify-center font-title-sm text-title-sm shrink-0">
+                CS
+              </div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface truncate">Clara Marie Santos</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-caps text-[10px]">PATRON TIER</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary mt-0.5 flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-xs">clara.santos@gmail.com</span>
+<span>•</span>
+<span class="font-label-code text-label-code text-xs">+63 917 842 1904</span>
+<span>•</span>
+<span class="text-on-surface-variant font-medium">14 print runs, 3 shoots</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs shrink-0 text-on-surface-variant">
+<span class="font-label-code text-label-code text-xs">Open Profile</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- SECTION 1: QUICK ACTIONS (Command Shortcuts) -->
+<div>
+<div class="px-space-sm py-1 flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Atelier Quick Actions</span>
+<span class="font-label-code text-label-code text-[11px] text-secondary">Immediate Triggers</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+<!-- Action 1 -->
+<div class="flex items-center justify-between p-space-sm px-space-md bg-surface-container-low hover:bg-surface-container rounded-lg cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">print_add</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">New Printing Intake</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">N</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">P</kbd>
+</div>
+</div>
+<!-- Action 2 -->
+<div class="flex items-center justify-between p-space-sm px-space-md bg-surface-container-low hover:bg-surface-container rounded-lg cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">add_a_photo</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">New Studio Booking</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">N</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">B</kbd>
+</div>
+</div>
+<!-- Action 3 -->
+<div class="flex items-center justify-between p-space-sm px-space-md bg-surface-container-low hover:bg-surface-container rounded-lg cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">point_of_sale</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">Counter Settlement</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">R</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">P</kbd>
+</div>
+</div>
+<!-- Action 4 -->
+<div class="flex items-center justify-between p-space-sm px-space-md bg-surface-container-low hover:bg-surface-container rounded-lg cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">tune</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">Calibrate Darkroom ICC</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">C</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-on-surface-variant">L</kbd>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 4: QUICK NAVIGATION -->
+<div>
+<div class="px-space-sm py-1 flex items-center justify-between mb-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Fast Navigation</span>
+<span class="font-label-code text-label-code text-[11px] text-secondary">Switch View</span>
+</div>
+<div class="space-y-1">
+<a class="flex items-center justify-between p-space-sm px-space-md rounded-lg hover:bg-surface-container text-on-surface transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">view_timeline</span>
+<span class="font-body-sm text-body-sm">Jump to Printing Orders Master List</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-[16px]">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-space-sm px-space-md rounded-lg hover:bg-surface-container text-on-surface transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">calendar_view_week</span>
+<span class="font-body-sm text-body-sm">Jump to Studio Schedule &amp; Bay Availability</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-[16px]">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-space-sm px-space-md rounded-lg hover:bg-surface-container text-on-surface transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">point_of_sale</span>
+<span class="font-body-sm text-body-sm">Open Face-to-Face Settlement Terminal</span>
+</div>
+<span class="material-symbols-outlined text-secondary text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Studio Mandatory Protocol Callout (Inside Palette) -->
+<div class="mx-space-md my-space-sm p-space-sm bg-surface-container rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">storefront</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[12px]">Counter Settlement Policy Active: Release voucher issued upon register receipt.</span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary shrink-0">Terminal #01</span>
+</div>
+<!-- Footer Command Bar / Keyboard Map -->
+<div class="px-space-lg py-space-sm bg-surface-container-low flex flex-wrap items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-[11px]">
+<div class="flex items-center gap-space-md flex-wrap">
+<div class="flex items-center gap-1">
+<kbd class="px-1 py-0.5 rounded bg-surface-container text-[10px]">↑</kbd>
+<kbd class="px-1 py-0.5 rounded bg-surface-container text-[10px]">↓</kbd>
+<span>navigate</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container text-[10px]">↵</kbd>
+<span>open order</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container text-[10px]">tab</kbd>
+<span>filter by type</span>
+</div>
+<div class="flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container text-[10px]">esc</kbd>
+<span>dismiss</span>
+</div>
+</div>
+<div class="text-secondary font-medium">
+          JHUNLEA Atelier OS
+        </div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple palette search interactivity to showcase live filter feedback
+  const inputEl = document.getElementById('palette-input');
+  if (inputEl) {
+    inputEl.focus();
+    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+  }
+</script></div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

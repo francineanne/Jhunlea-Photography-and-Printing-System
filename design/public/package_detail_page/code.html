@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"tertiary-fixed":"#e4e2e2","error":"#ba1a1a","on-secondary-container":"#636262","on-surface-variant":"#5b403d","inverse-primary":"#ffb4ac","on-surface":"#1a1c1c","on-tertiary-fixed":"#1b1c1c","background":"#f9f9f9","on-error-container":"#93000a","on-tertiary":"#ffffff","on-primary":"#ffffff","surface-tint":"#b91d20","on-primary-fixed":"#410003","primary":"#a20513","on-error":"#ffffff","on-tertiary-container":"#e8e6e6","on-primary-fixed-variant":"#93000e","primary-fixed-dim":"#ffb4ac","secondary-fixed-dim":"#c8c6c5","surface-container-high":"#e8e8e8","surface-container-highest":"#e2e2e2","on-secondary":"#ffffff","tertiary-fixed-dim":"#c8c6c6","surface-container":"#eeeeee","surface":"#f9f9f9","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#474746","secondary-container":"#e2dfde","tertiary":"#4f4f4f","surface-variant":"#e2e2e2","primary-fixed":"#ffdad6","on-background":"#1a1c1c","on-tertiary-fixed-variant":"#474747","on-secondary-fixed":"#1c1b1b","outline":"#8f706c","error-container":"#ffdad6","secondary-fixed":"#e5e2e1","surface-container-low":"#f3f3f3","primary-container":"#c62828","surface-bright":"#f9f9f9","tertiary-container":"#676767","surface-dim":"#dadada","on-primary-container":"#ffe0dd","outline-variant":"#e4beba","secondary":"#5f5e5e","inverse-surface":"#2f3131","inverse-on-surface":"#f1f1f1"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-mobile":"1rem","space-lg":"1.5rem","space-md":"1rem","margin-mobile":"1rem",margin:"2rem","space-sm":"0.5rem",gutter:"1.5rem","space-xs":"0.25rem","space-xl":"2.5rem"},fontFamily:{"title-md":["Plus Jakarta Sans"],"label-code":["JetBrains Mono"],"body-lg":["Plus Jakarta Sans"],"headline-lg":["Playfair Display"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"label-caps":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"price-display":["Plus Jakarta Sans"],"headline-sm":["Playfair Display"],"display-hero":["Playfair Display"],"headline-md":["Playfair Display"]},fontSize:{"title-md":["18px",{lineHeight:"26px",fontWeight:"600"}],"label-code":["13px",{lineHeight:"18px",letterSpacing:"0.04em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"26px",fontWeight:"400"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.015em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"22px",fontWeight:"400"}],"display-hero-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.08em",fontWeight:"700"}],"title-sm":["16px",{lineHeight:"24px",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"price-display":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-sm":["22px",{lineHeight:"30px",fontWeight:"500"}],"display-hero":["56px",{lineHeight:"64px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["28px",{lineHeight:"36px",fontWeight:"500"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md border-b border-surface-container-high shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="bg-surface-container-low border-b border-surface-container-high py-space-xs px-margin"><div class="max-w-[1280px] mx-auto flex items-center justify-between text-secondary font-label-caps text-label-caps uppercase"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[15px]">storefront</span><span>Studio Policy: Payment is made face-to-face at Jhunlea Photography &amp; Printing in store. No online checkout required.</span></div><div class="flex items-center gap-space-md"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px]">schedule</span>Mon-Sat 8:30 AM - 6:30 PM</span><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px]">pin_drop</span>PH Atelier Lab</span></div></div></div><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm shrink-0"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WgVLaGW8jw4eDMIX9E3e8IpbgqC_sKBqOlFGE3hvN1DPB9Zea-As7ir2yc_f9XioYy0oIXneM0rTUPwWs6fIi7IzttMIZcs1P3DUjMXWEqNd8jvilMIgDLDmeQHKjulphByMIW_noQ-oUDlTPjOLQ7yHdWLTnpsx-vw12CNXO6Dq4MVvpei1eat-L8qAhJze9SjnQc7RNFoPuS2RtfsriLfkDJBswAYuMm4J5Cbu4Fb4ZwEm9UHU7mLA"/><div class="flex flex-col"><span class="font-headline-md text-headline-sm tracking-tight text-on-surface leading-none uppercase font-semibold">JHUNLEA</span><span class="font-label-caps text-label-caps text-secondary tracking-widest uppercase">Photography &amp; Printing</span></div></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary font-title-sm border-b-2 border-primary pb-1"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="services" href="#">Services</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="printing-services" href="#">Printing Services</a><a aria-current="page" class="transition-colors text-primary font-title-sm border-b-2 border-primary pb-1" data-path="photography-packages" href="#">Photography Packages</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="package-finder" href="#">Package Finder</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="how-it-works" href="#">How it works</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="track-order" href="#">Track Order</a></nav><div class="flex items-center gap-space-sm shrink-0"><button aria-label="Toggle Theme" class="w-10 h-10 rounded-lg flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">contrast</span></button><a class="px-space-md py-space-sm font-title-sm text-body-md text-on-surface hover:bg-surface-container rounded-lg transition-colors" data-path="login" href="#">Login</a><a class="px-space-md py-space-sm font-title-sm text-body-md bg-primary-container text-on-primary rounded-lg hover:bg-primary shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04)] transition-colors" data-path="book-a-shoot" href="#">Book a shoot</a></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<!-- Top Bar & Breadcrumb Navigation Hierarchy -->
+<section class="w-full bg-surface-container-low/70 py-space-md">
+<div class="max-w-[1280px] mx-auto px-margin flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<nav aria-label="Breadcrumb" class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary">
+<a class="hover:text-primary transition-colors flex items-center gap-1" data-path="home" href="#">
+<span class="material-symbols-outlined text-[16px]">home</span>
+<span>Home</span>
+</a>
+<span class="text-tertiary-fixed-dim">/</span>
+<a class="hover:text-primary transition-colors" data-path="photography-packages" href="#">
+          Photography Packages
+        </a>
+<span class="text-tertiary-fixed-dim">/</span>
+<span class="text-on-surface font-title-sm text-body-sm">Graduation Prestige Package</span>
+</nav>
+<div class="flex items-center gap-space-xs shrink-0">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-primary font-label-caps text-label-caps uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          Most Popular • Academic Season 2025
+        </span>
+</div>
+</div>
+</section>
+<!-- Main Content Layout (60% / 40% Desktop Split) -->
+<section class="w-full py-space-xl">
+<div class="max-w-[1280px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- LEFT COLUMN (60% ~ 7 cols of 12) -->
+<div class="lg:col-span-7 flex flex-col gap-space-xl">
+<!-- Main Gallery Viewer -->
+<div class="flex flex-col gap-space-md">
+<div class="relative w-full aspect-[4/3] rounded-xl overflow-hidden shadow-sm bg-surface-container group">
+<img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]" data-alt="Editorial portrait of a smiling Filipino university graduate wearing an academic toga gown with gold embroidery, captured against a clean warm charcoal studio backdrop with master strobe softbox lighting, museum-grade composition." id="mainGalleryImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyAmtSrW6qaLEuaOmjRwuSXEQ8UlfX30Lv7e1WTMk48TXgIQp4Fay4EC71yr1h7q-IwfZF7zUJ6tXkdF31iRxdlT5HFggTWEB4rLVsnzTiRLKmoMFHY_JSwCnsEH2LcTteQUQNqm0GqD-rske2pugSyH9JvswzyRGzc1GwGz1faLuIkCxlK8HEMMfedCUrCE-X_ph0SgzfOBdHew6V4xZX3wVDniu6935TyFS02YvwvldJMzrxzmJw"/>
+<!-- Image Badge / Attribution Overlay -->
+<div class="absolute bottom-4 left-4 bg-on-surface/80 backdrop-blur-md px-3 py-1.5 rounded-lg text-surface font-label-caps text-label-caps uppercase flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[16px]">verified</span>
+<span>Sample photos taken at Jhunlea Studio</span>
+</div>
+<!-- Fullscreen hint glyph -->
+<div class="absolute top-4 right-4 bg-on-surface/60 backdrop-blur-sm w-9 h-9 rounded-lg flex items-center justify-center text-surface opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</div>
+</div>
+<!-- Thumbnail Carousel (5 items) -->
+<div class="grid grid-cols-5 gap-space-sm" id="thumbStrip">
+<button aria-label="Toga shot" class="thumb-btn relative aspect-[4/3] rounded-lg overflow-hidden ring-2 ring-primary transition-all scale-[1.02]" data-src="toga" onclick="switchThumb(0)" type="button">
+<img class="w-full h-full object-cover" data-alt="Close up graduation portrait featuring academic hood and cap with crisp studio sidelight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7_GG82nlrLagfq6-OCb-qIJBpluBQnUnM_31QOLWjIfqk3Qt8upTtsFCiuQFhbMBYUWplE4kP2jj5ZKymvMBaF_qwqwUy-UuBn5k1euISbkfVL1LnfqVppKwDPDBiSoeB3RTGQcA8BGUEF5Koa2CLMfM8EUjQCK5ZJWI46FRYjEQN3woPacLAueB8ar9-nsQWfYXKC6VKBC5TIFes4uri__-ItNV30Ich4NdbH1HUvtK6UguzNEcW"/>
+<span class="absolute inset-0 bg-primary/10"></span>
+</button>
+<button aria-label="Smart casual look" class="thumb-btn relative aspect-[4/3] rounded-lg overflow-hidden opacity-75 hover:opacity-100 transition-all" data-src="casual" onclick="switchThumb(1)" type="button">
+<img class="w-full h-full object-cover" data-alt="Modern confident graduate in stylish smart casual linen blazer sitting on minimalist wooden studio stool." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb20oUsU2oDqOUTppL_NrpvtmiDwcUK10qAZOs-Cb5KKfBGJhenTrc8XrMe-2Iv_2Aw_FjLaclN1wbSs0HWwkBP7B_2xyogpqgxkYPX1FvDjuiV8GfVRS4t3fzHooLMzecHr3CwWt3-gs2GfLDf0T5XqKU-PMJ_rNWq5fNznLD4TYJs9GYHqPHGWqo3926sZzlSdPJJqsliAAB2jdHbCu7EuQFs_pWzcHO4oZ0yo-Rifg4-V5zHHuX"/>
+</button>
+<button aria-label="Framed print deliverable" class="thumb-btn relative aspect-[4/3] rounded-lg overflow-hidden opacity-75 hover:opacity-100 transition-all" data-src="frame" onclick="switchThumb(2)" type="button">
+<img class="w-full h-full object-cover" data-alt="Premium minimalist light ash wooden frame with archival 8R fine art graduation photo mounted on gallery white matting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5VPb2f8eIBJyEByIcT8vaaVE7BPYFApwtFD-SWEcBzXq3JraeuL89_jJzrgAxkBXYMsFSCHnkirP73MmIKW4--OUVuNdKlprljBESGBFISTFHwRMul64oLs0bhtJztmuZOHxsvzc2Q7npNnDRX0Iz9YI3c1Hh-AeQSVvNAp6FCbo85JgxkB4KWb6oK-AN9z4yf0xSdIfLzxPgScOICY8uFhSaxh_u9rgw49mybCWwGsLWIEDPQgIO"/>
+</button>
+<button aria-label="Backdrop lighting setup" class="thumb-btn relative aspect-[4/3] rounded-lg overflow-hidden opacity-75 hover:opacity-100 transition-all" data-src="setup" onclick="switchThumb(3)" type="button">
+<img class="w-full h-full object-cover" data-alt="Behind the scenes view of Jhunlea studio floor showcasing dual octabox strobe lights and Crimson backdrop roll." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw0cbI0dWb9d_fivfvwjJ20v4N7000DQ8sZTCNlTRP_v4InonqFUOSVFnop0VyimG3BKE1i4su7KT6kOoaNY4--UKa29N9RsnS5UKk8Tq5Dr6T4JAS7fJD7ZrUOIE-u87kW3rvOexuj20lAg7nYqtciDJnI_pnoayGiLtK8UIarno4sVk_lo-cACc21KbKWk0Ubw6VEDp4n8-A8RxYbWQZQXPrOSNug1mzjgPq2AVV41CsNGrH4NQx"/>
+</button>
+<button aria-label="Full package deliverables" class="thumb-btn relative aspect-[4/3] rounded-lg overflow-hidden opacity-75 hover:opacity-100 transition-all" data-src="wallets" onclick="switchThumb(4)" type="button">
+<img class="w-full h-full object-cover" data-alt="Top down flatlay of eight archival wallet sized graduation photo prints and embossed atelier envelope." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv7g-L_Wiz1c55gK3jYlRDw-JZZM1jD3M2IBZPVWTKH1Tz_8fXKbhdGAfe5365FOTCJd7lJRsKbNcl5CcSOfh0bIiRt59rbdCBuz0oSJ3S4lkGJJaybnL8i2pgdWrNNXBglJTOpLZrkiODK6imvD1LE6B7_Q2sx8YQVICd-NuHebBrvFmEJpE6AMELJ0BnP0gy5XNb_JpD4G2YScNupAQyhCGHp0j_m3YDIHsMeFtsmY_h2aC96xnR"/>
+</button>
+</div>
+</div>
+<!-- Section: What's Included -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-lg">
+<div class="flex items-center justify-between pb-space-sm bg-surface-container-low/40 -mx-space-lg px-space-lg pt-space-sm -mt-space-lg rounded-t-xl">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">inventory_2</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">What's Included in this Package</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary">CODE: PKG-GRAD-PR</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed">
+              Designed explicitly for graduating university seniors, postgraduates, and honor students seeking timeless editorial keepsakes. Balanced between ceremonial prestige and relaxed contemporary personal branding.
+            </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Item 1 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">light_mode</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">Pro Strobe &amp; Lighting</h3>
+<p class="font-body-sm text-body-sm text-secondary">Full studio lighting with professional strobe &amp; dual softbox diffusion.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">60 Mins Dedicated Floor</h3>
+<p class="font-body-sm text-body-sm text-secondary">Private shoot floor time with dedicated portrait director and guidance.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">checkroom</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">2 Outfit Changes</h3>
+<p class="font-body-sm text-body-sm text-secondary">Academic gown/toga shoot + smart casual or modern executive attire.</p>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">cloud_download</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">10 Master Retouched Files</h3>
+<p class="font-body-sm text-body-sm text-secondary">High-resolution color-graded master JPEGs via secure digital download link.</p>
+</div>
+</div>
+<!-- Item 5 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">crop_original</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">1 Framed 8R Archival Print</h3>
+<p class="font-body-sm text-body-sm text-secondary">8×10" Archival Lustre print enclosed in a handcrafted minimalist wooden frame.</p>
+</div>
+</div>
+<!-- Item 6 -->
+<div class="flex items-start gap-space-sm p-space-sm rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low transition-colors">
+<div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">photo_library</span>
+</div>
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">8 Wallet Gift Prints</h3>
+<p class="font-body-sm text-body-sm text-secondary">Heavyweight pocket-sized prints curated for family keepsakes and wallet frames.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Available Backdrop Themes -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Available Backdrop Themes</h2>
+<p class="font-body-sm text-body-sm text-secondary">Select your preferred background aesthetic (can be changed freely upon studio arrival).</p>
+</div>
+<span class="font-label-caps text-label-caps text-primary uppercase bg-primary-fixed px-2.5 py-1 rounded-full">Included in session</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-space-sm" id="backdropContainer">
+<!-- Backdrop 1 -->
+<button class="backdrop-chip flex flex-col items-center gap-space-xs p-2.5 rounded-lg bg-surface-container-low text-center ring-2 ring-primary hover:bg-surface-container transition-all" onclick="selectBackdrop(this, 'Classic Studio Crimson')" type="button">
+<div class="w-10 h-10 rounded-full bg-primary-container shadow-inner flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">check</span>
+</div>
+<span class="font-title-sm text-body-sm text-on-surface">Classic Crimson</span>
+<span class="font-label-code text-[10px] text-secondary">Atelier Signature</span>
+</button>
+<!-- Backdrop 2 -->
+<button class="backdrop-chip flex flex-col items-center gap-space-xs p-2.5 rounded-lg bg-surface-container-low text-center hover:bg-surface-container transition-all opacity-80" onclick="selectBackdrop(this, 'Modern Warm Cream')" type="button">
+<div class="w-10 h-10 rounded-full bg-[#EDE6D6] shadow-inner"></div>
+<span class="font-title-sm text-body-sm text-on-surface">Warm Cream</span>
+<span class="font-label-code text-[10px] text-secondary">Organic Linen</span>
+</button>
+<!-- Backdrop 3 -->
+<button class="backdrop-chip flex flex-col items-center gap-space-xs p-2.5 rounded-lg bg-surface-container-low text-center hover:bg-surface-container transition-all opacity-80" onclick="selectBackdrop(this, 'Executive Dark Charcoal')" type="button">
+<div class="w-10 h-10 rounded-full bg-[#2A2B2D] shadow-inner"></div>
+<span class="font-title-sm text-body-sm text-on-surface">Dark Charcoal</span>
+<span class="font-label-code text-[10px] text-secondary">Editorial Depth</span>
+</button>
+<!-- Backdrop 4 -->
+<button class="backdrop-chip flex flex-col items-center gap-space-xs p-2.5 rounded-lg bg-surface-container-low text-center hover:bg-surface-container transition-all opacity-80" onclick="selectBackdrop(this, 'Bookcase Library Gradient')" type="button">
+<div class="w-10 h-10 rounded-full bg-gradient-to-br from-[#4A3525] to-[#1E1610] shadow-inner"></div>
+<span class="font-title-sm text-body-sm text-on-surface">Library Grad</span>
+<span class="font-label-code text-[10px] text-secondary">Academic Tone</span>
+</button>
+<!-- Backdrop 5 -->
+<button class="backdrop-chip flex flex-col items-center gap-space-xs p-2.5 rounded-lg bg-surface-container-low text-center hover:bg-surface-container transition-all opacity-80 col-span-2 sm:col-span-1" onclick="selectBackdrop(this, 'Crisp Pure White')" type="button">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest shadow-inner"></div>
+<span class="font-title-sm text-body-sm text-on-surface">Pure White</span>
+<span class="font-label-code text-[10px] text-secondary">High-Key Clean</span>
+</button>
+</div>
+<p class="font-label-code text-body-sm text-secondary flex items-center gap-1.5 pt-1">
+<span class="material-symbols-outlined text-[15px] text-primary">palette</span>
+<span>Currently selected: <span class="text-on-surface font-semibold" id="selectedBackdropLabel">Classic Studio Crimson</span></span>
+</p>
+</div>
+<!-- Section: Custom Add-ons & Upgrades -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Custom Add-ons &amp; Upgrades</h2>
+<p class="font-body-sm text-body-sm text-secondary">Enhance your session deliverables. Add-ons are finalized during your in-store consultation.</p>
+</div>
+<div class="flex flex-col gap-space-sm" id="addonList">
+<!-- Add-on 1 -->
+<label class="group flex items-center justify-between p-space-md rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-space-md">
+<input class="addon-checkbox w-5 h-5 accent-primary rounded cursor-pointer" data-title="Hair &amp; Light Grooming Touchup" onchange="recalculatePrice()" type="checkbox" value="350"/>
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md text-on-surface group-hover:text-primary transition-colors">Hair &amp; Light Grooming Touchup</span>
+<span class="font-body-sm text-body-sm text-secondary">15-minute studio prep before roll, flyaway taming &amp; matte powder application.</span>
+</div>
+</div>
+<span class="font-price-display text-body-md text-primary shrink-0">+₱350</span>
+</label>
+<!-- Add-on 2 -->
+<label class="group flex items-center justify-between p-space-md rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-space-md">
+<input class="addon-checkbox w-5 h-5 accent-primary rounded cursor-pointer" data-title="Additional 12R Large Wall Canvas" onchange="recalculatePrice()" type="checkbox" value="650"/>
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md text-on-surface group-hover:text-primary transition-colors">Additional 12R Large Wall Canvas</span>
+<span class="font-body-sm text-body-sm text-secondary">Gallery-wrapped fine art canvas (12×18") ready to hang in your family living room.</span>
+</div>
+</div>
+<span class="font-price-display text-body-md text-primary shrink-0">+₱650</span>
+</label>
+<!-- Add-on 3 -->
+<label class="group flex items-center justify-between p-space-md rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-space-md">
+<input class="addon-checkbox w-5 h-5 accent-primary rounded cursor-pointer" data-title="Raw Unedited Photos Archive" onchange="recalculatePrice()" type="checkbox" value="400"/>
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md text-on-surface group-hover:text-primary transition-colors">Raw Unedited Photos Archive</span>
+<span class="font-body-sm text-body-sm text-secondary">Entire session archive (50+ high-res raw unedited shots delivered via Google Drive).</span>
+</div>
+</div>
+<span class="font-price-display text-body-md text-primary shrink-0">+₱400</span>
+</label>
+<!-- Add-on 4 -->
+<label class="group flex items-center justify-between p-space-md rounded-lg bg-surface-container-low/60 hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-space-md">
+<input class="addon-checkbox w-5 h-5 accent-primary rounded cursor-pointer" data-title="Rush 24-Hour Digital Turnaround" onchange="recalculatePrice()" type="checkbox" value="250"/>
+<div class="flex flex-col">
+<span class="font-title-sm text-body-md text-on-surface group-hover:text-primary transition-colors">Rush 24-Hour Digital Turnaround</span>
+<span class="font-body-sm text-body-sm text-secondary">Fast-track retouched master digital files delivered directly within 24 hours of selection.</span>
+</div>
+</div>
+<span class="font-price-display text-body-md text-primary shrink-0">+₱250</span>
+</label>
+</div>
+</div>
+<!-- Section: FAQs & Guidelines -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">help_outline</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Frequently Asked Questions &amp; Studio Guidelines</h2>
+</div>
+<div class="flex flex-col gap-space-xs" id="faqAccordion">
+<!-- FAQ 1 -->
+<details class="group p-space-md rounded-lg bg-surface-container-low/50 hover:bg-surface-container-low transition-colors" open="">
+<summary class="font-title-sm text-body-md text-on-surface cursor-pointer list-none flex items-center justify-between">
+<span>Can my parents or siblings join me for the session?</span>
+<span class="material-symbols-outlined text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-sm font-body-md text-body-md text-secondary leading-relaxed">
+                  Yes! The Graduation Prestige Package generously includes up to two (2) family members or companions at no added charge for the final portrait set. Please ensure guests arrive dressed and photo-ready by minute 40 of your booking.
+                </div>
+</details>
+<!-- FAQ 2 -->
+<details class="group p-space-md rounded-lg bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<summary class="font-title-sm text-body-md text-on-surface cursor-pointer list-none flex items-center justify-between">
+<span>Do you provide graduation togas, hoods, and academic caps?</span>
+<span class="material-symbols-outlined text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-sm font-body-md text-body-md text-secondary leading-relaxed">
+                  We maintain a pristine in-house wardrobe of black basic academic togas, mortarboards, and common collegiate hoods (UP, UST, DLSU, Ateneo, FEU, and standard golden tassels). However, for unique departmental hood colors, we recommend bringing your institution's specific regalia.
+                </div>
+</details>
+<!-- FAQ 3 -->
+<details class="group p-space-md rounded-lg bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<summary class="font-title-sm text-body-md text-on-surface cursor-pointer list-none flex items-center justify-between">
+<span>How and when do I choose which photos get printed and retouched?</span>
+<span class="material-symbols-outlined text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-sm font-body-md text-body-md text-secondary leading-relaxed">
+                  Immediately following your shoot, our photographer will sit down with you at our 32-inch calibrated grading monitor to flag your preferred top shots. Alternatively, an online proofing link can be sent to your email within 24 hours so you can choose at home.
+                </div>
+</details>
+<!-- FAQ 4 -->
+<details class="group p-space-md rounded-lg bg-surface-container-low/50 hover:bg-surface-container-low transition-colors">
+<summary class="font-title-sm text-body-md text-on-surface cursor-pointer list-none flex items-center justify-between">
+<span>What is the physical print collection timeline?</span>
+<span class="material-symbols-outlined text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="pt-space-sm font-body-md text-body-md text-secondary leading-relaxed">
+                  Once you approve your master retouched proof, our darkroom and framing workshop crafts your 8R archival framed print and 8 wallet copies in 3 to 5 business days. You can pick them up directly at our studio desk or book courier pickup (Grab/Lalamove).
+                </div>
+</details>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (40% ~ 5 cols of 12 - STICKY SUMMARY CARD) -->
+<div class="lg:col-span-5 sticky top-28 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-md flex flex-col gap-space-lg">
+<!-- Header & Price -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-wider">Atelier Portrait Package</span>
+<span class="font-label-code text-[11px] text-secondary">PH-MNL #04</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface font-semibold">
+                Graduation Prestige Package
+              </h1>
+<div class="mt-space-sm pt-space-sm flex items-baseline gap-space-xs">
+<span class="font-headline-lg text-headline-lg text-primary font-bold" id="totalPriceDisplay">₱1,850</span>
+<span class="font-body-sm text-body-sm text-secondary">Standard studio session</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                Estimated price • Confirmed upon in-person review &amp; final frame selection
+              </p>
+</div>
+<!-- Important Studio Booking Notice (Mandatory Physical Policy) -->
+<div class="rounded-xl bg-surface-container-low p-space-md flex gap-space-md">
+<span class="material-symbols-outlined text-primary text-[24px] shrink-0 mt-0.5">storefront</span>
+<div class="flex flex-col gap-1">
+<h4 class="font-title-sm text-body-md text-on-surface font-semibold">Face-to-Face Payment Policy</h4>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed">
+                  Notice: Selecting a package does not confirm a booking or take any online payment. Payment is made face-to-face at Jhunlea Photography &amp; Printing on the day of your session.
+                </p>
+</div>
+</div>
+<!-- Quick Specs Bento -->
+<div class="grid grid-cols-2 gap-space-sm bg-surface-container-low/50 p-space-md rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-secondary uppercase tracking-wider">Duration</span>
+<span class="font-title-sm text-body-md text-on-surface font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]">schedule</span>
+                  60 minutes
+                </span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] text-secondary uppercase tracking-wider">Turnaround</span>
+<span class="font-title-sm text-body-md text-on-surface font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[16px]">local_shipping</span>
+                  3 to 5 business days
+                </span>
+</div>
+<div class="flex flex-col col-span-2 pt-space-xs">
+<span class="font-label-caps text-[10px] text-secondary uppercase tracking-wider">People Covered</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">
+                  1 graduate (+ up to 2 family members for free final shot)
+                </span>
+</div>
+<div class="flex flex-col col-span-2 pt-space-xs">
+<span class="font-label-caps text-[10px] text-secondary uppercase tracking-wider">Outputs</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">
+                  10 Retouched High-Res Photos • 1 Framed 8R Print + 8 Wallets
+                </span>
+</div>
+</div>
+<!-- Date & Time Selector Form -->
+<div class="flex flex-col gap-space-md pt-space-xs">
+<label class="flex flex-col gap-space-xs">
+<span class="font-title-sm text-body-sm text-on-surface font-semibold flex items-center justify-between">
+<span>Select Preferred Date</span>
+<span class="font-label-code text-[11px] text-secondary">Walk-in holds honored</span>
+</span>
+<div class="relative">
+<input class="w-full h-11 px-space-md rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary shadow-sm" id="sessionDate" min="2025-05-01" type="date" value="2025-05-16"/>
+</div>
+</label>
+<!-- Time Slot Chips -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-title-sm text-body-sm text-on-surface font-semibold">Available Studio Slots</span>
+<div class="grid grid-cols-2 gap-space-sm" id="slotGroup">
+<button class="slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-primary text-on-primary shadow-sm transition-all" onclick="pickSlot(this, '10:00 AM')" type="button">
+                    10:00 AM
+                  </button>
+<button class="slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all" onclick="pickSlot(this, '1:30 PM')" type="button">
+                    1:30 PM
+                  </button>
+<button class="slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all" onclick="pickSlot(this, '3:30 PM')" type="button">
+                    3:30 PM
+                  </button>
+<button class="slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all" onclick="pickSlot(this, '5:00 PM')" type="button">
+                    5:00 PM
+                  </button>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<!-- Primary Crimson Button with sweep hover effect -->
+<button class="group relative w-full h-12 rounded-lg bg-primary-container text-on-primary font-title-sm text-body-md font-semibold overflow-hidden shadow-md hover:shadow-lg transition-all" onclick="handleBookingInitiation()" type="button">
+<!-- Crimson sweep background span -->
+<span class="absolute inset-0 w-full h-full bg-primary transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></span>
+<span class="relative z-10 flex items-center justify-center gap-space-xs">
+<span>Book this package</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</span>
+</button>
+<!-- Secondary Inquire Button -->
+<button class="w-full h-11 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center gap-space-xs" onclick="handleInquiry()" type="button">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span>Ask questions about this package</span>
+</button>
+</div>
+<!-- Studio Desk Helpline -->
+<div class="pt-space-sm flex items-center justify-between text-secondary font-body-sm text-body-sm">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">call</span>
+<span>Call studio desk:</span>
+</span>
+<a class="font-label-code text-label-code text-on-surface font-semibold hover:text-primary transition-colors" href="tel:0289201142">
+                (02) 8920-1142
+              </a>
+</div>
+<div class="bg-surface-container-low/40 -mx-space-lg -mb-space-lg p-space-md rounded-b-xl text-center">
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">
+                Need a custom group package for 5+ graduates? Inquire for class bundles.
+              </p>
+</div>
+</div>
+<!-- Studio Trust Badge Pill -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">workspace_premium</span>
+<div>
+<p class="font-title-sm text-body-sm text-on-surface">Archival Guarantee</p>
+<p class="font-body-sm text-body-sm text-secondary">Pigment inks resistant to fading for 80+ years</p>
+</div>
+</div>
+<span class="font-label-code text-body-sm text-primary font-bold">100% Cotton Rag</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive JavaScript Handling Gallery & Price Calculations -->
+<script>
+    const BASE_PACKAGE_PRICE = 1850;
+
+    // Gallery switching
+    function switchThumb(index) {
+      const thumbs = document.querySelectorAll('.thumb-btn');
+      thumbs.forEach((t, i) => {
+        if (i === index) {
+          t.classList.add('ring-2', 'ring-primary', 'scale-[1.02]');
+          t.classList.remove('opacity-75');
+        } else {
+          t.classList.remove('ring-2', 'ring-primary', 'scale-[1.02]');
+          t.classList.add('opacity-75');
+        }
+      });
+      // Visual feedback cue
+      const mainImg = document.getElementById('mainGalleryImage');
+      mainImg.style.opacity = '0.7';
+      setTimeout(() => {
+        mainImg.style.opacity = '1';
+      }, 150);
+    }
+
+    // Backdrop theme selection
+    function selectBackdrop(element, name) {
+      const chips = document.querySelectorAll('.backdrop-chip');
+      chips.forEach(c => {
+        c.classList.remove('ring-2', 'ring-primary');
+        c.classList.add('opacity-80');
+        const icon = c.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove();
+      });
+      element.classList.add('ring-2', 'ring-primary');
+      element.classList.remove('opacity-80');
+
+      const circle = element.firstElementChild;
+      if (!circle.querySelector('.material-symbols-outlined')) {
+        const check = document.createElement('span');
+        check.className = 'material-symbols-outlined text-[18px] text-on-surface';
+        check.innerText = 'check';
+        circle.appendChild(check);
+      }
+
+      document.getElementById('selectedBackdropLabel').textContent = name;
+    }
+
+    // Slot picker
+    function pickSlot(btn, slotTime) {
+      const allSlots = document.querySelectorAll('.slot-btn');
+      allSlots.forEach(s => {
+        s.className = 'slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-surface-container-low text-on-surface hover:bg-surface-container-high transition-all';
+      });
+      btn.className = 'slot-btn h-10 rounded-lg text-center font-title-sm text-body-sm bg-primary text-on-primary shadow-sm transition-all';
+    }
+
+    // Price recalculation
+    function recalculatePrice() {
+      let currentTotal = BASE_PACKAGE_PRICE;
+      const checkboxes = document.querySelectorAll('.addon-checkbox:checked');
+      checkboxes.forEach(cb => {
+        currentTotal += parseInt(cb.value, 10);
+      });
+      
+      const displayElem = document.getElementById('totalPriceDisplay');
+      if (displayElem) {
+        displayElem.innerHTML = '&#8369;' + currentTotal.toLocaleString();
+      }
+    }
+
+    // Booking interaction
+    function handleBookingInitiation() {
+      const dateVal = document.getElementById('sessionDate').value;
+      const checkedAddons = Array.from(document.querySelectorAll('.addon-checkbox:checked')).map(c => c.getAttribute('data-title'));
+      const summaryMsg = "Preferred session date: " + dateVal + "\\nAdd-ons: " + (checkedAddons.length ? checkedAddons.join(', ') : "None") + "\\n\\nRemember: Payment is made face-to-face at Jhunlea Studio on your shoot day. Proceed to schedule confirmation?";
+      
+      if (confirm(summaryMsg)) {
+        alert("Your slot reservation request has been logged! Our team will contact your phone number within 3 studio hours to verify graduation gown sizes.");
+      }
+    }
+
+    function handleInquiry() {
+      alert("Opening atelier direct desk messenger. For prompt updates, call (02) 8920-1142 during studio hours.");
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low border-t border-surface-container-high"><div class="max-w-[1280px] mx-auto px-margin pt-space-xl pb-space-lg"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl mb-space-xl"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm uppercase text-on-surface font-semibold">JHUNLEA</span><span class="font-label-code text-label-code text-primary">ATELIER</span></div><p class="font-body-md text-body-md text-secondary leading-relaxed">Premium editorial photography atelier and fine art photographic print laboratory. Precision crafting for milestones, portraits, and tactile archiving.</p><div class="flex items-center gap-space-xs text-secondary font-label-caps text-label-caps uppercase"><span class="material-symbols-outlined text-primary text-[16px]">verified</span>Certified Archival Master Printing</div></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Quick Links</h3><ul class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="home" href="#">Studio Overview</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="package-finder" href="#">Interactive Package Finder</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="how-it-works" href="#">The Atelier Workflow</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="track-order" href="#">Order Production Status</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="client-galleries" href="#">Private Proofing Galleries</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Studio Services</h3><ul class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="printing-services" href="#">Fine Art Giclée &amp; Canvas</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="photography-packages" href="#">Editorial &amp; Creative Portraiture</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="photography-packages" href="#">Graduation &amp; Corporate Headshots</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="printing-services" href="#">Heirloom Hardbound Photo Books</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="services" href="#">Custom Framing &amp; Dry Mounting</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Laboratory &amp; Atelier</h3><div class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><div class="flex items-start gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span><span>Poblacion District, Manila, Philippines</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0">call</span><span>+63 (02) 8924 1102</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0">mail</span><span>studio@jhunlea-atelier.ph</span></div><div class="flex items-start gap-space-xs mt-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">schedule</span><div><p class="font-title-sm text-body-sm text-on-surface">Operating Hours:</p><p class="font-body-sm text-body-sm">Mon - Sat: 8:30 AM – 6:30 PM</p><p class="font-body-sm text-body-sm text-secondary">Sundays: Closed for Maintenance</p></div></div></div></div></div><div class="pt-space-md border-t border-surface-container-high flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-secondary"><div>© 2025 Jhunlea Photography &amp; Printing. All rights reserved. Registered Philippine Cultural Atelier.</div><div class="flex items-center gap-space-lg font-label-code text-label-code"><span>PHYSICAL IN-STORE SETTLEMENT</span><span>•</span><span>MANILA ATELIER</span></div></div></div></footer></body></html>

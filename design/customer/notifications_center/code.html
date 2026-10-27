@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="my-requests" href="#">My requests</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="notifications" href="#">Notifications</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><a aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></a><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<div class="relative w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin pt-space-lg pb-space-xl">
+<div class="absolute -top-10 -right-12 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<div class="absolute top-1/3 -left-20 w-80 h-80 bg-surface-container-high/60 rounded-full blur-2xl pointer-events-none -z-10"></div>
+<div class="relative mb-space-lg bg-surface-container-lowest/80 backdrop-blur-md p-space-lg rounded-xl shadow-sm">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-code text-label-code">
+<span>Customer Portal</span>
+<span>/</span>
+<span class="text-primary font-semibold">Notifications</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+            Notifications &amp; Studio Updates
+          </h1>
+<p class="font-body-md text-body-md text-secondary max-w-2xl">
+            Real-time alerts regarding print runs, proof approvals, bay scheduling, and pickup readiness.
+          </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs lg:pt-0">
+<button class="inline-flex items-center gap-space-xs px-space-md h-11 rounded-lg bg-surface-container-high text-on-surface font-title-sm text-body-md hover:bg-surface-container-highest transition-all shadow-sm" id="toggleDropdownBtn" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">notifications_active</span>
+<span>Header Bell Dropdown Demo</span>
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md h-11 rounded-lg bg-surface-container text-on-surface font-title-sm text-body-md hover:bg-surface-container-high transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">done_all</span>
+<span>Mark all as read</span>
+</button>
+<a class="inline-flex items-center gap-space-xs px-space-md h-11 rounded-lg bg-surface-container-low text-secondary hover:text-on-surface hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+<span class="font-title-sm text-body-md">Preferences</span>
+</a>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<div class="xl:col-span-8 space-y-space-xl">
+<section class="space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary font-bold">Priority Updates</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-title-sm text-title-sm text-on-surface">Today</span>
+</div>
+<span class="font-label-code text-label-code text-secondary bg-surface-container px-space-sm py-0.5 rounded-full">2 Unread</span>
+</div>
+<div class="space-y-space-md">
+<div class="group relative bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[26px]">inventory_2</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
+<h2 class="font-title-md text-title-md text-on-surface truncate">
+                        Printing Order <span class="font-label-code text-label-code font-bold text-primary">PR-0012</span> is ready for pickup
+                      </h2>
+</div>
+<span class="font-label-code text-body-sm text-secondary shrink-0">Today, 2:30 PM</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-space-md">
+                    Your 10 pcs 8R Fine Art Archival Lustre Prints have completed pigment trimming and are packaged in climate-controlled <strong class="text-on-surface font-semibold">Bin #04-A</strong> at Poblacion counter.
+                  </p>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-primary-container text-on-primary font-title-sm text-body-md rounded-lg hover:bg-primary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+<span>View In-Store Pickup Pass</span>
+</button>
+<button class="inline-flex items-center h-10 px-space-md bg-surface-container text-secondary font-title-sm text-body-md rounded-lg hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+                      Dismiss
+                    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="group relative bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[26px]">schedule</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
+<h2 class="font-title-md text-title-md text-on-surface truncate">
+                        Adjusted Timeslot Proposed for Photoshoot <span class="font-label-code text-label-code font-bold text-on-surface">PB-0005</span>
+</h2>
+</div>
+<span class="font-label-code text-body-sm text-secondary shrink-0">Today, 11:15 AM</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-space-md">
+                    Master Photographer Jhunlea proposed shifting your May 24 session from <span class="line-through text-tertiary">10:00 AM</span> to <strong class="text-on-surface font-semibold">11:30 AM</strong> to ensure darkroom 5000K calibration.
+                  </p>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-primary-container text-on-primary font-title-sm text-body-md rounded-lg hover:bg-primary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+<span>Review &amp; Accept New Time</span>
+</button>
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-surface-container text-secondary font-title-sm text-body-md rounded-lg hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span>Contact Studio</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary font-bold">Archive Log</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-title-sm text-title-sm text-on-surface">Earlier</span>
+</div>
+<span class="font-label-code text-label-code text-secondary">3 Records</span>
+</div>
+<div class="space-y-space-md">
+<div class="group bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[26px]">receipt_long</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface truncate">
+                        Quotation Confirmed for <span class="font-label-code text-label-code font-bold text-on-surface">PR-0018</span> (Thesis Hardbinding)
+                      </h2>
+</div>
+<span class="font-label-code text-body-sm text-secondary shrink-0">Yesterday, 4:20 PM</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-space-md">
+                    Lead print technician verified 2 volumes in maroon buckram with gold foil stamping at <strong class="text-on-surface font-semibold">₱1,400.00</strong> confirmed price.
+                  </p>
+<div>
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-surface-container text-on-surface font-title-sm text-body-md rounded-lg hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span>View Order Specs</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="group bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[26px]">camera_alt</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface truncate">
+                        Photoshoot <span class="font-label-code text-label-code font-bold text-on-surface">PB-0005</span> Request Accepted
+                      </h2>
+</div>
+<span class="font-label-code text-body-sm text-secondary shrink-0">May 11, 2025</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-space-md">
+                    Studio Bay 02 reserved for Clara Santos. Photographer assigned: <strong class="text-on-surface font-semibold">Jhunlea P. Arceo</strong>.
+                  </p>
+<div>
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-surface-container text-on-surface font-title-sm text-body-md rounded-lg hover:bg-surface-container-high transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span>View Booking</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="group bg-surface-container-lowest p-space-md md:p-space-lg rounded-xl shadow-sm hover:shadow-md transition-all">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-error-container/40 flex items-center justify-center text-error shrink-0">
+<span class="material-symbols-outlined text-[26px]">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs mb-space-xs">
+<div class="flex items-center gap-space-sm">
+<h2 class="font-title-md text-title-md text-on-surface truncate">
+                        Action Required: File Resolution Warning for <span class="font-label-code text-label-code font-bold text-on-surface">PR-0021</span>
+</h2>
+</div>
+<span class="font-label-code text-body-sm text-secondary shrink-0">May 10, 2025</span>
+</div>
+<p class="font-body-md text-body-md text-secondary leading-relaxed mb-space-md">
+                    Uploaded file <code class="font-label-code text-label-code bg-surface-container px-1 rounded">Family_Retrato_Master_RAW.tif</code> is 142 DPI. For a 24x36 inch canvas, 300 DPI is strongly recommended.
+                  </p>
+<div>
+<button class="inline-flex items-center gap-space-xs h-10 px-space-md bg-primary-container text-on-primary font-title-sm text-body-md rounded-lg hover:bg-primary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">upload_file</span>
+<span>Re-upload Higher Resolution File</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="xl:col-span-4 space-y-space-lg">
+<div class="w-full bg-surface-container-lowest/95 backdrop-blur-xl p-space-md rounded-xl shadow-xl transition-all" id="interactiveDropdown">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">notifications</span>
+<span class="font-title-sm text-title-sm text-on-surface">Notifications</span>
+<span class="font-label-caps text-label-caps px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed font-bold">3 Unread</span>
+</div>
+<button class="font-label-code text-body-sm text-primary hover:underline" type="button">Mark read</button>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mb-space-sm">Simulated header quick-glance dropdown view:</p>
+<div class="space-y-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0"></span>
+<div class="min-w-0 flex-1">
+<p class="font-title-sm text-body-sm text-on-surface font-semibold truncate">PR-0012 Ready for Pickup</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">Bin #04-A • Poblacion counter</p>
+<span class="font-label-code text-[11px] text-secondary">2:30 PM</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0"></span>
+<div class="min-w-0 flex-1">
+<p class="font-title-sm text-body-sm text-on-surface font-semibold truncate">PB-0005 Slot Proposed</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">New time: 11:30 AM (May 24)</p>
+<span class="font-label-code text-[11px] text-secondary">11:15 AM</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0"></span>
+<div class="min-w-0 flex-1">
+<p class="font-title-sm text-body-sm text-on-surface font-semibold truncate">PR-0021 DPI Warning</p>
+<p class="font-body-sm text-body-sm text-secondary truncate">Prepress check flagged 142 DPI</p>
+<span class="font-label-code text-[11px] text-secondary">May 10</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs text-center">
+<a class="inline-flex items-center justify-center gap-space-xs w-full py-2 rounded-lg bg-surface text-primary font-title-sm text-body-sm hover:bg-surface-container transition-colors" href="#">
+<span>View All Notifications in Center</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface">Atelier Service Hub</h3>
+<p class="font-label-code text-body-sm text-secondary">Poblacion, Makati Studio</p>
+</div>
+</div>
+<div class="overflow-hidden rounded-xl">
+<img class="w-full h-36 object-cover hover:scale-105 transition-transform duration-500" data-alt="Warm atmospheric interior of Jhunlea photographic printmaking studio in Poblacion with wooden finishing tables, framed fine art prints, archival paper rolls, and natural studio window light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHZdE-5EaAewx_9I2ZH1VEPRIC19F5YbUYt5IMDJgMCCmjC1kO3-K6a55RPyWDxEoDDDr0x4KBTMX9Apsq7eax4zRwIpy3dGdS9f1otvkN8mJW2PeofqkmnD4fFjX18Jl-hoouihPWPMtp34uzR4CpxbfSyavFPKFkwz_NnPZn8k2ul7dpxPcUoPO9dGqmkeS6c2ftH54wWdZCPWnP328xG2ISQPrfCkm3twdstYsBsKMoTPmaWc08"/>
+</div>
+<div class="space-y-space-xs font-body-sm text-body-sm text-secondary">
+<div class="flex items-center justify-between">
+<span>Counter Hours:</span>
+<strong class="text-on-surface font-semibold">9:00 AM – 7:00 PM</strong>
+</div>
+<div class="flex items-center justify-between">
+<span>Print Lab Turnaround:</span>
+<strong class="text-on-surface font-semibold">24-48 Hours</strong>
+</div>
+<div class="flex items-center justify-between">
+<span>Direct Studio Hotline:</span>
+<span class="font-label-code text-on-surface">+63 917 849 5486</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">sms</span>
+<div>
+<p class="font-title-sm text-body-sm text-on-surface">SMS Instant Alerts</p>
+<p class="font-body-sm text-body-sm text-secondary">Active on +63 917 •••• 921</p>
+</div>
+</div>
+<button class="text-primary font-title-sm text-body-sm hover:underline" type="button">Edit</button>
+</div>
+</div>
+</div>
+<div class="mt-space-xl p-space-md md:p-space-lg rounded-xl bg-surface-container-low shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-start md:items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">payments</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-md font-semibold text-on-surface">Mandatory Studio Transaction Policy</span>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+              Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout. Pickup passes authenticate balance settling upon handoff.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<a class="inline-flex items-center gap-space-xs px-space-md h-10 rounded-lg bg-surface-container-highest text-on-surface font-title-sm text-body-sm hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">settings</span>
+<span>SMS &amp; Email Dispatch Rules</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const btn = document.getElementById('toggleDropdownBtn');
+    const dropdown = document.getElementById('interactiveDropdown');
+    if (!btn || !dropdown) return;
+    
+    btn.addEventListener('click', function() {
+      dropdown.classList.toggle('ring-2');
+      dropdown.classList.toggle('ring-primary');
+      dropdown.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  })();
+</script></main><div class="fixed bottom-6 right-6 z-40"><a aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02] cursor-pointer" data-path="ai-assistant" href="#"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></a></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

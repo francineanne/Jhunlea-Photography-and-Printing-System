@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const navLinks = document.querySelectorAll('aside nav a');
+      navLinks.forEach(link => {
+        link.classList.remove('bg-primary-container', 'text-on-primary', 'font-bold');
+        link.classList.add('text-secondary-fixed-dim');
+        if (link.getAttribute('data-path') === 'settings') {
+          link.classList.add('bg-primary-container', 'text-on-primary', 'font-bold', 'rounded-lg', 'shadow-sm');
+          link.classList.remove('text-secondary-fixed-dim');
+        }
+      });
+    });
+  </script>
+<div class="px-space-lg pt-space-lg pb-space-xl max-w-[1280px] w-full mx-auto flex flex-col gap-space-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-primary tracking-widest uppercase">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Core Governance &amp; Studio Directives</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Atelier Settings &amp; Operational Rules</h1>
+<p class="font-body-md text-body-md text-secondary max-w-3xl">
+          Configure studio storefront policies, booking constraints, prepress upload limits, and AI Concierge knowledge.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm self-start md:self-auto">
+<div class="inline-flex items-center gap-space-xs px-space-md py-space-xs rounded-full bg-surface-container text-on-surface font-label-code text-label-code shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span>SYNC ACTIVE: TERMINAL #01-POB</span>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="bg-surface-container-low rounded-xl p-space-xs shadow-sm overflow-x-auto">
+<div class="flex items-center gap-space-xs min-w-max" id="settings-tab-list">
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all bg-primary-container text-on-primary shadow-sm" id="tab-btn-business" onclick="switchTab('business')">
+<span class="material-symbols-outlined text-[18px]">store</span>
+<span>1. Business Info</span>
+</button>
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all text-on-surface-variant hover:bg-surface-container hover:text-on-surface" id="tab-btn-booking" onclick="switchTab('booking')">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+<span>2. Booking &amp; Schedule Rules</span>
+</button>
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all text-on-surface-variant hover:bg-surface-container hover:text-on-surface" id="tab-btn-prepress" onclick="switchTab('prepress')">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>3. Prepress &amp; Upload Rules</span>
+</button>
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all text-on-surface-variant hover:bg-surface-container hover:text-on-surface" id="tab-btn-faq" onclick="switchTab('faq')">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+<span>4. AI Assistant Knowledge</span>
+</button>
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all text-on-surface-variant hover:bg-surface-container hover:text-on-surface" id="tab-btn-appearance" onclick="switchTab('appearance')">
+<span class="material-symbols-outlined text-[18px]">palette</span>
+<span>5. Appearance &amp; Themes</span>
+</button>
+<button class="tab-trigger flex items-center gap-space-xs px-space-md py-space-sm rounded-lg font-title-sm text-title-sm text-xs transition-all text-on-surface-variant hover:bg-surface-container hover:text-on-surface" id="tab-btn-security" onclick="switchTab('security')">
+<span class="material-symbols-outlined text-[18px]">security</span>
+<span>6. Account &amp; Security</span>
+</button>
+</div>
+</div>
+<!-- TAB 1: Business Info -->
+<div class="tab-panel flex flex-col gap-space-lg" id="panel-business">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<!-- Left: Form inputs -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+<span class="font-title-sm text-title-sm text-on-surface">Atelier Identity &amp; Physical Premises</span>
+</div>
+<span class="font-label-code text-label-code text-secondary text-[11px]">ID: ATELIER-MNL-001</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Studio Official Brand Name</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container shadow-inner" type="text" value="JHUNLEA — Photography &amp; Printing"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Physical Atelier Address (Client Walk-in Destination)</label>
+<textarea class="p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container shadow-inner leading-relaxed resize-none" rows="2">Poblacion District, Manila / Quezon City Atelier Hub, Philippines</textarea>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Contact Phone &amp; Mobile</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container shadow-inner" type="text" value="+63 (02) 8924 1102 / +63 917 842 1904"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Official Studio Email</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container shadow-inner" type="email" value="owner@jhunlea-atelier.ph"/>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Standard Operating Hours</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container shadow-inner" type="text" value="Mon–Sat 8:30 AM – 6:30 PM, Sundays: Private Shoots &amp; Maintenance"/>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">verified</span>
+<span class="font-title-sm text-title-sm text-on-surface">Registration Credentials</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">Registered DTI and BIR operational studio permits verified under Maestro Jhunlea P. Arceo.</p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm pt-space-xs">
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary uppercase">DTI Certificate</span>
+<span class="font-label-code text-label-code text-on-surface font-bold text-xs mt-1">#NCR-2023-88910</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary uppercase">BIR Form 2303</span>
+<span class="font-label-code text-label-code text-on-surface font-bold text-xs mt-1">TIN 402-198-554-000</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Atelier Station</span>
+<span class="font-label-code text-label-code text-on-surface font-bold text-xs mt-1">Terminal Desk #1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Studio Visual Showcase & Atelier Card -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="font-title-sm text-title-sm text-on-surface">Storefront Verification Mat</div>
+<div class="relative rounded-lg overflow-hidden h-48 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Warm atmospheric photography atelier interior with dark walnut framing tables, Hasselblad cameras on tripods, soft warm ambient lighting, fine art photographic prints hanging on walls with museum grade matte presentation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBuKO_OCjhtLc6wbz9CYHq4q4pOA1mMGoZDPyUaF9HGoM4Cnw_Mau7DZ7UhEX8dk-GgzL7fXbPFBp8TCCHH3bOuvq-Mt8rXvSytufq6sXRF_R2K_GAX4-0dxjra4Siwq6iAJ_gt4MeLJM1socfI3QK_Qud-C4pMsvCHNk0U_HkaNLCenMltbN_fz6Q2mezVdnU8ffGtcguQIZZPOFqXweLcS-5--CDzePYLeU96Tazt2StigBNxnzh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex items-end p-space-md">
+<div class="flex items-center gap-space-xs text-surface-container-lowest">
+<span class="material-symbols-outlined text-[18px] text-primary-fixed">verified_user</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Atelier Poblacion Hub</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Counter POS Sync</span>
+<span class="font-label-code text-label-code text-xs px-2 py-0.5 rounded-full bg-primary-container text-on-primary">ONLINE</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                Client receipts and order forms will print with the physical Poblacion counter address.
+              </p>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs text-on-surface">
+<span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+<span class="font-title-sm text-title-sm">Atelier Location Map</span>
+</div>
+<div class="w-full h-36 rounded-lg bg-cover bg-center shadow-inner" data-location="Poblacion, Makati, Metro Manila, Philippines" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBrBTTp2RNtsHxxH8e6U2KYWbHcX4ewzOGazvWSzytbnVUMygt2UBZ_oTdVpS7bvd6bkwFQVCf7-sdtRB8N1-6pSLvbggr18Jcf-bJ9Is4-Q-krUOadSRG8z1wGk39o07jI46j1qObLy2ltc2N6dbLjEkmzV1RWJdzp1LXDFoDmzLzEBNUXPPD05qmq2T348lJj683FoH7kiapO2E-1fOsYg39T5N_6CpWHkIMo7y_9cjlq6_U7Zk7c')"></div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">14.5632° N, 121.0336° E • Studio Flagship Desk</span>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 2: Booking Rules & Policy Enforcement -->
+<div class="tab-panel hidden flex-col gap-space-lg" id="panel-booking">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Policy Banner Highlight -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">policy</span>
+<span class="font-title-sm text-title-sm text-on-surface">Studio Policy Enforcements</span>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-primary text-on-primary font-label-caps text-label-caps uppercase">System Fixed</span>
+</div>
+<!-- Toggle: Face-to-Face Settlement Policy Notice -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-start justify-between gap-space-md">
+<div class="flex gap-space-md items-start">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">storefront</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Require Face-to-Face Settlement Policy Notice on All Screens</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">lock</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                    Forces display of mandatory prompt: <em>"Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout."</em> Non-negotiable brand integrity rule.
+                  </p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative p-0.5 cursor-not-allowed shrink-0">
+<div class="w-5 h-5 bg-on-primary rounded-full shadow-md ml-auto"></div>
+</div>
+</div>
+<!-- Toggle: Allow Partial Deposit Payments at Counter -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-start justify-between gap-space-md">
+<div class="flex gap-space-md items-start">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">Allow Partial Deposit Payments at Counter</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                    Permits client to place a 50% studio reservation deposit in-person; remaining 50% settled upon collection of printed sheets or final soft copies.
+                  </p>
+<div class="flex items-center gap-space-sm mt-3">
+<span class="font-label-caps text-label-caps uppercase text-secondary">Default Deposit Ratio:</span>
+<span class="px-space-sm py-0.5 rounded bg-surface-container font-label-code text-label-code font-bold text-on-surface">50% OF TOTAL BOOKING</span>
+</div>
+</div>
+</div>
+<button class="w-12 h-6 bg-primary rounded-full relative p-0.5 cursor-pointer shrink-0 transition-colors" onclick="toggleSwitch(this)">
+<div class="w-5 h-5 bg-on-primary rounded-full shadow-md ml-auto transition-transform"></div>
+</button>
+</div>
+</div>
+<!-- Lead Time & Cancellation Rules -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="font-title-sm text-title-sm text-on-surface">Reschedule, Cancellation &amp; Lead Time Parameters</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs bg-surface-container-low p-space-md rounded-xl">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Minimum Lead Time for Milestone Sessions</label>
+<div class="flex items-center gap-space-sm mt-2">
+<input class="w-20 h-10 px-space-sm text-center bg-surface-container-lowest rounded-lg font-title-sm text-title-sm text-on-surface focus:outline-none" max="14" min="1" type="number" value="2"/>
+<span class="font-body-md text-body-md text-on-surface">Days in Advance</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Applies to Debut, Creative Portraiture, and Pre-Nup shoots.</span>
+</div>
+<div class="flex flex-col gap-space-xs bg-surface-container-low p-space-md rounded-xl">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Reschedule Notice Window</label>
+<div class="flex items-center gap-space-sm mt-2">
+<input class="w-20 h-10 px-space-sm text-center bg-surface-container-lowest rounded-lg font-title-sm text-title-sm text-on-surface focus:outline-none" max="72" min="6" step="6" type="number" value="24"/>
+<span class="font-body-md text-body-md text-on-surface">Hours Prior to Call Time</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Cancellations under 24 hours forfeit session slot hold.</span>
+</div>
+</div>
+<div class="bg-surface-container-high/40 rounded-xl p-space-md flex items-center gap-space-md">
+<span class="material-symbols-outlined text-primary text-[24px]">front_hand</span>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface text-xs font-bold uppercase">Zero Online Refund Policy</span>
+<span class="font-body-sm text-body-sm text-secondary">Because all payments are collected face-to-face at the counter, any dispute or refund must be physically verified by studio administration at the atelier desk.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<span class="font-title-sm text-title-sm text-on-surface">Studio Bay Booking Capacity</span>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">Bay 01 — Portrait Cyc</span>
+<span class="font-body-sm text-body-sm text-secondary">Max 5 pax per session</span>
+</div>
+<span class="font-label-code text-label-code text-xs px-2 py-0.5 rounded bg-surface-container text-on-surface">60 MIN SLOTS</span>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">Bay 02 — Editorial &amp; Grad</span>
+<span class="font-body-sm text-body-sm text-secondary">Includes companion seating</span>
+</div>
+<span class="font-label-code text-label-code text-xs px-2 py-0.5 rounded bg-surface-container text-on-surface">45 MIN SLOTS</span>
+</div>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">Bay 03 — Darkroom &amp; Framing</span>
+<span class="font-body-sm text-body-sm text-secondary">Proofing &amp; review area</span>
+</div>
+<span class="font-label-code text-label-code text-xs px-2 py-0.5 rounded bg-surface-container text-on-surface">30 MIN SLOTS</span>
+</div>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-secondary">Studio Calendar Buffer</span>
+<span class="font-body-sm text-body-sm text-on-surface">15-minute sanitation &amp; lens calibration buffer between client shoots is automatically inserted.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 3: Prepress & Upload Rules -->
+<div class="tab-panel hidden flex-col gap-space-lg" id="panel-prepress">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">upload_file</span>
+<span class="font-title-sm text-title-sm text-on-surface">Ingestion Constraints &amp; Limits</span>
+</div>
+<span class="font-label-code text-label-code text-secondary text-xs">RIP ENGINE v4.2</span>
+</div>
+<!-- Stepper limit -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">Max Single File Upload Limit</span>
+<span class="font-body-sm text-body-sm text-secondary">Applies to client file submissions via atelier web drop.</span>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container-lowest p-1 rounded-lg">
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface" onclick="adjustUploadLimit(-25)">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<div class="w-20 text-center font-label-code text-label-code font-bold text-on-surface" id="upload-limit-display">100 MB</div>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:bg-surface-container transition-colors text-on-surface" onclick="adjustUploadLimit(25)">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+<!-- Permitted Formats Checkbox Grid -->
+<div class="flex flex-col gap-space-xs pt-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-secondary">Permitted Formats for Fine Art &amp; Prepress Ingestion</span>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-space-sm mt-2">
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">PDF/X Standards</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">PDF/X-1a, X-4</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">TIFF (16-bit)</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">Uncompressed</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">High-Res JPG</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">RGB / sRGB</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">PNG (Alpha)</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">Lossless</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">Adobe PSD</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">Flattened/Layers</span>
+</div>
+</label>
+<label class="flex items-center gap-space-sm p-space-md rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container transition-colors">
+<div class="w-5 h-5 rounded bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-xs">Illustrator EPS</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">Vector Art</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Prepress Automatic Warnings -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="font-title-sm text-title-sm text-on-surface">Automatic Quality Assurance Alarms</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-xs">DPI Warning Threshold</span>
+<span class="font-label-code text-label-code text-primary font-bold">&lt; 300 DPI</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Files with resolution under 300 DPI will show a "Blur Hazard / Soft Print" cautionary flag on proofing sheet.</p>
+<div class="mt-2 flex items-center gap-space-xs text-xs font-semibold text-primary">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+<span>Triggers Front-Desk Warning Badge</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-xs">Bleed Warning Margin</span>
+<span class="font-label-code text-label-code text-primary font-bold">&lt; 2.0 mm</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Warns if trimming edge clearance is less than 2mm for large format guillotine cuts.</p>
+<div class="mt-2 flex items-center gap-space-xs text-xs font-semibold text-primary">
+<span class="material-symbols-outlined text-[16px]">content_cut</span>
+<span>Triggers Guillotine Safety Alert</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<span class="font-title-sm text-title-sm text-on-surface">Color Space Profile Defaults</span>
+<div class="flex flex-col gap-space-sm">
+<div class="p-space-sm bg-surface-container-low rounded-lg">
+<div class="font-label-caps text-label-caps uppercase text-secondary">Studio Standard RGB</div>
+<div class="font-title-sm text-title-sm text-xs mt-1">Adobe RGB (1998)</div>
+<span class="font-body-sm text-body-sm text-secondary text-[11px]">Recommended for 12-color archival giclée prints.</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg">
+<div class="font-label-caps text-label-caps uppercase text-secondary">Prepress CMYK</div>
+<div class="font-title-sm text-title-sm text-xs mt-1">GRACoL2006_Coated1v2</div>
+<span class="font-body-sm text-body-sm text-secondary text-[11px]">Commercial brochure &amp; booklet offset runs.</span>
+</div>
+</div>
+<div class="rounded-xl overflow-hidden bg-surface-container h-44 relative">
+<img class="w-full h-full object-cover" data-alt="High precision large format photographic pigment printer operating in an atelier print laboratory, spitting out archival photographic art paper, detailed printhead mechanism with pristine ink tubes and calibration color bars." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvD-kCEZiXT8Lo3TH-b-reU66_pi3gnUIDUCO6UkS3E9o-aHKgl45byKUyM0QadkVtImnM1CMfypRdz5D4ymZUCHa-23HGHq1jr91UXjOzLdThKfV2a_-4TPVGxIA6g-mr4eRt1rSRJpZ6k1zUV4uSb1C8NFcEf51VLqy5FpORifnKKcMUy4TZFd6kXUQc0TUKipSgmygq9lTUGJs7SFc0J1ls8c9h_4OGAT7jkpNCPT7tAdMTgiaX"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-transparent to-transparent flex items-end p-space-md">
+<span class="font-label-code text-label-code text-surface-container-lowest text-xs">Epson SureColor P9000 Calibrated</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 4: AI Assistant Knowledge (Studio FAQ Editor) -->
+<div class="tab-panel hidden flex-col gap-space-lg" id="panel-faq">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">AI Concierge Studio Knowledge Base</h2>
+<p class="font-body-md text-body-md text-secondary">
+            Equips the walk-in inquiry kiosk &amp; chatbot with verified atelier guidelines and non-negotiable cash rules.
+          </p>
+</div>
+<button class="h-10 px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors font-title-sm text-title-sm text-xs text-on-surface flex items-center gap-space-xs self-start md:self-auto" onclick="addNewFaqRow()">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>Add New Knowledge Entry</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md" id="faq-entries-list">
+<!-- Entry 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm border-l-4 border-primary">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center font-label-code text-xs font-bold">1</span>
+<span class="font-title-sm text-title-sm text-on-surface">Mandatory Payment Protocol</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary font-label-caps text-label-caps uppercase text-[10px]">Critical Policy</span>
+<button class="w-8 h-8 rounded flex items-center justify-center text-secondary hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Query / Intent Prompt</label>
+<input class="h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="text" value="What is your payment policy?"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Concierge Ground Truth Response</label>
+<textarea class="p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none resize-none" rows="2">Payment is made face-to-face at Jhunlea Photography &amp; Printing counter. No online checkout or credit card advance required.</textarea>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-label-code text-xs font-bold">2</span>
+<span class="font-title-sm text-title-sm text-on-surface">Studio Etiquette &amp; Companions</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-secondary font-label-caps text-label-caps uppercase text-[10px]">Studio Bay</span>
+<button class="w-8 h-8 rounded flex items-center justify-center text-secondary hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Query / Intent Prompt</label>
+<input class="h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="text" value="Can companions join graduation shoots?"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Concierge Ground Truth Response</label>
+<textarea class="p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none resize-none" rows="2">Yes, up to 2 companions or parents are welcome in Bay 02 for no extra charge.</textarea>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-label-code text-xs font-bold">3</span>
+<span class="font-title-sm text-title-sm text-on-surface">Archival Substrates &amp; Media</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-secondary font-label-caps text-label-caps uppercase text-[10px]">Prepress Specs</span>
+<button class="w-8 h-8 rounded flex items-center justify-center text-secondary hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Query / Intent Prompt</label>
+<input class="h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="text" value="What paper stocks are used for giclée prints?"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Concierge Ground Truth Response</label>
+<textarea class="p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none resize-none" rows="2">We stock 260gsm Archival Satin Lustre and 310gsm 100% Cotton Rag Hahnemühle.</textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 5: Appearance & Themes -->
+<div class="tab-panel hidden flex-col gap-space-lg" id="panel-appearance">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div>
+<h2 class="font-title-md text-title-md text-on-surface">Atelier Theme &amp; Screen Atmosphere</h2>
+<p class="font-body-md text-body-md text-secondary">Select the environmental theme profile that best complements your color grading lighting.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg pt-space-xs">
+<!-- Theme 1: Darkroom -->
+<div class="theme-card cursor-pointer rounded-xl p-space-md bg-inverse-surface text-inverse-on-surface flex flex-col gap-space-md shadow-md ring-2 ring-primary" onclick="selectTheme(this)">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-surface-container-lowest">Darkroom Mode</span>
+<span class="w-5 h-5 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<div class="h-28 rounded-lg bg-surface-container-high/10 p-space-sm flex flex-col justify-between">
+<div class="flex gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim/40"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim/40"></span>
+</div>
+<div class="bg-surface-container-high/20 h-5 w-3/4 rounded"></div>
+<div class="bg-surface-container-high/15 h-3 w-1/2 rounded"></div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary-fixed-dim text-xs">
+              Optimized for photo retouchers and printing technicians working in controlled ambient light bays.
+            </p>
+</div>
+<!-- Theme 2: Daylight Paper -->
+<div class="theme-card cursor-pointer rounded-xl p-space-md bg-surface-container-low text-on-surface flex flex-col gap-space-md shadow-sm hover:shadow-md transition-shadow" onclick="selectTheme(this)">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm">Daylight Paper</span>
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center text-secondary"></span>
+</div>
+<div class="h-28 rounded-lg bg-surface-container-lowest p-space-sm flex flex-col justify-between shadow-inner">
+<div class="flex gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/30"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/30"></span>
+</div>
+<div class="bg-surface-container h-5 w-3/4 rounded"></div>
+<div class="bg-surface-container h-3 w-1/2 rounded"></div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs">
+              High-contrast editorial white canvas reminiscent of natural daylight falling onto studio prints.
+            </p>
+</div>
+<!-- Theme 3: System Default -->
+<div class="theme-card cursor-pointer rounded-xl p-space-md bg-surface-container-low text-on-surface flex flex-col gap-space-md shadow-sm hover:shadow-md transition-shadow" onclick="selectTheme(this)">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm">System Default</span>
+<span class="w-5 h-5 rounded-full bg-surface-container flex items-center justify-center text-secondary"></span>
+</div>
+<div class="h-28 rounded-lg bg-gradient-to-r from-surface-container-lowest to-inverse-surface/40 p-space-sm flex flex-col justify-between shadow-inner">
+<div class="flex gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary/40"></span>
+</div>
+<div class="bg-surface-container h-5 w-3/4 rounded"></div>
+<div class="bg-surface-container h-3 w-1/2 rounded"></div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs">
+              Synchronizes automatically with terminal operating system schedule.
+            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- TAB 6: Account & Security -->
+<div class="tab-panel hidden flex-col gap-space-lg" id="panel-security">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Password Reset Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">key</span>
+<span class="font-title-sm text-title-sm text-on-surface">Change Master Admin Password</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Current Master Passphrase</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" type="password" value="••••••••••••••••"/>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">New Password</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" placeholder="Min. 12 characters" type="password"/>
+</div>
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-caps text-label-caps uppercase text-secondary">Confirm New Password</label>
+<input class="h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none" placeholder="Repeat passphrase" type="password"/>
+</div>
+</div>
+<div class="pt-space-xs">
+<button class="h-10 px-space-md rounded-lg bg-inverse-surface text-inverse-on-surface font-title-sm text-title-sm text-xs hover:bg-black transition-colors self-start">
+                Update Master Passphrase
+              </button>
+</div>
+</div>
+<!-- 2FA Section -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">phonelink_lock</span>
+<span class="font-title-sm text-title-sm text-on-surface">Two-Factor Authentication (2FA)</span>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container text-on-primary font-label-code text-label-code text-xs">ENFORCED</span>
+</div>
+<p class="font-body-md text-body-md text-secondary">
+              Secures daily counter checkout shifts and pricing override functions. Authenticator application registered to Maestro Jhunlea P. Arceo.
+            </p>
+<div class="p-space-md bg-surface-container-low rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[24px]">verified</span>
+<div>
+<div class="font-title-sm text-title-sm text-xs">Google Authenticator (Yubikey Backed)</div>
+<div class="font-label-code text-label-code text-secondary text-[11px]">Enrolled on Jan 14, 2024 • Device: iPhone 15 Pro Max</div>
+</div>
+</div>
+<button class="text-primary font-title-sm text-title-sm text-xs hover:underline">Re-pair</button>
+</div>
+</div>
+</div>
+<!-- Right: Active Sessions -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface">Active Atelier Terminal Sessions</span>
+<button class="font-label-caps text-label-caps uppercase text-primary hover:underline">Revoke Others</button>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">computer</span>
+<span class="font-title-sm text-title-sm text-xs">Poblacion Counter #1 (This Terminal)</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">macOS Sonoma • Studio Chrome 124.0</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">192.168.1.104 • Active now</span>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">desktop_mac</span>
+<span class="font-title-sm text-title-sm text-xs">Retouching Suite Mac Studio</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">macOS Sonoma • Darkroom OS</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">192.168.1.118 • Idle 24m ago</span>
+</div>
+<div class="p-space-md bg-surface-container-low rounded-lg flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">smartphone</span>
+<span class="font-title-sm text-title-sm text-xs">Owner Mobile Hub</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">iOS 17.5 • Atelier Staff App</span>
+<span class="font-label-code text-label-code text-[10px] text-secondary">LTE Cellular • 2 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Pinned Save Settings Footer Bar -->
+<div class="sticky bottom-4 z-30 bg-surface/95 backdrop-blur-xl rounded-xl p-space-md shadow-xl flex flex-col sm:flex-row items-center justify-between gap-space-md mt-space-md">
+<div class="flex items-center gap-space-sm text-on-surface">
+<span class="material-symbols-outlined text-primary text-[22px]">info</span>
+<div>
+<span class="font-title-sm text-title-sm text-xs">Unsaved changes will apply across all studio client kiosks and RIP stations.</span>
+<div class="font-label-code text-label-code text-[11px] text-secondary">Policy: Face-to-Face Settlement stays permanently locked.</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<button class="h-11 px-space-lg rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-title-sm text-title-sm text-xs" onclick="resetSettings()">
+          Reset to Defaults
+        </button>
+<button class="h-11 px-space-lg rounded-lg bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-all shadow-md flex items-center justify-center gap-space-xs font-title-sm text-title-sm text-xs" id="save-btn" onclick="saveSettings()">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Save Changes</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Interactive JavaScript Handler -->
+<script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.add('hidden');
+        panel.classList.remove('flex');
+      });
+
+      const activePanel = document.getElementById('panel-' + tabId);
+      if (activePanel) {
+        activePanel.classList.remove('hidden');
+        activePanel.classList.add('flex');
+      }
+
+      document.querySelectorAll('.tab-trigger').forEach(btn => {
+        btn.classList.remove('bg-primary-container', 'text-on-primary', 'shadow-sm');
+        btn.classList.add('text-on-surface-variant');
+      });
+
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-primary-container', 'text-on-primary', 'shadow-sm');
+        activeBtn.classList.remove('text-on-surface-variant');
+      }
+    }
+
+    let uploadLimit = 100;
+    function adjustUploadLimit(delta) {
+      uploadLimit = Math.max(25, Math.min(500, uploadLimit + delta));
+      const display = document.getElementById('upload-limit-display');
+      if (display) {
+        display.innerText = uploadLimit + ' MB';
+      }
+    }
+
+    function toggleSwitch(btn) {
+      const knob = btn.querySelector('div');
+      if (btn.classList.contains('bg-primary')) {
+        btn.classList.remove('bg-primary');
+        btn.classList.add('bg-surface-container');
+        knob.classList.remove('ml-auto');
+        knob.classList.add('mr-auto');
+      } else {
+        btn.classList.add('bg-primary');
+        btn.classList.remove('bg-surface-container');
+        knob.classList.add('ml-auto');
+        knob.classList.remove('mr-auto');
+      }
+    }
+
+    function selectTheme(card) {
+      document.querySelectorAll('.theme-card').forEach(c => {
+        c.classList.remove('ring-2', 'ring-primary');
+        const icon = c.querySelector('.material-symbols-outlined');
+        if (icon) icon.remove();
+      });
+      card.classList.add('ring-2', 'ring-primary');
+      const badge = card.querySelector('div span:last-child');
+      if (badge && !badge.querySelector('.material-symbols-outlined')) {
+        badge.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
+      }
+    }
+
+    function addNewFaqRow() {
+      const list = document.getElementById('faq-entries-list');
+      const count = list.children.length + 1;
+      const newCard = document.createElement('div');
+      newCard.className = 'bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col gap-space-sm';
+      newCard.innerHTML = `
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-space-xs">
+            <span class="w-6 h-6 rounded-full bg-surface-container text-on-surface flex items-center justify-center font-label-code text-xs font-bold">${count}</span>
+            <span class="font-title-sm text-title-sm text-on-surface">Custom Client FAQ</span>
+          </div>
+          <button onclick="this.closest('.bg-surface-container-lowest').remove()" class="w-8 h-8 rounded flex items-center justify-center text-secondary hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-label-caps text-label-caps uppercase text-secondary">Query / Intent Prompt</label>
+          <input type="text" placeholder="e.g. Do you provide hair & makeup artist on site?" class="h-10 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none">
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <label class="font-label-caps text-label-caps uppercase text-secondary">Concierge Ground Truth Response</label>
+          <textarea rows="2" placeholder="Answer provided to walk-in clients..." class="p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none resize-none"></textarea>
+        </div>
+      `;
+      list.appendChild(newCard);
+    }
+
+    function saveSettings() {
+      const btn = document.getElementById('save-btn');
+      btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Applying Atelier Rules...</span>';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Directives Synchronized!</span>';
+        setTimeout(() => {
+          btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">save</span><span>Save Changes</span>';
+          btn.disabled = false;
+        }, 2000);
+      }, 700);
+    }
+
+    function resetSettings() {
+      if (confirm("Reset atelier operational parameters to factory baseline presets?")) {
+        uploadLimit = 100;
+        document.getElementById('upload-limit-display').innerText = '100 MB';
+        switchTab('business');
+      }
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

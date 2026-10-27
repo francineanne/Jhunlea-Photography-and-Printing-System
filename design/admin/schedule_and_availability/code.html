@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffdad6", "outline-variant": "#e4beba", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "primary-container": "#c62828", "secondary-container": "#e2dfde", "surface-container-high": "#e8e8e8", "error-container": "#ffdad6", "on-error": "#ffffff", "inverse-surface": "#2f3131", "on-primary-fixed-variant": "#93000e", "secondary-fixed-dim": "#c8c6c5", "on-primary-container": "#ffe0dd", "surface-container-low": "#f3f3f3", "secondary-fixed": "#e5e2e1", "surface-container-highest": "#e2e2e2", "on-background": "#1a1c1c", "tertiary-container": "#676767", "primary": "#a20513", "secondary": "#5f5e5e", "surface": "#f9f9f9", "on-secondary": "#ffffff", "surface-bright": "#f9f9f9", "tertiary-fixed-dim": "#c8c6c6", "tertiary-fixed": "#e4e2e2", "primary-fixed-dim": "#ffb4ac", "on-secondary-fixed": "#1c1b1b", "on-secondary-container": "#636262", "on-secondary-fixed-variant": "#474746", "inverse-primary": "#ffb4ac", "inverse-on-surface": "#f1f1f1", "surface-variant": "#e2e2e2", "outline": "#8f706c", "on-tertiary-container": "#e8e6e6", "on-tertiary-fixed-variant": "#474747", "on-tertiary-fixed": "#1b1c1c", "surface-dim": "#dadada", "surface-container": "#eeeeee", "on-error-container": "#93000a", "surface-tint": "#b91d20", "on-primary-fixed": "#410003", "surface-container-lowest": "#ffffff", "tertiary": "#4f4f4f", "background": "#f9f9f9", "on-surface": "#1a1c1c", "error": "#ba1a1a", "on-surface-variant": "#5b403d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-mobile": "1rem", "gutter": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "space-md": "1rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "2rem" }, "fontFamily": { "label-code": ["JetBrains Mono"], "label-caps": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-hero": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"] }, "fontSize": { "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] cursor-pointer hover:text-surface-container-lowest transition-colors">menu_open</span></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-210px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">print</span><span class="font-body-md text-body-md">Printing Orders</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-primary-container text-on-primary">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">photo_camera</span><span class="font-body-md text-body-md">Photo Bookings</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-surface-container-high/20 text-secondary-fixed">8</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Services Catalog</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">package_2</span><span class="font-body-md text-body-md">Photo Packages</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">palette</span><span class="font-body-md text-body-md">Themes &amp; Backdrops</span></div></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="schedule-and-availability" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-body-md text-body-md">Studio Calendar</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Client Directory</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Counter Payments</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="font-body-md text-body-md">Notifications</span></div><span class="w-2 h-2 rounded-full bg-primary-container"></span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-body-md text-body-md">Studio Reports</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Atelier Settings</span></div></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payments settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="max-w-[1280px] mx-auto px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Notice Banner: Counter Settlement / Studio Policy -->
+<div class="mb-space-lg p-space-md rounded-xl bg-surface-container-low flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[22px]">point_of_sale</span>
+</div>
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">Atelier Reservation &amp; Cash Settlement Protocol</p>
+<p class="font-body-sm text-body-sm text-secondary">All dates and slots held face-to-face or pre-booked online are settled via cash or counter terminal upon studio arrival. No online card processing.</p>
+</div>
+</div>
+<div class="inline-flex items-center gap-space-xs font-label-code text-label-code text-primary bg-primary-fixed/40 px-space-md py-1.5 rounded-full shrink-0">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+      LIVE DISPATCH READY
+    </div>
+</div>
+<!-- Header & Primary Controls -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest mb-space-xs">
+<span>Studio Operations</span>
+<span class="text-secondary">•</span>
+<span class="text-primary font-bold">Bay Scheduler</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Studio Schedule &amp; Bay Availability</h1>
+<p class="font-body-md text-body-md text-secondary mt-space-xs max-w-2xl">
+        Manage shoot calendars, bay reservations, lab proofing hours, and blackout holiday dates across all active physical atelier facilities.
+      </p>
+</div>
+<!-- Quick Block Modal Trigger CTA -->
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="h-11 px-space-lg rounded-xl bg-primary-container text-on-primary font-title-sm text-title-sm hover:bg-primary transition-colors flex items-center gap-space-xs shadow-md" onclick="document.getElementById('blackout-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[20px]">event_busy</span>
+<span>+ Block Date / Add Maintenance</span>
+</button>
+</div>
+</div>
+<!-- Command Strip: View Selector, Month Navigation & Bay Filters -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm mb-space-lg flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-space-md">
+<!-- Left: Month Nav & View Switcher -->
+<div class="flex flex-wrap items-center gap-space-md">
+<!-- Month Stepper -->
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-xl">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="font-headline-sm text-headline-sm text-on-surface px-space-sm font-semibold tracking-tight">May 2025</span>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+<button class="h-9 px-space-md rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-title-sm text-body-sm transition-colors">
+        Today
+      </button>
+<!-- View Selector -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-lg">
+<button class="px-space-md py-1.5 rounded bg-primary-container text-on-primary font-title-sm text-body-sm shadow-sm transition-all">Month</button>
+<button class="px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface font-title-sm text-body-sm transition-all">Week</button>
+<button class="px-space-md py-1.5 rounded text-on-surface-variant hover:text-on-surface font-title-sm text-body-sm transition-all">Day</button>
+</div>
+</div>
+<!-- Right: Bay Specific Filters -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase mr-space-xs">Facility Bay:</span>
+<button class="px-space-md py-1.5 rounded-full bg-inverse-surface text-inverse-on-surface font-title-sm text-body-sm">
+        All Bays (3)
+      </button>
+<button class="px-space-md py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-sm transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+        Bay 01 (Solo &amp; Corp)
+      </button>
+<button class="px-space-md py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-sm transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+        Bay 02 (Milestone &amp; Staging)
+      </button>
+<button class="px-space-md py-1.5 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface font-body-md text-body-sm transition-colors flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+        Darkroom Lab
+      </button>
+</div>
+</div>
+<!-- Primary Interactive Split: Calendar Grid (8 cols equivalent) + Operating Panel (4 cols) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT / MAIN: Calendar Grid (Month View) -->
+<div class="xl:col-span-8 flex flex-col">
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm">
+<!-- Weekday Header (Mon to Sun) -->
+<div class="grid grid-cols-7 gap-1 text-center font-label-caps text-label-caps text-secondary mb-space-sm uppercase tracking-wider">
+<div class="py-2 bg-surface-container-low rounded-lg">Mon</div>
+<div class="py-2 bg-surface-container-low rounded-lg">Tue</div>
+<div class="py-2 bg-surface-container-low rounded-lg">Wed</div>
+<div class="py-2 bg-surface-container-low rounded-lg">Thu</div>
+<div class="py-2 bg-surface-container-low rounded-lg">Fri</div>
+<div class="py-2 bg-surface-container-low rounded-lg font-bold text-primary">Sat</div>
+<div class="py-2 bg-surface-container-low rounded-lg text-outline">Sun</div>
+</div>
+<!-- Month Grid: 5 Weeks for May 2025 (Starts Thu May 1) -->
+<div class="grid grid-cols-7 gap-1.5">
+<!-- Mon Apr 28 (Prev Month) -->
+<div class="min-h-[120px] p-2 bg-surface-container-low/40 rounded-xl flex flex-col opacity-35 select-none">
+<span class="font-label-code text-label-code text-secondary">28</span>
+</div>
+<!-- Tue Apr 29 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low/40 rounded-xl flex flex-col opacity-35 select-none">
+<span class="font-label-code text-label-code text-secondary">29</span>
+</div>
+<!-- Wed Apr 30 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low/40 rounded-xl flex flex-col opacity-35 select-none">
+<span class="font-label-code text-label-code text-secondary">30</span>
+</div>
+<!-- THU MAY 01: National Holiday / Studio Blackout -->
+<div class="min-h-[120px] p-2 bg-error-container/40 rounded-xl flex flex-col justify-between group hover:shadow-md transition-shadow">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-error font-bold">01</span>
+<span class="material-symbols-outlined text-error text-[16px]">close</span>
+</div>
+<div class="mt-1 p-1.5 bg-error text-on-error rounded-md text-[11px] font-title-sm leading-tight">
+              Labor Day • Full Atelier Blackout
+            </div>
+</div>
+<!-- FRI MAY 02 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface font-semibold">02</span>
+<span class="font-label-code text-[10px] text-secondary">2 slots</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<!-- Confirmed Session -->
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight shadow-sm hover:scale-[1.02] transition-transform">
+<span class="font-label-code font-bold text-primary-fixed">PB-0012</span> J. Reyes (10:00 AM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- SAT MAY 03 (High Volume) -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-primary font-bold">03</span>
+<span class="font-label-code text-[10px] text-secondary">FULL</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight shadow-sm">
+<span class="font-label-code font-bold">PB-0005</span> Clara Santos (11:30 AM • Bay 02)
+              </div>
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight shadow-sm">
+<span class="font-label-code font-bold text-primary-fixed">PB-0006</span> Lim Family (2:30 PM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- SUN MAY 04 (Darkroom Maintenance) -->
+<div class="min-h-[120px] p-2 bg-surface-container-high/60 rounded-xl flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-secondary font-bold">04</span>
+<span class="material-symbols-outlined text-secondary text-[14px]">lock</span>
+</div>
+<div class="p-1.5 bg-surface-container-highest rounded-md font-label-caps text-[10px] text-secondary leading-tight uppercase tracking-wider">
+              Chemical Flush • Darkroom Maintenance
+            </div>
+</div>
+<!-- WEEK 2: May 05 - May 11 -->
+<!-- Mon May 05 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">05</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<!-- Calibration Block -->
+<div class="p-1.5 rounded-md bg-outline-variant/60 text-on-surface font-body-sm text-[11px] leading-tight flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">tune</span>
+<span>Strobe 5000K Calibration (10:00 AM)</span>
+</div>
+</div>
+</div>
+<!-- Tue May 06 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">06</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0018</span> Mateo Val (1:00 PM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Wed May 07 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">07</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<!-- Pending Request -->
+<div class="p-1.5 rounded-md bg-secondary-container/80 text-on-surface font-body-sm text-[11px] leading-tight">
+<div class="flex items-center justify-between">
+<span class="font-label-code font-bold text-primary">PB-0007</span>
+<span class="font-label-caps text-[9px] uppercase px-1 rounded bg-surface-container-highest">Pending</span>
+</div>
+<span>Clara Santos (2:00 PM • Bay 01)</span>
+</div>
+</div>
+</div>
+<!-- Thu May 08 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">08</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0021</span> Dr. G. Ramos (4:00 PM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Fri May 09 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">09</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0024</span> Alcantara Trio (11:00 AM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Sat May 10 (Peak day) -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-primary font-bold">10</span>
+<span class="font-label-code text-[10px] text-secondary">3 shoots</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold">PB-0027</span> B. Corpuz Debut (9:00 AM • Bay 02)
+              </div>
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0029</span> S. Yambao (2:00 PM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Sun May 11 (Private VIP by appointment) -->
+<div class="min-h-[120px] p-2 bg-surface-container-high/60 rounded-xl flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-secondary font-bold">11</span>
+<span class="material-symbols-outlined text-secondary text-[14px]">stars</span>
+</div>
+<div class="p-1.5 rounded-md bg-tertiary text-on-tertiary font-body-sm text-[11px] leading-tight">
+              VIP Studio Lockout • Archival Session (1:00 PM)
+            </div>
+</div>
+<!-- WEEK 3: May 12 - May 18 -->
+<!-- Mon May 12 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">12</span>
+</div>
+</div>
+<!-- Tue May 13 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">13</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-secondary-container/80 text-on-surface font-body-sm text-[11px] leading-tight">
+<div class="flex items-center justify-between">
+<span class="font-label-code font-bold text-primary">PB-0033</span>
+<span class="font-label-caps text-[9px] uppercase px-1 rounded bg-surface-container-highest">Pending</span>
+</div>
+<span>E. Villanueva (3:30 PM • Bay 01)</span>
+</div>
+</div>
+</div>
+<!-- Wed May 14 (TODAY indicator) -->
+<div class="min-h-[120px] p-2 bg-surface-container-lowest rounded-xl flex flex-col shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="font-label-code text-label-code text-primary font-bold">14</span>
+<span class="px-1.5 py-0.5 rounded bg-primary-container text-on-primary font-label-caps text-[9px] uppercase font-bold">Today</span>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0036</span> Arceo Executive (1:00 PM • Bay 01)
+              </div>
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold">PB-0039</span> Manila Herald (3:30 PM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Thu May 15 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">15</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0041</span> K. Sy Graduate (10:30 AM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Fri May 16 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">16</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-secondary-container/80 text-on-surface font-body-sm text-[11px] leading-tight">
+<div class="flex items-center justify-between">
+<span class="font-label-code font-bold text-primary">PB-0044</span>
+<span class="font-label-caps text-[9px] uppercase px-1 rounded bg-surface-container-highest">Pending</span>
+</div>
+<span>T. Mendoza (2:00 PM • Bay 02)</span>
+</div>
+</div>
+</div>
+<!-- Sat May 17 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-primary font-bold">17</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold">PB-0048</span> Bautista Clan (11:00 AM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Sun May 18 -->
+<div class="min-h-[120px] p-2 bg-surface-container-high/60 rounded-xl flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-secondary font-bold">18</span>
+<span class="material-symbols-outlined text-secondary text-[14px]">lock</span>
+</div>
+<div class="p-1.5 bg-surface-container-highest rounded-md font-label-caps text-[10px] text-secondary leading-tight uppercase tracking-wider">
+              Weekly Chemistry Reset
+            </div>
+</div>
+<!-- WEEK 4: May 19 - May 25 -->
+<!-- Mon May 19 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">19</span>
+</div>
+</div>
+<!-- Tue May 20 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">20</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0052</span> Architect L. Tan (9:30 AM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Wed May 21 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">21</span>
+</div>
+</div>
+<!-- Thu May 22 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">22</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0055</span> Ateneo Law Grad (2:00 PM • Bay 01)
+              </div>
+</div>
+</div>
+<!-- Fri May 23 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">23</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-outline-variant/60 text-on-surface font-body-sm text-[11px] leading-tight flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">lens</span>
+<span>Hasselblad Lens Clean (4:00 PM)</span>
+</div>
+</div>
+</div>
+<!-- Sat May 24 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-primary font-bold">24</span>
+<span class="font-label-code text-[10px] text-secondary">2 shoots</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold">PB-0059</span> Dela Paz Maternity (10:00 AM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Sun May 25 -->
+<div class="min-h-[120px] p-2 bg-surface-container-high/60 rounded-xl flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-secondary font-bold">25</span>
+<span class="material-symbols-outlined text-secondary text-[14px]">lock</span>
+</div>
+<div class="p-1.5 bg-surface-container-highest rounded-md font-label-caps text-[10px] text-secondary leading-tight uppercase tracking-wider">
+              Lab Sealed
+            </div>
+</div>
+<!-- WEEK 5: May 26 - May 31 -->
+<!-- Mon May 26 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">26</span>
+</div>
+</div>
+<!-- Tue May 27 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">27</span>
+</div>
+</div>
+<!-- Wed May 28 (Floor Maintenance Blackout) -->
+<div class="min-h-[120px] p-2 bg-error-container/40 rounded-xl flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-error font-bold">28</span>
+<span class="material-symbols-outlined text-error text-[16px]">format_paint</span>
+</div>
+<div class="mt-1 p-1.5 bg-error text-on-error rounded-md text-[11px] font-title-sm leading-tight">
+              Floor Epoxy Repainting • Bay 01 Closed
+            </div>
+</div>
+<!-- Thu May 29 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">29</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-inverse-surface text-inverse-on-surface font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold text-primary-fixed">PB-0063</span> Dr. C. Lee (3:00 PM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Fri May 30 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface">30</span>
+</div>
+</div>
+<!-- Sat May 31 -->
+<div class="min-h-[120px] p-2 bg-surface-container-low rounded-xl flex flex-col group hover:bg-surface-container transition-colors">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-primary font-bold">31</span>
+<span class="font-label-code text-[10px] text-secondary">2 shoots</span>
+</div>
+<div class="mt-1.5 space-y-1">
+<div class="p-1.5 rounded-md bg-primary-container text-on-primary font-body-sm text-[11px] leading-tight">
+<span class="font-label-code font-bold">PB-0068</span> Soliven Golden (1:30 PM • Bay 02)
+              </div>
+</div>
+</div>
+<!-- Sun Jun 01 (Next Month) -->
+<div class="min-h-[120px] p-2 bg-surface-container-low/40 rounded-xl flex flex-col opacity-35 select-none">
+<span class="font-label-code text-label-code text-secondary">01</span>
+</div>
+</div>
+</div>
+<!-- Calendar Legend Strip -->
+<div class="mt-space-md p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-wrap items-center justify-between gap-space-md">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Color Schedule Legend:</span>
+<div class="flex flex-wrap items-center gap-space-lg font-body-sm text-body-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-primary-container"></span>
+<span class="text-on-surface font-medium">Confirmed Shoot (Bay 02 / Prime)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-inverse-surface"></span>
+<span class="text-on-surface font-medium">Confirmed Shoot (Bay 01 / Standard)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-secondary-container"></span>
+<span class="text-on-surface font-medium">Pending Request</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-outline-variant"></span>
+<span class="text-on-surface font-medium">Lab / Bay Maintenance</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-3 h-3 rounded bg-error"></span>
+<span class="text-on-surface font-medium">Full Holiday / Studio Blackout</span>
+</div>
+</div>
+</div>
+<!-- Studio Bay Visual Allocation Spark -->
+<div class="mt-space-lg grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Bay 01 Status Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Bay 01 • Solo / Portrait</span>
+<p class="font-title-sm text-title-sm text-on-surface mt-0.5">72% Booked</p>
+<p class="font-body-sm text-[12px] text-secondary">Cyclorama 107" White Seamless</p>
+</div>
+<div class="w-12 h-12 relative flex items-center justify-center">
+<svg class="w-12 h-12 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="72, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="material-symbols-outlined text-primary text-[18px] absolute">photo_camera</span>
+</div>
+</div>
+<!-- Bay 02 Status Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Bay 02 • Milestone / Group</span>
+<p class="font-title-sm text-title-sm text-on-surface mt-0.5">88% Booked</p>
+<p class="font-body-sm text-[12px] text-secondary">Motorized Muslin &amp; Arch Sets</p>
+</div>
+<div class="w-12 h-12 relative flex items-center justify-center">
+<svg class="w-12 h-12 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="material-symbols-outlined text-primary text-[18px] absolute">groups</span>
+</div>
+</div>
+<!-- Darkroom Status Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Darkroom Lab • Printproofing</span>
+<p class="font-title-sm text-title-sm text-on-surface mt-0.5">45% In-Lab</p>
+<p class="font-body-sm text-[12px] text-secondary">Epson SureColor P9000 &amp; Baths</p>
+</div>
+<div class="w-12 h-12 relative flex items-center justify-center">
+<svg class="w-12 h-12 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="45, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="material-symbols-outlined text-secondary text-[18px] absolute">print</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT PANEL: Studio Rules, Operating Hours & Blackouts (4 cols) -->
+<div class="xl:col-span-4 flex flex-col gap-space-lg">
+<!-- Studio Rules Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">tune</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Operating Hours</h2>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Ruleset v2.4</span>
+</div>
+<!-- Weekly Schedule Toggles -->
+<div class="space-y-space-sm mb-space-lg">
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">Monday – Saturday</p>
+<p class="font-label-code text-label-code text-secondary">08:30 AM – 06:30 PM (Regular Shoots)</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">Sunday</p>
+<p class="font-label-code text-label-code text-secondary">VIP by Appointment (Chemical Flush)</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+<!-- Slot Duration Rules -->
+<h3 class="font-title-sm text-title-sm text-on-surface mb-space-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">timelapse</span>
+<span>Slot Duration Rules</span>
+</h3>
+<div class="space-y-space-xs mb-space-lg">
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-body-md text-body-md text-on-surface">Standard Portrait Slot</span>
+<span class="font-label-code text-label-code font-bold text-primary">30 mins</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-body-md text-body-md text-on-surface">Milestone / Graduation Slot</span>
+<span class="font-label-code text-label-code font-bold text-primary">60 mins</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface-container-low">
+<span class="font-body-md text-body-md text-on-surface">Creative / Editorial Slot</span>
+<span class="font-label-code text-label-code font-bold text-primary">90 mins</span>
+</div>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-primary-fixed/20">
+<span class="font-body-md text-body-md text-on-surface-variant font-medium">Turnaround Steam / Reset Buffer</span>
+<span class="font-label-code text-label-code font-bold text-on-primary-fixed-variant">15 mins</span>
+</div>
+</div>
+<!-- Studio Atmosphere Snapshot: Visual Element -->
+<div class="relative rounded-xl overflow-hidden mb-space-md shadow-sm">
+<img class="w-full h-36 object-cover" data-alt="High-end minimalist photography studio bay in warm studio light featuring pristine white seamless cyclorama background, studio strobes with softboxes on c-stands, and vintage director chair. Clean editorial composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5y6pbHwmSRXem0KJQJ5s3UJszqW7Vga1hNzOk8a6IFgdFJbAGwaMbPPYXYEoJFpY1bjsQBL0DXV5dXMs7K09Brzv3UKP580HMBJi78CnE_KZ6h7bbVxRk0TYsT0Z7iD22OLoyMKN8giD39AbcqtGYFgpmZV61Bh0Xagq5Aorw4k-AfTj49vCefwp1rKOvmkfWOhFT-nXf-57auBapNNYQzOUQOsi5K8Dl70aMHV8GG-kb5pvEzfKC"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/90 via-inverse-surface/30 to-transparent flex flex-col justify-end p-space-md">
+<span class="font-label-caps text-label-caps text-primary-fixed uppercase tracking-wider">Atelier Staging Standards</span>
+<span class="font-title-sm text-title-sm text-inverse-on-surface">Bays Sanitized Every 90 Minutes</span>
+</div>
+</div>
+</div>
+<!-- Blackout Dates & Holidays Manager -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">calendar_month</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Blackouts &amp; Maintenance</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary">3 active</span>
+</div>
+<!-- List of Active Blackouts -->
+<div class="space-y-space-sm mb-space-lg">
+<!-- Item 1 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-error mt-2"></span>
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">June 12, 2025</p>
+<p class="font-body-sm text-body-sm text-secondary">PH Independence Day (National Holiday) • Studio Closed</p>
+</div>
+</div>
+<button class="text-secondary hover:text-error transition-colors p-1" title="Remove Blackout">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<!-- Item 2 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-error mt-2"></span>
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">May 28, 2025</p>
+<p class="font-body-sm text-body-sm text-secondary">Floor Epoxy Repainting • Bay 01 Unavailable</p>
+</div>
+</div>
+<button class="text-secondary hover:text-error transition-colors p-1" title="Remove Blackout">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+<!-- Item 3 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="w-2 h-2 rounded-full bg-outline-variant mt-2"></span>
+<div>
+<p class="font-title-sm text-title-sm text-on-surface">Sundays (Recurring)</p>
+<p class="font-body-sm text-body-sm text-secondary">Darkroom Chemical Maintenance &amp; Paper Calibration</p>
+</div>
+</div>
+<button class="text-secondary hover:text-error transition-colors p-1" title="Config Rule">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+</button>
+</div>
+</div>
+<!-- Quick Form: Add New Blackout Date -->
+<div class="p-space-md bg-surface-container rounded-xl">
+<p class="font-title-sm text-title-sm text-on-surface mb-space-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">add_circle</span>
+<span>Register New Blocked Date</span>
+</p>
+<form class="space-y-space-sm" onsubmit="event.preventDefault();">
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Target Date</label>
+<input class="w-full h-11 px-space-md rounded-lg bg-surface-container-lowest text-on-surface font-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container" type="date" value="2025-06-19"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Scope</label>
+<select class="w-full h-11 px-space-md rounded-lg bg-surface-container-lowest text-on-surface font-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container">
+<option>Full Atelier (All Bays &amp; Darkroom)</option>
+<option>Bay 01 Only (Solo / Corporate)</option>
+<option>Bay 02 Only (Milestone / Staging)</option>
+<option>Darkroom Lab Only (Chemical Maintenance)</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Reason / Note</label>
+<input class="w-full h-11 px-space-md rounded-lg bg-surface-container-lowest text-on-surface font-body-sm placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-primary-container" placeholder="e.g. Rizal Day / Aircon Duct Cleaning" type="text"/>
+</div>
+<button class="w-full h-11 rounded-lg bg-inverse-surface hover:bg-black text-inverse-on-surface font-title-sm text-body-sm transition-colors mt-space-sm" type="submit">
+              Save Blackout Date
+            </button>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive Modal for "+ Block Date / Add Maintenance" -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-space-md bg-inverse-surface/60 backdrop-blur-sm hidden" id="blackout-modal">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-2xl p-space-lg shadow-xl relative animate-in fade-in zoom-in duration-200">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">event_busy</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Block Date or Equipment</h3>
+</div>
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-secondary hover:bg-surface-container-high transition-colors" onclick="document.getElementById('blackout-modal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="font-body-md text-body-md text-secondary mb-space-lg">
+        Create an immediate blackout period. Clients booking online or through counter inquiries will not see available slots for this duration.
+      </p>
+<form class="space-y-space-md" onsubmit="event.preventDefault(); document.getElementById('blackout-modal').classList.add('hidden');">
+<div class="grid grid-cols-2 gap-space-md">
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Start Date</label>
+<input class="w-full h-11 px-space-sm rounded-lg bg-surface-container-low text-on-surface font-body-sm focus:outline-none" type="date" value="2025-05-28"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">End Date</label>
+<input class="w-full h-11 px-space-sm rounded-lg bg-surface-container-low text-on-surface font-body-sm focus:outline-none" type="date" value="2025-05-28"/>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Bay or Facility Affected</label>
+<select class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface font-body-sm focus:outline-none">
+<option>Entire Atelier Facility</option>
+<option>Bay 01 (Solo &amp; Corporate Staging)</option>
+<option>Bay 02 (Milestone / Large Backdrop)</option>
+<option>Chemical Darkroom &amp; Large Format Printer</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Maintenance Type</label>
+<div class="grid grid-cols-2 gap-space-xs">
+<label class="flex items-center gap-space-xs p-space-sm rounded-lg bg-surface-container-low cursor-pointer">
+<input checked="" class="text-primary focus:ring-0" name="mtype" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface">Holiday Blackout</span>
+</label>
+<label class="flex items-center gap-space-xs p-space-sm rounded-lg bg-surface-container-low cursor-pointer">
+<input class="text-primary focus:ring-0" name="mtype" type="radio"/>
+<span class="font-body-sm text-body-sm text-on-surface">Equipment Service</span>
+</label>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-secondary uppercase block mb-1">Public Display Reason</label>
+<input class="w-full h-11 px-space-md rounded-lg bg-surface-container-low text-on-surface font-body-sm placeholder:text-secondary focus:outline-none" placeholder="e.g. Scheduled Studio Cyclorama Repainting" type="text"/>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-md">
+<button class="px-space-md h-11 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-body-sm transition-colors" onclick="document.getElementById('blackout-modal').classList.add('hidden')" type="button">
+            Cancel
+          </button>
+<button class="px-space-lg h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-sm transition-colors shadow-sm" type="submit">
+            Confirm &amp; Lock Bay Slots
+          </button>
+</div>
+</form>
+</div>
+</div>
+</div></div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

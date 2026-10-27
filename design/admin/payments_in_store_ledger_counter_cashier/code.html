@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const activeLink = document.querySelector('nav a[data-path="payments"]');
+      if (activeLink) {
+        document.querySelectorAll('nav a').forEach(el => {
+          el.className = "flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors";
+        });
+        activeLink.className = "flex items-center justify-between px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary font-bold shadow-sm transition-colors";
+      }
+    });
+  </script>
+<div class="px-space-lg py-space-md space-y-space-lg max-w-[1440px] mx-auto w-full">
+<!-- Atelier Physical Protocol Banner -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-start md:items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[22px]">policy</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-widest">Protocol Mandate</span>
+<span class="text-secondary text-[12px]">•</span>
+<span class="font-label-code text-label-code text-[11px] text-on-surface-variant">Front-Desk Counter Standard</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-0.5">
+<span class="font-bold text-on-surface">Important Atelier Settlement Rule:</span> Record a payment only after receiving it in person at the front desk. Jhunlea operates strictly without online card checkout.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm self-end md:self-auto shrink-0">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest font-label-code text-[11px] text-on-surface font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+          POS Terminal BDO-01 Active
+        </span>
+</div>
+</div>
+<!-- Page Header & Action Bar -->
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-lg">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary uppercase">
+<span>ATELIER POBLACION</span>
+<span>/</span>
+<span>FINANCIAL RECONCILIATION</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface">In-Store Settlement &amp; Counter Cashier Ledger</h1>
+<p class="font-body-md text-body-md text-secondary">Physical counter payment logs, cash drawer reconciliation, and outstanding customer balances.</p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="h-10 px-4 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm font-semibold transition-all flex items-center gap-2 shadow-sm" onclick="window.print()">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+<span>Daily Z-Reading</span>
+</button>
+<button class="h-10 px-5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-body-sm text-body-sm font-semibold transition-all flex items-center gap-2 shadow-md" onclick="document.getElementById('recordPaymentModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>+ Record New Payment</span>
+</button>
+</div>
+</div>
+<!-- Metric Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute -right-3 -top-3 w-20 h-20 bg-primary/5 rounded-full pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Gross Intake • May 2025</span>
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
+</div>
+<div class="mt-space-md font-price-display text-price-display text-on-surface">₱58,420.00</div>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low -mx-space-lg -mb-space-lg px-space-lg py-2 flex items-center justify-between text-secondary">
+<span class="font-label-code text-label-code text-[11px]">34 transactions recorded</span>
+<span class="font-label-code text-[11px] text-primary-container font-semibold">100% In-Store</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Outstanding Confirmed</span>
+<span class="material-symbols-outlined text-outline text-[20px]">pending_actions</span>
+</div>
+<div class="mt-space-md font-price-display text-price-display text-primary-container">₱8,450.00</div>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low -mx-space-lg -mb-space-lg px-space-lg py-2 flex items-center justify-between text-secondary">
+<span class="font-label-code text-label-code text-[11px]">Across 5 active jobs</span>
+<span class="font-label-code text-[11px] text-on-surface-variant">Due at Counter</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Unconfirmed Estimates</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">request_quote</span>
+</div>
+<div class="mt-space-md font-price-display text-price-display text-secondary">₱4,650.00</div>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low -mx-space-lg -mb-space-lg px-space-lg py-2 flex items-center justify-between text-secondary">
+<span class="font-label-code text-label-code text-[11px]">Pending Prepress review</span>
+<span class="font-label-code text-[11px]">Not yet binding</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm relative overflow-hidden flex flex-col justify-between">
+<div class="absolute right-0 bottom-0 translate-x-2 translate-y-2 opacity-5 pointer-events-none">
+<span class="material-symbols-outlined text-[90px]">point_of_sale</span>
+</div>
+<div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Physical Drawer Balance</span>
+<span class="material-symbols-outlined text-primary-container text-[20px]">point_of_sale</span>
+</div>
+<div class="mt-space-md font-price-display text-price-display text-on-surface">₱6,210.00</div>
+</div>
+<div class="mt-space-sm pt-space-sm bg-surface-container-low -mx-space-lg -mb-space-lg px-space-lg py-2 flex items-center justify-between text-secondary">
+<span class="font-label-code text-label-code text-[11px]">Cash + Slips Reconciled</span>
+<span class="inline-flex items-center gap-1 font-label-code text-[11px] text-on-surface font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+            Audited 17:00
+          </span>
+</div>
+</div>
+</div>
+<!-- Search & Multi-Filter Control Hub -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<div class="flex-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-space-sm">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container transition-colors" id="ledgerSearchInput" placeholder="Search receipt slip, client name, or job code (PR- / PB-)..." type="text"/>
+</div>
+<!-- Method Selector Pills -->
+<div class="flex items-center overflow-x-auto gap-1 bg-surface-container-low p-1 rounded-lg shrink-0">
+<button class="px-3 py-1.5 rounded-md font-body-sm text-body-sm font-semibold bg-surface-container-lowest text-on-surface shadow-xs">All Methods</button>
+<button class="px-3 py-1.5 rounded-md font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors">Cash</button>
+<button class="px-3 py-1.5 rounded-md font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors">GCash QR</button>
+<button class="px-3 py-1.5 rounded-md font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors">Maya QR</button>
+<button class="px-3 py-1.5 rounded-md font-body-sm text-body-sm text-secondary hover:text-on-surface transition-colors">BDO/BPI POS</button>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0">
+<div class="relative">
+<select class="h-10 pl-3 pr-8 bg-surface-container-low text-on-surface font-body-sm text-body-sm rounded-lg appearance-none cursor-pointer focus:outline-none focus:bg-surface-container transition-colors">
+<option>Today (May 19)</option>
+<option>This Week</option>
+<option selected="">May 2025</option>
+<option>Q2 2025</option>
+<option>Custom Date Range...</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-[18px] pointer-events-none">calendar_today</span>
+</div>
+<button class="w-10 h-10 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant flex items-center justify-center transition-colors" title="Export CSV Ledger">
+<span class="material-symbols-outlined text-[20px]">file_download</span>
+</button>
+</div>
+</div>
+<!-- Counter Ledger Visual Status & Recent Activity Split -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- Main Table Card: 8 or 9 cols -->
+<div class="xl:col-span-9 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">receipt</span>
+<span class="font-title-sm text-title-sm text-on-surface">In-Store Counter Settlements</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-code text-[11px] font-bold">5 Transactions Listed</span>
+</div>
+<div class="flex items-center gap-2 font-label-code text-[12px] text-secondary">
+<span>Terminal: FRONT_DESK_01</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container-low/50 text-secondary font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-3 px-space-md">Receipt ID</th>
+<th class="py-3 px-space-md">Timestamp</th>
+<th class="py-3 px-space-md">Job Ref</th>
+<th class="py-3 px-space-md">Customer</th>
+<th class="py-3 px-space-md text-right">Job Fee</th>
+<th class="py-3 px-space-md text-right">Settled Amount</th>
+<th class="py-3 px-space-md">Method</th>
+<th class="py-3 px-space-md">Recorded By</th>
+<th class="py-3 px-space-md text-center">Receipt Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/70 transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="font-label-code text-label-code text-primary font-bold">RCP-0924</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-on-surface-variant font-label-code text-[12px]">
+                  May 19, 14:10
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] font-medium text-on-surface">PR-0019</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<div class="font-semibold text-on-surface">Elena Aguilar</div>
+<div class="text-[11px] text-secondary">A3+ Studio Portrait Print</div>
+</td>
+<td class="py-3.5 px-space-md text-right font-label-code text-secondary">
+                  ₱350.00
+                </td>
+<td class="py-3.5 px-space-md text-right whitespace-nowrap">
+<div class="font-label-code font-bold text-on-surface">₱350.00</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[10px] text-primary-container font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Paid Full
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-code text-[11px] font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">payments</span>
+                    Cash Counter
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-secondary font-label-code text-[12px]">
+                  Jhunlea P. Arceo
+                </td>
+<td class="py-3.5 px-space-md text-center whitespace-nowrap">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="Print Paper Thermal Slip">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="View Transaction Audit Log">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/70 transition-colors bg-surface-container-low/20">
+<td class="py-3.5 px-space-md">
+<span class="font-label-code text-label-code text-primary font-bold">RCP-0923</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-on-surface-variant font-label-code text-[12px]">
+                  May 18, 16:45
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] font-medium text-on-surface">PB-0005</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<div class="font-semibold text-on-surface">Clara Marie Santos</div>
+<div class="text-[11px] text-secondary">Creative Portrait Studio Session</div>
+</td>
+<td class="py-3.5 px-space-md text-right font-label-code text-secondary">
+                  ₱1,850.00
+                </td>
+<td class="py-3.5 px-space-md text-right whitespace-nowrap">
+<div class="font-label-code font-bold text-on-surface">₱1,850.00</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[10px] text-primary-container font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Paid Full
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-code text-[11px] font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary">qr_code_2</span>
+                    GCash QR
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-secondary font-label-code text-[12px]">
+                  Denise G. Santos
+                </td>
+<td class="py-3.5 px-space-md text-center whitespace-nowrap">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="Print Paper Thermal Slip">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="View Transaction Audit Log">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/70 transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="font-label-code text-label-code text-primary font-bold">RCP-0922</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-on-surface-variant font-label-code text-[12px]">
+                  May 18, 11:20
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] font-medium text-on-surface">PR-0018</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<div class="font-semibold text-on-surface">Markus Reyes</div>
+<div class="text-[11px] text-secondary">Canvas Gallery Wrap 24x36</div>
+</td>
+<td class="py-3.5 px-space-md text-right font-label-code text-secondary">
+                  ₱2,400.00
+                </td>
+<td class="py-3.5 px-space-md text-right whitespace-nowrap">
+<div class="font-label-code font-bold text-on-surface">₱1,200.00</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[10px] text-secondary font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> 50% Deposit
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-code text-[11px] font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">credit_card</span>
+                    BDO POS Debit
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-secondary font-label-code text-[12px]">
+                  Jhunlea P. Arceo
+                </td>
+<td class="py-3.5 px-space-md text-center whitespace-nowrap">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="Print Paper Thermal Slip">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="View Transaction Audit Log">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/70 transition-colors bg-surface-container-low/20">
+<td class="py-3.5 px-space-md">
+<span class="font-label-code text-label-code text-primary font-bold">RCP-0921</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-on-surface-variant font-label-code text-[12px]">
+                  May 17, 17:00
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] font-medium text-on-surface">PB-0009</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<div class="font-semibold text-on-surface">Montenegro Family</div>
+<div class="text-[11px] text-secondary">Grand Studio Group Heritage</div>
+</td>
+<td class="py-3.5 px-space-md text-right font-label-code text-secondary">
+                  ₱3,500.00
+                </td>
+<td class="py-3.5 px-space-md text-right whitespace-nowrap">
+<div class="font-label-code font-bold text-on-surface">₱3,500.00</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[10px] text-primary-container font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Paid Full
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-code text-[11px] font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-primary">qr_code_scanner</span>
+                    Maya QR
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-secondary font-label-code text-[12px]">
+                  Jhunlea P. Arceo
+                </td>
+<td class="py-3.5 px-space-md text-center whitespace-nowrap">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="Print Paper Thermal Slip">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="View Transaction Audit Log">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low/70 transition-colors">
+<td class="py-3.5 px-space-md">
+<span class="font-label-code text-label-code text-primary font-bold">RCP-0920</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-on-surface-variant font-label-code text-[12px]">
+                  May 17, 10:15
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] font-medium text-on-surface">PR-0009</span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<div class="font-semibold text-on-surface">Clara Marie Santos</div>
+<div class="text-[11px] text-secondary">4R Fine Art Velvet Luster (x3)</div>
+</td>
+<td class="py-3.5 px-space-md text-right font-label-code text-secondary">
+                  ₱210.00
+                </td>
+<td class="py-3.5 px-space-md text-right whitespace-nowrap">
+<div class="font-label-code font-bold text-on-surface">₱210.00</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[10px] text-primary-container font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span> Paid Full
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container font-label-code text-[11px] font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">payments</span>
+                    Cash Counter
+                  </span>
+</td>
+<td class="py-3.5 px-space-md whitespace-nowrap text-secondary font-label-code text-[12px]">
+                  Denise G. Santos
+                </td>
+<td class="py-3.5 px-space-md text-center whitespace-nowrap">
+<div class="inline-flex items-center gap-1">
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="Print Paper Thermal Slip">
+<span class="material-symbols-outlined text-[18px]">print</span>
+</button>
+<button class="p-1.5 rounded hover:bg-surface-container text-on-surface-variant transition-colors" title="View Transaction Audit Log">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-space-md bg-surface-container-low/40 flex flex-col sm:flex-row items-center justify-between gap-space-sm font-label-code text-[12px] text-secondary">
+<div class="flex items-center gap-2">
+<span>Showing records 1 - 5 of 34 for May 2025</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2.5 py-1 rounded bg-surface-container text-on-surface font-semibold disabled:opacity-50">Prev</button>
+<span class="px-3 py-1 rounded bg-primary-container text-on-primary font-bold">1</span>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface">2</button>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface">3</button>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface">Next</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Reconciliation & Channel Distribution (3 cols) -->
+<div class="xl:col-span-3 space-y-space-md">
+<!-- Tender Distribution Card with SVG Ring -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-title-sm text-title-sm text-on-surface">Counter Breakdown</h3>
+<span class="font-label-code text-[11px] text-secondary">May 2025</span>
+</div>
+<!-- Distribution Visual -->
+<div class="flex items-center justify-center py-2">
+<div class="relative w-36 h-36 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<!-- Background track -->
+<circle class="text-surface-container-high" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-width="3.8"></circle>
+<!-- Segment 1: Cash (45%) -->
+<circle class="text-primary-container" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="45 55" stroke-dashoffset="0" stroke-width="3.8"></circle>
+<!-- Segment 2: GCash QR (30%) -->
+<circle class="text-secondary" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="30 70" stroke-dashoffset="-45" stroke-width="3.8"></circle>
+<!-- Segment 3: Maya QR & POS (25%) -->
+<circle class="text-on-surface-variant" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="25 75" stroke-dashoffset="-75" stroke-width="3.8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-price-display text-sm font-bold text-on-surface leading-none">₱58.4k</span>
+<span class="font-label-caps text-[9px] text-secondary uppercase tracking-widest mt-1">Total Settled</span>
+</div>
+</div>
+</div>
+<div class="space-y-2 pt-2">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span>Physical Cash Counter</span>
+</div>
+<span class="font-label-code font-bold text-on-surface">₱26,289 (45%)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span>GCash QR In-Store</span>
+</div>
+<span class="font-label-code font-bold text-on-surface">₱17,526 (30%)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-on-surface-variant"></span>
+<span>Maya QR &amp; BDO POS</span>
+</div>
+<span class="font-label-code font-bold text-on-surface">₱14,605 (25%)</span>
+</div>
+</div>
+</div>
+<!-- Cashier Shift Ledger Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="font-title-sm text-title-sm text-on-surface">Active Counter Staff</div>
+<span class="inline-flex items-center gap-1 font-label-code text-[11px] text-primary-container font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span> Live Shift
+            </span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Jhunlea P. Arceo</span>
+<span class="font-label-code text-[11px] text-secondary">Owner/Cashier</span>
+</div>
+<div class="flex items-center justify-between font-label-code text-[11px] text-on-surface-variant">
+<span>Intake Today:</span>
+<span class="font-bold text-on-surface">₱4,060.00 (3 jobs)</span>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Denise G. Santos</span>
+<span class="font-label-code text-[11px] text-secondary">Front Desk Associate</span>
+</div>
+<div class="flex items-center justify-between font-label-code text-[11px] text-on-surface-variant">
+<span>Intake Today:</span>
+<span class="font-bold text-on-surface">₱2,150.00 (2 jobs)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal: Record In-Store Payment Dialog -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/60 backdrop-blur-sm" id="recordPaymentModal">
+<div class="bg-surface-container-lowest rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[942px]">
+<!-- Modal Header -->
+<div class="px-space-lg pt-space-lg pb-space-md bg-surface-container-low flex items-start justify-between">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container animate-pulse"></div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">Atelier Counter Cashier</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Record Counter Settlement</h2>
+<p class="font-body-sm text-body-sm text-secondary">Verify physical cash count or merchant POS terminal slip before submitting.</p>
+</div>
+<button class="w-8 h-8 rounded-lg hover:bg-surface-container text-secondary hover:text-on-surface flex items-center justify-center transition-colors" onclick="document.getElementById('recordPaymentModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-space-lg overflow-y-auto space-y-space-md">
+<!-- Step 1: Order / Booking Autocomplete Search -->
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-secondary uppercase font-bold">Step 1 • Target Order / Studio Booking</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-primary text-[20px]">check_circle</span>
+<input class="w-full h-11 pl-10 pr-10 bg-surface-container-low rounded-lg font-body-sm text-body-sm font-semibold text-on-surface focus:outline-none cursor-default" readonly="" type="text" value="PR-0012 — Fine Art Giclée (Clara Marie Santos)"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-secondary text-[20px]">unfold_more</span>
+</div>
+</div>
+<!-- Financial Breakdown Summary Tile -->
+<div class="bg-surface-container-low rounded-xl p-space-md grid grid-cols-3 gap-space-sm text-center">
+<div class="space-y-0.5">
+<span class="font-label-caps text-[10px] text-secondary uppercase">Total Confirmed Fee</span>
+<div class="font-title-sm text-title-sm text-on-surface font-label-code">₱1,850.00</div>
+</div>
+<div class="space-y-0.5">
+<span class="font-label-caps text-[10px] text-secondary uppercase">Already Paid</span>
+<div class="font-title-sm text-title-sm text-secondary font-label-code">₱0.00</div>
+</div>
+<div class="space-y-0.5">
+<span class="font-label-caps text-[10px] text-primary uppercase font-bold">Outstanding Balance</span>
+<div class="font-title-sm text-title-sm text-primary-container font-label-code font-bold">₱1,850.00</div>
+</div>
+</div>
+<!-- Step 2: Payment Intake Fields -->
+<div class="space-y-space-md pt-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps text-secondary uppercase font-bold">Step 2 • Payment Intake &amp; Tender</label>
+<span class="font-label-code text-[11px] text-on-surface-variant">Slip Series: RCP-0925</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="space-y-1">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Amount Received (PHP)</label>
+<div class="relative">
+<span class="absolute left-3.5 top-2.5 font-label-code font-bold text-on-surface">₱</span>
+<input class="w-full h-11 pl-8 pr-4 bg-surface-container-low rounded-lg font-label-code text-body-lg text-on-surface font-bold focus:outline-none focus:bg-surface-container transition-colors" id="modalAmountReceived" type="number" value="1850.00"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Resulting Balance</label>
+<div class="h-11 px-3.5 bg-surface-container-low rounded-lg flex items-center justify-between font-label-code text-body-sm">
+<span class="text-on-surface font-bold">₱0.00</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/10 text-primary-container text-[11px] font-bold">Fully Settled</span>
+</div>
+</div>
+</div>
+<!-- Payment Method Segmented Buttons -->
+<div class="space-y-1.5">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Counter Payment Method</label>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="paymentMethod" type="radio" value="cash"/>
+<div class="h-16 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface flex flex-col items-center justify-center p-2 text-center transition-all shadow-xs">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+<span class="font-body-sm text-body-sm font-semibold mt-1">Cash</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="paymentMethod" type="radio" value="gcash"/>
+<div class="h-16 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface flex flex-col items-center justify-center p-2 text-center transition-all shadow-xs">
+<span class="material-symbols-outlined text-[20px]">qr_code_2</span>
+<span class="font-body-sm text-body-sm font-semibold mt-1">GCash QR</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="paymentMethod" type="radio" value="maya"/>
+<div class="h-16 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface flex flex-col items-center justify-center p-2 text-center transition-all shadow-xs">
+<span class="material-symbols-outlined text-[20px]">qr_code_scanner</span>
+<span class="font-body-sm text-body-sm font-semibold mt-1">Maya QR</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="paymentMethod" type="radio" value="pos"/>
+<div class="h-16 rounded-xl bg-surface-container-low peer-checked:bg-primary-container peer-checked:text-on-primary text-on-surface flex flex-col items-center justify-center p-2 text-center transition-all shadow-xs">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+<span class="font-body-sm text-body-sm font-semibold mt-1">POS / Debit</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Cash Tendered & Change Calculator Row -->
+<div class="p-space-md bg-surface-container-low rounded-xl space-y-space-sm">
+<div class="flex items-center justify-between text-secondary">
+<span class="font-label-caps text-label-caps uppercase font-bold text-on-surface">Cash Drawer Tender Assist</span>
+<span class="font-label-code text-[11px]">Instant Calculation</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="space-y-1">
+<span class="font-body-sm text-body-sm text-secondary">Cash Tendered by Client</span>
+<div class="relative">
+<span class="absolute left-3 top-2 font-label-code text-on-surface font-semibold">₱</span>
+<input class="w-full h-9 pl-7 pr-3 bg-surface-container-lowest rounded-lg font-label-code text-body-md text-on-surface font-semibold focus:outline-none" type="text" value="2000.00"/>
+</div>
+</div>
+<div class="space-y-1">
+<span class="font-body-sm text-body-sm text-secondary">Change Due to Customer</span>
+<div class="h-9 px-3 bg-surface-container-lowest rounded-lg flex items-center justify-between font-label-code font-bold text-primary-container">
+<span>₱150.00</span>
+<span class="text-[11px] text-secondary font-normal">Dispense change</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Terminal Reference & Staff Stamp -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="space-y-1">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Terminal Auth / Ref Note <span class="text-secondary text-[11px] font-normal">(Optional)</span></label>
+<input class="w-full h-10 px-3.5 bg-surface-container-low rounded-lg font-label-code text-body-sm text-on-surface focus:outline-none focus:bg-surface-container transition-colors" placeholder="e.g. TRX-GCASH-981240" type="text" value="TRX-GCASH-981240"/>
+</div>
+<div class="space-y-1">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Recorded By</label>
+<input class="w-full h-10 px-3.5 bg-surface-container-low text-secondary rounded-lg font-body-sm text-body-sm focus:outline-none cursor-default" readonly="" type="text" value="Jhunlea P. Arceo (Master Photographer)"/>
+</div>
+</div>
+<!-- In-Studio Physical Confirmation Checkbox -->
+<label class="flex items-start gap-3 p-space-sm rounded-lg bg-primary/5 cursor-pointer">
+<input checked="" class="mt-1 w-4 h-4 rounded text-primary-container focus:ring-0 accent-primary-container cursor-pointer" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-on-surface">
+<span class="font-bold text-primary">I confirm that this payment was physically collected</span> at the Poblacion studio counter and accurately checked against drawer funds or transaction screen.
+            </span>
+</label>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-space-lg py-space-md bg-surface-container-low flex flex-col-reverse sm:flex-row items-center justify-end gap-space-sm">
+<button class="w-full sm:w-auto h-11 px-5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm font-semibold transition-colors" onclick="document.getElementById('recordPaymentModal').classList.add('hidden')">
+          Cancel
+        </button>
+<button class="w-full sm:w-auto h-11 px-6 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-body-sm text-body-sm font-bold shadow-md flex items-center justify-center gap-2 transition-all" onclick="document.getElementById('recordPaymentModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">print</span>
+<span>Confirm &amp; Print Receipt</span>
+</button>
+</div>
+</div>
+</div>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

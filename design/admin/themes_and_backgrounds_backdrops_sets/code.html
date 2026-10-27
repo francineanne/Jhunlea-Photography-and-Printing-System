@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<!-- Interactive Top Action & Inventory Bar -->
+<div class="px-space-lg pt-space-lg pb-space-md">
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-sm mb-space-xs">
+<span class="px-space-sm py-0.5 rounded-full bg-primary-container/10 text-primary-container font-label-caps text-label-caps tracking-widest uppercase">Atelier Catalog</span>
+<span class="text-on-surface-variant font-label-code text-label-code text-[11px]">BAY 01 &amp; BAY 02 LIVE HARDWARE</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Themes &amp; Studio Backdrops Management</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-space-xs">
+          Configure seamless paper rolls, fabric drops, architectural sets, and lighting moods for Bay 01 &amp; Bay 02.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="h-10 px-4 rounded-lg bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors font-title-sm text-title-sm text-xs flex items-center gap-space-xs shadow-sm" id="quickStatsToggle">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span>Calibrate Lighting Presets</span>
+</button>
+<button class="h-10 px-5 rounded-lg bg-primary-container text-on-primary font-title-sm text-title-sm text-xs hover:bg-primary transition-all duration-200 flex items-center gap-space-xs shadow-md" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>+ Add New Theme / Backdrop</span>
+</button>
+</div>
+</div>
+<!-- Filter & Precision Control Bar -->
+<div class="mt-space-lg bg-surface-container-low p-space-md rounded-xl shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-space-md">
+<!-- Category Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 md:pb-0" id="filterPills">
+<button class="filter-pill active px-3.5 py-1.5 rounded-full bg-primary-container text-on-primary font-label-caps text-label-caps tracking-wider transition-colors shadow-sm flex items-center gap-1.5" data-filter="all">
+<span>All</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-primary/20 text-[10px]">8</span>
+</button>
+<button class="filter-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-caps text-label-caps tracking-wider transition-colors flex items-center gap-1.5" data-filter="seamless">
+<span>Seamless Paper</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-surface/10 text-[10px]">4</span>
+</button>
+<button class="filter-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-caps text-label-caps tracking-wider transition-colors flex items-center gap-1.5" data-filter="architectural">
+<span>Architectural Sets</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-surface/10 text-[10px]">2</span>
+</button>
+<button class="filter-pill px-3.5 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface font-label-caps text-label-caps tracking-wider transition-colors flex items-center gap-1.5" data-filter="velvet">
+<span>Velvet &amp; Muslin</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-surface/10 text-[10px]">2</span>
+</button>
+</div>
+<!-- Controls: Search & Bay Filter -->
+<div class="flex items-center gap-space-sm">
+<div class="relative flex-1 md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[18px]">search</span>
+<input class="w-full h-9 pl-9 pr-3 rounded-lg bg-surface-container-lowest text-on-surface placeholder:text-secondary font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/30 shadow-sm" id="backdropSearch" placeholder="Search backdrops, roll #..." type="text"/>
+</div>
+<div class="relative">
+<select class="h-9 pl-3 pr-8 rounded-lg bg-surface-container-lowest text-on-surface font-label-code text-label-code text-xs focus:outline-none focus:ring-2 focus:ring-primary-container/30 shadow-sm appearance-none cursor-pointer" id="bayFilter">
+<option value="all">All Studio Bays</option>
+<option value="bay1">Bay 01 (Grand Cyclorama)</option>
+<option value="bay2">Bay 02 (Private Editorial)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Studio Bay Live Inventory Overview Mini Bar -->
+<div class="px-space-lg mb-space-md">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Active Backdrops</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">7 <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">/ 8 Total</span></div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[22px]">palette</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Bay 01 Rigged</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">3 <span class="font-body-sm text-body-sm text-secondary font-normal">Motorized Rolls</span></div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[22px]">videocam</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Bay 02 Rigged</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5">4 <span class="font-body-sm text-body-sm text-secondary font-normal">Rolls &amp; Walls</span></div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[22px]">camera</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex items-center justify-between">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Roll Stock Alert</div>
+<div class="font-headline-sm text-headline-sm text-primary-container font-bold mt-0.5">18m <span class="font-body-sm text-body-sm text-on-surface-variant font-normal">Classic Crimson</span></div>
+</div>
+<div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">straighten</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 1: Visual Image Card Grid (Backdrops & Sets Catalog) -->
+<div class="px-space-lg pb-space-xl">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">
+<span>Displaying Atelier Library</span>
+<span class="text-secondary">•</span>
+<span class="text-primary font-bold">8 Rigged Configs</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary font-label-code text-[12px]">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Paper motor winches synced</span>
+</div>
+</div>
+<!-- 4-Column Responsive Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-lg" id="backdropGrid">
+<!-- Card 1: Classic Crimson -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay2" data-category="seamless">
+<div>
+<!-- Thumbnail Container with Sample Shoot Portrait -->
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-end studio graduation portrait of a Filipino student in black commencement robe and crimson academic sash posing against a seamless classic crimson studio backdrop with dramatic Rembrandt key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpTxIrNq0CQwR0S_ZZR1ITtkNolI0xfcQoa_NkkXuuQCvrXHIJ0s2jGDqNwOdGWXWfnjbca347-LcJ_qAQopTuouVjmJZQqMMrZGy4WQuPCUIGaA-S8ZBc_29uREgs1w_uTscCXqMVUTucCcPcUTdf6l9mx1EClSVY8Tbpu2mjH4suA-oHd7R3jcCzsxtjrR7CszB6jQsfHRJV8shT262-0axKWCDOoHTRGwNdxu4dGrfoTIF-0Pex"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<!-- Floating Bay & State Badges -->
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 02</span>
+<span class="px-2.5 py-1 rounded-md bg-primary-container text-on-primary font-label-caps text-[10px] uppercase tracking-wider">Featured</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<!-- Bottom Image Bar: Title Overlay -->
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Seamless Paper #42</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Classic Crimson</h3>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-space-md space-y-space-sm">
+<!-- Swatches & Metas -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #C62828;" title="Crimson #C62828"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #8E0000;" title="Deep Red #8E0000"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#C62828</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>34 shoots</span>
+</div>
+</div>
+<!-- Lighting & Tech Note -->
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Calibrated for graduation regalia and prestige portraits. Best paired with 120cm Octabox with 45° grid fill.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Roll: 18m remaining</span>
+<span class="text-emerald-700 font-bold">Grade A</span>
+</div>
+</div>
+</div>
+<!-- Card Action Footer -->
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 2: Warm Cream -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay1" data-category="velvet">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Tender multi-generational family portrait shot against an organic textured warm cream linen backdrop with soft diffused continuous natural studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBl0AkVO2kUi6Z8kRQmmsMaKhEDdlJXRyoeBvoSYIpvhMTJ5W8JWpLQ_vIdU16iWFQrnmn1OnvGqL9OAvUnc3GjzL0B_F_Ona1mdLgLUhyEcqdVZJcopBf9SAqPhV8FePlY0g4DXMvOEh_kH3JBL7R0UjGjxxASJjW9AdJUoa6sDJgQUYAfTOuWSWYZDqAq2jcGTzQ0tPA5RA5PD8isV_AyoCwPDLhl-XWY6WkShXDNGrBJsN_KQGyh"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 01 &amp; 02</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Organic Linen</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Warm Cream</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #F5EBE0;" title="Cream #F5EBE0"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #E3D5CA;" title="Warm Muted #E3D5CA"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#F5EBE0</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>28 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Gentle earth-tone aesthetic suited for maternity, newborn, and milestone family sessions.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Fabric: French Linen</span>
+<span class="text-emerald-700 font-bold">Steamed Today</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 3: Dark Charcoal -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay1" data-category="seamless">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Moody cinematic portrait of an artist in black turtleneck under high contrast rim lighting against a deep dark matte charcoal studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCK_d9sFyB-O17CTxHZFpP_JHPXV7EKf8CVHvMb08-Ktsn_l9HlZBL1o8nvEcPMyZmOhVPsw9hErowj4G0QubyPkysZxQeUF1nWln5A6lRWy0UjY8PusGyMxCuwvXXTFEtS18jicCMhymZ_nTJLqhVaeX4ZVj76Ahmr-zv-38BIxyObrLvjsmUgwInR6CBbyG1l893Q5dsb1gm4A4G7ojIcHKsdqHqnZZTGrGp5hNSJSao-1KvwLqz8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 01</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Editorial Depth</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Dark Charcoal</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #262626;" title="Charcoal #262626"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #1A1A1A;" title="Deep Black #1A1A1A"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#262626</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>19 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Savage Smoke Gray roll used with narrow grid snoots for high-profile executive and arts headshots.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Roll: 32m remaining</span>
+<span class="text-emerald-700 font-bold">Grade A</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 4: Library Grad / Classic Wood -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay2" data-category="architectural">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Traditional graduation commencement photo with academic honors medallion on a mahogany carved library backdrop with leather-bound books and warm ambient brass lamps." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLV-3OUqXS9f4uiK_qte1yIcBsoUm45R-oDgFz2rZeADmb_z9dWK08LKkM9FucS0Xkg7CjcvVMUz53BmXhmN96fN-RPBRyeX6JbM-ZnyxyBIkZ1BpXtqxawkxFi9I6BMIbMf4GguQMwCo1D_CCbwjqQ5IoaDYj29Sje31hy-kBDNdgb_S-qpXq2sd2cwbByzf2sV-7xQilY8F7hIhhys_N-DiGQ7ODA2dP2cuK5PPR2ag_PT41ZQEe"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 02</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Architectural Set</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Library Grad / Wood</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #5C4033;" title="Mahogany #5C4033"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #3B2F2F;" title="Dark Walnut #3B2F2F"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#5C4033</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>22 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Physical architectural wall with handcrafted wood paneling, antique legal tomes, and warm tungsten lighting accents.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Set: Modular Wall</span>
+<span class="text-amber-700 font-bold">Req. 15m Setup</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 5: Pure White / Seamless Alabaster -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay1" data-category="seamless">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Clean minimalist high-key business portrait of a modern Filipino executive against a pure white infinity cyclorama curve with bright even softbox diffusion." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIJIPPkVfu9uFdcXJV0Bs2Kh_Io6FKWrGgai84LxQqVci9a_wU0zCLGqhB4i18JKEFY3OeAvYbUCwGXprOAVjTJuPhmOYyCXpedaZ0CJSQ6oC1sp3RkiO-l5WEaWQQtzhg91c-VpsIz0eKMUfZDmChP6CCDZg6geyK5nQ6sEEjxFPj52tKso1PsNxf-kkNwGDatiQPl8ZQs5QyHS6KuBUfFfqKvv0MspdLpu4uWD4jeqlVz1rKGU7V"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 01</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">High-Key Clean</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Pure White / Alabaster</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #FFFFFF;" title="Pure White #FFFFFF"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #E5E5E5;" title="Alabaster #E5E5E5"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#FFFFFF</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>41 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Bay 01 hard cyclorama curve with dual strip ground lights for 100% pure high-key commercial clarity.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Floor: Repainted Mon</span>
+<span class="text-emerald-700 font-bold">Immaculate</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 6: Onyx Velvet Noir -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay2" data-category="velvet">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-fashion editorial model in shimmering gown posing against an ultra-deep black absorbent onyx velvet drape with moody golden sidelight highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRifZmFR_YkvzFuDtrqWIv-DJszsWrtFLYuHp7Qc2uHf3FaMVYrR2EFs_V0M6I8ClALG_lCPjuAQaZ0j_BByIg4x9rpOQsFFpO71rH2MEPVw4NqF-PHLgyQYSlgmHGJI3u-Z2-nNrbiuDa0m_h91AhoCz4skexhcGW0X1pbAeRh6iDT2aHh8CV--m0zFhpRo_JcAlHAbTrzffNfSkStnh0T5_bae76av4vdh6M8UttLyGyDD0Cu60a"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 02</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-on-surface shadow-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Published</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Textured Fabric</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Onyx Velvet Noir</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #111111;" title="Velvet Black #111111"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #1C1917;" title="Textured Stone #1C1917"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#111111</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-primary-container">camera</span>
+<span>14 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Heavy light-devouring cotton velvet. Zero reflection bounce, providing ultimate separation for high fashion.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Track: Bay 02 Curtain</span>
+<span class="text-emerald-700 font-bold">Pristine</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Edit</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary hover:text-error transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-[16px]">power_settings_new</span>
+</button>
+</div>
+</div>
+<!-- Card 7: Raw Concrete & Industrial -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay1" data-category="architectural">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" data-alt="Raw architectural industrial studio shoot with concrete micro-cement wall, soft gray gradient, featuring minimalist modern branding and editorial talent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgPV-Zp01U3dTfCUkU561M-2NZMzZE4c94tJrOH8SemhQGxV6nug6Ea1ewFABXm_3g7Io0Yc4BdrKQMq_5kNaawdDerzdwyKR0SCecXPK4XrtkwsziN6XxxAQxU5Pbr1v4WTslA7ObcFPZZgpjL11cXkz84W-dj7FPyDgXxK2Q4MHWLF5JsAtxT_B5Zv4SYaKqSO1lc-dhRGbXxslt1DThUF0-P_sIvtl-xqaBN16bIXEW7jBnZSzt"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Bay 01</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-high/90 backdrop-blur font-title-sm text-[11px] text-on-surface-variant shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span>Draft (OFF)</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Textured Wall</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Raw Concrete &amp; Industrial</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #8C8C8C;" title="Concrete #8C8C8C"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #666666;" title="Deep Cement #666666"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#8C8C8C</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-secondary">camera</span>
+<span>3 shoots</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Hand-troweled lime wash concrete wall. Undergoing final sealant cure before client booking release.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Surface: Lime Sealant</span>
+<span class="text-amber-700 font-bold">Curing (48h)</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Configure</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-emerald-700 transition-colors" title="Activate Now">
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- Card 8: Sage Atelier Botanic -->
+<div class="backdrop-card group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-bay="bay2" data-category="velvet">
+<div>
+<div class="relative h-56 w-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Organic botanical atelier studio staging with muted sage olive green velvet backdrop, dried pampas and soft warm ambient side sunlight for an autumn campaign." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9Ariwfchko-tHbrwFVSA6p-JJGrynCrI8ZKoHC_9dFLPdnLC4jhNrk5jEIrKzuUY1hibTrsOaeLFg8yCljUvTC8_Y2BU2WW5PniZ6nnxAQE8nETd3GYmUGkadi42ZhY3_FzaJO_h7eqKqs796jAQd1vxYw-SbRaKzrPr45HpoGoXdTfq_mOjfguF-3741wLIw0naS_1UwjtkjQAzy4KRge-zvU-jKiniUtIXfozC2NLROLFAmETlS"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/70 via-transparent to-black/20"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5">
+<span class="px-2.5 py-1 rounded-md bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-code text-[11px] font-bold shadow-sm">Staging Bay</span>
+</div>
+<div class="absolute top-3 right-3">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur font-title-sm text-[11px] text-primary-container font-semibold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span>Live June 1</span>
+</span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-surface-container-lowest">
+<div class="font-label-caps text-label-caps uppercase text-surface-variant/80 tracking-wider">Seasonal Olive</div>
+<h3 class="font-title-md text-title-md text-surface-container-lowest font-bold leading-tight">Sage Atelier Botanic</h3>
+</div>
+</div>
+<div class="p-space-md space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #8A9A86;" title="Sage #8A9A86"></div>
+<div class="w-6 h-6 rounded-full shadow-inner ring-2 ring-surface-container" style="background-color: #667A68;" title="Olive Shade #667A68"></div>
+<span class="font-label-code text-[11px] text-on-surface-variant ml-1">#8A9A86</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant font-label-code text-[11px]">
+<span class="material-symbols-outlined text-[16px] text-secondary">calendar_today</span>
+<span>Scheduled</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+              Limited mid-year seasonal release for graduation creatives and family branding sessions.
+            </p>
+<div class="pt-space-xs flex items-center justify-between text-on-surface-variant font-body-sm text-[12px]">
+<span class="font-label-code">Roll: Arriving May 28</span>
+<span class="text-primary font-bold">Auto-Launch</span>
+</div>
+</div>
+</div>
+<div class="p-space-md pt-0 mt-space-sm flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-[12px] flex items-center justify-center gap-1 transition-colors" onclick="document.getElementById('editThemeModal').classList.remove('hidden')">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+<span>Configure</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface flex items-center justify-center transition-colors" title="Duplicate Settings">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="h-9 w-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-secondary transition-colors" title="Schedule">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 2: Active Add / Edit Theme Modal (Dialog Previewing 'Classic Crimson') -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm overflow-y-auto" id="editThemeModal">
+<div class="bg-surface-container-lowest w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto border-none">
+<!-- Modal Header -->
+<div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-3.5 h-3.5 rounded-full shadow-inner" style="background-color: #C62828;"></div>
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">Studio Hardware &amp; Booking Rig</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Edit Theme: Classic Crimson</h2>
+</div>
+</div>
+<button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" onclick="document.getElementById('editThemeModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Body (Two-Column Editorial Form) -->
+<div class="p-space-lg max-h-[768px] overflow-y-auto space-y-space-lg">
+<!-- Mandatory Storefront Settlement Reminder Note inside dialog -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex items-center gap-space-sm text-on-surface-variant font-body-sm text-[12px]">
+<span class="material-symbols-outlined text-primary-container text-[18px]">info</span>
+<span>Theme selection syncs directly to in-person counter terminals. Clients settle payment in-studio upon shoot arrival.</span>
+</div>
+<!-- Row 1: Core Identification -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Theme Name</label>
+<input class="w-full h-11 px-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm" type="text" value="Classic Crimson"/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Theme Category</label>
+<div class="relative">
+<select class="w-full h-11 px-3.5 pr-8 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm appearance-none cursor-pointer">
+<option selected="">Seamless Studio Paper</option>
+<option>Architectural Sets</option>
+<option>Velvet &amp; Muslin Drapes</option>
+<option>Custom Hand-Painted Canvas</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Bay Assignment</label>
+<div class="relative">
+<select class="w-full h-11 px-3.5 pr-8 rounded-lg bg-surface-container-low text-on-surface font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm appearance-none cursor-pointer">
+<option>Bay 01 — Grand Cyclorama</option>
+<option selected="">Bay 02 — Private Staging</option>
+<option>Both Bays (Movable Rig)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Row 2: Color Palette Swatches & Lighting Notes -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="space-y-3 bg-surface-container-low p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-surface uppercase">Color Palette Swatches</span>
+<span class="font-label-code text-[11px] text-on-surface-variant">Hex Picker &amp; Camera Sensor Calibration</span>
+</div>
+<div class="flex items-center gap-space-md">
+<!-- Primary Swatch -->
+<div class="flex-1 space-y-1">
+<label class="font-label-code text-[11px] text-secondary">Primary Dominant</label>
+<div class="flex items-center gap-2 bg-surface-container-lowest p-2 rounded-lg shadow-sm">
+<input class="w-7 h-7 rounded border-none cursor-pointer p-0 bg-transparent" type="color" value="#C62828"/>
+<span class="font-label-code text-label-code text-on-surface font-bold">#C62828</span>
+</div>
+</div>
+<!-- Secondary Swatch -->
+<div class="flex-1 space-y-1">
+<label class="font-label-code text-[11px] text-secondary">Shadow / Accent</label>
+<div class="flex items-center gap-2 bg-surface-container-lowest p-2 rounded-lg shadow-sm">
+<input class="w-7 h-7 rounded border-none cursor-pointer p-0 bg-transparent" type="color" value="#8E0000"/>
+<span class="font-label-code text-label-code text-on-surface font-bold">#8E0000</span>
+</div>
+</div>
+</div>
+<!-- Roll physical meter gauge -->
+<div class="pt-2">
+<div class="flex items-center justify-between text-[11px] font-label-code text-on-surface-variant mb-1">
+<span>Roll Condition: 18m Remaining</span>
+<span class="text-primary font-semibold">60% Of Savage 30m</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 60%;"></div>
+</div>
+</div>
+</div>
+<!-- Lighting Recommendation Notes -->
+<div class="space-y-1.5 bg-surface-container-low p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Lighting Recommendation Notes</label>
+<span class="material-symbols-outlined text-[18px] text-amber-700">light_mode</span>
+</div>
+<textarea class="w-full p-3 rounded-lg bg-surface-container-lowest text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm" placeholder="Add technical notes for photographers..." rows="3">Calibrated for 120cm Octabox with 45° grid fill. Keep talent at least 1.8m from paper to avoid red spill on garments. Use Profoto B10X at 1/16 power for rim highlights.</textarea>
+</div>
+</div>
+<!-- Row 3: Physical Condition & Stock Metadata -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Physical Hardware Details</label>
+<input class="w-full h-11 px-3.5 rounded-lg bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container shadow-sm" type="text" value='Savage Universal 107" Crimson Roll #42'/>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Maintenance Status</label>
+<div class="flex items-center gap-2">
+<div class="flex-1 h-11 px-3.5 rounded-lg bg-surface-container-low flex items-center justify-between text-body-sm">
+<span class="text-on-surface">Inspected Today (No creasing)</span>
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+</div>
+<button class="h-11 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-title-sm text-xs transition-colors flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">content_cut</span>
+<span>Trim Roll</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Row 4: Photo Reference & Mood Uploader (Dropzone with 2 sample shoot photos) -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Photo Reference &amp; Mood Uploader</label>
+<span class="font-label-code text-[11px] text-on-surface-variant">Client wizard preview images (Max 10MB)</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Sample 1 -->
+<div class="relative h-32 rounded-xl overflow-hidden group shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="High quality studio sample portrait showing female graduate in black gown on crimson backdrop under directional portrait lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP9Zup9ePj-kDkcBeUNNLtjy9YVDi_543YdZ8rVwbF-PqTC663KGJJxxKpfUnNqmaB3_OT3EoXOjInsUyQRcLpPk1pu3DvE4F6YfKyxz14ztMHPWTS2T-u67rgQATwET_YvI7rgsy0nKlroiqb156d4XRXZ8k_ILVb_IQvUO46irbUpNEsOHbSC7flvFPLZropRZvqNvvrqgEuIymmCCqDvR9auA0l-zgWhMFzYXaw8pq-s5BRMu3A"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest" title="View Full">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center hover:bg-primary" title="Remove">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+<span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 text-surface-container-lowest font-label-caps text-[9px] uppercase">Primary Cover</span>
+</div>
+<!-- Sample 2 -->
+<div class="relative h-32 rounded-xl overflow-hidden group shadow-sm bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Sample male graduation photo with crimson academic hood and studio honors regalia on classic crimson background with gold medal gleam." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-oCJh9tLvOVx1oQVlWVj9cewzkBACbu5iC9kFVT-Vd3LUAePIIDhxY-ZqccQ1PDaQVSOOIF2kxSVVlta0kTWiiZ8i0REJzIf9fV3jS-hNFaGEj-3OeulIy4fAXz-5uYQ8tbfIKFpPKYJwR-N4U9HDvVZHqtmaAEJOmm3MGEF6Ly7Rfxu24-CJEGpHKQyvQAym5nDFcEzeAGkH15UjaSxZ7H-FLe2qxOAEWZJPYIoNc4MpWHbztjs0"/>
+<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest/90 text-on-surface flex items-center justify-center hover:bg-surface-container-lowest" title="View Full">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center hover:bg-primary" title="Remove">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+<span class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 text-surface-container-lowest font-label-caps text-[9px] uppercase">Alternate Angle</span>
+</div>
+<!-- Upload Dropzone -->
+<div class="h-32 rounded-xl bg-surface-container-low hover:bg-surface-container flex flex-col items-center justify-center text-center p-3 cursor-pointer transition-colors group">
+<span class="material-symbols-outlined text-secondary group-hover:text-primary-container transition-colors text-[28px] mb-1">cloud_upload</span>
+<span class="font-title-sm text-[12px] text-on-surface">Upload Shoot Sample</span>
+<span class="font-body-sm text-[10px] text-on-surface-variant mt-0.5">Drag JPG, PNG, or WEBP</span>
+</div>
+</div>
+</div>
+<!-- Row 5: Compatible Packages & Status Toggle -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<!-- Multi-select Tags -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Compatible Packages</label>
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container/10 text-primary-container font-label-code text-[12px] font-semibold">
+<span>Graduation Prestige</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer">cancel</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container/10 text-primary-container font-label-code text-[12px] font-semibold">
+<span>Creative &amp; Editorial</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer">cancel</span>
+</span>
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary-container/10 text-primary-container font-label-code text-[12px] font-semibold">
+<span>Family &amp; Milestone</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer">cancel</span>
+</span>
+<button class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-code text-[12px] flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">add</span>
+<span>Link Package</span>
+</button>
+</div>
+</div>
+<!-- Status Toggle Switch -->
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps text-on-surface uppercase">Studio Booking Status</label>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-700 text-[20px]">public</span>
+<div>
+<div class="font-title-sm text-[13px] text-on-surface">Published to Client Booking Wizard</div>
+<div class="font-body-sm text-[11px] text-on-surface-variant">Clients can select this during step 2 online inquiry.</div>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-space-lg py-space-md bg-surface-container-low flex items-center justify-between gap-space-sm">
+<button class="px-4 py-2 rounded-lg text-secondary hover:text-error hover:bg-error-container/20 font-title-sm text-[13px] transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">archive</span>
+<span>Archive Backdrop</span>
+</button>
+<div class="flex items-center gap-space-sm">
+<button class="px-5 py-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-[13px] transition-colors" onclick="document.getElementById('editThemeModal').classList.add('hidden')">
+            Cancel
+          </button>
+<button class="px-6 py-2.5 rounded-lg bg-primary-container text-on-primary hover:bg-primary font-title-sm text-[13px] transition-all shadow-md flex items-center gap-1.5" onclick="document.getElementById('editThemeModal').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span>Save Theme Details</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Interactive JavaScript logic for client-side category & bay filtering -->
+<script>
+    (function initBackdropsManager() {
+      const pills = document.querySelectorAll('.filter-pill');
+      const cards = document.querySelectorAll('.backdrop-card');
+      const baySelect = document.getElementById('bayFilter');
+      const searchInput = document.getElementById('backdropSearch');
+
+      function filterCatalog() {
+        const activePill = document.querySelector('.filter-pill.active');
+        const activeCategory = activePill ? activePill.dataset.filter : 'all';
+        const bayValue = baySelect ? baySelect.value : 'all';
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        cards.forEach(card => {
+          const cardCategory = card.dataset.category || '';
+          const cardBay = card.dataset.bay || '';
+          const cardText = card.innerText.toLowerCase();
+
+          const matchesCategory = (activeCategory === 'all' || cardCategory === activeCategory);
+          const matchesBay = (bayValue === 'all' || cardBay === bayValue || cardBay === 'bay1' && bayValue === 'bay1' || cardBay === 'bay2' && bayValue === 'bay2');
+          const matchesSearch = !searchQuery || cardText.includes(searchQuery);
+
+          if (matchesCategory && matchesBay && matchesSearch) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => {
+            p.classList.remove('active', 'bg-primary-container', 'text-on-primary');
+            p.classList.add('bg-surface-container', 'text-on-surface-variant');
+          });
+          pill.classList.add('active', 'bg-primary-container', 'text-on-primary');
+          pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          filterCatalog();
+        });
+      });
+
+      if (baySelect) {
+        baySelect.addEventListener('change', filterCatalog);
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterCatalog);
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

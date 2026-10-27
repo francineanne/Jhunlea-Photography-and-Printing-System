@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<div class="px-space-lg py-space-md flex flex-col gap-space-md">
+<!-- Top Editorial Header & Operational Controls -->
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="space-y-space-xs max-w-2xl">
+<div class="inline-flex items-center gap-space-xs text-primary font-label-code text-label-code">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span>CLIENT RELATIONSHIP SUITE</span>
+<span class="text-secondary">•</span>
+<span class="text-on-surface-variant font-label-caps text-label-caps">LUXURY ATELIER CRM</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+          Client Directory &amp; Relationship Management
+        </h1>
+<p class="font-body-md text-body-md text-secondary">
+          Review customer profiles, studio booking archives, prepress print orders, and face-to-face account balances settled directly at counter.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md py-2 rounded-lg">
+<span class="material-symbols-outlined text-[18px] text-primary">account_balance_wallet</span>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Studio Receivables</span>
+<span class="font-label-code text-label-code font-bold text-on-surface ml-1">₱7,650.00</span>
+</div>
+<button class="inline-flex items-center gap-space-xs px-space-md py-2.5 bg-primary text-on-primary rounded-lg font-title-sm text-title-sm text-xs tracking-wide shadow-sm hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>+ New Customer Intake</span>
+</button>
+</div>
+</div>
+<!-- Filter & Precision Search Bar -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-sm bg-surface-container-low p-space-sm rounded-xl">
+<div class="lg:col-span-5 relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-secondary text-[18px]">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-lowest shadow-sm" id="client-search" placeholder="Search by client name, mobile (+63), email, or Ref (#CS-...)" type="text"/>
+</div>
+<div class="lg:col-span-3 flex items-center bg-surface-container-lowest rounded-lg px-3 shadow-sm">
+<span class="material-symbols-outlined text-secondary text-[18px] mr-2">military_tech</span>
+<select class="w-full bg-transparent h-11 font-body-sm text-body-sm text-on-surface focus:outline-none cursor-pointer">
+<option value="all">Tier: All Studio Clients</option>
+<option selected="" value="gold">Gold Heirloom Patron</option>
+<option value="regular">Verified Regular</option>
+<option value="new">New Studio Client</option>
+</select>
+</div>
+<div class="lg:col-span-4 flex items-center justify-between gap-space-xs">
+<button class="flex-1 h-11 px-3 bg-surface-container-lowest rounded-lg font-label-caps text-label-caps text-primary hover:bg-error-container hover:text-on-error-container transition-all flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+<span>Has Outstanding Balance (₱)</span>
+</button>
+<button class="h-11 px-3.5 bg-surface-container-lowest rounded-lg text-on-surface-variant hover:text-on-surface transition-colors flex items-center justify-center shadow-sm" title="Reset Filters">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Master-Detail 2-Panel Architecture -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+<!-- LEFT PANEL: Customer Registry (45% -> 5 cols on lg, 5 cols out of 12) -->
+<div class="lg:col-span-5 flex flex-col gap-space-xs">
+<div class="flex items-center justify-between px-space-xs py-1">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Client Profiles (6)</span>
+<span class="font-label-code text-label-code text-[11px] text-on-surface-variant">Sorted by Studio Engagement</span>
+</div>
+<!-- Client List Cards -->
+<div class="flex flex-col gap-space-xs overflow-y-auto max-h-[820px] pr-1">
+<!-- Selected: Clara Marie Santos -->
+<div class="group relative bg-surface-container-lowest p-space-md rounded-xl shadow-md transition-all cursor-pointer bg-gradient-to-r from-primary-fixed/30 to-transparent">
+<div class="absolute left-0 top-3 bottom-3 w-1.5 bg-primary rounded-r-full"></div>
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-13 h-13 rounded-full object-cover shadow-sm ring-2 ring-primary/20" data-alt="Editorial portrait of Clara Marie Santos, an elegant young Filipina professional with classic hair styling in natural daylight warm studio atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq2y08mmLqnu_3c0dwQpsf-GGm5Rc6krN7oDhJW1nWkuyb2UfikAqMQkxlM8UAsNxrBI_7XQQ08PiDFcI_zxFkRngnamdjzryj8YtHS2KA19tZDmwdPZIIzhTyqktZt2n41oSjOt-SmoHYTUR_bPFVz3y8JwYvYdv5k-VA2W_pmE7DO-rWTsgBJvYXvejPIiGu9hTUdKv1RvFVdZwwVs5vE1z-k_wMxZrdeKxN521TDSZr70MxDBxj"/>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-0.5" title="Gold Heirloom">
+<span class="material-symbols-outlined text-[12px] block">workspace_premium</span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Clara Marie Santos</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-code text-[11px] font-bold">
+                    Due: ₱850.00
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 917 842 1904</span>
+<span>•</span>
+<span class="truncate">clara.santos@atelier.ph</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/50 px-2.5 py-1 rounded-md">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">auto_stories</span>
+<span>14 Studio Jobs</span>
+</span>
+<span class="text-secondary">Active 2 hrs ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Client 2: Rafael 'Raffy' Lim -->
+<div class="group bg-surface-container-lowest p-space-md rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer">
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Cinematic studio headshot of Rafael Raffy Lim, a casual creative male designer in soft studio warm lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbZQf5jTRMlBEMDmBRaTcuUZgffNqzQLEGmlcxsHj6VIDau7GFin1e67rJownqhcW8HguqZp0BvzXuIBUUpxaGAXBjUuj1LaFS2vhxWm5pPWu23AYqz_-W98mJ6tKnFI8Q6kr2_p70BEEyNoODMbJ4uK-y-a6H0XWqn1d_z-KAvKGVDT3e2pxt6IkASds44qDtivVL-OrsC5G3LBWx4_hh1A-O-J2--mqNgUHlZJoH67d2jJvfBEab"/>
+<span class="absolute -bottom-1 -right-1 bg-surface-container-high text-secondary rounded-full p-0.5">
+<span class="material-symbols-outlined text-[12px] block">verified</span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Rafael 'Raffy' Lim</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-code text-[11px]">
+                    ₱0.00 Settled
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 920 193 8812</span>
+<span>•</span>
+<span class="truncate">r.lim@archvisual.com</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/30 px-2.5 py-1 rounded-md">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">photo_camera</span>
+<span>6 Requests</span>
+</span>
+<span class="text-secondary">2 days ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Client 3: Atty. Carmela Villanueva -->
+<div class="group bg-surface-container-lowest p-space-md rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer">
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Formal executive studio portrait of Atty Carmela Villanueva in navy corporate attire, dramatic chiaroscuro lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNlvF1IeDoy7zQxd8gLsUbxzRoUM59At2xOFuqlrO5Wekgf4Tik7IM8GbTsZrmWA3yrKp_CRdw9QkUjNt5oPZWKOWBoiNGTOp8kFj_zrYNO0RMVcdYzYke0eH8sUQxmtXG8sMFs0YDNtexRhJYM3t_j-23bo6w9R_GBmDU0bTBXSSBEy0L7sitQKLiZe3LPncVl6eBrcnxzof9Zn4wHY-SSlD5_afXb9c7P3eBcRQmxG9y5CyIHFdC"/>
+<span class="absolute -bottom-1 -right-1 bg-surface-container-high text-secondary rounded-full p-0.5">
+<span class="material-symbols-outlined text-[12px] block">verified</span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Atty. Carmela Villanueva</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-code text-[11px] font-bold">
+                    Due: ₱1,200.00
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 918 331 4452</span>
+<span>•</span>
+<span class="truncate">carmela@villanuevalaw.ph</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/30 px-2.5 py-1 rounded-md">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-secondary">print</span>
+<span>4 Requests</span>
+</span>
+<span class="text-secondary">Yesterday</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Client 4: Eduardo 'Ed' Tan -->
+<div class="group bg-surface-container-lowest p-space-md rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer">
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center font-title-sm text-title-sm text-on-surface-variant">
+                  ET
+                </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Eduardo 'Ed' Tan</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-surface-container text-secondary font-label-code text-[11px]">
+                    ₱0.00 Settled
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 945 889 0113</span>
+<span>•</span>
+<span class="truncate">ed.tan77@gmail.com</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/30 px-2.5 py-1 rounded-md">
+<span class="text-primary font-bold">New Client (1 Request)</span>
+<span class="text-secondary">May 12</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Client 5: Markus Reyes -->
+<div class="group bg-surface-container-lowest p-space-md rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer">
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Editorial close portrait of Markus Reyes, an art director with subtle grin against warm gray studio backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuADwsnTYzetOnjsLKwS-X2CeC_PYnLVoPJ8DDvCEwNBrOY6bNjA5ixoHgKrBZEIevexKfGCzBBQ4wWf1ZpfvINpHM6yjV8_9Ne_mxsD1yvDKUs_3W4PGq_pp7S1jgvxBKd6R0xwam4oI95aHjjRLXOTTlFm366bUUNImKW5pS2QxI_SSziCV9l2EXpcBC5FvHmZCkB1yh0a_WYbodsG0Gj44mwVoP29QllowAO-4wQI07G5P9nDhe8g"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Markus Reyes</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-code text-[11px] font-bold">
+                    Due: ₱2,400.00
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 927 554 9901</span>
+<span>•</span>
+<span class="truncate">reyes.markus@studiofolio.ph</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/30 px-2.5 py-1 rounded-md">
+<span>5 Requests (Fine Art Prints)</span>
+<span class="text-secondary">4 hrs ago</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Client 6: Danilo Laurel -->
+<div class="group bg-surface-container-lowest p-space-md rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer">
+<div class="flex items-start gap-space-md">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="Distinguished grandfather portrait of Danilo Laurel, warm natural light, soft vignette, sepia undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxOmHY26MAw0o4sGHLWT4c7SSGcXxZsjJ8XrUd88jAXAZY8idD1IfNcO1tJGQFYwyPWWaXX6gMWus7xdtOOcwhw8opQPmuSGPfmiGOlzcHnx8vvQN6xZUVxXMST77aNRGMhW1L0t-8Hpf0M0OXvFGbur7DKENwztO9m2YjyticreaUaym-D8nuwoFXPnZRj3hDsfmfA6FXEosTdQtmjyJwuHNaGBKKsLRKeI8JohjxbVStRAGh0Uwt"/>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary rounded-full p-0.5">
+<span class="material-symbols-outlined text-[12px] block">workspace_premium</span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-1">
+<h3 class="font-title-sm text-title-sm text-on-surface truncate">Danilo Laurel</h3>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-code text-[11px] font-bold">
+                    Due: ₱3,200.00
+                  </span>
+</div>
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary text-[12px] truncate mt-0.5">
+<span>+63 917 112 4009</span>
+<span>•</span>
+<span class="truncate">danilo.laurel@laurelandco.com</span>
+</div>
+<div class="mt-2.5 pt-2 flex items-center justify-between text-[11px] font-label-code text-on-surface-variant bg-surface-container-low/30 px-2.5 py-1 rounded-md">
+<span>8 Requests • Gold Heirloom</span>
+<span class="text-secondary">May 19</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT PANEL: Comprehensive Dossier (55% -> 7 cols on lg) -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<!-- Dossier Main Header Card -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm space-y-space-md">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<img class="w-20 h-20 rounded-2xl object-cover shadow-sm ring-2 ring-primary/20" data-alt="Refined close-up profile portrait of Clara Marie Santos in crisp studio high-definition lighting, clean gallery framing aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBivs9wsRNRp9ntIn95VSKVLdpMSy8gVYAua0idlPya9AzkueIZtsJOqUZzzQUWGijf_PlY6gQbYUKrRbGDahFsHacxTAjwnLTOdbVblTVAQzVSm9QrA5kOgJcMShKb9lHWB3hqPemA8EjRMdtUBu81-ENscBhCQha1-6b-doGz55Xh0FgooEIbyDGqIzV8JWcfVWAHA_uoCOyqFi-s0RqbuyfuQCfYq5Ao9MPCKF-dw6caDSOExUcT"/>
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs flex-wrap">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Clara Marie Santos</h2>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 bg-primary/10 text-primary rounded-full font-label-caps text-label-caps uppercase">
+<span class="material-symbols-outlined text-[14px]">verified</span> Verified Client
+                  </span>
+</div>
+<div class="flex items-center gap-space-sm font-label-code text-label-code text-secondary text-xs">
+<span class="text-on-surface font-bold">#CS-8841</span>
+<span>•</span>
+<span class="text-primary font-bold">Gold Heirloom Tier</span>
+<span>•</span>
+<span>14 completed jobs, 0 cancellations</span>
+</div>
+</div>
+</div>
+<!-- Quick Communication Actions -->
+<div class="flex items-center gap-space-xs self-stretch sm:self-auto justify-end">
+<a class="px-space-sm py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm flex items-center gap-1.5 transition-colors" href="tel:+639178421904" title="Direct Phone Call">
+<span class="material-symbols-outlined text-[16px] text-primary">call</span>
+<span class="hidden xl:inline">+63 917 842 1904</span>
+</a>
+<button class="px-space-sm py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm flex items-center gap-1.5 transition-colors" title="Send SMS message">
+<span class="material-symbols-outlined text-[16px]">sms</span>
+<span class="hidden sm:inline">SMS</span>
+</button>
+<button class="px-space-sm py-2 bg-surface-container-low hover:bg-surface-container text-on-surface rounded-lg font-body-sm text-body-sm flex items-center gap-1.5 transition-colors" title="Send Email">
+<span class="material-symbols-outlined text-[16px]">mail</span>
+<span class="hidden sm:inline">Email</span>
+</button>
+</div>
+</div>
+<!-- Financial Performance Bento -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<div class="bg-surface-container-low p-space-md rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Lifetime Spend</span>
+<div class="mt-1 font-price-display text-price-display text-on-surface font-bold">₱24,850.00</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant text-[11px] mt-0.5">Across 14 Atelier bookings &amp; prints</div>
+</div>
+<div class="bg-error-container/40 p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-error-container uppercase font-bold">Counter Balance Due</span>
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+</div>
+<div class="mt-1 font-price-display text-price-display text-primary font-bold">₱850.00</div>
+<div class="font-body-sm text-body-sm text-on-error-container text-[11px] mt-0.5">Pending face-to-face handover</div>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl">
+<span class="font-label-caps text-label-caps text-secondary uppercase">In-Store Reliability</span>
+<div class="mt-1 flex items-baseline gap-1">
+<span class="font-price-display text-price-display text-on-surface font-bold">100%</span>
+<span class="font-body-sm text-body-sm text-secondary text-xs">perfect record</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary text-[11px] mt-0.5">14/14 settled at desk terminal</div>
+</div>
+</div>
+<!-- Client Preferences & Atelier Craft Notes (Editable) -->
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase">
+<span class="material-symbols-outlined text-[16px] text-primary">edit_note</span>
+<span>Studio Notes &amp; Shoot Specifications</span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">Auto-saved to Atelier Vault</span>
+</div>
+<textarea class="w-full bg-surface-container-lowest p-space-sm rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary shadow-xs resize-none" rows="2">Prefers Bay 02 morning light. Mother uses wheelchair ramp. Loves 260gsm Satin Lustre for fine-art family prints.</textarea>
+</div>
+</div>
+<!-- Tabbed Deep-Dive History Section -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg space-y-space-md">
+<!-- Nav Tabs -->
+<div class="flex items-center gap-space-sm bg-surface-container-low p-1 rounded-xl">
+<button class="flex-1 py-2 px-space-sm rounded-lg bg-surface-container-lowest text-primary font-title-sm text-title-sm text-xs shadow-sm transition-all flex items-center justify-center gap-1.5" id="tab-requests-btn">
+<span class="material-symbols-outlined text-[16px]">folder_shared</span>
+<span>Active &amp; Past Requests (8)</span>
+</button>
+<button class="flex-1 py-2 px-space-sm rounded-lg text-secondary hover:text-on-surface font-title-sm text-title-sm text-xs transition-all flex items-center justify-center gap-1.5" id="tab-ledger-btn">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+<span>In-Store Payment Ledger (6)</span>
+</button>
+<button class="flex-1 py-2 px-space-sm rounded-lg text-secondary hover:text-on-surface font-title-sm text-title-sm text-xs transition-all flex items-center justify-center gap-1.5" id="tab-assets-btn">
+<span class="material-symbols-outlined text-[16px]">art_track</span>
+<span>Stored Print Assets (4)</span>
+</button>
+</div>
+<!-- TAB 1: Active & Past Requests -->
+<div class="space-y-space-sm" id="tab-requests-content">
+<!-- Row 1: Fine Art Giclée -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">photo_library</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold text-on-surface">PR-0012</span>
+<span class="font-title-sm text-title-sm text-xs text-on-surface">Fine Art Giclée (10 pcs 8R)</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">
+                    Hahnemühle 260gsm Satin Lustre • Calibration: AdobeRGB • Lab Queue
+                  </div>
+</div>
+</div>
+<div class="flex items-center gap-space-md w-full md:w-auto justify-between md:justify-end">
+<div class="text-right">
+<div class="font-label-code text-label-code font-bold text-primary">₱1,850.00 Balance</div>
+<div class="font-label-caps text-label-caps text-[10px] text-secondary">May 18</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-primary text-on-primary font-label-caps text-label-caps tracking-wide shrink-0">
+                  Ready for Pickup
+                </span>
+</div>
+</div>
+<!-- Row 2: Graduation Session -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">camera</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold text-on-surface">PB-0005</span>
+<span class="font-title-sm text-title-sm text-xs text-on-surface">Graduation Prestige Session</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">
+                    Bay 02 Natural North Daylight • Wheelchair Ramp Reserved • 60 mins
+                  </div>
+</div>
+</div>
+<div class="flex items-center gap-space-md w-full md:w-auto justify-between md:justify-end">
+<div class="text-right">
+<div class="font-label-code text-label-code text-secondary text-xs">₱0.00 (Counter Settled)</div>
+<div class="font-label-caps text-label-caps text-[10px] text-secondary">May 24, 11:30 AM</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps tracking-wide shrink-0">
+                  Confirmed
+                </span>
+</div>
+</div>
+<!-- Row 3: Passport & Visa -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold text-on-surface">PR-0009</span>
+<span class="font-title-sm text-title-sm text-xs text-on-surface">Passport &amp; Visa Biometrics Photos</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">
+                    Schengen Visa spec + PH Passport hard copies • Delivered
+                  </div>
+</div>
+</div>
+<div class="flex items-center gap-space-md w-full md:w-auto justify-between md:justify-end">
+<div class="text-right">
+<div class="font-label-code text-label-code text-secondary text-xs">₱210.00 (Cash)</div>
+<div class="font-label-caps text-label-caps text-[10px] text-secondary">May 04</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-caps text-label-caps tracking-wide shrink-0">
+                  Completed &amp; Claimed
+                </span>
+</div>
+</div>
+<!-- Row 4: Studio Portrait -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm hover:bg-surface-container transition-colors">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">portrait</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code font-bold text-on-surface">PB-0002</span>
+<span class="font-title-sm text-title-sm text-xs text-on-surface">Essential Studio Portrait</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary text-xs mt-0.5">
+                    Warm Editorial Canvas • Full Color Calibration • Retouched Master
+                  </div>
+</div>
+</div>
+<div class="flex items-center gap-space-md w-full md:w-auto justify-between md:justify-end">
+<div class="text-right">
+<div class="font-label-code text-label-code text-secondary text-xs">₱1,200.00 Paid</div>
+<div class="font-label-caps text-label-caps text-[10px] text-secondary">Apr 28</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-caps text-label-caps tracking-wide shrink-0">
+                  Completed
+                </span>
+</div>
+</div>
+</div>
+<!-- TAB 2: In-Store Payment Ledger (Hidden by default, toggled via JS) -->
+<div class="hidden space-y-space-sm" id="tab-ledger-content">
+<div class="bg-surface-container-low p-space-md rounded-xl space-y-space-sm">
+<div class="flex items-center justify-between font-label-caps text-label-caps text-secondary uppercase pb-2">
+<span>Receipt Reference</span>
+<span>Payment Method</span>
+<span>Amount Paid</span>
+<span>Staff Signoff</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-2">
+<div>
+<div class="font-label-code text-label-code font-bold text-on-surface">RCP-2025-0891</div>
+<div class="text-secondary text-[11px]">May 18, 2025 • Deposit PR-0012</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface font-label-code text-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">qr_code_2</span> GCash QR
+                </div>
+<div class="font-label-code text-label-code font-bold text-on-surface">₱1,000.00</div>
+<div class="text-secondary text-xs font-label-code">Jhunlea P. Arceo</div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-2">
+<div>
+<div class="font-label-code text-label-code font-bold text-on-surface">RCP-2025-0442</div>
+<div class="text-secondary text-[11px]">May 04, 2025 • Full PR-0009</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface font-label-code text-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">payments</span> Cash Desk
+                </div>
+<div class="font-label-code text-label-code font-bold text-on-surface">₱210.00</div>
+<div class="text-secondary text-xs font-label-code">Jhunlea P. Arceo</div>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-2">
+<div>
+<div class="font-label-code text-label-code font-bold text-on-surface">RCP-2025-0109</div>
+<div class="text-secondary text-[11px]">Apr 28, 2025 • Full PB-0002</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface font-label-code text-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">credit_card</span> BPI POS
+                </div>
+<div class="font-label-code text-label-code font-bold text-on-surface">₱1,200.00</div>
+<div class="text-secondary text-xs font-label-code">Jhunlea P. Arceo</div>
+</div>
+</div>
+</div>
+<!-- TAB 3: Stored Print Assets (Hidden by default, toggled via JS) -->
+<div class="hidden space-y-space-sm" id="tab-assets-content">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm">
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center gap-space-sm">
+<div class="w-16 h-16 bg-surface-container-highest rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Editorial portrait test proof file preview showing color swatches and framing lines on Hahnemuhle paper simulation." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDmF2QUCVN51QQEWWJvCv6JAn2czw1_FhOqQTDzKl759kzXYmCqh1-QVhWNVgsaH5Ph1FzxGGGXwE4ChSL1hIGKdnoBPxWOOGeuAEebQFmLupVI4FpopiQiKoBHBl62wP0FTpJkAwGoT-TgM_uIKfeBDaEf21TdyNaem9WFftNmJmNW97PAZ7TkZcOcyP8b7njO4fTMGyU8Mw68bRjPkuI1DzrgcXYUGgZ8h8BOZXMMTUL70MfYzt9"/>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs truncate">Clara_Grad_8R_Portraits.pdf</div>
+<div class="font-label-code text-label-code text-[11px] text-secondary">18.4 MB • CMYK Prepress</div>
+<span class="inline-block mt-1 font-label-caps text-label-caps text-primary text-[10px]">Approved Proof</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-xl flex items-center gap-space-sm">
+<div class="w-16 h-16 bg-surface-container-highest rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="High precision passport photo composite 4-up sheet layout with crop marks and biometric measurement guidelines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdHeR3HpSzrm3-7p0QTkO56WqRa17J2Qv2a_8SW0TSN7MwPhxXm0_IfM7Vzz-Q_urT1YgiL7T7_K_hChksMQiBiUMkIow4JJG1MoA480kxSNlyKw5udUOI1wArFaNJqfsb2HW_6gwrSyvclz4SZ47ANV_XyPAtFiHY131eS-bXcBm9Gn_41Mtcr0oikrI5EI6YWX5yapQOJsMsAxHZN2F_HWcXYQyiplh6HKTsAH1yCgTLw0eUX2pR"/>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs truncate">Clara_Schengen_Passport_4x.tiff</div>
+<div class="font-label-code text-label-code text-[11px] text-secondary">6.2 MB • sRGB 300DPI</div>
+<span class="inline-block mt-1 font-label-caps text-label-caps text-secondary text-[10px]">Archived</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer for Selected Client -->
+<div class="pt-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<button class="px-space-md py-2.5 bg-primary text-on-primary rounded-lg font-title-sm text-title-sm text-xs shadow-sm hover:bg-primary-container transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">point_of_sale</span>
+<span>Record Counter Payment</span>
+</button>
+<button class="px-space-md py-2.5 bg-surface-container text-on-surface rounded-lg font-title-sm text-title-sm text-xs hover:bg-surface-container-high transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span>Create New Booking for Clara</span>
+</button>
+</div>
+<button class="px-space-md py-2.5 bg-surface-container-low text-on-surface rounded-lg font-title-sm text-title-sm text-xs hover:bg-surface-container transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>Create Print Job</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Mandatory Studio Notice Banner -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center justify-between gap-space-md shadow-xs">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">storefront</span>
+</div>
+<div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface">Store Settlement Policy</div>
+<p class="font-body-sm text-body-sm text-secondary text-xs">
+            Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout. All ledger balances update directly at counter terminal POS.
+          </p>
+</div>
+</div>
+<div class="hidden sm:flex items-center gap-space-xs font-label-code text-label-code text-xs text-secondary shrink-0">
+<span class="material-symbols-outlined text-[16px] text-primary">verified_user</span>
+<span>Atelier Terminal #01</span>
+</div>
+</div>
+</div>
+<script>
+    // Tab switching micro-interactions
+    const tabBtns = [
+      document.getElementById('tab-requests-btn'),
+      document.getElementById('tab-ledger-btn'),
+      document.getElementById('tab-assets-btn')
+    ];
+    const tabContents = [
+      document.getElementById('tab-requests-content'),
+      document.getElementById('tab-ledger-content'),
+      document.getElementById('tab-assets-content')
+    ];
+
+    tabBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach((b, i) => {
+          if (i === index) {
+            b.classList.remove('text-secondary');
+            b.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          } else {
+            b.classList.add('text-secondary');
+            b.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+          }
+        });
+
+        tabContents.forEach((content, i) => {
+          if (i === index) {
+            content.classList.remove('hidden');
+          } else {
+            content.classList.add('hidden');
+          }
+        });
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

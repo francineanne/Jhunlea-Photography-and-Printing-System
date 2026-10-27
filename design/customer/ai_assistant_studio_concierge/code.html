@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="notifications" href="#">Notifications</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><a aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></a><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<div class="max-w-[1280px] w-full mx-auto px-margin-mobile md:px-margin py-space-lg flex flex-col gap-space-lg">
+<!-- Context Ribbon & Page Architecture Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-space-xs font-label-caps text-label-caps text-primary tracking-widest uppercase font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>
+<span>Studio Intelligence System v2.4</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mt-space-xs">
+          Studio Concierge &amp; Dialogue
+        </h1>
+<p class="font-body-md text-body-md text-secondary mt-space-xs max-w-2xl">
+          Direct dialogue system calibrated on 12+ years of fine art archival print profiles, graduation portrait staging, and Poblacion studio schedules.
+        </p>
+</div>
+<!-- Quick Session Telemetry Pills -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">shutter_speed</span>
+<span class="font-label-code text-label-code text-on-surface">CALIBRATION: 2880 DPI ULTRACHROME</span>
+</div>
+<div class="hidden sm:flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">schedule</span>
+<span class="font-label-code text-label-code text-secondary">RESPONSE &lt; 0.4s</span>
+</div>
+</div>
+</div>
+<!-- Main Workspace Grid: AI Concierge Main Window + Studio Side Rail -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Primary Chat Engine Container (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col bg-surface-container-lowest rounded-xl shadow-md overflow-hidden relative">
+<!-- AI Assistant Header -->
+<div class="p-space-md sm:p-space-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="relative w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">camera</span>
+<span class="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-surface-container-lowest flex items-center justify-center">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-title-md text-title-md text-on-surface font-bold">Jhunlea Studio Assistant</span>
+<span class="bg-primary/10 text-primary font-label-caps text-label-caps px-space-xs py-0.5 rounded uppercase font-semibold">Active Concierge</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+                Online Concierge • Powered by Studio Atelier Knowledge Base
+              </p>
+</div>
+</div>
+<!-- Header Action Controls -->
+<div class="flex items-center gap-space-xs sm:self-center">
+<button class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-lg text-on-surface hover:bg-surface-container-high transition-colors font-title-sm text-body-sm" title="Start new session" type="button">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+<span class="hidden sm:inline">New Conversation</span>
+</button>
+<a class="flex items-center gap-space-xs bg-inverse-surface text-inverse-on-surface px-space-md py-space-xs rounded-lg hover:bg-on-background transition-colors font-title-sm text-body-sm" href="tel:+639170000000" title="Direct owner contact">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span class="hidden sm:inline">Contact Owner</span>
+</a>
+<button class="w-9 h-9 flex items-center justify-center rounded-lg text-secondary hover:bg-surface-container-high hover:text-on-surface transition-colors" title="Minimize window" type="button">
+<span class="material-symbols-outlined text-[20px]">horizontal_rule</span>
+</button>
+</div>
+</div>
+<!-- Studio Policy / Legal Disclaimer Notice -->
+<div class="p-space-md bg-surface-container-low/60 flex items-start gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary leading-relaxed">
+<strong class="font-semibold text-on-surface">Studio Face-to-Face Transaction Policy:</strong> AI assistant recommendations and price calculations are studio estimates and do not constitute confirmed bookings or final prices. All bookings and prepress files are personally verified by Jhunlea P. Arceo, and payment is made face-to-face in-store at Poblacion Atelier.
+          </p>
+</div>
+<!-- Chat Conversation Scroll Area -->
+<div class="p-space-md sm:p-space-lg flex flex-col gap-space-lg max-h-[640px] overflow-y-auto">
+<!-- Suggested Prompt Chips -->
+<div class="flex flex-col gap-space-xs pb-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase font-semibold">Suggested Studio Inquiries</span>
+<div class="flex flex-wrap gap-space-xs">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-full font-body-sm text-body-sm transition-all hover:scale-[1.02] shadow-sm text-left" type="button">
+                Recommend a photoshoot package
+              </button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-full font-body-sm text-body-sm transition-all hover:scale-[1.02] shadow-sm text-left" type="button">
+                What printing options are available?
+              </button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-full font-body-sm text-body-sm transition-all hover:scale-[1.02] shadow-sm text-left" type="button">
+                How do I book a graduation session?
+              </button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-full font-body-sm text-body-sm transition-all hover:scale-[1.02] shadow-sm text-left" type="button">
+                Explain paper GSM weights
+              </button>
+</div>
+</div>
+<!-- Message 1: Assistant Welcome Bubble -->
+<div class="flex gap-space-md items-start max-w-2xl">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Jhunlea Assistant</span>
+<span class="font-label-code text-body-sm text-secondary">09:41 AM</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container text-on-surface font-body-md text-body-md shadow-sm rounded-tl-none">
+                Mabuhay Clara! I am your Jhunlea Studio concierge. I can help recommend the ideal portrait package, explain our archival pigment printing specs, or calculate an estimated quote. What are you looking to create today?
+              </div>
+</div>
+</div>
+<!-- Message 2: User Prompt -->
+<div class="flex gap-space-md items-start max-w-2xl self-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-on-background text-surface flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+<div class="flex flex-col gap-space-xs items-end">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-body-sm text-secondary">09:43 AM</span>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Clara Santos</span>
+</div>
+<div class="p-space-md rounded-xl bg-primary text-on-primary font-body-md text-body-md shadow-sm rounded-tr-none">
+                I'm graduating next month with honors and want both digital files and a framed photo for our living room. What package fits best?
+              </div>
+</div>
+</div>
+<!-- Message 3: Assistant Response with Recommendation Cards -->
+<div class="flex gap-space-md items-start max-w-3xl">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+</div>
+<div class="flex flex-col gap-space-md flex-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Jhunlea Assistant</span>
+<span class="font-label-code text-body-sm text-secondary">09:43 AM</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container text-on-surface font-body-md text-body-md shadow-sm rounded-tl-none">
+                Congratulations on your graduation with honors, Clara! That is an exceptional achievement. Based on your milestone, I strongly recommend our <strong class="text-primary font-semibold">Graduation Prestige Package</strong>, designed specifically for multi-look university portraits and archival wall presentation.
+              </div>
+<!-- Recommendation Card 1: Featured Flagship -->
+<div class="bg-surface-container-low rounded-xl p-space-md sm:p-space-lg flex flex-col md:flex-row gap-space-lg shadow-sm hover:shadow-md transition-shadow">
+<div class="relative md:w-44 h-48 md:h-auto rounded-lg overflow-hidden shrink-0 bg-surface-dim">
+<img class="w-full h-full object-cover" data-alt="A distinguished Filipina graduate student dressed in deep university graduation gown and satin academic honors sash smiling with subtle confidence in a warm photographic studio setting illuminated by soft portrait rim lights and deep museum charcoal backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtnR4EjbJgDNGxeGpi26lOEpBS3XUQ7G9_8-39eF5pjt-1lp7oLEq7tpUOoUEXXGu_qZT429LxosI4k4OhAvEyc3fFOPkbZ_2WYKeDoyX6CqNMidblME_GmWAEKI1xIwMW_bnmZQM3Mh701IOHDyNo7ajCSvcQpZprDqhKMR6ProUm4WZoHiqgYDC-UV2OeP9Pt9NFDgI3QLTW--kaJR-pBqvoadFhhLWwz1sEFfTpeitasbxGuP79"/>
+<span class="absolute top-2 left-2 bg-primary text-on-primary font-label-caps text-label-caps px-space-xs py-0.5 rounded shadow">
+                    BEST VALUE
+                  </span>
+</div>
+<div class="flex flex-col justify-between flex-1 gap-space-md">
+<div>
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Graduation Prestige</h2>
+<div class="flex items-baseline gap-1">
+<span class="font-price-display text-price-display text-primary">₱1,850</span>
+<span class="font-label-code text-body-sm text-secondary">Est. Total</span>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-xs mt-space-sm text-body-sm font-body-sm text-on-surface">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">schedule</span>
+<span>60 mins dedicated bay</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">checkroom</span>
+<span>2 outfits (Toga + Formal Barong/Dress)</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">cloud_done</span>
+<span>10 retouched master digitals</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">filter_frames</span>
+<span>Framed 8R archival lustre + 8 wallet prints</span>
+</div>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-body-sm px-space-md py-space-xs rounded-xl shadow transition-colors flex items-center gap-space-xs" type="button">
+<span>Start Request with this Package</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface font-title-sm text-body-sm px-space-md py-space-xs rounded-xl transition-colors" type="button">
+                      View Package Details
+                    </button>
+</div>
+</div>
+</div>
+<!-- Recommendation Card 2: Lightweight Alternative -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[24px]">portrait</span>
+</div>
+<div>
+<span class="block font-title-sm text-title-sm text-on-surface">Essential Studio Portrait + Framed 8R Add-on</span>
+<span class="font-body-sm text-body-sm text-secondary">30 mins bay • Single attire • 3 retouched digitals + Separate custom framing</span>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-space-md shrink-0">
+<div class="text-right">
+<span class="block font-price-display text-body-lg font-bold text-on-surface">₱1,650</span>
+<span class="block font-label-code text-[11px] text-secondary">₱1,200 + ₱450</span>
+</div>
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-space-md py-space-xs rounded-xl font-title-sm text-body-sm transition-colors" type="button">
+                    Select
+                  </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Message 4: Out-of-Scope User Prompt -->
+<div class="flex gap-space-md items-start max-w-2xl self-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full bg-on-background text-surface flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+<div class="flex flex-col gap-space-xs items-end">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-body-sm text-secondary">09:44 AM</span>
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Clara Santos</span>
+</div>
+<div class="p-space-md rounded-xl bg-primary text-on-primary font-body-md text-body-md shadow-sm rounded-tr-none">
+                Can you charge my credit card right now for the ₱1,850 so my slot is locked in?
+              </div>
+</div>
+</div>
+<!-- Message 5: Out-of-Scope Response (Enforcing Studio Policy) -->
+<div class="flex gap-space-md items-start max-w-3xl">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">auto_awesome</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-body-sm font-semibold text-on-surface">Jhunlea Assistant</span>
+<span class="font-label-caps text-label-caps bg-surface-container-high text-secondary px-1.5 py-0.5 rounded">POLICY ENFORCEMENT</span>
+<span class="font-label-code text-body-sm text-secondary">09:45 AM</span>
+</div>
+<div class="p-space-md sm:p-space-lg rounded-xl bg-surface-container text-on-surface font-body-md text-body-md shadow-sm rounded-tl-none flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-sm text-primary font-semibold font-title-sm">
+<span class="material-symbols-outlined text-[20px]">no_sim</span>
+<span>Online Card Processing Not Permitted</span>
+</div>
+<p>
+                  I cannot process credit card payments or online checkouts. At <strong>Jhunlea Photography &amp; Printing</strong>, all transactions are settled face-to-face at our Poblacion studio counter on the day of your shoot or upon print pickup (via Cash, GCash, Maya, or Debit card).
+                </p>
+<div class="bg-surface-container-low p-space-md rounded-lg flex items-center gap-space-md mt-space-xs">
+<span class="material-symbols-outlined text-primary text-[24px]">verified</span>
+<p class="font-body-sm text-body-sm text-secondary">
+                    This guarantees you personally inspect physical backdrop arrangements, lighting previews, and paper proofs before any money is paid!
+                  </p>
+</div>
+<p class="mt-space-xs">
+                  Would you like me to guide you to our booking calendar to reserve your preferred date without any upfront fee?
+                </p>
+<div class="pt-space-xs flex gap-space-sm">
+<button class="bg-primary hover:bg-primary-container text-on-primary font-title-sm text-body-sm px-space-md py-space-xs rounded-xl transition-colors shadow" type="button">
+                    Open Reservation Calendar
+                  </button>
+<button class="bg-surface-container-high hover:bg-surface-dim text-on-surface font-title-sm text-body-sm px-space-md py-space-xs rounded-xl transition-colors" type="button">
+                    Ask Another Question
+                  </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Typing Indicator Bubble -->
+<div class="flex gap-space-md items-center max-w-xl">
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container px-space-md py-space-sm rounded-full text-secondary">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-bounce [animation-delay:0.4s]"></span>
+</div>
+<span class="font-body-sm text-body-sm italic">
+                Assistant is reviewing studio calibration data...
+              </span>
+</div>
+</div>
+</div>
+<!-- Chat Input Dock -->
+<div class="p-space-md bg-surface-container-low flex flex-col gap-space-xs shadow-[0_-2px_12px_rgba(0,0,0,0.02)]">
+<form class="flex items-center gap-space-xs sm:gap-space-sm bg-surface-container-lowest p-1.5 rounded-xl shadow-inner" onsubmit="event.preventDefault();">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors" title="Attach file or photo proof" type="button">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<input class="flex-1 bg-transparent px-space-sm py-2 font-body-md text-body-md text-on-surface focus:outline-none placeholder:text-secondary/60" placeholder="Ask about printing papers, framing, or photoshoot packages..." type="text"/>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors hidden sm:flex" title="Voice dictation" type="button">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary hover:bg-primary-container text-on-primary transition-transform active:scale-95 shadow" title="Send query" type="submit">
+<span class="material-symbols-outlined text-[20px]">arrow_upward</span>
+</button>
+</form>
+<div class="flex items-center justify-between px-space-xs text-secondary font-label-caps text-[10px] tracking-wider uppercase">
+<span>Powered by Jhunlea Studio Calibration Engine</span>
+<span>Shift + Enter for multi-line</span>
+</div>
+</div>
+</div>
+<!-- Studio Side Rail: Specs, Prepress Guides, & Master Proofing (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Live Concierge Metadata Card -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Atelier Parameters</span>
+<span class="bg-surface-container text-on-surface font-label-code text-label-code px-space-xs py-0.5 rounded">POBLACION, PH</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between font-body-sm text-body-sm py-1">
+<span class="text-secondary">Master Printer In Charge</span>
+<span class="font-semibold text-on-surface">Jhunlea P. Arceo</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-1">
+<span class="text-secondary">Archival Ink Profile</span>
+<span class="font-label-code text-body-sm text-on-surface">11-Color UltraChrome</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-1">
+<span class="text-secondary">Paper Stocks Available</span>
+<span class="font-semibold text-on-surface">Lustre, Matte, Rag 310gsm</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm py-1">
+<span class="text-secondary">Booking Deposit</span>
+<span class="text-primary font-bold">₱0.00 (In-Store Only)</span>
+</div>
+</div>
+<!-- Studio Work Hours Graphic Visual -->
+<div class="p-space-md bg-surface-container rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<div>
+<span class="block font-title-sm text-body-sm font-semibold text-on-surface">Today's Studio Session</span>
+<span class="block font-label-code text-body-sm text-secondary">08:00 AM – 06:00 PM</span>
+</div>
+</div>
+<span class="font-label-code text-body-sm text-primary font-bold">OPEN</span>
+</div>
+</div>
+<!-- Visual Proofing & Paper Standards Showcase -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-title-md text-title-md text-on-surface">Archival Substrates</h3>
+<span class="material-symbols-outlined text-secondary text-[20px]">layers</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+            Every studio print is dried under controlled humidity and cold-mounted behind anti-reflective acrylic.
+          </p>
+<div class="relative h-44 rounded-lg overflow-hidden bg-surface-dim shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Close up macroscopic high definition photograph of photographic paper texture showing heavy 310gsm cotton rag archival paper weave reflecting gentle studio key lighting with precision edge cutting and crimson color test swatches." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCryaXS79WK5d-DupSjkzbwaPCPDZmc9Lsu3Iu0a3qoVQLbt2tVa2QfNh0zXJ2iLAU1NC9DCHzrk6EXVrZgLC60ekhNaxB087JpwrfKMc5s4KFeTzVuvmB48Y6sJKirjXQ8AwBSQefvCYhhyOiULvGfXz83ATHIF0vrLRZfV0q34zseMUKW8k1-Fomtjiny5qugApM-dOZ1dyddHvdWG9PZ1OuARXal4KgtUbKc97-jvyFh-riOSJRq"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-space-md">
+<div class="text-white">
+<span class="font-label-caps text-label-caps text-primary-fixed uppercase tracking-wider block">Signature Stock</span>
+<span class="font-title-sm text-body-md font-semibold">Hahnemühle Photo Rag 308 GSM</span>
+</div>
+</div>
+</div>
+<!-- Substrate Breakdown Mini List -->
+<div class="flex flex-col gap-space-xs font-body-sm text-body-sm">
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container transition-colors">
+<span class="text-on-surface font-medium">Fine Art Lustre (260 GSM)</span>
+<span class="font-label-code text-secondary">Standard</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container transition-colors">
+<span class="text-on-surface font-medium">Metallic Pearl (300 GSM)</span>
+<span class="font-label-code text-secondary">+₱150</span>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded hover:bg-surface-container transition-colors">
+<span class="text-on-surface font-medium">Museum Cotton Smooth (310 GSM)</span>
+<span class="font-label-code text-secondary">+₱300</span>
+</div>
+</div>
+</div>
+<!-- Studio Master Dispatch Card -->
+<div class="bg-inverse-surface text-inverse-on-surface p-space-lg rounded-xl shadow-md flex flex-col gap-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold">
+              JP
+            </div>
+<div>
+<span class="block font-title-sm text-body-md font-semibold text-white">Jhunlea P. Arceo</span>
+<span class="block font-label-caps text-label-caps text-outline-variant uppercase">Proprietor &amp; Lead Colorist</span>
+</div>
+</div>
+<blockquote class="font-headline-sm text-body-lg italic text-inverse-on-surface/90">
+            “We never rush a graduate's pride or a family heirloom into digital prints without personal tactile inspection.”
+          </blockquote>
+<div class="flex items-center gap-space-xs pt-space-xs text-outline-variant font-label-code text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed">pin_drop</span>
+<span>Studio Desk 1, Poblacion Atelier</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main><div class="fixed bottom-6 right-6 z-40"><a aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02] cursor-pointer" data-path="ai-assistant" href="#"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></a></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffdad6", "outline-variant": "#e4beba", "on-tertiary": "#ffffff", "on-primary": "#ffffff", "primary-container": "#c62828", "secondary-container": "#e2dfde", "surface-container-high": "#e8e8e8", "error-container": "#ffdad6", "on-error": "#ffffff", "inverse-surface": "#2f3131", "on-primary-fixed-variant": "#93000e", "secondary-fixed-dim": "#c8c6c5", "on-primary-container": "#ffe0dd", "surface-container-low": "#f3f3f3", "secondary-fixed": "#e5e2e1", "surface-container-highest": "#e2e2e2", "on-background": "#1a1c1c", "tertiary-container": "#676767", "primary": "#a20513", "secondary": "#5f5e5e", "surface": "#f9f9f9", "on-secondary": "#ffffff", "surface-bright": "#f9f9f9", "tertiary-fixed-dim": "#c8c6c6", "tertiary-fixed": "#e4e2e2", "primary-fixed-dim": "#ffb4ac", "on-secondary-fixed": "#1c1b1b", "on-secondary-container": "#636262", "on-secondary-fixed-variant": "#474746", "inverse-primary": "#ffb4ac", "inverse-on-surface": "#f1f1f1", "surface-variant": "#e2e2e2", "outline": "#8f706c", "on-tertiary-container": "#e8e6e6", "on-tertiary-fixed-variant": "#474747", "on-tertiary-fixed": "#1b1c1c", "surface-dim": "#dadada", "surface-container": "#eeeeee", "on-error-container": "#93000a", "surface-tint": "#b91d20", "on-primary-fixed": "#410003", "surface-container-lowest": "#ffffff", "tertiary": "#4f4f4f", "background": "#f9f9f9", "on-surface": "#1a1c1c", "error": "#ba1a1a", "on-surface-variant": "#5b403d" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin-mobile": "1rem", "gutter": "1.5rem", "space-lg": "1.5rem", "gutter-mobile": "1rem", "space-md": "1rem", "space-xl": "2.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "margin": "2rem" }, "fontFamily": { "label-code": ["JetBrains Mono"], "label-caps": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "display-hero": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-sm": ["Playfair Display"] }, "fontSize": { "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><span class="material-symbols-outlined text-secondary-fixed-dim text-[18px] cursor-pointer hover:text-surface-container-lowest transition-colors">menu_open</span></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-210px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="overview" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="font-body-md text-body-md">Overview</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">print</span><span class="font-body-md text-body-md">Printing Orders</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-primary-container text-on-primary">14</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">photo_camera</span><span class="font-body-md text-body-md">Photo Bookings</span></div><span class="font-label-code text-label-code text-[11px] px-space-xs py-0.5 rounded bg-surface-container-high/20 text-secondary-fixed">8</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="services" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">inventory_2</span><span class="font-body-md text-body-md">Services Catalog</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">package_2</span><span class="font-body-md text-body-md">Photo Packages</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">palette</span><span class="font-body-md text-body-md">Themes &amp; Backdrops</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="schedule-and-availability" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">calendar_today</span><span class="font-body-md text-body-md">Studio Calendar</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Client Directory</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Counter Payments</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="font-body-md text-body-md">Notifications</span></div><span class="w-2 h-2 rounded-full bg-primary-container"></span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">bar_chart</span><span class="font-body-md text-body-md">Studio Reports</span></div></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">settings</span><span class="font-body-md text-body-md">Atelier Settings</span></div></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payments settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="max-w-[1280px] mx-auto px-space-lg py-space-lg"><div class="flex flex-col w-full">
+<!-- Top Editorial Header & Operational Telemetry -->
+<section class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg mb-space-xl">
+<div>
+<div class="inline-flex items-center gap-space-xs font-label-caps text-label-caps text-primary uppercase tracking-widest mb-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+        Atelier Master Dispatch
+      </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+        Good morning, <span class="italic font-display-hero">Jhunlea</span>
+</h1>
+<p class="font-body-md text-body-md text-secondary mt-space-xs flex items-center gap-space-sm">
+<span>Monday, May 19, 2025</span>
+<span class="text-surface-container-highest">•</span>
+<span class="font-label-code text-label-code text-[12px] text-on-surface-variant">Manila Atelier Lab (Poblacion)</span>
+<span class="text-surface-container-highest">•</span>
+<span class="inline-flex items-center gap-1 text-[12px] font-label-code text-primary">
+<span class="material-symbols-outlined text-[14px]">thermostat</span> 21.4°C / 46% RH Proofing Climate
+        </span>
+</p>
+</div>
+<!-- Quick Action Tray & Notice Snippet -->
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="flex items-center gap-space-xs px-space-md py-space-sm bg-surface-container-low rounded-xl text-on-surface shadow-sm">
+<span class="material-symbols-outlined text-primary-container text-[18px]">verified</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-[10px] text-secondary">Prepress Engine</span>
+<span class="font-label-code text-label-code text-[11px] font-bold">ICC E-Proofing Active</span>
+</div>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-space-sm bg-inverse-surface text-inverse-on-surface hover:bg-tertiary rounded-xl font-title-sm text-title-sm text-xs transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Manual Walk-in Order</span>
+</button>
+<button class="flex items-center gap-space-xs px-space-md py-space-sm bg-primary-container text-on-primary hover:bg-primary rounded-xl font-title-sm text-title-sm text-xs transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span>Run Lab Queue</span>
+</button>
+</div>
+</section>
+<!-- Face-to-Face Settlement Policy Notice Banner -->
+<div class="mb-space-xl p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md shadow-sm relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex items-center gap-space-md pl-space-xs">
+<div class="w-10 h-10 rounded-lg bg-error-container/40 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[22px]">point_of_sale</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Storefront Settlement Protocol Active</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-code text-[10px]">STRICT IN-PERSON</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">
+          Payment is settled face-to-face at the Jhunlea Atelier counter upon job proof inspection or shoot check-in. No online checkout gateways authorized.
+        </p>
+</div>
+</div>
+<div class="flex items-center gap-space-md self-end md:self-center shrink-0 font-label-code text-label-code text-[12px] text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span> Cash / Studio POS Terminal</span>
+<span class="font-label-caps text-label-caps text-primary cursor-pointer hover:underline">Station 01 Terminal</span>
+</div>
+</div>
+<!-- Stat Cards Grid (6 Metrics) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-space-md mb-space-xl">
+<!-- 1. New requests to review -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Review Queue</span>
+<span class="px-space-sm py-0.5 rounded-full bg-amber-100 text-amber-900 font-label-code text-[11px] font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> 3 pending
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-display-hero text-[34px] leading-tight text-on-surface font-semibold">3</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface-variant mt-1">New requests to review</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[11px]">
+<span>Prepress &amp; shoots</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- 2. Printing in process -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Lab Engine</span>
+<span class="px-space-sm py-0.5 rounded-full bg-violet-100 text-violet-900 font-label-code text-[11px] font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-violet-600 animate-pulse"></span> 5 active
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-display-hero text-[34px] leading-tight text-on-surface font-semibold">5</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface-variant mt-1">Printing in process</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[11px]">
+<span>Canon Pro-12 &amp; Epson</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- 3. Ready for pickup -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Staging Bins</span>
+<span class="px-space-sm py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-label-code text-[11px] font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> 4 allocated
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-display-hero text-[34px] leading-tight text-on-surface font-semibold">4</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface-variant mt-1">Ready for pickup</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[11px]">
+<span>Boxed &amp; inspected</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- 4. Shoots this week -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Studio Bookings</span>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container text-on-surface font-label-code text-[11px] font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> 6 booked
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-display-hero text-[34px] leading-tight text-on-surface font-semibold">6</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface-variant mt-1">Shoots this week</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[11px]">
+<span>Bays 01 &amp; 02</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- 5. Awaiting schedule confirmation -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Slot Request</span>
+<span class="px-space-sm py-0.5 rounded-full bg-blue-100 text-blue-900 font-label-code text-[11px] font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> 2 sessions
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-display-hero text-[34px] leading-tight text-on-surface font-semibold">2</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface-variant mt-1">Awaiting schedule</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[11px]">
+<span>Requires clearance</span>
+<span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform text-primary">arrow_forward</span>
+</div>
+</div>
+<!-- 6. Unpaid balances (Pending face-to-face) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between hover:shadow-md transition-all relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<span class="font-label-caps text-label-caps text-primary uppercase">Counter Receivables</span>
+<span class="px-space-sm py-0.5 rounded-full bg-error-container text-on-error-container font-label-code text-[10px] font-bold">
+          Due In-Store
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="font-price-display text-price-display text-primary leading-tight font-bold">₱8,450.00</div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface mt-1">Unpaid balances</div>
+</div>
+<div class="mt-space-sm pt-space-xs flex items-center justify-between text-secondary font-label-code text-[10px] leading-tight">
+<span>Counter collection only</span>
+<span class="material-symbols-outlined text-[16px] text-primary">receipt_long</span>
+</div>
+</div>
+</section>
+<!-- Main Bento Workstation: Priority Actions & Studio Pulse -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg mb-space-xl">
+<!-- LEFT COLUMN: Needs Action Priority Board (7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Needs Immediate Action</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-code text-[11px]">4 Critical</span>
+</div>
+<button class="font-label-caps text-label-caps text-primary hover:underline uppercase flex items-center gap-1">
+<span>Audit All</span>
+<span class="material-symbols-outlined text-[14px]">tune</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mb-space-lg">
+          High-priority print calibration checks, schedule locks, and prepress warnings requiring owner sign-off.
+        </p>
+<!-- Item Stack -->
+<div class="space-y-space-md">
+<!-- Job 1: Low DPI Warning -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-primary font-bold">PR-0021</span>
+<span class="font-title-sm text-title-sm text-sm text-on-surface truncate">Clara Santos</span>
+<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-label-code text-[10px] font-bold">Action Required</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Canvas Gallery Wrap Mount (24×36 in)
+                </div>
+<div class="flex items-center gap-space-sm mt-1 text-[11px] font-label-code text-error">
+<span class="material-symbols-outlined text-[14px]">image_not_supported</span>
+<span>Low DPI Warning (142 DPI submitted • Recommended 300 DPI)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 self-end md:self-center">
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary hover:bg-primary font-title-sm text-title-sm text-xs transition-colors shadow-sm whitespace-nowrap">
+                Review File &amp; Prepress
+              </button>
+</div>
+</div>
+<!-- Job 2: Booking Review -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">event_upcoming</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-on-surface font-bold">PB-0007</span>
+<span class="font-title-sm text-title-sm text-sm text-on-surface truncate">Clara Santos</span>
+<span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-900 font-label-code text-[10px] font-bold">Awaiting Owner Review</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Creative &amp; Editorial Studio Portfolio Session
+                </div>
+<div class="flex items-center gap-space-sm mt-1 text-[11px] font-label-code text-secondary">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>Requested Friday Jun 6, 2:00 PM • Bay 01 Stage</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 self-end md:self-center">
+<button class="px-space-md py-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface hover:bg-tertiary font-title-sm text-title-sm text-xs transition-colors shadow-sm whitespace-nowrap">
+                Review Schedule
+              </button>
+</div>
+</div>
+<!-- Job 3: Bleed Resolved Ready for Pro-12 -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-primary font-bold">PR-0012</span>
+<span class="font-title-sm text-title-sm text-sm text-on-surface truncate">Clara Santos</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-label-code text-[10px] font-bold">Prepress Resolved</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  10 pcs 8R Fine Art Prints (Hahnemühle Photo Rag 308)
+                </div>
+<div class="flex items-center gap-space-sm mt-1 text-[11px] font-label-code text-secondary">
+<span class="material-symbols-outlined text-[14px]">crop</span>
+<span>2mm bleed inquiry confirmed by client • RIP prepared</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 self-end md:self-center">
+<button class="px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary hover:bg-primary font-title-sm text-title-sm text-xs transition-colors shadow-sm whitespace-nowrap">
+                Send to Canon Pro-12
+              </button>
+</div>
+</div>
+<!-- Job 4: Walk-in Slot Request -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-space-md hover:bg-surface-container transition-colors shadow-sm">
+<div class="flex items-start gap-space-md min-w-0">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-primary flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">flash_on</span>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-on-surface font-bold">PB-0009</span>
+<span class="font-title-sm text-title-sm text-sm text-on-surface truncate">Marco Valerio</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface font-label-code text-[10px] font-bold">Ready for Bay 01</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+                  Biometric Visa Studio Bundle (Express Print + Digital ISO)
+                </div>
+<div class="flex items-center gap-space-sm mt-1 text-[11px] font-label-code text-primary font-semibold">
+<span class="material-symbols-outlined text-[14px]">hourglass_top</span>
+<span>Walk-in requested today • Settles ₱950.00 at counter</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 self-end md:self-center">
+<button class="px-space-md py-space-sm rounded-lg bg-inverse-surface text-inverse-on-surface hover:bg-tertiary font-title-sm text-title-sm text-xs transition-colors shadow-sm whitespace-nowrap">
+                Confirm Slot
+              </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Order Volume & Projected Revenue Visualizer -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm mb-space-md">
+<div>
+<div class="font-label-caps text-label-caps text-secondary uppercase">Weekly Load Matrix</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Weekly Atelier Production Volume</h3>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-2 font-label-code text-[11px] text-secondary">
+<span class="w-3 h-3 rounded bg-primary-container inline-block"></span> Fine Art Prints
+              <span class="w-3 h-3 rounded bg-inverse-surface inline-block"></span> Photo Bookings
+            </div>
+<div class="text-right">
+<span class="font-label-caps text-[10px] text-secondary block">Projected Settled</span>
+<span class="font-price-display text-title-md text-primary font-bold">₱42,800</span>
+</div>
+</div>
+</div>
+<!-- Inline SVG Compact 7-Day Bar Chart -->
+<div class="w-full mt-space-sm">
+<svg class="w-full h-44 overflow-visible" preserveaspectratio="none" viewbox="0 0 640 160">
+<!-- Gridlines -->
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="4 4" x1="0" x2="640" y1="20" y2="20"></line>
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="4 4" x1="0" x2="640" y1="70" y2="70"></line>
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="4 4" x1="0" x2="640" y1="120" y2="120"></line>
+<!-- Bars: Grouped 7 Days (Mon-Sun). Max scale 120px -->
+<!-- Mon (4 prints, 2 shoots) -->
+<rect fill="#c62828" height="65" rx="3" width="18" x="35" y="65"></rect>
+<rect fill="#2f3131" height="40" rx="3" width="18" x="57" y="90"></rect>
+<!-- Tue (6 prints, 3 shoots) -->
+<rect fill="#c62828" height="85" rx="3" width="18" x="125" y="45"></rect>
+<rect fill="#2f3131" height="50" rx="3" width="18" x="147" y="80"></rect>
+<!-- Wed (8 prints, 4 shoots) -->
+<rect fill="#c62828" height="100" rx="3" width="18" x="215" y="30"></rect>
+<rect fill="#2f3131" height="62" rx="3" width="18" x="237" y="68"></rect>
+<!-- Thu (7 prints, 5 shoots) -->
+<rect fill="#c62828" height="90" rx="3" width="18" x="305" y="40"></rect>
+<rect fill="#2f3131" height="75" rx="3" width="18" x="327" y="55"></rect>
+<!-- Fri Peak (12 prints, 8 shoots) -->
+<rect fill="#c62828" height="120" rx="3" width="18" x="395" y="10"></rect>
+<rect fill="#2f3131" height="98" rx="3" width="18" x="417" y="32"></rect>
+<!-- Sat Peak (14 prints, 9 shoots) -->
+<rect fill="#c62828" height="125" rx="3" width="18" x="485" y="5"></rect>
+<rect fill="#2f3131" height="106" rx="3" width="18" x="507" y="24"></rect>
+<!-- Sun (5 prints, 4 shoots) -->
+<rect fill="#c62828" height="70" rx="3" width="18" x="575" y="60"></rect>
+<rect fill="#2f3131" height="55" rx="3" width="18" x="597" y="75"></rect>
+</svg>
+<!-- Day Labels -->
+<div class="grid grid-cols-7 text-center font-label-code text-[11px] text-secondary mt-space-xs">
+<div><span class="font-bold text-on-surface">Mon</span> (Today)</div>
+<div>Tue</div>
+<div>Wed</div>
+<div>Thu</div>
+<div class="text-primary font-bold">Fri • Peak</div>
+<div class="text-primary font-bold">Sat • Peak</div>
+<div>Sun</div>
+</div>
+</div>
+<div class="mt-space-md p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between text-[11px] font-label-code text-on-surface-variant">
+<span>Friday &amp; Saturday bay utilization reached 92% ceiling</span>
+<span class="text-primary font-bold">Bookings auto-buffer +15m</span>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Studio Timeline & Real-time Live Streams (5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Studio Bay Chronological Timeline (Today) -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">calendar_view_day</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Today's Studio Timeline</h3>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">May 19, 2025</span>
+</div>
+<!-- Bay Status Badges -->
+<div class="flex items-center gap-space-sm mb-space-lg">
+<div class="flex-1 p-space-xs px-space-sm bg-surface-container rounded-lg flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-[10px] text-secondary">Bay 01 (Biometric / Editorial)</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="flex-1 p-space-xs px-space-sm bg-surface-container rounded-lg flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-[10px] text-secondary">Bay 02 (Prestige / Portrait)</span>
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</div>
+</div>
+<!-- Timeline Items -->
+<div class="relative pl-6 space-y-space-md before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-surface-container-highest">
+<!-- Event 1: Calibration -->
+<div class="relative">
+<span class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-surface-container-high border-2 border-surface-container-lowest"></span>
+<div class="flex items-baseline justify-between">
+<span class="font-label-code text-label-code text-[12px] font-bold text-on-surface">09:30 AM</span>
+<span class="font-label-caps text-[10px] text-secondary uppercase">Lab Protocol</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mt-1 shadow-sm">
+<div class="font-title-sm text-title-sm text-xs text-on-surface">Lab Calibration</div>
+<div class="font-body-sm text-body-sm text-[12px] text-secondary mt-0.5">
+                11-color UltraChrome warmup &amp; spectro head alignment completed.
+              </div>
+</div>
+</div>
+<!-- Event 2: Graduation Session -->
+<div class="relative">
+<span class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-primary-container border-2 border-surface-container-lowest"></span>
+<div class="flex items-baseline justify-between">
+<span class="font-label-code text-label-code text-[12px] font-bold text-primary">10:00 AM – 11:30 AM</span>
+<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-label-code text-[10px] font-bold">Confirmed / Staged</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mt-1 shadow-sm border-l-2 border-primary-container">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-xs text-on-surface">PB-0005 Graduation Prestige</span>
+<span class="font-label-code text-[11px] text-secondary">Bay 02</span>
+</div>
+<div class="font-body-sm text-body-sm text-[12px] text-on-surface-variant mt-0.5">
+                Clara Santos • Velvet Crimson Backdrop #04 Staged
+              </div>
+<div class="mt-1 flex items-center justify-between text-[11px] font-label-code text-secondary">
+<span>3 Toga Styles • Gown Ready</span>
+<span class="text-on-surface font-semibold">Counter balance: ₱3,200</span>
+</div>
+</div>
+</div>
+<!-- Event 3: Corporate Headshot -->
+<div class="relative">
+<span class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-surface-container-high border-2 border-surface-container-lowest"></span>
+<div class="flex items-baseline justify-between">
+<span class="font-label-code text-label-code text-[12px] font-bold text-on-surface">01:30 PM – 02:15 PM</span>
+<span class="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 font-label-code text-[10px] font-bold">Slot Held</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mt-1 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-xs text-on-surface">Corporate Executive Headshot</span>
+<span class="font-label-code text-[11px] text-secondary">Bay 01</span>
+</div>
+<div class="font-body-sm text-body-sm text-[12px] text-secondary mt-0.5">
+                Architect Rafael Mendoza • Seamless Slate 18% Grey
+              </div>
+</div>
+</div>
+<!-- Event 4: Proof Review -->
+<div class="relative">
+<span class="absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-surface-container-high border-2 border-surface-container-lowest"></span>
+<div class="flex items-baseline justify-between">
+<span class="font-label-code text-label-code text-[12px] font-bold text-on-surface">03:30 PM – 05:00 PM</span>
+<span class="font-label-caps text-[10px] text-secondary uppercase">Darkroom Bay</span>
+</div>
+<div class="p-space-sm bg-surface-container-low rounded-lg mt-1 shadow-sm">
+<div class="font-title-sm text-title-sm text-xs text-on-surface">Fine Art Archival Proof Review &amp; In-Person Trimming</div>
+<div class="font-body-sm text-body-sm text-[12px] text-secondary mt-0.5">
+                Gallery inspection bench reserved for 24x36 Canvas Stretch inspect.
+              </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recently Updated Requests Activity Stream -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">history_toggle_off</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Stream Activity</h3>
+</div>
+<span class="font-label-caps text-label-caps text-secondary uppercase text-[10px]">Real-time Lab</span>
+</div>
+<div class="space-y-space-sm">
+<!-- Update 1 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-emerald-600 text-[18px] shrink-0 mt-0.5">done_all</span>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs text-on-surface truncate">PR-0019 • 12R Matte Archival Packed</div>
+<div class="font-body-sm text-body-sm text-[11px] text-secondary">Bin #03 allocated. SMS ready alert triggered.</div>
+</div>
+</div>
+<span class="font-label-code text-label-code text-[10px] text-secondary shrink-0">12m ago</span>
+</div>
+<!-- Update 2 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">receipt</span>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs text-on-surface truncate">Cash Settle • ₱1,850.00 Received</div>
+<div class="font-body-sm text-body-sm text-[11px] text-secondary">Clara Santos paid counter invoice #INV-8812.</div>
+</div>
+</div>
+<span class="font-label-code text-label-code text-[10px] text-secondary shrink-0">44m ago</span>
+</div>
+<!-- Update 3 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-blue-600 text-[18px] shrink-0 mt-0.5">cloud_upload</span>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs text-on-surface truncate">Raw TIFF Ingest • PR-0022 Received</div>
+<div class="font-body-sm text-body-sm text-[11px] text-secondary">Color profile Adobe RGB (1998) validated.</div>
+</div>
+</div>
+<span class="font-label-code text-label-code text-[10px] text-secondary shrink-0">1h ago</span>
+</div>
+<!-- Update 4 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex items-start gap-space-sm min-w-0">
+<span class="material-symbols-outlined text-amber-600 text-[18px] shrink-0 mt-0.5">warning</span>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-xs text-on-surface truncate">Roll Stock Warning: 24" Baryta 310gsm</div>
+<div class="font-body-sm text-body-sm text-[11px] text-secondary">Remaining: 3.4m on Roll 2 (approx 3 prints left).</div>
+</div>
+</div>
+<span class="font-label-code text-label-code text-[10px] text-secondary shrink-0">2h ago</span>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-code text-[11px] text-secondary">Audit Trail Session #9940</span>
+<button class="font-label-caps text-label-caps text-xs text-primary hover:underline">Full Logbook</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Studio Hardware Status Strip -->
+<section class="p-space-md bg-surface-container-lowest rounded-xl shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">precision_manufacturing</span>
+</div>
+<div>
+<div class="font-title-sm text-title-sm text-xs text-on-surface">Atelier Lab Output Units Online</div>
+<div class="font-body-sm text-body-sm text-[11px] text-secondary">
+          Canon imagePROGRAF PRO-12 (Gloss Optimizer Ready) • Epson SureColor P9000 (Archival HDR 99.3%)
+        </div>
+</div>
+</div>
+<div class="flex items-center gap-space-lg flex-wrap font-label-code text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Spectrophotometer: Calibrated 08:00 AM</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span>Storage Vault: 4.8 TB / 12 TB RAID-6</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Station 01 Counter Terminal: Logged In</span>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Simple micro-interaction for action triggers
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const originalText = this.innerText;
+      if (this.innerText.includes('Review') || this.innerText.includes('Confirm') || this.innerText.includes('Send')) {
+        this.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span> Processing...';
+        setTimeout(() => {
+          this.innerHTML = '<span class="material-symbols-outlined text-[14px]">done</span> Acknowledged';
+          this.classList.remove('bg-primary-container', 'bg-inverse-surface');
+          this.classList.add('bg-emerald-700', 'text-white');
+        }, 600);
+      }
+    });
+  });
+</script></div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

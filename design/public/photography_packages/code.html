@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"tertiary-fixed":"#e4e2e2","error":"#ba1a1a","on-secondary-container":"#636262","on-surface-variant":"#5b403d","inverse-primary":"#ffb4ac","on-surface":"#1a1c1c","on-tertiary-fixed":"#1b1c1c","background":"#f9f9f9","on-error-container":"#93000a","on-tertiary":"#ffffff","on-primary":"#ffffff","surface-tint":"#b91d20","on-primary-fixed":"#410003","primary":"#a20513","on-error":"#ffffff","on-tertiary-container":"#e8e6e6","on-primary-fixed-variant":"#93000e","primary-fixed-dim":"#ffb4ac","secondary-fixed-dim":"#c8c6c5","surface-container-high":"#e8e8e8","surface-container-highest":"#e2e2e2","on-secondary":"#ffffff","tertiary-fixed-dim":"#c8c6c6","surface-container":"#eeeeee","surface":"#f9f9f9","surface-container-lowest":"#ffffff","on-secondary-fixed-variant":"#474746","secondary-container":"#e2dfde","tertiary":"#4f4f4f","surface-variant":"#e2e2e2","primary-fixed":"#ffdad6","on-background":"#1a1c1c","on-tertiary-fixed-variant":"#474747","on-secondary-fixed":"#1c1b1b","outline":"#8f706c","error-container":"#ffdad6","secondary-fixed":"#e5e2e1","surface-container-low":"#f3f3f3","primary-container":"#c62828","surface-bright":"#f9f9f9","tertiary-container":"#676767","surface-dim":"#dadada","on-primary-container":"#ffe0dd","outline-variant":"#e4beba","secondary":"#5f5e5e","inverse-surface":"#2f3131","inverse-on-surface":"#f1f1f1"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-mobile":"1rem","space-lg":"1.5rem","space-md":"1rem","margin-mobile":"1rem",margin:"2rem","space-sm":"0.5rem",gutter:"1.5rem","space-xs":"0.25rem","space-xl":"2.5rem"},fontFamily:{"title-md":["Plus Jakarta Sans"],"label-code":["JetBrains Mono"],"body-lg":["Plus Jakarta Sans"],"headline-lg":["Playfair Display"],"body-md":["Plus Jakarta Sans"],"display-hero-mobile":["Playfair Display"],"headline-lg-mobile":["Playfair Display"],"label-caps":["Plus Jakarta Sans"],"title-sm":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"price-display":["Plus Jakarta Sans"],"headline-sm":["Playfair Display"],"display-hero":["Playfair Display"],"headline-md":["Playfair Display"]},fontSize:{"title-md":["18px",{lineHeight:"26px",fontWeight:"600"}],"label-code":["13px",{lineHeight:"18px",letterSpacing:"0.04em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"26px",fontWeight:"400"}],"headline-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.015em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"22px",fontWeight:"400"}],"display-hero-mobile":["36px",{lineHeight:"44px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-lg-mobile":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"label-caps":["11px",{lineHeight:"16px",letterSpacing:"0.08em",fontWeight:"700"}],"title-sm":["16px",{lineHeight:"24px",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"18px",fontWeight:"400"}],"price-display":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-sm":["22px",{lineHeight:"30px",fontWeight:"500"}],"display-hero":["56px",{lineHeight:"64px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-md":["28px",{lineHeight:"36px",fontWeight:"500"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-md border-b border-surface-container-high shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="bg-surface-container-low border-b border-surface-container-high py-space-xs px-margin"><div class="max-w-[1280px] mx-auto flex items-center justify-between text-secondary font-label-caps text-label-caps uppercase"><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-primary text-[15px]">storefront</span><span>Studio Policy: Payment is made face-to-face at Jhunlea Photography &amp; Printing in store. No online checkout required.</span></div><div class="flex items-center gap-space-md"><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px]">schedule</span>Mon-Sat 8:30 AM - 6:30 PM</span><span class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px]">pin_drop</span>PH Atelier Lab</span></div></div></div><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-sm shrink-0"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AEtjO1WgVLaGW8jw4eDMIX9E3e8IpbgqC_sKBqOlFGE3hvN1DPB9Zea-As7ir2yc_f9XioYy0oIXneM0rTUPwWs6fIi7IzttMIZcs1P3DUjMXWEqNd8jvilMIgDLDmeQHKjulphByMIW_noQ-oUDlTPjOLQ7yHdWLTnpsx-vw12CNXO6Dq4MVvpei1eat-L8qAhJze9SjnQc7RNFoPuS2RtfsriLfkDJBswAYuMm4J5Cbu4Fb4ZwEm9UHU7mLA"/><div class="flex flex-col"><span class="font-headline-md text-headline-sm tracking-tight text-on-surface leading-none uppercase font-semibold">JHUNLEA</span><span class="font-label-caps text-label-caps text-secondary tracking-widest uppercase">Photography &amp; Printing</span></div></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary font-title-sm border-b-2 border-primary pb-1"><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="services" href="#">Services</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="printing-services" href="#">Printing Services</a><a aria-current="page" class="transition-colors text-primary font-title-sm border-b-2 border-primary pb-1" data-path="photography-packages" href="#">Photography Packages</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="package-finder" href="#">Package Finder</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="how-it-works" href="#">How it works</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors" data-path="track-order" href="#">Track Order</a></nav><div class="flex items-center gap-space-sm shrink-0"><button aria-label="Toggle Theme" class="w-10 h-10 rounded-lg flex items-center justify-center text-secondary hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">contrast</span></button><a class="px-space-md py-space-sm font-title-sm text-body-md text-on-surface hover:bg-surface-container rounded-lg transition-colors" data-path="login" href="#">Login</a><a class="px-space-md py-space-sm font-title-sm text-body-md bg-primary-container text-on-primary rounded-lg hover:bg-primary shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04)] transition-colors" data-path="book-a-shoot" href="#">Book a shoot</a></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full pb-32">
+<section class="w-full bg-surface-container-low py-space-xl">
+<div class="max-w-[1280px] mx-auto px-margin">
+<nav aria-label="Breadcrumb" class="flex items-center gap-space-xs text-secondary font-label-caps text-label-caps uppercase mb-space-sm">
+<a class="hover:text-primary transition-colors" href="#">Home</a>
+<span class="text-secondary-fixed-dim">/</span>
+<a class="hover:text-primary transition-colors" href="#">Packages</a>
+<span class="text-secondary-fixed-dim">/</span>
+<span class="text-primary font-semibold">Photography</span>
+</nav>
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-lg">
+<div class="max-w-3xl">
+<div class="inline-flex items-center gap-space-xs font-label-code text-label-code text-primary uppercase tracking-widest mb-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+            Atelier Series • 2025 Tier Catalog
+          </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Studio Photography Packages</h1>
+<p class="font-body-lg text-body-lg text-secondary mt-space-sm">Thoughtfully crafted sessions for portraits, academic milestones, families, and creative portfolios. Explore our curated tiers or select multiple to compare.</p>
+</div>
+<div class="flex items-center gap-space-md bg-surface-container-lowest p-space-md rounded-xl shadow-sm self-start lg:self-end">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[22px]">compare_arrows</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-sm text-title-sm text-on-surface">Curated Matrix</span>
+<span class="font-body-sm text-body-sm text-secondary">6 Tailored Studio Setups Available</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full py-space-lg bg-surface">
+<div class="max-w-[1280px] mx-auto px-margin">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-space-md">
+<div class="flex flex-wrap items-center gap-space-xs" id="categoryChips">
+<button class="px-space-md py-space-xs rounded-full bg-primary-container text-on-primary font-title-sm text-body-sm transition-all shadow-sm flex items-center gap-space-xs">
+<span>All Packages</span>
+<span class="text-[11px] bg-primary/40 px-1.5 py-0.5 rounded-full">6</span>
+</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface font-title-sm text-body-sm transition-all">Portrait &amp; Solo</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface font-title-sm text-body-sm transition-all">Family &amp; Group</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface font-title-sm text-body-sm transition-all">Graduation &amp; Academic</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface font-title-sm text-body-sm transition-all">Creative &amp; Editorial</button>
+<button class="px-space-md py-space-xs rounded-full bg-surface-container-low hover:bg-surface-container text-secondary hover:text-on-surface font-title-sm text-body-sm transition-all">ID &amp; Corporate</button>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full text-secondary font-label-caps text-label-caps uppercase self-start md:self-auto">
+<span class="material-symbols-outlined text-[16px] text-primary">info</span>
+<span>Tip: Check 'Compare' on up to 3 packages to see side-by-side differences.</span>
+</div>
+</div>
+</div>
+</section>
+<section class="w-full">
+<div class="max-w-[1280px] mx-auto px-margin">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Package 1 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-1" data-pkg-price="₱1,200" data-pkg-title="Essential Studio Portrait">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Minimalist editorial studio portrait of a woman against a textured warm taupe background, lit with soft diffused Rembrandt studio lighting, fine art photography, neutral tones, Philippine atelier craft." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxsXNraWavn1pBetw-YJwLugqHZ_jR62u32YmY4Jh9tZ53PInbgzHYnxKaVsqzYQqk2dtsL1Zuxso7za-i0s5OdpsYFfdeup4raHw9NZYNlvup6MiF1hnkYnO7ZOt8j0fCbtRl_79KNGdu0imGT3ULhX3gpqXhnVaGXiomRoMbmJYyzLR5EmXEEkMf6q_96WhG36rT_iqJzh_5i-2m_3eKKO4stDgOWZl3Sj8HsncZgGJGajV1oiq3"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-caps text-label-caps uppercase">Solo &amp; Portrait</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-1', 'Essential Studio Portrait', '₱1,200', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 30 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person</span> Solo (1 pax)</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 01 • REFINED ESSENTIAL</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Essential Studio Portrait</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">An intimate solo session capturing personal character with classic atelier monochrome and color lighting.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>1 backdrop tone (Canvas, Alabaster, or Graphite)</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>5 retouched digital masters in high-resolution</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>2 archival 5R matte prints with museum border</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Single wardrobe styling arrangement</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱1,200</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Package 2 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-2" data-pkg-price="₱1,850" data-pkg-title="Graduation Prestige">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Sophisticated academic graduation portrait of a proud Philippine university graduate in traditional dark toga with gold sash, cinematic rim lighting, dignified atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAI-MlkiuFi_ZP50nSHcVYB9U3SXCDr8WeC3b9yIVFqngs24mxBWjtZpnccZE-u0pp1_kIErIzmH3fs3hYYSMvcISyRksNnN72E4dtI51ix6HlSYNOP0s-BQd4sVRXVTKVFI6GxFp0ALN_7gYMvROK4CWHDYkOqtolu02HIEY-zjsSw596PQY1mHuMcQksa4glkG8SeZmGWA1n1JjbWMClW649ET9vL8yrVUHZ3zWNJ0W3IOQTHybl0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-primary text-on-primary font-label-caps text-label-caps uppercase">Academic Milestone</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input checked="" class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-2', 'Graduation Prestige', '₱1,850', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 60 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">groups</span> Graduate + 2 guests</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 02 • HERITAGE &amp; TOGA</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Graduation Prestige</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Formal academic toga, Filipiniana barong or creative cap shoot commemorating commencement achievements.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>2 backdrops (Official academic gradient &amp; contemporary studio)</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>10 master retouched copies + full proof gallery</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>1 8R archival framed portrait with non-glare glass</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Complimentary cap, toga, &amp; hood steam preparation</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱1,850</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Package 3 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-3" data-pkg-price="₱2,400" data-pkg-title="Creative &amp; Editorial Portfolio">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High fashion creative editorial studio shoot featuring dramatic red gel lighting, moody shadows, avant-garde posing, cinematic art direction, fine art editorial styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-s88UDQXHm_899BCwDh4D8R9kocbhfNdelA3mOWJG5Ugo3AVfPjtkQJNRgmMUve8rZlBxBEVNc8pWFpzBh5G0xLVxJUftx3TnTOmDcjyVRw-Nivw3ZbA6WuiUtQLOVGlzoC3iF3--T9Th0FY9bXEVEG2vzzLWWsBbGVgB-Syzc7r-j_8w0sCOEj83gBBwmUsP3EVcXZwq3wKEsiquLmHx5dPOChCZvjQz9l2bh_radkkqtDIFSL2y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-caps text-label-caps uppercase">Editorial &amp; Fashion</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-3', 'Creative &amp; Editorial Portfolio', '₱2,400', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 75 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person</span> 1-2 pax</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 03 • ART DIRECTION</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Creative &amp; Editorial Portfolio</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Experimental lighting, high-fashion styling, and avant-garde compositional storytelling for models and creatives.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Artistic lighting gels, snoots, and textured cyclorama</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Unlimited outfit variations within booked slot</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>12 high-resolution master color-graded files</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Pre-session digital moodboard &amp; posing guidance</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱2,400</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Package 4 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-4" data-pkg-price="₱3,500" data-pkg-title="Family Warmth &amp; Milestone">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Multi-generational Filipino family smiling together in a luminous daylight studio setting, styled in coordinated warm linen tones, relaxed and joyful pose, fine art heirloom photograph." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqdK_Ia6ksZOSBmNGpcmdPCJ4ijyv0gWkaUYBbAbVK8lHtFc0Dbffp8667AF_XC4TfZVHbs-v9M6_1H52_lILdtUwD-D4BnvqXBJH_agVVqxlT6isec7CdEbTYiQlD13tlzmsB55ISD7gJ_cjBpz10BwLqObtSeHgYxVBaUJvgg16PDwb01xx1joX0NnVd0rz-jAYj3z3OLoA7XyhUWQsUrhKAipHhlVs01FyTCqI1X4nHWtHkqqbR"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-caps text-label-caps uppercase">Family &amp; Group</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-4', 'Family Warmth &amp; Milestone', '₱3,500', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 90 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">diversity_1</span> Up to 6 pax</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 04 • HEIRLOOM HERITAGE</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Family Warmth &amp; Milestone</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Celebratory generations portraits with balanced soft floodlighting designed to capture familial warmth and connection.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Whole family plus individual breakout grouping combos</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>15 master retouched digital files with heirloom archive</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>1 12R Archival cotton canvas wrap print ready to hang</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Includes elders and children staging accommodations</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱3,500</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Package 5 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-5" data-pkg-price="₱2,800" data-pkg-title="Couple &amp; Engagement Glow">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Romantic indoor pre-nuptial couple shoot, intimate gaze, warm ambient lighting, minimal contemporary studio backdrop, cinematic quiet luxury mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLwgCb8PJd0zRaeRtEmxkUoB-_fz3oLbO_rir-FTtqVI4gH8VyE9sK7RY2Huk_hmYEYSwjgREIdd1bUNh1PP8zC8fH9W6kOGXoz1FB5sBjxFyLTYEebFn7eJYCt2yeFBC1WIkxwhClul4NlgFcaMbwKfYoSlIhjaAXzGU3zTrVgLNlk2dg1pxLe_DOTkIkkPewMr0lfuQ-l_Z6ty3nU1h25fEkkuEAvBLwFzX_s0I5XVote0LmrcxL"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-caps text-label-caps uppercase">Couples &amp; Prenup</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-5', 'Couple &amp; Engagement Glow', '₱2,800', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 60 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">favorite</span> Couple (2 pax)</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 05 • ROMANCE ATELIER</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Couple &amp; Engagement Glow</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Intimate romantic portraiture for anniversaries, engagements, or modern minimalist pre-wedding keepsakes.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>2 backdrop aesthetics (Warm Natural Daylight &amp; Velvet Noir)</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>10 retouched digital masters in private proofing link</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>1 8R framed fine art print + 1 accordion mini keepsake album</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>2 coordinated wardrobe set changes permitted</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱2,800</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Package 6 -->
+<article class="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between" data-pkg-id="pkg-6" data-pkg-price="₱950" data-pkg-title="Executive &amp; Corporate Headshot">
+<div>
+<div class="relative w-full aspect-[16/9] overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Polished corporate executive headshot of an Asian business professional in a clean blazer, neutral gray studio backdrop, crisp professional rim lighting, LinkedIn profile style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiz4Fyv_hWOMOUUBbLW8Srqrd3Rzl4RT1uqGYI2Wl8sBLSubZIvlLvB6hx-f-joot1fk9vhwuQj2loRLaPbaBMkAdCiLmzhbVkx6XYV3cfbtxB4Mu9xsRQnCYzVb8kfWP73SKPBVE-M5e_5qTe17pW-UxhaWTafvnpW2nZ4wM-4dbKvcFdgFqq9dzsqgYE_BunROf8hwGP_SNH8rCFez0UhMwnhf_JVtBL-MtnL_rd0EGiInYGOQmN"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+<div class="absolute top-space-sm left-space-sm">
+<span class="px-space-sm py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md text-on-surface font-label-caps text-label-caps uppercase">Corporate &amp; ID</span>
+</div>
+<label class="absolute top-space-sm right-space-sm flex items-center gap-space-xs bg-surface-container-lowest/95 backdrop-blur-md px-space-sm py-1 rounded-full cursor-pointer shadow-sm select-none hover:bg-surface-container-lowest">
+<input class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer" onchange="toggleCompare('pkg-6', 'Executive &amp; Corporate Headshot', '₱950', this)" type="checkbox"/>
+<span class="font-label-caps text-label-caps uppercase text-on-surface">Compare</span>
+</label>
+<div class="absolute bottom-space-sm left-space-sm right-space-sm flex items-center justify-between text-on-primary font-label-code text-label-code">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> 20 mins</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">badge</span> 1 pax</span>
+</div>
+</div>
+<div class="p-space-lg flex flex-col gap-space-md">
+<div>
+<span class="font-label-code text-label-code text-primary">TIER 06 • EXPRESS EXECUTIVE</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Executive &amp; Corporate Headshot</h3>
+<p class="font-body-sm text-body-sm text-secondary mt-1">High-impact profile portraits optimized for LinkedIn, press releases, company leadership pages, and visa applications.</p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col gap-space-sm">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Inclusions &amp; Outputs</span>
+<ul class="flex flex-col gap-space-xs font-body-sm text-body-sm text-on-surface">
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Signature Studio Gray or Alabaster Pure backdrop</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>3 express retouched soft copies delivered within 24 hours</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Cropped ratios for LinkedIn, passport, and CV included</span>
+</li>
+<li class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">check_circle</span>
+<span>Live monitor instant review during shooting</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="p-space-lg pt-0 flex flex-col gap-space-md">
+<div class="flex items-baseline justify-between bg-surface-container p-space-sm px-space-md rounded-lg">
+<span class="font-body-sm text-body-sm text-secondary">Estimated studio rate:</span>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">₱950</span>
+<span class="block font-label-code text-[11px] text-secondary">Settled in-store</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="h-11 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-title-sm text-body-md transition-colors flex items-center justify-center">Details</button>
+<button class="h-11 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md transition-colors shadow-sm flex items-center justify-center gap-space-xs">
+<span>Book Shoot</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- Studio Policy Banner Card -->
+<section class="w-full mt-space-xl">
+<div class="max-w-[1280px] mx-auto px-margin">
+<div class="bg-surface-container-low rounded-xl p-space-lg shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-lg relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="flex items-start gap-space-md pl-space-xs">
+<div class="w-12 h-12 rounded-xl bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm shrink-0">
+<span class="material-symbols-outlined text-[28px]">storefront</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-md text-title-md text-on-surface">Zero Online Billing • Face-to-Face Settlement Policy</span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-surface font-label-caps text-[10px] uppercase">Studio Guarantee</span>
+</div>
+<p class="font-body-md text-body-md text-secondary mt-1 max-w-2xl">
+              Selecting a package does not charge your card. No online checkout required. Payment is made face-to-face at Jhunlea Photography &amp; Printing during your shoot schedule via Cash, GCash, Maya, or Studio POS terminal.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-md shrink-0 w-full md:w-auto">
+<div class="flex flex-col text-right hidden sm:flex">
+<span class="font-label-code text-label-code text-primary">POBLACION ATELIER LAB</span>
+<span class="font-body-sm text-body-sm text-secondary">Manila, Philippines</span>
+</div>
+<a class="w-full md:w-auto px-space-lg py-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-title-sm text-body-md shadow-sm transition-colors text-center" href="#">Studio Policy Guide</a>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky Bottom Compare Bar -->
+<aside class="fixed bottom-6 left-0 right-0 z-40 px-margin pointer-events-none transition-all duration-300" id="stickyCompareBar">
+<div class="max-w-[1280px] mx-auto pointer-events-auto">
+<div class="bg-inverse-surface text-inverse-on-surface rounded-2xl p-space-md shadow-xl backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">compare</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm" id="compareCountLabel">2 packages selected to compare:</span>
+<span class="px-2 py-0.5 rounded-full bg-white/20 text-white font-label-code text-[11px]" id="compareMaxPill">2 of 3 MAX</span>
+</div>
+<p class="font-body-sm text-body-sm text-tertiary-fixed-dim" id="compareSelectionList">Essential Studio Portrait, Graduation Prestige</p>
+</div>
+</div>
+<div class="flex items-center gap-space-md self-end md:self-auto">
+<div class="flex -space-x-2 overflow-hidden hidden sm:flex">
+<div class="inline-block h-9 w-9 rounded-full ring-2 ring-inverse-surface bg-surface-container overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="Portrait avatar thumbnail of Essential Studio Portrait session" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZcE8aHrEmoU9UNIvpF1ayc9WzYIxkxglo9zXeAq5CfI6Fig05ysKT5TNPfA16ukEy1Ky8olAXmX6MJALyeoyQNAKm4yVytmJ-Bi3RXE6wbltinjKhtP79gl7fLUj4zZw2oEU8-JnuqmeoJdvW6o0wvvBNKq-FDBEzBgdKpCZnTzhdKdAClXbtgLR1A8Wxa2r98LiDfScLURU8BUKkMAIj03U8zPvB7J4gV8WggFwhkwKXtJNhJlzr"/>
+</div>
+<div class="inline-block h-9 w-9 rounded-full ring-2 ring-inverse-surface bg-surface-container overflow-hidden">
+<img class="h-full w-full object-cover" data-alt="Portrait avatar thumbnail of Graduation Prestige session" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG5iNrIG7dQ4TLl0QG989ptPMFJPwYj-DImfHEhN70oNMNegL2RD5LMQyt6PguFZ4YKRTWEQ7XstXFmoz6r_-OObudNCuQ5KW0khGsadlmbmTKNk0O1KZUEl74Vcz1-Vhd1x_MHu1sFqfpJW2d9bE28eg87_W37MwAQQ8RIlVOMzqjsSVr1KYTj24l5_Mspjz62bHrPGgxiDVYyKT7jUs_2G7hh2BJ_zgEhKn34mRAQRDDuUnpqP9Q"/>
+</div>
+</div>
+<button class="font-body-sm text-body-sm text-inverse-primary hover:underline px-space-xs py-1 transition-colors" onclick="clearAllCompare()">Clear selection</button>
+<button class="px-space-lg py-space-sm rounded-lg bg-primary hover:bg-primary-container text-on-primary font-title-sm text-body-md transition-all shadow-md flex items-center gap-space-xs">
+<span id="compareCtaText">Compare 2 packages now</span>
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<script>
+  const selectedPackages = new Map([
+    ['pkg-1', { title: 'Essential Studio Portrait', price: '₱1,200' }],
+    ['pkg-2', { title: 'Graduation Prestige', price: '₱1,850' }]
+  ]);
+
+  function updateCompareBarUI() {
+    const bar = document.getElementById('stickyCompareBar');
+    const countLabel = document.getElementById('compareCountLabel');
+    const maxPill = document.getElementById('compareMaxPill');
+    const selectionList = document.getElementById('compareSelectionList');
+    const ctaText = document.getElementById('compareCtaText');
+
+    if (selectedPackages.size === 0) {
+      bar.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none');
+      bar.classList.remove('opacity-100', 'translate-y-0');
+      return;
+    }
+
+    bar.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
+    bar.classList.add('opacity-100', 'translate-y-0');
+
+    const count = selectedPackages.size;
+    countLabel.textContent = `${count} package${count > 1 ? 's' : ''} selected to compare:`;
+    maxPill.textContent = `${count} of 3 MAX`;
+    ctaText.textContent = `Compare ${count} package${count > 1 ? 's' : ''} now`;
+
+    const titles = Array.from(selectedPackages.values()).map(pkg => pkg.title).join(', ');
+    selectionList.textContent = titles;
+  }
+
+  function toggleCompare(id, title, price, checkbox) {
+    if (checkbox.checked) {
+      if (selectedPackages.size >= 3) {
+        checkbox.checked = false;
+        alert('You can compare a maximum of 3 packages side-by-side.');
+        return;
+      }
+      selectedPackages.set(id, { title, price });
+    } else {
+      selectedPackages.delete(id);
+    }
+    updateCompareBarUI();
+  }
+
+  function clearAllCompare() {
+    selectedPackages.clear();
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => { cb.checked = false; });
+    updateCompareBarUI();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateCompareBarUI();
+  });
+</script></main><footer class="w-full bg-surface-container-low border-t border-surface-container-high"><div class="max-w-[1280px] mx-auto px-margin pt-space-xl pb-space-lg"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-space-xl mb-space-xl"><div class="flex flex-col gap-space-md"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm uppercase text-on-surface font-semibold">JHUNLEA</span><span class="font-label-code text-label-code text-primary">ATELIER</span></div><p class="font-body-md text-body-md text-secondary leading-relaxed">Premium editorial photography atelier and fine art photographic print laboratory. Precision crafting for milestones, portraits, and tactile archiving.</p><div class="flex items-center gap-space-xs text-secondary font-label-caps text-label-caps uppercase"><span class="material-symbols-outlined text-primary text-[16px]">verified</span>Certified Archival Master Printing</div></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Quick Links</h3><ul class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="home" href="#">Studio Overview</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="package-finder" href="#">Interactive Package Finder</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="how-it-works" href="#">The Atelier Workflow</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="track-order" href="#">Order Production Status</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="client-galleries" href="#">Private Proofing Galleries</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Studio Services</h3><ul class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="printing-services" href="#">Fine Art Giclée &amp; Canvas</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="photography-packages" href="#">Editorial &amp; Creative Portraiture</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="photography-packages" href="#">Graduation &amp; Corporate Headshots</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="printing-services" href="#">Heirloom Hardbound Photo Books</a></li><li class="hover:text-on-surface transition-colors cursor-pointer"><a data-path="services" href="#">Custom Framing &amp; Dry Mounting</a></li></ul></div><div class="flex flex-col gap-space-sm"><h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wide">Laboratory &amp; Atelier</h3><div class="flex flex-col gap-space-xs font-body-md text-body-md text-secondary"><div class="flex items-start gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">location_on</span><span>Poblacion District, Manila, Philippines</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0">call</span><span>+63 (02) 8924 1102</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0">mail</span><span>studio@jhunlea-atelier.ph</span></div><div class="flex items-start gap-space-xs mt-space-xs"><span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">schedule</span><div><p class="font-title-sm text-body-sm text-on-surface">Operating Hours:</p><p class="font-body-sm text-body-sm">Mon - Sat: 8:30 AM – 6:30 PM</p><p class="font-body-sm text-body-sm text-secondary">Sundays: Closed for Maintenance</p></div></div></div></div></div><div class="pt-space-md border-t border-surface-container-high flex flex-col md:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-secondary"><div>© 2025 Jhunlea Photography &amp; Printing. All rights reserved. Registered Philippine Cultural Atelier.</div><div class="flex items-center gap-space-lg font-label-code text-label-code"><span>PHYSICAL IN-STORE SETTLEMENT</span><span>•</span><span>MANILA ATELIER</span></div></div></div></footer></body></html>

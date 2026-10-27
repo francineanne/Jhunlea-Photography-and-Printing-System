@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="notifications" href="#">Notifications</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><a aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></a><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin py-space-lg">
+<!-- Top Breadcrumb & Page Title Block -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+<div>
+<div class="flex items-center gap-space-xs text-secondary font-label-code text-label-code uppercase tracking-wider mb-space-xs">
+<span>Customer Portal</span>
+<span class="text-secondary/50">/</span>
+<span class="text-primary font-semibold">Account</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Profile &amp; Account Settings</h1>
+<p class="font-body-md text-body-md text-secondary mt-1 max-w-2xl">
+          Manage your client profile, authentication credentials, atelier appearance, and studio alerts.
+        </p>
+</div>
+<!-- Quick Action / Status Tag -->
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs rounded-xl shadow-sm self-start md:self-auto">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+<div class="font-label-code text-label-code text-on-surface font-medium">
+          CLIENT ID: <span class="text-primary font-bold">#CS-8841</span>
+</div>
+</div>
+</div>
+<!-- Mandatory Studio Policy Notice Strip -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-xl p-space-md mb-space-xl shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pl-space-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary-container shrink-0">
+<span class="material-symbols-outlined text-[24px]">storefront</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">Mandatory Atelier Settlement Policy</span>
+<p class="font-body-md text-body-sm text-secondary">
+              Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout required.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span>PHILIPPINES STUDIO CODE 04</span>
+</div>
+</div>
+</div>
+<!-- Main Grid: 25% Left Nav Sidebar / 75% Right Sections -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+<!-- Left Sidebar (3 Cols = 25%) -->
+<aside class="lg:col-span-3 flex flex-col gap-space-lg sticky top-28">
+<!-- Client Identity Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col items-center text-center">
+<div class="relative mb-space-md group cursor-pointer">
+<div class="w-24 h-24 rounded-full overflow-hidden shadow-md">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Warm natural editorial portrait photograph of Clara Marie Santos in an art studio, natural soft warm daylight, film grain aesthetic, refined neutral background, contemporary elegance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEC1R_Rdtf38Qv6Fgb8MVKf1JtsJqhvPYglYNcYqBlc5Wm-YB7JPMwuKo775LUBaj6i5LEkEgpHOWvP8onZkxWtt1KcbN8t4de3E-LL_cvwkiIQwho_dIlILwRiZ1Y9cwvTTGCmDVF4TKxBJX__YHBVSfOJ2y-lWbBb5Z2gOiPNbF2TTQW8CVh8nTr91ysFUOU6f0reIK5ae6zadW5QRd8WkxSqf7HA_7tbxYDoH5pRITxktCGsiVl"/>
+</div>
+<button aria-label="Update studio avatar photo" class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md hover:bg-primary transition-all">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</button>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface leading-snug">Clara Marie Santos</h2>
+<div class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 px-space-sm py-0.5 rounded-full font-label-caps text-label-caps mt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            VERIFIED STUDIO CLIENT
+          </div>
+<span class="font-label-code text-body-sm text-secondary mt-1">Member since March 2023</span>
+<!-- Atelier Archival Activity Micro Badge -->
+<div class="w-full mt-space-md pt-space-md bg-surface-container-low rounded-lg p-space-sm flex justify-around">
+<div class="text-center">
+<span class="block font-title-sm text-title-sm text-on-surface font-bold">14</span>
+<span class="block font-label-caps text-label-caps text-secondary">ARCHIVED PRINTS</span>
+</div>
+<div class="text-center">
+<span class="block font-title-sm text-title-sm text-on-surface font-bold">3</span>
+<span class="block font-label-caps text-label-caps text-secondary">SHOOT SESSIONS</span>
+</div>
+</div>
+</div>
+<!-- Sidebar Navigation Menu -->
+<nav class="bg-surface-container-lowest rounded-xl p-space-sm shadow-sm flex flex-col gap-1" id="account-nav">
+<a class="account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-primary font-title-sm text-body-md bg-surface-container-low transition-colors" href="#section-profile">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+<span>Profile Information</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+<a class="account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low font-title-sm text-body-md transition-colors" href="#section-security">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">shield_lock</span>
+<span>Security &amp; Password</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+<a class="account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low font-title-sm text-body-md transition-colors" href="#section-appearance">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+<span>Appearance &amp; Theme</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+<a class="account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low font-title-sm text-body-md transition-colors" href="#section-notifications">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+<span>Notification Preferences</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+<a class="account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low font-title-sm text-body-md transition-colors" href="#section-policy">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">contract</span>
+<span>Studio Policies &amp; Terms</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</a>
+<div class="h-px bg-surface-container my-1"></div>
+<button class="w-full flex items-center justify-between px-space-md py-space-sm rounded-lg text-error hover:bg-error-container/40 font-title-sm text-body-md transition-colors text-left" onclick="document.getElementById('logout-modal').classList.remove('hidden')" type="button">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span class="font-semibold">Log Out</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+</button>
+</nav>
+<!-- Studio Concierge Card -->
+<div class="bg-surface-container-low rounded-xl p-space-md shadow-sm">
+<div class="flex items-center gap-space-sm text-on-surface mb-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">support_agent</span>
+<span class="font-title-sm text-title-sm font-semibold">Atelier Helpdesk</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+            Need to update your primary studio billing records or corporate invoicing address?
+          </p>
+<div class="mt-space-md flex items-center justify-between">
+<span class="font-label-code text-body-sm text-on-surface font-semibold">+63 2 8812 4000</span>
+<span class="font-label-caps text-label-caps text-primary">MON-SAT 9AM</span>
+</div>
+</div>
+</aside>
+<!-- Right Content Area (9 Cols = 75%) -->
+<div class="lg:col-span-9 flex flex-col gap-space-xl">
+<!-- SECTION 1: Profile Information -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm" id="section-profile">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-primary font-bold">01 / IDENTITY</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Profile Information</h3>
+<p class="font-body-md text-body-sm text-secondary">Personal and contact records used for job orders, proofs, and print gallery deliveries.</p>
+</div>
+<span class="inline-flex items-center gap-1 font-label-code text-label-code text-secondary bg-surface-container px-space-sm py-1 rounded-md self-start sm:self-auto">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+              READ-ONLY TAX ID
+            </span>
+</div>
+<form class="space-y-space-md" id="profile-form" onsubmit="event.preventDefault(); showToast('Profile details updated successfully');">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Full Name -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="fullName">
+                  Full Legal Name
+                </label>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pl-10" id="fullName" type="text" value="Clara Marie Santos"/>
+<span class="material-symbols-outlined absolute left-3 top-3 text-secondary text-[20px]">person</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Matches the national ID required during face-to-face studio pickups.</p>
+</div>
+<!-- Email Address -->
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-title-sm text-body-md text-on-surface" for="emailAddr">Email Address</label>
+<span class="inline-flex items-center gap-1 font-label-code text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[13px]">verified</span>
+                    VERIFIED
+                  </span>
+</div>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pl-10" id="emailAddr" type="email" value="clara.santos@gmail.com"/>
+<span class="material-symbols-outlined absolute left-3 top-3 text-secondary text-[20px]">mail</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Used for proofing notifications, contact sheets, and digital archives.</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<!-- Mobile Phone -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="phone">
+                  Mobile Phone Number (+63 Philippines)
+                </label>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pl-10" id="phone" type="tel" value="+63 917 842 1904"/>
+<span class="material-symbols-outlined absolute left-3 top-3 text-secondary text-[20px]">phone_iphone</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Used exclusively for SMS proofing alerts and in-store pickup ready notifications.</p>
+</div>
+<!-- Default Studio Location -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="studioLocation">
+                  Primary Studio Location
+                </label>
+<div class="relative">
+<select class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pl-10 appearance-none" id="studioLocation">
+<option selected="">Poblacion District Atelier &amp; Darkroom Lab, Manila</option>
+<option>Bonifacio Global City Visual Art Center</option>
+<option>Quezon City North Portraiture Hub</option>
+<option>Alabang Fine Art Annex &amp; Framing Loft</option>
+</select>
+<span class="material-symbols-outlined absolute left-3 top-3 text-secondary text-[20px]">store</span>
+<span class="material-symbols-outlined absolute right-3 top-3 text-secondary text-[20px] pointer-events-none">unfold_more</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Default branch for walk-in proofs and counter payments.</p>
+</div>
+</div>
+<!-- Studio Proofing Signature Preference -->
+<div class="bg-surface-container-low p-space-md rounded-xl mt-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px] mt-0.5">workspace_premium</span>
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">Fine Art Certificate Embossing</span>
+<p class="font-body-sm text-body-sm text-secondary">Prints include Master Printmaker seal attributed to client name.</p>
+</div>
+</div>
+<span class="font-label-code text-label-code text-on-surface bg-surface-container-highest px-space-md py-1 rounded-lg shrink-0">
+                ACTIVE ON ALL RUNS
+              </span>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-md">
+<button class="h-11 px-space-lg rounded-xl font-title-sm text-body-md text-on-surface hover:bg-surface-container-high transition-colors" type="button">
+                Discard Changes
+              </button>
+<button class="h-11 px-space-xl rounded-xl font-title-sm text-body-md bg-primary-container text-on-primary hover:bg-primary transition-all shadow-sm flex items-center gap-space-xs" type="submit">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span>Save Profile</span>
+</button>
+</div>
+</form>
+</section>
+<!-- SECTION 2: Change Password & Security -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm" id="section-security">
+<div class="pb-space-md mb-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-primary font-bold">02 / AUTHENTICATION</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Security &amp; Password</h3>
+<p class="font-body-md text-body-sm text-secondary">Keep your client portal secure to protect high-resolution contact sheets and private photo sessions.</p>
+</div>
+<form class="space-y-space-md max-w-2xl" id="password-form" onsubmit="event.preventDefault(); showToast('Security password updated successfully');">
+<!-- Current Password -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="currentPassword">
+                Current Studio Password
+              </label>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pr-10" id="currentPassword" type="password" value="SecretPrint2024!"/>
+<button class="absolute right-3 top-2.5 text-secondary hover:text-on-surface transition-colors" onclick="togglePasswordVisibility('currentPassword', this)" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- New Password -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="newPassword">
+                New Password
+              </label>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pr-10" id="newPassword" oninput="evaluatePasswordStrength(this.value)" placeholder="Enter 8+ characters with mixed case, number &amp; symbol" type="password"/>
+<button class="absolute right-3 top-2.5 text-secondary hover:text-on-surface transition-colors" onclick="togglePasswordVisibility('newPassword', this)" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<!-- Password Strength Bar & Indicators -->
+<div class="mt-space-sm space-y-1.5">
+<div class="flex items-center justify-between text-body-sm">
+<span class="font-body-sm text-secondary">Security strength meter:</span>
+<span class="font-label-code text-label-code text-amber-700 font-semibold" id="strength-label">Moderate</span>
+</div>
+<div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden flex gap-1">
+<div class="h-full w-1/4 bg-emerald-500 rounded-full transition-all" id="bar-1"></div>
+<div class="h-full w-1/4 bg-emerald-500 rounded-full transition-all" id="bar-2"></div>
+<div class="h-full w-1/4 bg-amber-500 rounded-full transition-all" id="bar-3"></div>
+<div class="h-full w-1/4 bg-surface-container-highest rounded-full transition-all" id="bar-4"></div>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-label-code text-[11px] text-secondary">
+<div class="flex items-center gap-1 text-emerald-700" id="rule-len">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>8+ characters</span>
+</div>
+<div class="flex items-center gap-1 text-emerald-700" id="rule-case">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>Upper &amp; lower</span>
+</div>
+<div class="flex items-center gap-1 text-emerald-700" id="rule-num">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span>At least 1 number</span>
+</div>
+<div class="flex items-center gap-1 text-secondary" id="rule-sym">
+<span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
+<span>Special symbol</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Confirm New Password -->
+<div>
+<label class="block font-title-sm text-body-md text-on-surface mb-1.5" for="confirmPassword">
+                Confirm New Password
+              </label>
+<div class="relative">
+<input class="w-full h-11 bg-surface-container-low px-space-md text-on-surface rounded-xl font-body-md text-body-md focus:bg-surface-container-lowest focus:outline-none focus:shadow-md transition-all pr-10" id="confirmPassword" oninput="checkPasswordMatch()" placeholder="Re-enter new password" type="password"/>
+<span class="material-symbols-outlined absolute right-3 top-3 text-emerald-600 text-[20px]" id="match-icon">check_circle</span>
+</div>
+<p class="font-body-sm text-body-sm text-emerald-700 mt-1 flex items-center gap-1" id="match-text">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+                Passwords match verified
+              </p>
+</div>
+<!-- Two Factor Micro Banner -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex items-center justify-between gap-space-md mt-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-9 h-9 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">phonelink_lock</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-sm text-on-surface font-semibold">SMS Two-Factor Authentication</span>
+<span class="block font-body-sm text-body-sm text-secondary">Secures portrait galleries with 6-digit codes to +63 917 842 1904</span>
+</div>
+</div>
+<span class="font-label-code text-label-code text-emerald-800 bg-emerald-100 px-space-sm py-1 rounded-md">ENABLED</span>
+</div>
+<div class="pt-space-md">
+<button class="h-11 px-space-xl rounded-xl font-title-sm text-body-md bg-on-surface text-surface hover:bg-surface-container-highest hover:text-on-surface transition-all shadow-sm flex items-center gap-space-xs" type="submit">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span>Update Password</span>
+</button>
+</div>
+</form>
+</section>
+<!-- SECTION 3: Appearance & Atelier Theme -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm" id="section-appearance">
+<div class="pb-space-md mb-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-primary font-bold">03 / ATELIER VISUALS</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Appearance &amp; Atelier Theme</h3>
+<p class="font-body-md text-body-sm text-secondary">
+              Controls dashboard background and print preview contrast. High-fidelity rendering mimics physical paper proofs.
+            </p>
+</div>
+<!-- 3 Visual Preview Cards with Radio Selectors -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md" id="theme-selector-grid">
+<!-- Option 1: Light Mode (Active) -->
+<label class="theme-card relative cursor-pointer group rounded-xl p-space-md bg-surface-container-low transition-all shadow-sm flex flex-col justify-between" onclick="selectTheme('light', this)">
+<div class="w-full">
+<!-- Mini Preview Wireframe -->
+<div class="w-full h-28 bg-[#FFFFFF] rounded-lg p-2.5 shadow-sm mb-space-md flex flex-col gap-1.5">
+<div class="flex items-center justify-between pb-1">
+<div class="w-12 h-2.5 bg-neutral-200 rounded"></div>
+<div class="w-3 h-3 rounded-full bg-primary-container"></div>
+</div>
+<div class="w-full h-10 bg-neutral-100 rounded flex items-center px-2 gap-2">
+<div class="w-6 h-6 rounded bg-neutral-300"></div>
+<div class="flex-1 space-y-1">
+<div class="w-3/4 h-2 bg-neutral-300 rounded"></div>
+<div class="w-1/2 h-1.5 bg-neutral-200 rounded"></div>
+</div>
+</div>
+<div class="flex gap-1.5 mt-auto">
+<div class="w-8 h-3 bg-primary-container rounded"></div>
+<div class="w-10 h-3 bg-neutral-200 rounded"></div>
+</div>
+</div>
+<div class="flex items-start justify-between gap-space-sm">
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">Light Mode</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                      Clean paper white canvas with crisp neutral matting. Calibrated for daylight viewing.
+                    </p>
+</div>
+<div class="theme-radio w-5 h-5 rounded-full bg-primary-container flex items-center justify-center text-on-primary shrink-0">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-primary font-bold">CURRENTLY ACTIVE</span>
+<span class="font-label-code text-[11px] text-secondary">#FFFFFF / PAPER</span>
+</div>
+</label>
+<!-- Option 2: Dark Mode -->
+<label class="theme-card relative cursor-pointer group rounded-xl p-space-md bg-surface-container-low transition-all shadow-sm flex flex-col justify-between" onclick="selectTheme('dark', this)">
+<div class="w-full">
+<!-- Mini Preview Wireframe -->
+<div class="w-full h-28 bg-[#171717] rounded-lg p-2.5 shadow-sm mb-space-md flex flex-col gap-1.5">
+<div class="flex items-center justify-between pb-1">
+<div class="w-12 h-2.5 bg-neutral-700 rounded"></div>
+<div class="w-3 h-3 rounded-full bg-primary-container"></div>
+</div>
+<div class="w-full h-10 bg-neutral-800 rounded flex items-center px-2 gap-2">
+<div class="w-6 h-6 rounded bg-neutral-700"></div>
+<div class="flex-1 space-y-1">
+<div class="w-3/4 h-2 bg-neutral-600 rounded"></div>
+<div class="w-1/2 h-1.5 bg-neutral-700 rounded"></div>
+</div>
+</div>
+<div class="flex gap-1.5 mt-auto">
+<div class="w-8 h-3 bg-primary-container rounded"></div>
+<div class="w-10 h-3 bg-neutral-800 rounded"></div>
+</div>
+</div>
+<div class="flex items-start justify-between gap-space-sm">
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">Darkroom Mode</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                      Analog darkroom aesthetic with deep charcoal tone and glowing crimson focal markers.
+                    </p>
+</div>
+<div class="theme-radio w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0"></div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary font-bold">ATMOSPHERIC</span>
+<span class="font-label-code text-[11px] text-secondary">#171717 / LAB</span>
+</div>
+</label>
+<!-- Option 3: System Default -->
+<label class="theme-card relative cursor-pointer group rounded-xl p-space-md bg-surface-container-low transition-all shadow-sm flex flex-col justify-between" onclick="selectTheme('system', this)">
+<div class="w-full">
+<!-- Mini Preview Split Wireframe -->
+<div class="w-full h-28 rounded-lg overflow-hidden shadow-sm mb-space-md flex">
+<div class="w-1/2 h-full bg-[#FFFFFF] p-2.5 flex flex-col justify-between">
+<div class="w-10 h-2 bg-neutral-200 rounded"></div>
+<div class="w-full h-6 bg-neutral-100 rounded"></div>
+<div class="w-6 h-2 bg-primary-container rounded"></div>
+</div>
+<div class="w-1/2 h-full bg-[#171717] p-2.5 flex flex-col justify-between">
+<div class="w-10 h-2 bg-neutral-700 rounded ml-auto"></div>
+<div class="w-full h-6 bg-neutral-800 rounded"></div>
+<div class="w-6 h-2 bg-primary-container rounded ml-auto"></div>
+</div>
+</div>
+<div class="flex items-start justify-between gap-space-sm">
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">System Default</span>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+                      Syncs automatically with client device operating system appearance preferences.
+                    </p>
+</div>
+<div class="theme-radio w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0"></div>
+</div>
+</div>
+<div class="mt-space-md pt-space-xs flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary font-bold">DYNAMIC SYNC</span>
+<span class="font-label-code text-[11px] text-secondary">AUTO OS</span>
+</div>
+</label>
+</div>
+<div class="mt-space-md pt-space-md flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-secondary">Theme applies to client contact proofing, receipt prints, and AI assistant canvas.</span>
+<button class="h-9 px-space-md rounded-lg font-title-sm text-body-sm bg-surface-container-high text-on-surface hover:bg-surface-container-highest transition-colors" onclick="showToast('Theme preference recorded')" type="button">
+              Apply Theme
+            </button>
+</div>
+</section>
+<!-- SECTION 4: Notification Preferences -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm" id="section-notifications">
+<div class="pb-space-md mb-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-primary font-bold">04 / DISPATCH ALERTS</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Notification Preferences</h3>
+<p class="font-body-md text-body-sm text-secondary">Configure automated studio dispatch signals via instant SMS and atelier correspondence.</p>
+</div>
+<div class="space-y-space-md">
+<!-- Toggle 1: SMS In-Store Pickup Alerts -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">inventory_2</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-title-sm text-body-md text-on-surface font-semibold">SMS In-Store Pickup Ready Alerts</span>
+<span class="font-label-caps text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">CRITICAL</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                    Receive immediate text message as soon as master prints are inspected and placed in pickup bin #B-12.
+                  </p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" onchange="showToast('Pickup SMS preference updated')" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Toggle 2: Studio Proofing & Inquiry Alerts -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">rate_review</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-title-sm text-body-md text-on-surface font-semibold">Studio Proofing &amp; File Approval Alerts</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                    Dispatched whenever our Master Printmaker requests soft-proofing sign-off or crop confirmation.
+                  </p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" onchange="showToast('Proofing alerts preference updated')" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Toggle 3: Shoot Schedule Reminders -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">calendar_clock</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-title-sm text-body-md text-on-surface font-semibold">Photoshoot Schedule Reminders</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                    Calendar reminders sent 24 hours prior to studio bay reservation, wardrobe fitting, or lighting setup.
+                  </p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" onchange="showToast('Photoshoot reminder preference updated')" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+<!-- Toggle 4: Occasion & Promo Studio News -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-start sm:items-center justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-xl bg-surface-container-highest text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">campaign</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-title-sm text-body-md text-on-surface font-semibold">Seasonal Print Editions &amp; Atelier News</span>
+</div>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                    Curated invitations to limited fine-art paper workshops, framing exhibits, and portrait promotions.
+                  </p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input class="sr-only peer" onchange="showToast('Marketing newsletters disabled')" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION 5: Studio Policy & Face-to-Face Agreement -->
+<section class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm" id="section-policy">
+<div class="pb-space-md mb-space-lg">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-primary font-bold">05 / LEGAL &amp; PROTOCOL</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mt-1">Studio Policy &amp; Face-to-Face Agreement</h3>
+<p class="font-body-md text-body-sm text-secondary">Binding atelier policies governing print authenticity, payment settlement, and physical inspection.</p>
+</div>
+<!-- Signed Terms Acknowledgment Box -->
+<div class="bg-surface-container-low rounded-xl p-space-lg mb-space-lg">
+<div class="flex items-start gap-space-md mb-space-md">
+<div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">assignment_turned_in</span>
+</div>
+<div>
+<span class="block font-title-sm text-body-md text-on-surface font-semibold">Face-to-Face Settlement Policy Agreed on Registration</span>
+<span class="block font-label-code text-body-sm text-secondary mt-0.5">Signed by Clara Marie Santos on 2023-03-14 • IP Manila Central</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-lg p-space-md font-body-sm text-body-sm text-on-surface-variant space-y-2">
+<p>
+<strong>Studio Settlement Protocol:</strong> All print orders and photoshoot sessions are settled at the studio counter desk. Jhunlea Photography &amp; Printing operates with physical tactile review: clients inspect proofing density and archival stock before settling final balances via cash or studio debit terminals.
+              </p>
+<p>
+<strong>Archival Print Protection:</strong> Negatives and RAW digital archives are preserved for 180 calendar days post-delivery. Physical frames and canvas stretchers are custom assembled following counter verification.
+              </p>
+</div>
+<div class="mt-space-md flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary">
+<span class="material-symbols-outlined text-[16px] text-emerald-600">verified</span>
+<span>STATUS: DIGITALLY SEALED IN STUDIO VAULT</span>
+</div>
+<button class="font-title-sm text-body-sm text-primary hover:underline flex items-center gap-1" onclick="showToast('Archived policy PDF downloaded')" type="button">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Download Client Agreement PDF</span>
+</button>
+</div>
+</div>
+<!-- Danger Zone: Portal Termination / Log Out -->
+<div class="bg-error-container/30 rounded-xl p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md">
+<div>
+<span class="block font-title-sm text-body-md text-error font-semibold">Session Management</span>
+<p class="font-body-md text-body-sm text-secondary mt-0.5">
+                End active session on this device. Your unsaved proof annotations will be preserved.
+              </p>
+</div>
+<button class="h-11 px-space-lg rounded-xl font-title-sm text-body-md bg-error text-on-error hover:bg-error/90 transition-all shadow-sm flex items-center justify-center gap-space-xs shrink-0" onclick="document.getElementById('logout-modal').classList.remove('hidden')" type="button">
+<span class="material-symbols-outlined text-[18px]">logout</span>
+<span>Log Out of Studio Portal</span>
+</button>
+</div>
+</section>
+</div>
+</div>
+</div>
+<!-- Logout Confirmation Modal (Overlay) -->
+<div class="hidden fixed inset-0 z-50 bg-inverse-surface/60 backdrop-blur-sm flex items-center justify-center p-space-md" id="logout-modal">
+<div class="bg-surface-container-lowest rounded-2xl max-w-md w-full p-space-lg shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+<div class="w-12 h-12 rounded-full bg-error-container text-error flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-[28px]">logout</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Log Out of Studio Portal?</h4>
+<p class="font-body-md text-body-sm text-secondary mt-space-xs">
+        You are logged in as <strong class="text-on-surface">Clara Marie Santos (#CS-8841)</strong>. Any pending file uploads or unsubmitted print requests will remain drafted.
+      </p>
+<div class="bg-surface-container-low rounded-xl p-space-sm mt-space-md flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">storefront</span>
+<span class="font-body-sm text-body-sm text-secondary">
+          Your in-store print orders will continue processing at the Poblacion Atelier.
+        </span>
+</div>
+<div class="mt-space-lg flex items-center justify-end gap-space-sm">
+<button class="h-11 px-space-md rounded-xl font-title-sm text-body-md text-on-surface hover:bg-surface-container-high transition-colors" onclick="document.getElementById('logout-modal').classList.add('hidden')" type="button">
+          Cancel
+        </button>
+<button class="h-11 px-space-lg rounded-xl font-title-sm text-body-md bg-error text-on-error hover:bg-error/90 transition-all shadow-sm flex items-center gap-1.5" onclick="confirmLogout()" type="button">
+<span class="material-symbols-outlined text-[18px]">power_settings_new</span>
+<span>Confirm Log Out</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro Interaction Toast Feedback Container -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-inverse-surface text-inverse-on-surface px-space-lg py-space-sm rounded-full shadow-xl font-body-md text-body-md flex items-center gap-space-sm transition-all duration-300 opacity-0 pointer-events-none translate-y-4" id="toast-notification">
+<span class="material-symbols-outlined text-emerald-400 text-[20px]">check_circle</span>
+<span id="toast-message">Settings saved successfully</span>
+</div>
+</div>
+<script>
+  // Toast Helper
+  function showToast(message) {
+    const toast = document.getElementById('toast-notification');
+    const msgEl = document.getElementById('toast-message');
+    if (!toast || !msgEl) return;
+    
+    msgEl.textContent = message;
+    toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    
+    setTimeout(() => {
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+    }, 3000);
+  }
+
+  // Password Visibility Toggle
+  function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = 'visibility_off';
+    } else {
+      input.type = 'password';
+      icon.textContent = 'visibility';
+    }
+  }
+
+  // Password Security Strength Meter
+  function evaluatePasswordStrength(val) {
+    const bar1 = document.getElementById('bar-1');
+    const bar2 = document.getElementById('bar-2');
+    const bar3 = document.getElementById('bar-3');
+    const bar4 = document.getElementById('bar-4');
+    const label = document.getElementById('strength-label');
+    
+    const ruleLen = document.getElementById('rule-len');
+    const ruleCase = document.getElementById('rule-case');
+    const ruleNum = document.getElementById('rule-num');
+    const ruleSym = document.getElementById('rule-sym');
+
+    let score = 0;
+
+    // Checks
+    const hasLen = val.length >= 8;
+    const hasCase = /[a-z]/.test(val) && /[A-Z]/.test(val);
+    const hasNum = /\d/.test(val);
+    const hasSym = /[^a-zA-Z0-9]/.test(val);
+
+    updateRule(ruleLen, hasLen);
+    updateRule(ruleCase, hasCase);
+    updateRule(ruleNum, hasNum);
+    updateRule(ruleSym, hasSym);
+
+    if (hasLen) score++;
+    if (hasCase) score++;
+    if (hasNum) score++;
+    if (hasSym) score++;
+
+    // Reset bars
+    [bar1, bar2, bar3, bar4].forEach(b => {
+      b.className = 'h-full w-1/4 bg-surface-container-highest rounded-full transition-all';
+    });
+
+    if (score === 0) {
+      label.textContent = 'Too Weak';
+      label.className = 'font-label-code text-label-code text-error font-semibold';
+    } else if (score <= 2) {
+      bar1.className = 'h-full w-1/4 bg-error rounded-full transition-all';
+      if (score === 2) bar2.className = 'h-full w-1/4 bg-error rounded-full transition-all';
+      label.textContent = 'Weak';
+      label.className = 'font-label-code text-label-code text-error font-semibold';
+    } else if (score === 3) {
+      bar1.className = 'h-full w-1/4 bg-amber-500 rounded-full transition-all';
+      bar2.className = 'h-full w-1/4 bg-amber-500 rounded-full transition-all';
+      bar3.className = 'h-full w-1/4 bg-amber-500 rounded-full transition-all';
+      label.textContent = 'Moderate';
+      label.className = 'font-label-code text-label-code text-amber-700 font-semibold';
+    } else {
+      bar1.className = 'h-full w-1/4 bg-emerald-500 rounded-full transition-all';
+      bar2.className = 'h-full w-1/4 bg-emerald-500 rounded-full transition-all';
+      bar3.className = 'h-full w-1/4 bg-emerald-500 rounded-full transition-all';
+      bar4.className = 'h-full w-1/4 bg-emerald-500 rounded-full transition-all';
+      label.textContent = 'Atelier Secure';
+      label.className = 'font-label-code text-label-code text-emerald-700 font-semibold';
+    }
+  }
+
+  function updateRule(el, valid) {
+    const icon = el.querySelector('.material-symbols-outlined');
+    if (valid) {
+      el.className = 'flex items-center gap-1 text-emerald-700';
+      icon.textContent = 'check_circle';
+    } else {
+      el.className = 'flex items-center gap-1 text-secondary';
+      icon.textContent = 'radio_button_unchecked';
+    }
+  }
+
+  // Password Confirmation Matcher
+  function checkPasswordMatch() {
+    const p1 = document.getElementById('newPassword').value;
+    const p2 = document.getElementById('confirmPassword').value;
+    const icon = document.getElementById('match-icon');
+    const txt = document.getElementById('match-text');
+
+    if (p1 && p2 && p1 === p2) {
+      icon.className = 'material-symbols-outlined absolute right-3 top-3 text-emerald-600 text-[20px]';
+      icon.textContent = 'check_circle';
+      txt.className = 'font-body-sm text-body-sm text-emerald-700 mt-1 flex items-center gap-1';
+      txt.innerHTML = '<span class="material-symbols-outlined text-[14px]">verified</span> Passwords match verified';
+    } else {
+      icon.className = 'material-symbols-outlined absolute right-3 top-3 text-error text-[20px]';
+      icon.textContent = 'cancel';
+      txt.className = 'font-body-sm text-body-sm text-error mt-1 flex items-center gap-1';
+      txt.innerHTML = '<span class="material-symbols-outlined text-[14px]">error</span> Passwords do not match';
+    }
+  }
+
+  // Theme selector card microinteraction
+  function selectTheme(type, cardEl) {
+    const allCards = document.querySelectorAll('.theme-card');
+    allCards.forEach(c => {
+      const radio = c.querySelector('.theme-radio');
+      const badge = c.querySelector('.font-label-caps');
+      radio.className = 'theme-radio w-5 h-5 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0';
+      radio.innerHTML = '';
+      if (badge && badge.textContent === 'CURRENTLY ACTIVE') {
+        badge.textContent = 'AVAILABLE';
+        badge.className = 'font-label-caps text-label-caps text-secondary font-bold';
+      }
+    });
+
+    const activeRadio = cardEl.querySelector('.theme-radio');
+    activeRadio.className = 'theme-radio w-5 h-5 rounded-full bg-primary-container flex items-center justify-center text-on-primary shrink-0';
+    activeRadio.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
+    
+    const activeBadge = cardEl.querySelector('.font-label-caps');
+    if (activeBadge) {
+      activeBadge.textContent = 'CURRENTLY ACTIVE';
+      activeBadge.className = 'font-label-caps text-label-caps text-primary font-bold';
+    }
+
+    showToast(type.charAt(0).toUpperCase() + type.slice(1) + ' theme preview engaged');
+  }
+
+  // Log Out confirmation handler
+  function confirmLogout() {
+    document.getElementById('logout-modal').classList.add('hidden');
+    showToast('Client session terminated. Redirecting to studio login...');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1200);
+  }
+
+  // Active anchor link highlighting in sidebar
+  document.querySelectorAll('#account-nav a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      document.querySelectorAll('#account-nav a').forEach(a => {
+        a.className = 'account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container-low font-title-sm text-body-md transition-colors';
+      });
+      this.className = 'account-nav-item flex items-center justify-between px-space-md py-space-sm rounded-lg text-primary font-title-sm text-body-md bg-surface-container-low transition-colors';
+    });
+  });
+</script></main><div class="fixed bottom-6 right-6 z-40"><a aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02] cursor-pointer" data-path="ai-assistant" href="#"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></a></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary-fixed": "#410003", "on-secondary": "#ffffff", "on-surface-variant": "#5b403d", "on-tertiary": "#ffffff", "surface-variant": "#e2e2e2", "inverse-primary": "#ffb4ac", "on-primary-container": "#ffe0dd", "surface-container-high": "#e8e8e8", "surface-container-lowest": "#ffffff", "primary-fixed-dim": "#ffb4ac", "on-error-container": "#93000a", "on-primary": "#ffffff", "on-secondary-fixed": "#1c1b1b", "secondary-fixed-dim": "#c8c6c5", "on-tertiary-fixed-variant": "#474747", "outline": "#8f706c", "inverse-on-surface": "#f1f1f1", "surface-bright": "#f9f9f9", "surface-container-low": "#f3f3f3", "secondary": "#5f5e5e", "on-error": "#ffffff", "tertiary-fixed": "#e4e2e2", "surface-tint": "#b91d20", "error": "#ba1a1a", "on-tertiary-fixed": "#1b1c1c", "secondary-container": "#e2dfde", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c6", "surface": "#f9f9f9", "on-secondary-container": "#636262", "tertiary-container": "#676767", "inverse-surface": "#2f3131", "primary": "#a20513", "tertiary": "#4f4f4f", "on-background": "#1a1c1c", "error-container": "#ffdad6", "primary-container": "#c62828", "outline-variant": "#e4beba", "surface-dim": "#dadada", "on-surface": "#1a1c1c", "background": "#f9f9f9", "on-tertiary-container": "#e8e6e6", "surface-container-highest": "#e2e2e2", "on-primary-fixed-variant": "#93000e", "secondary-fixed": "#e5e2e1", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "space-xs": "0.25rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "margin": "2rem", "gutter-mobile": "1rem", "margin-mobile": "1rem" }, "fontFamily": { "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "headline-md": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Playfair Display"], "label-caps": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-sm": ["Playfair Display"], "display-hero-mobile": ["Playfair Display"], "price-display": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"] }, "fontSize": { "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }] } } } };</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-screen w-72 bg-inverse-surface text-inverse-on-surface z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-space-lg pt-space-lg pb-space-md"><div class="flex items-center justify-between"><div class="tracking-[0.2em] font-headline-sm text-headline-sm text-surface-container-lowest font-bold uppercase">JHUNLEA</div><button class="text-secondary-fixed-dim hover:text-surface-container-lowest transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">menu_open</span></button></div><div class="font-label-caps text-label-caps tracking-[0.16em] text-secondary-fixed-dim uppercase mt-space-xs">PHOTOGRAPHY &amp; PRINTING</div><div class="mt-space-sm inline-flex items-center gap-space-xs px-space-sm py-0.5 rounded-full bg-surface-container-high/10 text-primary-fixed-dim font-label-code text-label-code text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>ATELIER ADMIN SUITE</div></div><nav class="flex-1 px-space-sm space-y-0.5 overflow-y-auto max-h-[calc(100vh-230px)]" data-active-classes="bg-primary-container text-on-primary font-bold rounded-lg shadow-sm"><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="overview" href="#"><span class="font-body-md text-body-md">Overview</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="printing-orders" href="#"><span class="font-body-md text-body-md">Printing Orders</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-bookings" href="#"><span class="font-body-md text-body-md">Photography Bookings</span></a><a aria-current="page" class="flex items-center justify-between px-space-md py-space-sm transition-colors bg-primary-container text-on-primary font-bold rounded-lg shadow-sm" data-path="services" href="#"><span class="font-body-md text-body-md">Services</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="photography-packages" href="#"><span class="font-body-md text-body-md">Photography Packages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="themes-and-backgrounds" href="#"><span class="font-body-md text-body-md">Themes and Backgrounds</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="customers" href="#"><span class="font-body-md text-body-md">Customers</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="payments" href="#"><span class="font-body-md text-body-md">Payments</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="notifications" href="#"><span class="font-body-md text-body-md">Notifications / Messages</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="reports" href="#"><span class="font-body-md text-body-md">Reports &amp; Analytics</span></a><a class="flex items-center justify-between px-space-md py-space-sm rounded-lg text-secondary-fixed-dim hover:bg-surface-container-high/10 hover:text-surface-container-lowest transition-colors" data-path="settings" href="#"><span class="font-body-md text-body-md">Settings</span></a></nav></div><div class="p-space-md mx-space-sm mb-space-md bg-surface-container-high/5 rounded-xl"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-primary-fixed text-[20px]">storefront</span><div><div class="font-title-sm text-title-sm text-surface-container-lowest text-xs">Storefront Protocol</div><div class="font-body-sm text-body-sm text-secondary-fixed-dim text-[11px] leading-tight">Payment settled face-to-face at counter.</div></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs font-label-caps text-label-caps text-on-surface-variant uppercase"><span class="hover:text-on-surface cursor-pointer">Atelier</span><span class="text-secondary">/</span><span class="text-primary font-bold">Admin Console</span></div><div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-[11px]">Atelier Poblacion • Terminal Online</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">search</span><input class="w-72 h-10 pl-9 pr-14 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:bg-surface-container-low shadow-[0_1px_8px_rgba(0,0,0,0.02)]" placeholder="Search job, PR-code, or client..." type="text"/><kbd class="absolute right-2.5 px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface-variant">⌘K</kbd></div><div class="flex items-center gap-space-xs"><button aria-label="Toggle Dark/Light Mode" class="w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">dark_mode</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-2 ring-surface"></span></button></div><div class="h-6 w-px bg-surface-container-high"></div><div class="flex items-center gap-space-sm cursor-pointer"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden xl:block text-left"><div class="font-title-sm text-title-sm text-xs leading-none text-on-surface">Jhunlea P. Arceo</div><div class="font-label-caps text-label-caps text-[10px] leading-tight text-on-surface-variant">Master Photographer</div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-56px)]"><div class="px-space-lg pt-space-md"><div class="bg-surface-container-low rounded-lg p-space-md shadow-[0_1px_8px_rgba(0,0,0,0.02)] flex items-center gap-space-sm text-on-surface border-l-4 border-primary-container"><span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span><span class="font-body-md text-body-md">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</span></div></div><div class="flex flex-col w-full">
+<div class="px-space-lg py-space-lg max-w-[1400px] w-full mx-auto space-y-space-xl">
+<!-- Header Section with Distinct Atelier Styling -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-xs text-primary font-label-caps text-label-caps uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Catalog Architecture &amp; Substrate Control</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Printing Services Management &amp; Atelier Catalog</h1>
+<p class="font-body-md text-body-md text-secondary max-w-2xl">
+          Configure printing techniques, paper substrates, pricing models, and prepress specifications for counter intake and digital consultation.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm flex-shrink-0">
+<button class="h-11 px-space-md rounded-lg bg-surface-container text-on-surface font-title-sm text-title-sm hover:bg-surface-container-high transition-colors flex items-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span>Export Catalog</span>
+</button>
+<button class="h-11 px-space-md rounded-lg bg-primary-container text-on-primary font-title-sm text-title-sm hover:bg-primary transition-all flex items-center gap-space-xs shadow-md shadow-primary/20" id="openAddModalBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>+ Add New Service</span>
+</button>
+</div>
+</div>
+<!-- Summary Stats Strip: Asymmetric Bento Style -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+<!-- Stat 1 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-20 h-20 bg-primary/5 rounded-full pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Active Published</span>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container-low text-[11px] font-label-code text-on-surface">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A]"></span> LIVE
+          </span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">6</span>
+<span class="font-body-sm text-body-sm text-secondary">of 8 registered</span>
+</div>
+<div class="mt-space-sm w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- Stat 2 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Draft / Hidden</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">visibility_off</span>
+</div>
+<div class="mt-space-md flex items-baseline gap-space-sm">
+<span class="font-headline-lg text-headline-lg text-secondary">2</span>
+<span class="font-body-sm text-body-sm text-secondary">Pending proofing</span>
+</div>
+<span class="mt-space-sm font-label-code text-label-code text-[11px] text-secondary">Blueprint plotting &amp; Riso</span>
+</div>
+<!-- Stat 3 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Most Requested</span>
+<span class="material-symbols-outlined text-primary-container text-[20px]">auto_awesome</span>
+</div>
+<div class="mt-space-md">
+<div class="font-title-md text-title-md text-on-surface truncate">Fine Art Giclée Prints</div>
+<div class="font-label-code text-label-code text-[12px] text-primary-container font-semibold mt-0.5">38% Studio Volume</div>
+</div>
+<div class="mt-space-sm flex items-center gap-1 font-body-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[15px] text-[#16A34A]">trending_up</span>
+<span>+14% vs previous month</span>
+</div>
+</div>
+<!-- Stat 4 -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Base Revenue Average</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">payments</span>
+</div>
+<div class="mt-space-md">
+<div class="font-headline-md text-headline-md text-on-surface">₱280.00</div>
+<div class="font-body-sm text-body-sm text-secondary">Across standard tier intake</div>
+</div>
+<div class="mt-space-sm flex items-center justify-between font-label-code text-[11px] text-secondary">
+<span>Min: ₱3.00</span>
+<span>Max: ₱380.00</span>
+</div>
+</div>
+</div>
+<!-- Section 1: Services Catalog Data Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="p-space-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md bg-surface-container-low/50">
+<div>
+<div class="flex items-center gap-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Service Index &amp; Rates</h2>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-on-surface font-label-code text-[11px]">7 items loaded</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">Click any entry to load full specifications into the atelier calibration pane below.</p>
+</div>
+<div class="flex items-center gap-space-sm w-full md:w-auto">
+<div class="relative flex-1 md:w-64">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-secondary text-[18px]">filter_list</span>
+<select class="w-full h-10 pl-9 pr-8 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface focus:outline-none shadow-sm cursor-pointer appearance-none">
+<option>All Print Categories</option>
+<option>Archival &amp; Photo</option>
+<option>Document &amp; Commercial</option>
+<option>Signage &amp; Specialty</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-secondary text-[18px] pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container-low text-secondary font-label-caps text-label-caps tracking-wider uppercase">
+<th class="py-space-md px-space-lg">Service Profile</th>
+<th class="py-space-md px-space-md">Category</th>
+<th class="py-space-md px-space-md">Pricing Model</th>
+<th class="py-space-md px-space-md">Base Rate</th>
+<th class="py-space-md px-space-md">Specification Matrix</th>
+<th class="py-space-md px-space-md">Intake Files</th>
+<th class="py-space-md px-space-md text-center">Published</th>
+<th class="py-space-md px-space-lg text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface">
+<!-- Row 1: Active Editing Highlight -->
+<tr class="bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer group" onclick="scrollToConfig('Fine Art &amp; Studio Photo Prints')">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">photo_library</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface group-hover:text-primary transition-colors flex items-center gap-1.5">
+<span>Fine Art &amp; Studio Photo Prints</span>
+<span class="material-symbols-outlined text-primary-container text-[16px]" title="Currently Loaded">edit_note</span>
+</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: ART-GIC-01</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">Archival Pigment</span>
+</td>
+<td class="py-space-md px-space-md font-body-sm">Per Copy / Unit</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱15.00</span>
+<span class="text-secondary text-[11px]">/ 4R base</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">4 Sizes</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">3 Papers</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">2 Modes</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">TIFF</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PSD</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">RAW</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-primary-container hover:text-on-primary transition-colors flex items-center justify-center text-secondary" title="Edit Service" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" title="Duplicate" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-error-container hover:text-on-error-container transition-colors flex items-center justify-center text-secondary" title="Archive" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">description</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Document &amp; Thesis Printing</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: DOC-LSR-02</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">High-Speed Laser</span>
+</td>
+<td class="py-space-md px-space-md">Per Page</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱3.00</span>
+<span class="text-secondary text-[11px]">/ page</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">3 Sizes</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">4 Papers</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PDF</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">DOCX</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Biometric ID &amp; Passport Packages</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: ID-BIO-04</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">Precision Cut</span>
+</td>
+<td class="py-space-md px-space-md">Per Copy / Unit</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱120.00</span>
+<span class="text-secondary text-[11px]">/ pack</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">6 Presets</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Gloss / Matte</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">JPG</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PNG</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">loyalty</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Custom Stickers &amp; Vinyl Decals</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: STK-VNL-09</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">Waterproof Vinyl</span>
+</td>
+<td class="py-space-md px-space-md">Per Copy / Unit</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱65.00</span>
+<span class="text-secondary text-[11px]">/ A4 sheet</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Kiss/Die Cut</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Holo/Matte</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PDF</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">AI</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">aspect_ratio</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Large Format Posters &amp; Banners</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: BAN-ECO-12</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">Eco-Solvent</span>
+</td>
+<td class="py-space-md px-space-md">Quotation Only</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface text-[12px] bg-surface-container px-2 py-0.5 rounded">Custom Quote</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Roll Dimensions</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Tarpaulin/Canvas</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">TIFF</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PDF</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-on-surface flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Institutional Hardbinding &amp; Gold Foil</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: BND-STP-03</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-on-surface tracking-wider uppercase">Hot-Stamping</span>
+</td>
+<td class="py-space-md px-space-md">Per Copy / Unit</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱380.00</span>
+<span class="text-secondary text-[11px]">/ book</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Leatherette</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">Gold/Silver Emboss</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PDF</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-[#16A34A] rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-4 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 7: Draft mode (OFF) -->
+<tr class="hover:bg-surface-container-low transition-colors opacity-75">
+<td class="py-space-md px-space-lg">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container text-secondary flex items-center justify-center shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+</div>
+<div class="min-w-0">
+<div class="font-title-sm text-title-sm text-on-surface">Draft Blueprint Engineering Plotting</div>
+<span class="font-label-code text-label-code text-[11px] text-secondary">SKU: PLT-ENG-08</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<span class="px-2.5 py-1 rounded bg-surface-container font-label-caps text-[10px] text-secondary tracking-wider uppercase">Monochrome Draft</span>
+</td>
+<td class="py-space-md px-space-md">Per Page</td>
+<td class="py-space-md px-space-md">
+<span class="font-label-code font-bold text-on-surface">₱45.00</span>
+<span class="text-secondary text-[11px]">/ linear meter</span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">20lb Bond</span>
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-code text-[11px] text-secondary">24" &amp; 36" rolls</span>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">DWG</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container font-label-code text-[10px] text-on-surface font-semibold">PDF</span>
+</div>
+</td>
+<td class="py-space-md px-space-md text-center">
+<button class="w-10 h-6 bg-surface-container-highest rounded-full p-0.5 transition-colors relative inline-flex items-center" type="button">
+<span class="w-5 h-5 bg-white rounded-full shadow transform translate-x-0 transition-transform"></span>
+</button>
+</td>
+<td class="py-space-md px-space-lg text-right">
+<div class="inline-flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center text-secondary" type="button">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Section 2: Comprehensive 'Add / Edit Service' Split-Pane Configuration Console -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden scroll-mt-24" id="serviceConfigPane">
+<!-- Section Header -->
+<div class="p-space-lg bg-surface-container-low flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary">Live Calibration Workspace</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Service Configuration: Fine Art &amp; Studio Photo Prints</h2>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-code text-label-code text-[11px] text-secondary bg-surface-container-lowest px-2.5 py-1 rounded-full shadow-sm">
+            Status: Active &amp; Discoverable
+          </span>
+</div>
+</div>
+<!-- Split Layout: 60% Form / 40% Live Preview -->
+<div class="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x-0">
+<!-- Left Pane: 60% (col-span-7) Form Builder -->
+<div class="lg:col-span-7 p-space-lg space-y-space-lg">
+<!-- 1. Basic Information -->
+<div class="space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-title-md text-title-md text-on-surface">1. Basic Atelier Specifications</h3>
+<span class="font-label-code text-[11px] text-secondary">Required Settings</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-space-md">
+<div class="sm:col-span-8 space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Service Title</label>
+<input class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 shadow-sm" id="serviceNameInput" type="text" value="Fine Art &amp; Studio Photo Prints"/>
+</div>
+<div class="sm:col-span-4 space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Category Group</label>
+<select class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm">
+<option selected="">Fine Art / Exhibition</option>
+<option>Commercial Document</option>
+<option>Studio Portraiture</option>
+<option>Packaging &amp; Decals</option>
+</select>
+</div>
+<div class="sm:col-span-12 space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Short Public Description</label>
+<textarea class="w-full p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 shadow-sm" id="serviceDescInput" rows="2">Museum-grade 12-color archival pigment reproduction on cotton rag and luster mediums. Rated 100+ years lightfastness under UV protection glass.</textarea>
+</div>
+<!-- Icon Selector -->
+<div class="sm:col-span-12 space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Service Glyph / Identifier</label>
+<div class="flex items-center gap-space-sm flex-wrap">
+<button class="w-11 h-11 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">photo_library</span>
+</button>
+<button class="w-11 h-11 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+</button>
+<button class="w-11 h-11 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">camera</span>
+</button>
+<button class="w-11 h-11 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">landscape</span>
+</button>
+<button class="w-11 h-11 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container flex items-center justify-center shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">filter</span>
+</button>
+<span class="font-body-sm text-body-sm text-secondary ml-space-xs">Current glyph: Archival Print Matrix</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Pricing Architecture -->
+<div class="space-y-space-md pt-space-md bg-surface-container-low/30 p-space-md rounded-xl">
+<div class="flex items-center justify-between">
+<h3 class="font-title-md text-title-md text-on-surface">2. Pricing Model &amp; Foundation Rate</h3>
+<span class="font-label-code text-[11px] text-secondary">Settlement Metric</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm">
+<label class="flex flex-col p-space-md rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container-low transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface">Per Page</span>
+<input class="accent-primary" name="pricingType" type="radio"/>
+</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Multi-page booklets, legal, reports</span>
+</label>
+<label class="flex flex-col p-space-md rounded-lg bg-surface-container-lowest cursor-pointer shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-full bg-primary-container"></div>
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-primary font-bold">Per Copy / Unit</span>
+<input checked="" class="accent-primary" name="pricingType" type="radio"/>
+</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Fine art sheets, photo packs</span>
+</label>
+<label class="flex flex-col p-space-md rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container-low transition-colors shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface">Variable Quote</span>
+<input class="accent-primary" name="pricingType" type="radio"/>
+</div>
+<span class="font-body-sm text-body-sm text-secondary mt-1">Custom oversized, murals</span>
+</label>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Base Rate (PHP / ₱)</label>
+<div class="relative w-48">
+<span class="absolute left-3 top-2.5 font-label-code text-secondary">₱</span>
+<input class="w-full h-11 pl-8 pr- space-md bg-surface-container-lowest rounded-lg font-label-code text-on-surface font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm" id="baseRateInput" step="0.50" type="number" value="15.00"/>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">Starting reference cost before substrate and dimensional increments.</p>
+</div>
+</div>
+<!-- 3. Specification Modifiers Builder -->
+<div class="space-y-space-md pt-space-sm">
+<div class="flex items-center justify-between">
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">3. Specification Matrix &amp; Modifiers</h3>
+<p class="font-body-sm text-body-sm text-secondary">Customer-selectable options that append real-time line premiums.</p>
+</div>
+<button class="text-primary hover:text-primary-container font-title-sm text-title-sm flex items-center gap-1 text-xs" type="button">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span>Add Dimension Category</span>
+</button>
+</div>
+<!-- Group A: Paper Sizes -->
+<div class="p-space-md rounded-lg bg-surface-container-low space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface">Paper Sizes (Cut Formats)</span>
+<span class="font-label-code text-[11px] text-secondary">Dimensions Group</span>
+</div>
+<div class="flex flex-wrap gap-2" id="paperSizesList">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>4R Standard (4×6")</span>
+<span class="text-secondary font-label-code">(+₱0)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>5R Portrait (5×7")</span>
+<span class="text-primary-container font-label-code font-bold">(+₱15)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>8R Gallery (8×10")</span>
+<span class="text-primary-container font-label-code font-bold">(+₱60)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>A3+ Exhibition (13×19")</span>
+<span class="text-primary-container font-label-code font-bold">(+₱180)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-highest text-secondary text-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Size Variant
+                </button>
+</div>
+</div>
+<!-- Group B: Paper Substrates / Types -->
+<div class="p-space-md rounded-lg bg-surface-container-low space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface">Paper Substrates &amp; Media</span>
+<span class="font-label-code text-[11px] text-secondary">Physical Material</span>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>260gsm Satin Lustre</span>
+<span class="text-secondary font-label-code">(+₱0)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>310gsm Cotton Rag Hahnemühle</span>
+<span class="text-primary-container font-label-code font-bold">(+₱140)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest text-on-surface text-xs font-medium shadow-sm">
+<span>Metallic Pearl High-Gloss</span>
+<span class="text-primary-container font-label-code font-bold">(+₱75)</span>
+<button class="text-secondary hover:text-error text-xs ml-1" type="button">×</button>
+</span>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-highest text-secondary text-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">add</span> Add Substrate
+                </button>
+</div>
+</div>
+<!-- Group C & D: Modes & Sides Inlined -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="p-space-md rounded-lg bg-surface-container-low space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface text-xs">Color Engine</span>
+<span class="font-label-code text-[10px] text-secondary">Gamut</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between bg-surface-container-lowest p-2 rounded text-xs shadow-sm">
+<span>12-Color Archival Pigment</span>
+<span class="font-label-code text-secondary">+₱0</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-2 rounded text-xs shadow-sm">
+<span>Monochrome Carbon Black</span>
+<span class="font-label-code text-primary font-bold">-₱5</span>
+</div>
+</div>
+</div>
+<div class="p-space-md rounded-lg bg-surface-container-low space-y-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-title-sm text-title-sm text-on-surface text-xs">Pass &amp; Orientation</span>
+<span class="font-label-code text-[10px] text-secondary">Sides</span>
+</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between bg-surface-container-lowest p-2 rounded text-xs shadow-sm">
+<span>Single-Sided Print</span>
+<span class="font-label-code text-secondary">+₱0</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-lowest p-2 rounded text-xs shadow-sm">
+<span>Duplex / Dual-Face</span>
+<span class="font-label-code text-primary-container font-bold">+₱25</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. File Intake & Technical Specifications -->
+<div class="space-y-space-md pt-space-sm">
+<h3 class="font-title-md text-title-md text-on-surface">4. Customer File Intake Rules</h3>
+<div class="space-y-2">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Approved Master Formats</label>
+<div class="flex flex-wrap gap-2">
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">PDF (Print Ready)</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">TIFF (Uncompressed)</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">PSD (Photoshop)</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">JPG / JPEG</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">PNG (Lossless)</span>
+</label>
+<label class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low text-xs cursor-pointer hover:bg-surface-container">
+<input checked="" class="accent-primary rounded" type="checkbox"/>
+<span class="font-label-code font-bold">RAW / DNG</span>
+</label>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Max File Upload Volume</label>
+<div class="flex items-center gap-space-sm">
+<select class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm">
+<option>50 MB per file</option>
+<option selected="">100 MB per file (Fine Art Master)</option>
+<option>250 MB (High-Res Archival Archive)</option>
+</select>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Color Profile Target</label>
+<select class="w-full h-11 px-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm">
+<option selected="">Adobe RGB (1998) or sRGB</option>
+<option>ProPhoto RGB</option>
+<option>CMYK U.S. Web Coated (SWOP) v2</option>
+</select>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Customer Guidance &amp; Prepress Calibration Advisory</label>
+<textarea class="w-full p-space-md bg-surface-container-low rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:bg-surface-container-lowest shadow-sm" rows="2">All prints undergo spectrophotometer calibration against X-Rite i1Pro standards. Minimum 300 DPI at 1:1 scale recommended. We do not apply unasked artificial sharpening.</textarea>
+</div>
+</div>
+<!-- Form Actions Footer -->
+<div class="pt-space-md flex flex-wrap items-center justify-between gap-space-sm border-t-0">
+<button class="h-11 px-space-md rounded-lg text-primary hover:bg-error-container hover:text-on-error-container transition-colors font-title-sm text-title-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Delete Service</span>
+</button>
+<div class="flex items-center gap-space-sm">
+<button class="h-11 px-space-md rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-title-sm text-title-sm" type="button">
+                Cancel
+              </button>
+<button class="h-11 px-space-lg rounded-lg bg-primary-container text-on-primary hover:bg-primary transition-all font-title-sm text-title-sm shadow-md shadow-primary/20 flex items-center gap-space-xs" onclick="showSavedNotice()" type="button">
+<span class="material-symbols-outlined text-[18px]">check</span>
+<span>Save Changes</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Pane: 40% (col-span-5) Live Preview Portal -->
+<div class="lg:col-span-5 p-space-lg bg-surface-container-low/40 flex flex-col justify-between">
+<div class="space-y-space-md sticky top-24">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">devices</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-secondary">Live Customer Portal Preview</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#16A34A]/10 text-[#16A34A] font-label-code text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#16A34A] animate-pulse"></span> Dynamic Synced
+              </span>
+</div>
+<!-- Customer Facing Card Prototype -->
+<div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
+<!-- Visual Mockup Banner -->
+<div class="relative h-44 bg-surface-container-high overflow-hidden">
+<div class="bg-cover bg-center w-full h-full" data-alt="A macro studio shot of photographic fine art prints on thick textured cotton rag paper with rich monochrome ink, illuminated by warm soft studio natural daylight in an art atelier gallery setting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCv2-eeyRlxz_S0KfTGD8O2gwoMTBLkZBKA0NmnQrdKeAjyQ05X3fuHxSFKj3arE3ppt_48f58mEOL9opxo_B_SW1JsCCAhFOozxo_VnRWKMqrfTuiMHif4QoNeB6W_1J8VnNrGORQDXqQFVinwMCzkGaDEywQPhDB3ZajtG4ySQuxSVdYhArF084Xa0UxJmkD2oMmGSjZ1XzhLx1hFyvNKeaEsHQIvk0E5BZ_bwGIneWKUBANDjrLb')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+<div class="absolute top-3 left-3">
+<span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary font-label-caps text-[10px] uppercase tracking-wider font-bold shadow-sm">
+                    Archival Giclée
+                  </span>
+</div>
+<div class="absolute bottom-3 left-3 right-3 text-white">
+<div class="flex items-center gap-1 text-[11px] font-label-code text-surface-container-lowest opacity-80">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>Hahnemühle Certified Lab</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm text-white leading-tight" id="previewCardTitle">Fine Art &amp; Studio Photo Prints</h4>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-md space-y-space-md">
+<p class="font-body-sm text-body-sm text-secondary line-clamp-2" id="previewCardDesc">
+                  Museum-grade 12-color archival pigment reproduction on cotton rag and luster mediums. Rated 100+ years lightfastness under UV protection glass.
+                </p>
+<!-- Interactive Simulated Option Picker -->
+<div class="space-y-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-secondary">Selected Dimensions</span>
+<div class="grid grid-cols-2 gap-1.5 text-xs font-label-code">
+<button class="p-2 rounded bg-surface-container text-on-surface text-left flex justify-between items-center" onclick="updateLivePrice(15, '4R Standard')" type="button">
+<span>4R Standard</span>
+<span class="text-secondary font-bold">₱15</span>
+</button>
+<button class="p-2 rounded bg-primary-container text-on-primary text-left flex justify-between items-center shadow-sm" onclick="updateLivePrice(30, '5R Portrait')" type="button">
+<span>5R Portrait</span>
+<span class="font-bold">₱30</span>
+</button>
+<button class="p-2 rounded bg-surface-container text-on-surface text-left flex justify-between items-center" onclick="updateLivePrice(75, '8R Gallery')" type="button">
+<span>8R Gallery</span>
+<span class="text-secondary font-bold">₱75</span>
+</button>
+<button class="p-2 rounded bg-surface-container text-on-surface text-left flex justify-between items-center" onclick="updateLivePrice(195, 'A3+ Exhibition')" type="button">
+<span>A3+ Large</span>
+<span class="text-secondary font-bold">₱195</span>
+</button>
+</div>
+</div>
+<!-- Substrate Mini Selector -->
+<div class="space-y-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-secondary">Paper Substrate</span>
+<div class="p-2 rounded bg-surface-container-low flex items-center justify-between text-xs">
+<span class="font-medium text-on-surface">310gsm Cotton Rag Hahnemühle</span>
+<span class="font-label-code text-primary font-bold">+₱140.00</span>
+</div>
+</div>
+<!-- Dynamic Price Strip -->
+<div class="pt-space-xs flex items-baseline justify-between bg-surface-container-low p-space-md rounded-lg">
+<div>
+<span class="font-label-caps text-label-caps uppercase text-secondary">Estimated Starting Total</span>
+<div class="font-headline-md text-headline-md text-primary font-bold" id="livePriceEstimate">₱170.00</div>
+</div>
+<span class="font-label-code text-[11px] text-secondary">Inc. 12% atelier VAT</span>
+</div>
+<!-- Client CTA Mock -->
+<button class="w-full h-11 rounded-lg bg-on-background text-on-primary font-title-sm text-title-sm hover:bg-secondary transition-colors flex items-center justify-center gap-space-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+<span>Request Service / Bring to Counter</span>
+</button>
+<div class="text-center">
+<span class="font-label-code text-[11px] text-secondary">
+                    Intake Accepted: PDF, TIFF, PSD, RAW up to 100MB
+                  </span>
+</div>
+</div>
+</div>
+<!-- Synchronize Indicator Note -->
+<div class="p-space-md rounded-lg bg-surface-container-lowest shadow-sm flex items-center gap-space-sm text-secondary">
+<span class="material-symbols-outlined text-primary-container text-[20px] flex-shrink-0">sync_alt</span>
+<span class="font-body-sm text-body-sm text-[12px] leading-relaxed">
+                Preview synchronizes with form modifications in real time. Changes made here represent the client experience during in-atelier consultations and digital catalog browsing.
+              </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Atelier Physical Face-to-Face Settlement Policy Footer Banner -->
+<div class="p-space-lg rounded-xl bg-surface-container-lowest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary-container"></div>
+<div class="flex items-start md:items-center gap-space-md pl-space-xs">
+<div class="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[26px]">point_of_sale</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-on-surface">JHUNLEA Atelier In-Person Transaction Policy</h4>
+<p class="font-body-sm text-body-sm text-secondary">
+            Payment is completed face-to-face at Jhunlea Photography &amp; Printing atelier front desk prior to job execution. Online transactions are bypassed to ensure rigorous physical proof inspection with our master printmaker.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-xs flex-shrink-0">
+<span class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface font-label-code text-label-code text-[12px]">
+          Poblacion Main Studio
+        </span>
+</div>
+</div>
+</div>
+<!-- Notification Toast (Hidden by default, triggered on Save) -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none" id="saveToast">
+<div class="bg-inverse-surface text-inverse-on-surface px-space-lg py-space-md rounded-xl shadow-xl flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[#16A34A] text-[22px]">check_circle</span>
+<div>
+<div class="font-title-sm text-title-sm text-white">Catalog Synchronized</div>
+<div class="font-body-sm text-body-sm text-secondary-fixed-dim text-xs">Fine Art &amp; Studio Photo Prints updated successfully.</div>
+</div>
+</div>
+</div>
+<!-- Client-Side Realtime Interactive Script -->
+<script>
+    // Live input synchronization between left configuration form and right customer preview
+    const nameInput = document.getElementById('serviceNameInput');
+    const descInput = document.getElementById('serviceDescInput');
+    const baseRateInput = document.getElementById('baseRateInput');
+    const previewTitle = document.getElementById('previewCardTitle');
+    const previewDesc = document.getElementById('previewCardDesc');
+    const livePrice = document.getElementById('livePriceEstimate');
+
+    if (nameInput && previewTitle) {
+      nameInput.addEventListener('input', (e) => {
+        previewTitle.textContent = e.target.value || 'Untitled Service';
+      });
+    }
+
+    if (descInput && previewDesc) {
+      descInput.addEventListener('input', (e) => {
+        previewDesc.textContent = e.target.value || 'No description provided.';
+      });
+    }
+
+    function updateLivePrice(paperBase, label) {
+      const substratePremium = 140; // Cotton rag Hahnemühle mock
+      const calculatedTotal = paperBase + substratePremium;
+      if (livePrice) {
+        livePrice.textContent = '₱' + calculatedTotal.toFixed(2);
+      }
+    }
+
+    function scrollToConfig(serviceName) {
+      const pane = document.getElementById('serviceConfigPane');
+      if (pane) {
+        pane.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function showSavedNotice() {
+      const toast = document.getElementById('saveToast');
+      if (toast) {
+        toast.classList.remove('translate-y-24', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-24', 'opacity-0');
+        }, 3200);
+      }
+    }
+
+    const openAddModalBtn = document.getElementById('openAddModalBtn');
+    if (openAddModalBtn) {
+      openAddModalBtn.addEventListener('click', () => {
+        scrollToConfig();
+        if (nameInput) {
+          nameInput.value = 'New Custom Print Solution';
+          previewTitle.textContent = 'New Custom Print Solution';
+          nameInput.focus();
+        }
+      });
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-sm shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="max-w-[1280px] mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant font-label-code text-label-code text-[12px]"><div class="flex items-center gap-space-sm"><span class="font-title-sm text-primary font-bold tracking-wider">JHUNLEA</span><span>Core OS v2.4</span><span class="text-secondary">•</span><span>Atelier Administrative Suite</span></div><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[14px] text-primary">point_of_sale</span><span>In-Store Face-to-Face Settlement System • No Online Checkout</span></div></div></footer></div></body></html>

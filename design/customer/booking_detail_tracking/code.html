@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary": "#4f4f4f", "on-secondary-fixed": "#1c1b1b", "error-container": "#ffdad6", "inverse-surface": "#2f3131", "primary": "#a20513", "on-background": "#1a1c1c", "on-surface": "#1a1c1c", "on-tertiary-fixed-variant": "#474747", "on-primary-container": "#ffe0dd", "primary-fixed-dim": "#ffb4ac", "on-primary-fixed": "#410003", "primary-container": "#c62828", "surface-container-high": "#e8e8e8", "surface-dim": "#dadada", "tertiary-container": "#676767", "error": "#ba1a1a", "on-primary-fixed-variant": "#93000e", "surface-bright": "#f9f9f9", "inverse-on-surface": "#f1f1f1", "inverse-primary": "#ffb4ac", "surface-container-lowest": "#ffffff", "secondary-container": "#e2dfde", "tertiary-fixed": "#e4e2e2", "on-error": "#ffffff", "surface-container": "#eeeeee", "tertiary-fixed-dim": "#c8c6c5", "surface-container-highest": "#e2e2e2", "on-secondary-fixed-variant": "#474746", "primary-fixed": "#ffdad6", "surface-tint": "#b91d20", "on-surface-variant": "#5b403d", "outline": "#8f706c", "on-tertiary": "#ffffff", "surface": "#f9f9f9", "secondary-fixed": "#e5e2e1", "on-primary": "#ffffff", "secondary": "#5f5e5e", "background": "#f9f9f9", "outline-variant": "#e4beba", "secondary-fixed-dim": "#c8c6c5", "on-secondary-container": "#636262", "on-tertiary-fixed": "#1b1c1c", "surface-variant": "#e2e2e2", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-low": "#f3f3f3", "on-tertiary-container": "#e8e6e6" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "margin": "2rem", "margin-mobile": "1rem", "gutter": "1.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-sm": "0.5rem", "space-md": "1rem", "space-lg": "1.5rem", "space-xs": "0.25rem" }, "fontFamily": { "body-md": ["Plus Jakarta Sans"], "label-code": ["JetBrains Mono"], "headline-md": ["Playfair Display"], "title-md": ["Plus Jakarta Sans"], "title-sm": ["Plus Jakarta Sans"], "display-hero": ["Playfair Display"], "headline-sm": ["Playfair Display"], "body-sm": ["Plus Jakarta Sans"], "price-display": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "headline-lg": ["Playfair Display"], "headline-lg-mobile": ["Playfair Display"], "body-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Playfair Display"] }, "fontSize": { "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }], "label-code": ["13px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }], "headline-md": ["28px", { "lineHeight": "36px", "fontWeight": "500" }], "title-md": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "title-sm": ["16px", { "lineHeight": "24px", "fontWeight": "600" }], "display-hero": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-sm": ["22px", { "lineHeight": "30px", "fontWeight": "500" }], "body-sm": ["12px", { "lineHeight": "18px", "fontWeight": "400" }], "price-display": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "700" }], "headline-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }], "display-hero-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "600" }] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 max-w-[1280px] mx-auto px-margin flex items-center justify-between gap-space-lg"><div class="flex items-center gap-space-xl"><a class="flex items-center gap-space-sm group text-left" data-path="dashboard" href="#"><div class="w-9 h-9 rounded-xl bg-primary-container flex items-center justify-center text-on-primary transition-transform group-hover:scale-95"><span class="material-symbols-outlined text-[20px]">camera</span></div><div><span class="block font-headline-sm text-headline-sm uppercase tracking-[0.18em] text-on-surface leading-none font-bold">JHUNLEA</span><span class="block font-label-caps text-label-caps text-secondary uppercase tracking-[0.14em] mt-space-xs">PHOTOGRAPHY &amp; PRINTING</span></div></a><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm"><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="dashboard" href="#">Dashboard</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="request-printing" href="#">Request printing</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="book-photoshoot" href="#">Book photoshoot</a><a aria-current="page" class="font-title-sm transition-all bg-primary-container text-on-primary px-space-md py-space-xs rounded-xl shadow-sm" data-path="my-requests" href="#">My requests</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="notifications" href="#">Notifications</a><a class="font-title-sm text-body-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high px-space-md py-space-xs rounded-xl transition-all" data-path="ai-assistant" href="#">AI Assistant</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden md:flex items-center bg-surface-container-low px-space-md py-space-xs rounded-xl gap-space-sm shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"><span class="material-symbols-outlined text-secondary text-[18px]">search</span><span class="font-body-sm text-body-sm text-secondary">Quick search</span><span class="font-label-code text-label-code bg-surface-container-highest text-secondary px-space-xs py-0.5 rounded">⌘K</span></div><div class="flex items-center gap-space-xs"><a aria-label="Notifications" class="relative p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" data-path="notifications" href="#"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-4 h-4 bg-primary text-on-primary font-label-caps text-[9px] font-bold rounded-full flex items-center justify-center leading-none ring-2 ring-surface">2</span></a><button aria-label="Toggle appearance theme" class="p-space-sm rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">light_mode</span></button></div><div class="h-6 w-px bg-surface-container-highest"></div><div class="flex items-center gap-space-sm pl-space-xs cursor-pointer group"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden lg:block text-left"><span class="block font-title-sm text-body-md text-on-surface font-semibold group-hover:text-primary transition-colors leading-tight">Clara Santos</span><span class="block font-label-code text-body-sm text-secondary leading-tight">Verified Client</span></div><span class="material-symbols-outlined text-secondary text-[18px] group-hover:text-on-surface transition-colors">expand_more</span></div></div></div><div class="bg-surface-container-low/70"><div class="max-w-[1280px] mx-auto px-margin py-space-xs flex items-center justify-between"><div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px]">home</span><span>/</span><span class="text-on-surface font-semibold">Customer Portal</span></div><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span><span class="font-label-code text-label-code text-secondary">STUDIO APPOINTMENTS LIVE</span></div></div></div></header><main class="w-full pt-20 bg-surface min-h-[calc(100vh-140px)]"><div class="flex flex-col w-full">
+<div class="max-w-[1280px] w-full mx-auto px-margin-mobile md:px-margin py-space-md md:py-space-lg flex flex-col gap-space-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-label-code text-label-code text-primary bg-primary-fixed/60 px-space-sm py-0.5 rounded font-semibold tracking-wider">
+            BOOKING #PB-0005
+          </span>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">
+            Studio Bay 02 • Atelier Session
+          </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface leading-tight mt-1">
+          Graduation Prestige — Studio Session Detail
+        </h1>
+</div>
+<!-- Header Status Badges -->
+<div class="flex items-center gap-space-sm flex-wrap shrink-0">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-title-sm text-body-sm font-semibold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+          Reschedule Proposed by Studio
+        </span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-title-sm text-body-sm font-semibold shadow-sm">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+          Pending Client Confirmation
+        </span>
+</div>
+</div>
+<!-- Prominent Reschedule Proposed Callout Banner -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-surface-container-low via-primary-fixed/20 to-surface-container-low shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+<div class="p-space-md md:p-space-lg flex flex-col lg:flex-row lg:items-center justify-between gap-space-lg">
+<div class="flex items-start gap-space-md max-w-3xl">
+<div class="w-12 h-12 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+<span class="material-symbols-outlined text-[26px]">update</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm flex-wrap">
+<span class="font-title-md text-title-md text-on-surface font-semibold">
+                Master Photographer Jhunlea has proposed an adjusted timeslot
+              </span>
+<span class="font-label-code text-label-code bg-surface-container-highest text-primary px-space-xs py-0.5 rounded font-bold">
+                LIGHTING CALIBRATION
+              </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Due to laboratory optical calibration on Saturday morning, we recommend shifting your session by 1.5 hours to ensure full 5000K daylight-balanced strobe readiness and zero wait time.
+            </p>
+<!-- Timeslot Comparison Pill -->
+<div class="mt-space-sm inline-flex flex-wrap items-center gap-space-sm bg-surface-container-lowest/80 backdrop-blur-md px-space-md py-space-sm rounded-lg shadow-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-label-caps text-label-caps text-secondary uppercase">Original</span>
+<span class="font-label-code text-body-sm text-on-surface-variant line-through">Sat, May 24 @ 10:00 AM</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">trending_flat</span>
+<div class="flex items-center gap-1.5">
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold">Proposed</span>
+<span class="font-title-sm text-body-md text-on-surface font-bold text-primary">Sat, May 24 @ 11:30 AM</span>
+<span class="font-label-code text-label-code text-secondary bg-surface-container-high px-1.5 py-0.5 rounded">(Bay 02)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-space-sm shrink-0">
+<button class="flex items-center justify-center gap-2 bg-primary-container hover:bg-primary text-on-primary font-title-sm text-body-md font-semibold px-space-lg py-2.5 rounded-lg shadow-sm transition-all hover:scale-[1.01] active:scale-95" id="acceptRescheduleBtn">
+<span class="material-symbols-outlined text-[20px]">event_available</span>
+<span>Accept New Schedule</span>
+</button>
+<button class="flex items-center justify-center gap-2 bg-surface-container-lowest hover:bg-surface-container text-on-surface font-title-sm text-body-md font-semibold px-space-md py-2.5 rounded-lg shadow-sm transition-colors" id="requestAltBtn">
+<span class="material-symbols-outlined text-[20px] text-secondary">calendar_month</span>
+<span>Ask for Another Time</span>
+</button>
+<a class="flex items-center justify-center gap-1.5 text-secondary hover:text-on-surface font-title-sm text-body-sm px-space-sm py-2 transition-colors" href="tel:+639171234567">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span>Hotline</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Main Content Grid (65% / 35%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN (65% -> 8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-xl">
+<!-- 1. Status Progression Timeline -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-lg">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">timeline</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Session Progression Workflow</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary">STAGE 03 / 06</span>
+</div>
+<!-- Step Progress Track -->
+<div class="relative pl-6 space-y-6 before:absolute before:left-[15px] before:top-2 before:bottom-3 before:w-0.5 before:bg-surface-container-highest">
+<!-- Step 1 (Done) -->
+<div class="relative flex items-start gap-space-md group">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full">
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">Request Submitted</h3>
+<p class="font-body-sm text-body-sm text-secondary">Initial request confirmed by portal</p>
+</div>
+<span class="font-label-code text-label-code text-secondary mt-0.5 sm:mt-0">May 10, 2025 • 02:45 PM</span>
+</div>
+</div>
+<!-- Step 2 (Done) -->
+<div class="relative flex items-start gap-space-md group">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full">
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-semibold">Owner Pre-Check &amp; Review</h3>
+<p class="font-body-sm text-body-sm text-secondary">Bay schedule and technician assigned</p>
+</div>
+<span class="font-label-code text-label-code text-secondary mt-0.5 sm:mt-0">May 11, 2025 • 11:20 AM</span>
+</div>
+</div>
+<!-- Step 3 (Active / Current) -->
+<div class="relative flex items-start gap-space-md group">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-amber-500 text-surface-container-lowest flex items-center justify-center shadow-md animate-bounce">
+<span class="material-symbols-outlined text-[15px]">sync</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full p-space-sm rounded-lg bg-surface-container-low">
+<div>
+<div class="flex items-center gap-space-xs">
+<h3 class="font-title-sm text-body-md text-on-surface font-bold">Reschedule Alignment</h3>
+<span class="font-label-caps text-label-caps text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded">Action Required</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Studio suggested 11:30 AM shift for strobe calibration</p>
+</div>
+<span class="font-label-code text-label-code text-primary font-semibold mt-1 sm:mt-0">May 12, 2025 • Current</span>
+</div>
+</div>
+<!-- Step 4 (Upcoming) -->
+<div class="relative flex items-start gap-space-md opacity-60">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="font-label-code text-label-code">4</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full">
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-medium">Photoshoot Session &amp; Proofing</h3>
+<p class="font-body-sm text-body-sm text-secondary">60-minute studio shooting &amp; raw proof selection</p>
+</div>
+<span class="font-label-code text-label-code text-secondary mt-0.5 sm:mt-0">Scheduled May 24</span>
+</div>
+</div>
+<!-- Step 5 (Upcoming) -->
+<div class="relative flex items-start gap-space-md opacity-60">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[14px]">print</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full">
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-medium">Master Print &amp; Lab Finishing</h3>
+<p class="font-body-sm text-body-sm text-secondary">260gsm Satin Lustre archival printing</p>
+</div>
+<span class="font-label-code text-label-code text-secondary mt-0.5 sm:mt-0">2 Days Post-Session</span>
+</div>
+</div>
+<!-- Step 6 (Upcoming) -->
+<div class="relative flex items-start gap-space-md opacity-60">
+<div class="absolute -left-[30px] top-0.5 w-6 h-6 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[14px]">storefront</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between w-full">
+<div>
+<h3 class="font-title-sm text-body-md text-on-surface font-medium">In-Store Handover &amp; Settlement</h3>
+<p class="font-body-sm text-body-sm text-secondary">Physical frame inspection &amp; counter payment</p>
+</div>
+<span class="font-label-code text-label-code text-secondary mt-0.5 sm:mt-0">Final Handover</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Dual Production Pipeline Tracking -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Dual Production Pipeline</h2>
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Synchronized Operations</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Pipeline 1: Studio Session -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold">Studio Bay Readiness</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-label-caps text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                    BAY 02 RESERVED
+                  </span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold mt-1">Bay 02 Staged &amp; Lighting Calibrated</h3>
+<p class="font-body-sm text-body-sm text-secondary">
+                  5000K High-CRI strobes + softboxes prepped. Staging awaiting reschedule confirmation.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<span class="font-label-code text-label-code text-secondary">Session Status:</span>
+<span class="font-title-sm text-body-sm text-amber-700 font-semibold">Awaiting Schedule Confirmation</span>
+</div>
+</div>
+<!-- Pipeline 2: Print Production Lab -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Laboratory Queue</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-highest text-secondary font-label-caps text-[10px]">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    STOCK SECURED
+                  </span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold mt-1">Paper Stock Reserved (260gsm Satin Lustre 8R)</h3>
+<p class="font-body-sm text-body-sm text-secondary">
+                  Epson UltraChrome pigment dyes staged in humidity-controlled print laboratory.
+                </p>
+</div>
+<div class="flex items-center justify-between pt-space-xs bg-surface-container-lowest p-space-sm rounded-lg">
+<span class="font-label-code text-label-code text-secondary">Lab Status:</span>
+<span class="font-title-sm text-body-sm text-secondary font-semibold">Waiting for Session Proofs</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Package, Theme & Moodboard Summary -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div>
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold">Curated Session Specifications</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Package &amp; Creative Moodboard</h2>
+</div>
+<span class="font-label-code text-label-code bg-surface-container px-2.5 py-1 rounded text-secondary self-start sm:self-auto">
+              60 MIN • 2 OUTFITS
+            </span>
+</div>
+<!-- Package Details Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md bg-surface-container-low p-space-md rounded-xl">
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Selected Package</span>
+<p class="font-title-sm text-body-md text-on-surface font-bold mt-0.5">Graduation Prestige</p>
+<p class="font-body-sm text-body-sm text-secondary">Includes 10 Enhanced Proofs + 1 Archival Print</p>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Wardrobe Changes</span>
+<p class="font-title-sm text-body-md text-on-surface font-bold mt-0.5">Toga + Filipiniana Barong</p>
+<p class="font-body-sm text-body-sm text-secondary">Midway dressing bay transition</p>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-secondary uppercase">Studio Backdrop</span>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="w-3.5 h-3.5 rounded-full bg-[#8A181A] shadow-sm"></span>
+<span class="font-title-sm text-body-md text-on-surface font-bold">Classic Crimson</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Seamless matte studio paper</p>
+</div>
+</div>
+<!-- Moodboard Inspiration Tiles & Palette -->
+<div class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">palette</span>
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold">Uploaded Inspiration Moodboard</h3>
+</div>
+<!-- Color chips -->
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase mr-1">Tonal Direction:</span>
+<span class="w-5 h-5 rounded-full bg-[#171717] shadow-sm" title="#171717 Obsidian Dark"></span>
+<span class="w-5 h-5 rounded-full bg-[#C62828] shadow-sm" title="#C62828 Classic Crimson"></span>
+<span class="w-5 h-5 rounded-full bg-[#D4AF37] shadow-sm" title="#D4AF37 Academic Gold"></span>
+</div>
+</div>
+<!-- Moodboard 4 photo grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
+<div class="group relative rounded-lg overflow-hidden bg-surface-container aspect-square shadow-sm">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Sophisticated graduation studio portrait in warm dark tone. Young Southeast Asian female graduate wearing a dark navy academic toga with gold sash, sitting upright, soft directional key lighting with deep crimson seamless backdrop. Professional editorial composition, fine-art photographic paper texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHy5mrFqYfGBjBQmjCaAU-k42Kplpe9Fhup32_-vO4IGQM5DrIokBepNbShHNTj5MxJ6ATjoV1jRPrMF6pDzNKtegV1ToLsuWUktwkrGgzQ3aDJO24p8yw_1_QNyXfAxTh6UgGqQmdPStKxeAKmtf-WacNFN2XoJXCBxB7y6JrcrK_k4mBNZp3GU9D-JMNsNvHwcjO6DLSZlK0kywvpO09PRQxTtTjnXcsj5HWC-CwFE_roeBpPvGc"/>
+<span class="absolute bottom-2 left-2 font-label-code text-[10px] text-surface-container-lowest bg-on-background/70 px-1.5 py-0.5 rounded backdrop-blur-sm">Pose 01</span>
+</div>
+<div class="group relative rounded-lg overflow-hidden bg-surface-container aspect-square shadow-sm">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Traditional modern Filipiniana formal attire photoshoot. Elegant Filipiniana barong dress with butterfly sleeves, warm Rembrandt portrait lighting against clean minimalist studio wall. Neutral deep tones, dignified poise, high-end fine art gallery quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-FjvRkCifV_znVJ4fTzvKrdYIAJJG7dOCKF1wcTB7V3zJhZUCsaXotWjIhHhmLTTONQvHaEFYIQWlKPi3MTLu7kk_kj2PxcdpiOktnblbHbtDcH4eOSR5aRA4O5KPDn_WxFSAx6zysvfhm9rg5wdpDL-WuMRrLcKw5ywgpVdpwsgbKB917KFtvP4NGiKjzzpducGIg3tCUYYMtHM0s0WSUj4i-9DFPEEpiN60blF07-9cn9EuImTj"/>
+<span class="absolute bottom-2 left-2 font-label-code text-[10px] text-surface-container-lowest bg-on-background/70 px-1.5 py-0.5 rounded backdrop-blur-sm">Pose 02</span>
+</div>
+<div class="group relative rounded-lg overflow-hidden bg-surface-container aspect-square shadow-sm">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close-up macro detail of university graduation diploma roll tied with scarlet red satin ribbon and an embossed bronze honor medal resting on dark tactile linen cloth with soft bokeh studio lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbn8eo5AerARQqQYszQNZtQNGCz4vLsglxMe0crAxMNHGSvvRN7C7pN4ueTrkBGu8AQfgYMNJSK07AvSPBjCv6_AeO2TQwwIGQz7_bKuCOw9SnqTneFZ0h0d9EhlmAm7G6f7zKxsBGSaLGrXnj0wXjvsLWVleq4zcCiqkVh2p9RSV2eMxZC1Uqjjc1A_rdv5CzhhS5K7mROTIJoRnSJGo4JnF1CS7DlEOHXUoJDP1AOcZaIDvqt_D2"/>
+<span class="absolute bottom-2 left-2 font-label-code text-[10px] text-surface-container-lowest bg-on-background/70 px-1.5 py-0.5 rounded backdrop-blur-sm">Detail</span>
+</div>
+<div class="group relative rounded-lg overflow-hidden bg-surface-container aspect-square shadow-sm">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Joyful warm studio portrait of a university graduate embracing an elderly grandmother wearing classic linen formal wear, both laughing candidly with natural radiant expressions. Studio lighting is soft and golden, warm neutral backdrop." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6X97gyqlv6atB9czIF4pltp5K-FXBbjZyaLv8zLxv9E3mwhSpWQ-zqLA62SQr3dVTDBM6MA0NjbU_tw724QFH7fMeB2GhXBEVm61HDqnUwkBbKdUmo7w6odxQvKmPHv7W_RYi8dJLXigkIkh09nYxPu7YoDYKq5ZTtTf-jVladmsmX1qjM40OUssgnKgJbb-8AM_2LKDCaUfHVDrzFYfLB-cZyPObEfnBqbV71-7knWrwrbutk6Qi"/>
+<span class="absolute bottom-2 left-2 font-label-code text-[10px] text-surface-container-lowest bg-on-background/70 px-1.5 py-0.5 rounded backdrop-blur-sm">Family</span>
+</div>
+</div>
+</div>
+<!-- Notes Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md pt-space-xs">
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span class="font-label-caps text-label-caps uppercase font-bold">Client Specific Notes</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-1 italic">
+                “Requested extra natural smile shots with maternal grandma. She arrives with us at 11:15 AM.”
+              </p>
+</div>
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-caps text-label-caps uppercase font-bold text-primary">Studio Owner Remarks</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface mt-1">
+                “Hood and university medals can be switched midway through the 60-minute bay slot. Dressing room #2 allocated.”
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (35% -> 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-lg">
+<!-- 1. Schedule Side-by-Side Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Timeslot Matrix</h2>
+<span class="material-symbols-outlined text-secondary text-[20px]">calendar_today</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Requested Date -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-0.5">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Requested Date</span>
+<span class="font-label-code text-label-code text-secondary line-through">INITIAL</span>
+</div>
+<span class="font-title-sm text-body-md text-on-surface-variant font-medium">
+                Sat, May 24, 2025
+              </span>
+<span class="font-label-code text-label-code text-secondary">
+                10:00 AM – 11:00 AM
+              </span>
+</div>
+<!-- Arrow -->
+<div class="flex justify-center -my-1">
+<span class="material-symbols-outlined text-primary text-[20px]">arrow_downward</span>
+</div>
+<!-- Confirmed / Proposed Date -->
+<div class="p-space-sm rounded-lg bg-primary-fixed/30 flex flex-col gap-0.5 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-primary uppercase font-bold">Proposed / Confirmed</span>
+<span class="font-label-code text-label-code bg-primary-container text-on-primary px-1.5 py-0.2 rounded font-bold">RECOMMENDED</span>
+</div>
+<span class="font-title-md text-title-md text-on-surface font-bold">
+                Sat, May 24, 2025
+              </span>
+<div class="flex items-center justify-between mt-0.5">
+<span class="font-label-code text-body-md text-primary font-bold">
+                  11:30 AM – 12:30 PM
+                </span>
+<span class="font-label-caps text-label-caps text-secondary uppercase bg-surface-container px-2 py-0.5 rounded">
+                  Bay 02
+                </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-space-xs text-secondary text-body-sm pt-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span>Jhunlea Poblacion Atelier • Bay 02 Private Suite</span>
+</div>
+</div>
+<!-- 2. Itemized Price Breakdown -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Session Pricing</h2>
+<span class="font-label-caps text-label-caps text-secondary uppercase">PHP CURRENCY</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-title-sm text-body-md text-on-surface font-medium block">Base Photoshoot Session</span>
+<span class="font-body-sm text-body-sm text-secondary">Graduation Prestige (60 mins bay)</span>
+</div>
+<span class="font-label-code text-body-md text-on-surface font-semibold">₱1,850.00</span>
+</div>
+<div class="flex items-start justify-between">
+<div>
+<span class="font-title-sm text-body-md text-on-surface font-medium block">Studio Archival 8R Frame Add-on</span>
+<span class="font-body-sm text-body-sm text-secondary">Acid-free black wood gallery profile</span>
+</div>
+<span class="font-label-code text-body-md text-on-surface font-semibold">+₱450.00</span>
+</div>
+<div class="h-px bg-surface-container-highest my-space-xs"></div>
+<div class="flex items-center justify-between text-secondary">
+<span class="font-body-sm text-body-sm">Estimated Total</span>
+<span class="font-label-code text-body-sm">₱2,300.00</span>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">lock</span>
+<div>
+<span class="font-title-sm text-body-md text-on-surface font-bold block">Confirmed Total</span>
+<span class="font-label-caps text-[10px] text-secondary uppercase">Locked by Studio Manager</span>
+</div>
+</div>
+<span class="font-price-display text-price-display text-primary font-bold">₱2,300.00</span>
+</div>
+</div>
+</div>
+<!-- 3. Payment Card & Policy -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Payment Settlement</h2>
+<span class="font-label-caps text-label-caps text-secondary uppercase bg-surface-container-high px-2 py-0.5 rounded">COUNTER PAYMENT</span>
+</div>
+<div class="flex flex-col gap-space-xs bg-surface-container-low p-space-md rounded-xl">
+<div class="flex justify-between items-center text-body-sm text-secondary">
+<span>Total Session Amount:</span>
+<span class="font-label-code text-on-surface">₱2,300.00</span>
+</div>
+<div class="flex justify-between items-center text-body-sm text-secondary">
+<span>Online Paid:</span>
+<span class="font-label-code text-on-surface">₱0.00</span>
+</div>
+<div class="h-px bg-surface-container-highest my-1"></div>
+<div class="flex justify-between items-center">
+<span class="font-title-sm text-body-md text-on-surface font-bold">Balance Due at Counter:</span>
+<span class="font-title-md text-title-md text-primary font-bold">₱2,300.00</span>
+</div>
+<div class="mt-2 flex items-center gap-1.5 text-secondary">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Pay-on-Arrival at Poblacion Desk</span>
+</div>
+</div>
+<!-- Accepted Methods -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-caps text-label-caps text-secondary uppercase font-bold">Accepted In-Studio Methods</span>
+<div class="flex flex-wrap gap-1.5 text-secondary font-label-code text-body-sm">
+<span class="bg-surface-container-low px-2 py-1 rounded">Cash</span>
+<span class="bg-surface-container-low px-2 py-1 rounded">GCash QR</span>
+<span class="bg-surface-container-low px-2 py-1 rounded">Maya QR</span>
+<span class="bg-surface-container-low px-2 py-1 rounded">BDO / BPI POS</span>
+</div>
+</div>
+<!-- Studio Notice Banner (Mandatory Transaction Policy) -->
+<div class="bg-surface-container-low p-space-md rounded-xl relative overflow-hidden shadow-sm">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex items-start gap-space-sm pl-1">
+<span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">storefront</span>
+<div class="flex flex-col gap-0.5">
+<span class="font-title-sm text-body-sm font-bold text-on-surface">Studio Face-to-Face Policy</span>
+<p class="font-body-sm text-body-sm text-secondary leading-snug">
+                  Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout required.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. Studio Location & Bay Pass -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Studio Check-in Pass</h2>
+</div>
+<span class="font-label-code text-label-code text-secondary font-semibold">DESK #01</span>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-space-md bg-surface-container-low p-space-md rounded-xl">
+<!-- Simulated QR SVG -->
+<div class="w-24 h-24 bg-surface-container-lowest p-2 rounded-lg shrink-0 shadow-sm flex items-center justify-center">
+<svg class="w-full h-full text-on-surface" fill="currentColor" viewbox="0 0 100 100">
+<path d="M0,0 h35 v35 h-35 z M8,8 v19 h19 v-19 z M14,14 h7 v7 h-7 z"></path>
+<path d="M65,0 h35 v35 h-35 z M73,8 v19 h19 v-19 z M79,14 h7 v7 h-7 z"></path>
+<path d="M0,65 h35 v35 h-35 z M8,73 v19 h19 v-19 z M14,79 h7 v7 h-7 z"></path>
+<rect height="8" width="8" x="42" y="10"></rect>
+<rect height="14" width="6" x="52" y="18"></rect>
+<rect height="16" width="16" x="42" y="42"></rect>
+<rect height="8" width="10" x="65" y="45"></rect>
+<rect height="6" width="14" x="80" y="55"></rect>
+<rect height="20" width="8" x="45" y="70"></rect>
+<rect height="8" width="14" x="60" y="72"></rect>
+<rect height="15" width="15" x="80" y="80"></rect>
+<rect height="7" width="8" x="65" y="88"></rect>
+</svg>
+</div>
+<div class="flex flex-col gap-1 text-center sm:text-left">
+<span class="font-title-sm text-body-md font-bold text-on-surface">Poblacion Atelier Desk #01</span>
+<p class="font-body-sm text-body-sm text-secondary">
+                Scan at Front Desk upon Arrival for rapid queue priority and wardrobe clearance.
+              </p>
+<div class="flex items-center justify-center sm:justify-start gap-1 font-label-code text-label-code text-primary mt-1">
+<span class="material-symbols-outlined text-[16px]">qr_code_scanner</span>
+<span>FAST-PASS #PB0005</span>
+</div>
+</div>
+</div>
+<div class="text-secondary font-body-sm text-body-sm flex items-start gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0 mt-0.5">info</span>
+<span>Please arrive 15 minutes before your slot to allow outfit steaming and skin prep.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple interaction feedback for buttons
+  document.getElementById('acceptRescheduleBtn')?.addEventListener('click', function() {
+    this.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Timeslot Accepted</span>';
+    this.classList.remove('bg-primary-container', 'hover:bg-primary');
+    this.classList.add('bg-emerald-700', 'text-white');
+  });
+
+  document.getElementById('requestAltBtn')?.addEventListener('click', function() {
+    alert('Opening alternative time selection modal. Studio coordinator will be notified.');
+  });
+</script></main><div class="fixed bottom-6 right-6 z-40"><a aria-label="Studio AI Assistant" class="group flex items-center gap-space-sm bg-surface-container-lowest/90 backdrop-blur-xl px-space-md py-space-sm rounded-full shadow-[0_12px_24px_-6px_rgba(23,23,23,0.12),0_4px_8px_-2px_rgba(23,23,23,0.06)] hover:bg-surface-container-lowest transition-all hover:scale-[1.02] cursor-pointer" data-path="ai-assistant" href="#"><div class="relative w-9 h-9 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-[20px]">auto_awesome</span><span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-primary ring-2 ring-surface-container-lowest"></span></div><div class="text-left pr-space-xs"><span class="block font-title-sm text-body-sm font-semibold text-on-surface leading-tight">Studio AI Assistant</span><span class="block font-label-caps text-label-caps text-primary leading-tight font-bold">ONLINE</span></div></a></div><footer class="w-full bg-surface-container-lowest mt-space-xl shadow-[0_-1px_8px_rgba(0,0,0,0.02)]"><div class="max-w-[1280px] mx-auto px-margin py-space-lg"><div class="bg-surface-container-low p-space-md rounded-xl flex flex-col md:flex-row items-center justify-between gap-space-md"><div class="flex items-center gap-space-md text-left"><div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-primary-container shrink-0"><span class="material-symbols-outlined text-[22px]">storefront</span></div><div><span class="block font-title-sm text-body-md font-semibold text-on-surface">Studio Face-to-Face Transaction Policy</span><p class="font-body-md text-body-sm text-secondary mt-0.5">Payment is made face-to-face at Jhunlea Photography &amp; Printing • No online checkout.</p></div></div><div class="flex items-center gap-space-xs font-label-code text-label-code text-secondary bg-surface-container-highest px-space-md py-space-xs rounded-lg shrink-0"><span class="material-symbols-outlined text-[16px] text-primary">verified_user</span><span>ATELIER VERIFIED</span></div></div><div class="mt-space-lg pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm font-body-sm text-body-sm text-secondary"><p>© 2025 Jhunlea Photography &amp; Printing. All rights reserved.</p><div class="flex items-center gap-space-lg font-title-sm text-body-sm"><span class="font-label-code text-label-code">Fine Art Printmaking &amp; Portrait Studio</span></div></div></div></footer></body></html>

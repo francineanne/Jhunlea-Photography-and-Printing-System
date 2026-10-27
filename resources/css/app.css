@@ -1,25 +1,77 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'tailwindcss';
+@import '@fontsource-variable/playfair-display';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import '@fontsource-variable/jetbrains-mono';
+@import 'material-symbols/outlined.css';
+
+@source '../views';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-brand: #C62828;
+    --color-brand-hover: #B71C1C;
+    --color-ink: #171717;
+    --color-white: #FFFFFF;
+    --color-surface: #FBFBFB;
+    --color-card: #F5F5F5;
+    --color-border: #E5E5E5;
+    --color-text-secondary: #525252;
+    --color-text-muted: #A3A3A3;
+
+    --color-status-amber: #D97706;
+    --color-status-amber-bg: #FEF3C7;
+    --color-status-blue: #2563EB;
+    --color-status-blue-bg: #EFF6FF;
+    --color-status-violet: #7C3AED;
+    --color-status-violet-bg: #F5F3FF;
+    --color-status-green: #16A34A;
+    --color-status-green-bg: #DCFCE7;
+    --color-status-gray: #4B5563;
+    --color-status-gray-bg: #F3F4F6;
+    --color-status-red: #DC2626;
+    --color-status-red-bg: #FEE2E2;
+
+    --font-display: 'Playfair Display Variable', serif;
+    --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+    --radius-card: 12px;
+    --radius-control: 10px;
+
+    /* Semantic tokens: values switch under .dark (see below) */
+    --color-app-bg: var(--app-bg);
+    --color-app-card: var(--app-card);
+    --color-app-border: var(--app-border);
+    --color-app-text: var(--app-text);
+}
 
 :root {
-    --jhunlea-red: #C62828;
-    --jhunlea-black: #171717;
-    --jhunlea-white: #FFFFFF;
-    --jhunlea-gray: #6c757d;
+    --app-bg: #FBFBFB;
+    --app-card: #FFFFFF;
+    --app-border: #E5E5E5;
+    --app-text: #171717;
 }
 
-body {
-    font-family: "Inter", Arial, sans-serif;
-    background-color: #ffffff;
-    color: var(--jhunlea-black);
+.dark {
+    --app-bg: #0F0F0F;
+    --app-card: #171717;
+    --app-border: #262626;
+    --app-text: #FAFAFA;
+    color-scheme: dark;
 }
 
-.btn-jhunlea {
-    background-color: var(--jhunlea-red);
-    color: white;
-    border: none;
+@layer base {
+    body {
+        @apply bg-app-bg font-sans text-app-text antialiased;
+    }
 }
 
-.btn-jhunlea:hover {
-    background-color: #a51f1f;
-    color: white;
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    display: inline-block;
+    vertical-align: middle;
 }
