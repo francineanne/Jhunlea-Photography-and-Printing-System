@@ -22,7 +22,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen">
+<body x-data class="min-h-screen">
     @yield('content')
 </body>
 
