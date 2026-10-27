@@ -1,12 +1,19 @@
 # Git Workflow — Jhunlea (isang phase = isang branch)
 
-Ito ang patakaran ninyo: **isang tao lang ang nagko-code kada phase.** Gagawa ng branch mula sa pinakabagong `main`, tatapusin, ipapa-review, at saka ime-merge sa `main`. Pagkatapos noon, kukunin ng susunod ang bagong `main`. Dahil walang sabay na gumagawa, walang magbabanggaang code (walang merge conflict).
+Ito ang patakaran ninyo: **isang tao lang ang nagko-code kada phase.** Gagawa ng branch mula sa pinakabagong `main`, tatapusin, ipapa-review kay Claude sa chat, at kapag aprubado na, ime-merge sa `main`. Pagkatapos noon, kukunin ng susunod ang bagong `main`. Dahil walang sabay na gumagawa, walang magbabanggaang code (walang merge conflict).
 
 ```
 main ──●────────────●────────────●──────────→
         \          / \          /
          phase-1 ─●   phase-2 ─●        (salitan: Her, BF, Her, BF ...)
 ```
+
+## Mga patakaran
+
+- **Ang developer lang ang gumagawa ng git write commands:** branch, `add`, `commit`, `push`, `pull`, `merge`, at pag-untrack ng file. **Hindi kailanman nagpapatakbo ng git write command ang Claude Code.** Ang Claude Code ay sumusulat lang ng code, nagpapatakbo ng tests at nag-uulat. Pinapayagan lang sa kanya ang read-only na git: `git status`, `git diff`, `git log`, `git branch --show-current`, `git check-ignore`.
+- **Si Claude (sa chat) ang nagre-review**, at ang pag-apruba niya ang pinal. Wala nang partner review at wala nang Pull Request.
+- **Ang aprubadong phase ang nagiging bagong `main`.** Ang susunod na phase ay sa branch na galing sa `main` na iyon.
+- **Malalaking phase** (halimbawa Phase 1) ay puwedeng hatiin sa mga bahagi (1A, 1B, 1C) sa **iisang branch**. I-commit at i-push ang bawat bahagi bilang backup, pero ang buong branch lang ang ime-merge sa `main` kapag aprubado na ang huling bahagi.
 
 I-type ang lahat ng command sa terminal ng VS Code (`Ctrl + \``), sa loob ng `C:\xampp\htdocs\jhunlea`.
 
@@ -16,7 +23,7 @@ I-type ang lahat ng command sa terminal ng VS Code (`Ctrl + \``), sa loob ng `C:
 
 ### Her (owner ng repo sa GitHub)
 1. Sa GitHub repo, pumunta sa **Settings → Collaborators → Add people** at i-invite ang GitHub account ni BF.
-2. Optional, kung available sa plan ninyo: **Settings → Branches/Rules** at protektahan ang `main` para hindi ito ma-push nang diretso. Kailangang dumaan sa Pull Request.
+2. Huwag i-protect ang `main` na kailangan ng Pull Request, dahil diretso ang push mo sa `main` ayon sa workflow na ito (section F).
 
 ### BF (sa sarili niyang laptop)
 ```bash
@@ -42,7 +49,7 @@ git config --global pull.rebase false
 
 ---
 
-## B. Pagsisimula ng phase (ang gagawa ng phase)
+## B. Pagsisimula ng phase (ang developer na gagawa ng phase)
 
 ```bash
 git checkout main
@@ -50,10 +57,12 @@ git pull origin main
 git checkout -b phase-2-catalog       # palitan ng tamang pangalan ng phase
 composer install
 npm install
-php artisan migrate:fresh --seed      # para kapareho ng main ang local database mo
+php artisan migrate                   # para kapareho ng main ang database mo (huwag migrate:fresh kung may totoong data ka na)
 ```
 
 ## C. Habang nagko-code (paulit-ulit, kahit ilang beses sa isang araw)
+
+Ang developer ang magpapatakbo ng mga ito, hindi si Claude Code:
 
 ```bash
 git status                            # tingnan kung ano ang nagbago
@@ -64,55 +73,50 @@ git push                              # sa mga susunod na push
 ```
 
 Tips:
-- Mag-commit pagkatapos ng bawat maliit na natapos na bagay. Mas madaling bumalik kapag may nasira.
+- Mag-commit pagkatapos ng bawat maliit na natapos na bagay (o bawat bahagi ng malaking phase). Mas madaling bumalik kapag may nasira.
 - Malinaw na message: `Add ...`, `Fix ...`, `Update ...`.
 - Huwag i-commit ang `.env`, `vendor/` at `node_modules/`. Naka-ignore na ang mga ito.
 - Mag-push araw-araw para may backup sa GitHub.
 
-## D. Pagtatapos ng phase
+## D. Pagtatapos ng phase (bago ang review)
 
 1. I-check ang **Definition of done** sa `AGENTS.md`:
    ```bash
-   php artisan migrate:fresh --seed
    php artisan test
-   ./vendor/bin/pint
+   ./vendor/bin/pint --test
+   npm run build
    ```
-2. I-update ang status table sa `AGENTS.md` at ang checklist sa `docs/DEVELOPMENT_PLAN.md`, tapos i-commit at i-push.
-3. Sa GitHub, i-click ang **Compare & pull request**. Base: `main`, compare: `phase-2-catalog`.
-   - Title: `Phase 2 — Catalog`
-   - Sa description: ano ang natapos, paano i-test, at ano pa ang kulang.
+2. I-update ang status table sa `AGENTS.md` at ang checklist sa `docs/DEVELOPMENT_PLAN.md`.
+3. I-commit at i-push ang branch (`git add .`, `git status`, `git commit`, `git push`).
 
-## E. Review ng partner (bago i-merge)
+## E. Review at pag-apruba
+
+- Ibibigay ng Claude Code ang final report ng phase. Ipapa-review mo ito kay Claude sa chat.
+- Kung may problema, aayusin sa **parehong branch** at magpu-push ulit.
+- Kapag **aprubado** na, ang pag-apruba ay pinal. Wala nang Pull Request o partner review.
+
+## F. Merge sa main (pagkatapos ng pag-apruba)
 
 ```bash
-git fetch origin
-git checkout phase-2-catalog
-git pull
-composer install
-npm install
-php artisan migrate:fresh --seed
-php artisan serve        # terminal 1
-npm run dev              # terminal 2
-```
-- Subukan ang bawat feature sa browser. Mag-login bilang customer at bilang owner.
-- Ilagay ang comments sa Pull Request. Ang gumawa ng phase ang mag-aayos sa parehong branch at magpu-push ulit, at awtomatikong maa-update ang PR.
-- Kapag ayos na, i-click ang **Approve**.
-
-## F. Merge sa main
-
-Sa GitHub Pull Request, i-click ang **Merge pull request**, tapos **Confirm**. Ito na ang bagong `main`.
-
-Pagkatapos, kayong dalawa:
-```bash
+git add .
+git status
+git commit -m "Phase 2 — Catalog"          # kung may natitirang pagbabago
+git push -u origin phase-2-catalog
 git checkout main
 git pull origin main
+git merge --ff-only phase-2-catalog
+git push origin main
 ```
 
-Optional: burahin ang branch sa GitHub (may "Delete branch" button). Nananatili pa rin sa history ang lahat ng commits.
+`--ff-only` ang ginagamit para walang merge commit at tuwid ang history. Kapag nag-error ito (hindi na pwedeng fast-forward), huwag mag-force. Itanong muna kay Claude.
+
+Ang aprubadong phase na ito ang **bagong `main`**.
+
+Optional: burahin ang branch pagkatapos (`git branch -d phase-2-catalog` at "Delete branch" sa GitHub). Nananatili pa rin sa history ang lahat ng commits.
 
 ## G. Susunod na phase
 
-Ang susunod na gagawa ay babalik sa **step B** gamit ang bagong pangalan ng branch.
+Ang susunod na phase ay magsisimula ulit sa **section B**, galing sa bagong `main`, gamit ang bagong pangalan ng branch. Kapag si BF ang susunod, gagawin niya ang `git checkout main` at `git pull origin main` muna.
 
 ---
 
@@ -123,5 +127,6 @@ Ang susunod na gagawa ay babalik sa **step B** gamit ang bagong pangalan ng bran
 | "Your local changes would be overwritten" | `git stash`, tapos ang command, tapos `git stash pop` |
 | Nagkamali ng commit pero hindi pa naka-push | `git reset --soft HEAD~1` para ibalik ang huling commit at panatilihin ang mga pagbabago |
 | Naka-`main` pala habang nagko-code | `git checkout -b phase-x-name`. Sasama ang mga pagbabago mo sa bagong branch |
-| May error pagkatapos mag-pull | `composer install`, `npm install`, `php artisan migrate:fresh --seed`, `php artisan optimize:clear` |
+| May error pagkatapos mag-pull | `composer install`, `npm install`, `php artisan migrate`, `php artisan optimize:clear` |
+| Nag-error ang `git merge --ff-only` | Huwag mag-force. `git status` at `git log --oneline -5`, tapos itanong kay Claude |
 | Hindi sigurado | `git status` at `git log --oneline -5`, tapos itanong kay Claude |

@@ -14,7 +14,7 @@ Route::get('/', function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
-    Route::post('/login', [LoginController::class, 'store']);
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:20,1');
 
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1');
@@ -44,3 +44,6 @@ Route::get('/ui-kit', function () {
 
     return view('dev.ui-kit');
 });
+
+// Runs inside the web middleware group, so error pages know whether the visitor is signed in
+Route::fallback(fn () => abort(404));

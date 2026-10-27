@@ -1,8 +1,8 @@
 # Development Plan — Jhunlea Photography & Printing System
 
-Dalawa ang developer: **Her** (lead dev) at **BF**. Sunod-sunod ang phases: isang tao lang ang nagko-code kada phase. Ang isa naman ang nagre-review, nagte-test, at naghahanda ng susunod.
+Dalawa ang developer: **Her** (lead dev) at **BF**. Sunod-sunod ang phases: isang tao lang ang nagko-code kada phase. Ang isa naman ay nagbabasa at nagte-test ng natapos na phase, at naghahanda ng susunod. Si Claude (sa chat) ang nagre-review ng bawat phase.
 
-Bawat phase = isang branch → Pull Request → review ng partner → merge sa `main`. Tingnan ang `docs/GIT_WORKFLOW.md`.
+Bawat phase = isang branch → review ni Claude sa chat → kapag aprubado, ime-merge ng developer sa `main` (`git merge --ff-only`). Wala nang Pull Request at wala nang partner review. Ang aprubadong phase ang bagong `main`. Tingnan ang `docs/GIT_WORKFLOW.md`.
 
 | Phase | Owner | Branch | Laman |
 |---|---|---|---|
@@ -20,15 +20,15 @@ Bawat phase = isang branch → Pull Request → review ng partner → merge sa `
 
 **Habang naghihintay si BF (Phase 0–4), gagawin niya:**
 - I-setup ang project sa sarili niyang laptop (`docs/GIT_WORKFLOW.md`, section A)
-- I-review at i-test ang bawat Pull Request ni Her, para makilala niya ang code na gagamitin niya sa Phase 5–8
+- Basahin ang code ng bawat aprubadong phase ni Her at i-test ang mga natapos na feature, para makilala niya ang code na gagamitin niya sa Phase 5–8
 - Kunin mula sa shop ang totoong data: presyo, packages, litrato, oras, policies
 - Alamin ang Laravel basics: routes, controllers, Blade, Eloquent, migrations
 - I-research at i-test ang AI provider para sa Phase 7 (Gemini at Groq free tiers)
 
-**Habang nagko-code si BF (Phase 5–8), si Her ang magre-review at magte-test ng bawat Pull Request niya.**
+**Habang nagko-code si BF (Phase 5–8), si Her ang magbabasa ng code at magte-test ng bawat natapos na phase niya. Si Claude ang nagre-review bago i-merge.**
 
 **Pangkalahatang gawain ng hindi nagko-code:**
-- nire-review at tine-test ang phase na katatapos lang
+- binabasa ang code at tine-test ang phase na katatapos lang
 - kinukuha mula sa shop ang totoong data: presyo, packages, litrato, oras, policies
 - nag-iisip ng test cases para sa susunod na phase
 - nagsusulat ng user manual o mga slide para sa presentation
@@ -36,7 +36,7 @@ Bawat phase = isang branch → Pull Request → review ng partner → merge sa `
 ---
 
 ## Phase 0 — Cleanup (Her) · maliit lang
-- [ ] I-commit ang `AGENTS.md`, `CLAUDE.md`, `docs/`, at `design/`
+- [x] I-commit ang `AGENTS.md`, `CLAUDE.md`, `docs/`, at `design/`
 - [x] Alisin ang Bootstrap (`npm uninstall bootstrap @popperjs/core`), at tanggalin ang import nito sa `app.css` at `app.js`
 - [x] Setup ng Tailwind 4 sa `resources/css/app.css` na may `@theme` tokens mula sa DESIGN.md
 - [x] I-load ang fonts (Playfair Display, Plus Jakarta Sans, JetBrains Mono) at Material Symbols
@@ -46,14 +46,14 @@ Bawat phase = isang branch → Pull Request → review ng partner → merge sa `
 
 ## Phase 1 — Foundation (Her)
 Design refs: `design/login/*`, ang sidebar at header mula sa `design/admin/owner_overview`, at `design/public/landing_page` (header at footer lang)
-- [ ] `users.role` at `users.theme` migration, `UserRole` enum, `EnsureRole` middleware
-- [ ] Layouts: `public`, `auth`, `customer`, `owner` (sidebar), lahat may dark mode toggle
-- [ ] UI components: button, input, select, textarea, checkbox, badge/status pill, card, modal, toast, empty state, stepper, timeline, notice banner, aperture spinner, page loader
-- [ ] Auth: login, register (customer lang), logout, forgot password, reset password, at throttle sa login
-- [ ] Owner setup: `php artisan jhunlea:create-owner` command
-- [ ] Redirect ayon sa role; customer ay `/my/dashboard` at owner ay `/owner` (placeholder lang ang laman muna, walang pekeng numbers)
-- [ ] Error pages: 403, 404, 500
-- [ ] Tests: puwedeng mag-register, laging customer ang role ng nagre-register, hindi makakapasok ang customer sa `/owner`, at gumagana ang login at logout
+- [x] `users.role` at `users.theme` migration, `UserRole` enum, `EnsureRole` middleware
+- [x] Layouts: `public`, `auth`, `customer`, `owner` (sidebar), lahat may dark mode toggle
+- [x] UI components: button, input, select, textarea, checkbox, badge/status pill, card, modal, toast, empty state, stepper, timeline, notice banner, aperture spinner, page loader
+- [x] Auth: login, register (customer lang), logout, forgot password, reset password, at throttle sa login
+- [x] Owner setup: `php artisan jhunlea:create-owner` command
+- [x] Redirect ayon sa role; customer ay `/my/dashboard` at owner ay `/owner` (placeholder lang ang laman muna, walang pekeng numbers)
+- [x] Error pages: 403, 404, 500
+- [x] Tests: puwedeng mag-register, laging customer ang role ng nagre-register, hindi makakapasok ang customer sa `/owner`, at gumagana ang login at logout
 
 ## Phase 2 — Catalog (Her)
 Design refs: `design/public/*`, `design/admin/services_printing_catalog_management`, `photography_packages_studio_tier_manager`, `themes_and_backgrounds_backdrops_sets`
@@ -109,7 +109,7 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Owner command palette (Ctrl+K) para maghanap ng requests at customers
 - [ ] Tests: off-topic refusal, walang private data na lumalabas, at fallback kapag walang key
 
-## Phase 8 — Polish and release (BF, review ni Her)
+## Phase 8 — Polish and release (BF, may review mula kay Claude at kay Her)
 - [ ] Mobile responsive pass sa lahat ng screen (puwedeng gamitin ang mobile prompt sa Stitch bilang reference)
 - [ ] Animations gamit ang GSAP (scroll reveal, count-up, timeline draw, page loader) at reduced-motion support
 - [ ] Buong manual test (kasama si Her) ng bawat workflow, security checklist ng AGENTS.md section 12, at pag-aayos ng bugs

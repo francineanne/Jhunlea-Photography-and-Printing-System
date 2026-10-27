@@ -1,26 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.customer')
 
 @section('title', 'My dashboard')
 
-{{-- Placeholder: Part C replaces this with the real customer layout --}}
-@section('content')
-    <x-ui.toast />
+@section('main')
+    <h1 class="font-display text-3xl font-semibold sm:text-4xl">Welcome, {{ auth()->user()->name }}</h1>
+    <p class="mt-2 text-app-text-2">This is your account home.</p>
 
-    <header class="border-b border-app-border">
-        <div class="mx-auto flex max-w-[1280px] items-center justify-between gap-3 px-4 py-3 sm:px-6">
-            <x-ui.logo />
-            <div class="flex items-center gap-2">
-                <x-ui.theme-toggle />
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-ui.button type="submit" variant="outline">Log out</x-ui.button>
-                </form>
-            </div>
-        </div>
-    </header>
+    <x-ui.card class="mt-8">
+        <x-ui.empty-state icon="inbox" title="Nothing here yet" description="Your requests and bookings will show up here when they are available." />
+    </x-ui.card>
 
-    <main class="mx-auto max-w-[1280px] space-y-6 px-4 py-10 sm:px-6">
-        <h1 class="font-display text-3xl font-semibold sm:text-4xl">Welcome, {{ auth()->user()->name }}</h1>
-        <x-ui.notice>Coming soon: your requests and bookings will appear here.</x-ui.notice>
-    </main>
+    <x-ui.notice variant="payment" class="mt-6" />
 @endsection

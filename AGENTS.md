@@ -14,8 +14,8 @@
 
 | Phase | Name | Owner | Status |
 |---|---|---|---|
-| 0 | Repo cleanup and docs | Dev (Her) | Code done on `phase-0-cleanup` (Bootstrap removed, Tailwind 4 setup); awaiting review and merge |
-| 1 | Foundation: design system, layouts, authentication | Dev (Her) | Not started |
+| 0 | Repo cleanup and docs | Dev (Her) | Done (Bootstrap removed, Tailwind 4 setup) |
+| 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Not started |
 | 3 | Printing orders | Dev (Her) | Not started |
 | 4 | Photography bookings and schedule | Dev (Her) | Not started |
@@ -24,7 +24,7 @@
 | 7 | AI customer assistant | BF | Not started |
 | 8 | Testing, mobile pass, animation polish, deployment | BF (Her reviews) | Not started |
 
-Update this table when a phase is merged into `main`.
+Update this table when a phase is approved and merged into `main`.
 
 ---
 
@@ -64,7 +64,8 @@ composer install
 copy .env.example .env        # Windows (use cp on Git Bash)
 php artisan key:generate
 # create the "jhunlea" database in phpMyAdmin first
-php artisan migrate --seed
+php artisan migrate --seed    # the seeder creates no users
+php artisan jhunlea:create-owner   # asks for name, email and a hidden password; run it once to create the owner
 npm install
 
 # daily development (two terminals)
@@ -74,12 +75,15 @@ npm run dev                   # Vite hot reload
 # after pulling someone else's phase
 composer install
 npm install
-php artisan migrate:fresh --seed   # dev only; wipes local data
+php artisan migrate           # never migrate:fresh on a database that holds real data
 
 # quality
-php artisan test
-./vendor/bin/pint             # code style
+php artisan test              # in-memory sqlite: needs pdo_sqlite and sqlite3 enabled in php.ini
+./vendor/bin/pint --test      # code style check (./vendor/bin/pint fixes it)
+npm run build                 # must exit 0
 ```
+
+`php artisan migrate:fresh --seed` wipes the database. Use it only on a throwaway local database, never on one that has real data.
 
 ---
 
@@ -122,8 +126,10 @@ Rules:
 | Print Shop Owner | `owner` | Manage services, packages, themes, schedule, all orders and bookings, prices, payments, customers, reports, settings |
 | Customer | `customer` | Browse, submit printing orders, request bookings, see **only their own** requests and files, use the assistant, edit own profile and appearance |
 
-- Public registration always creates `customer`. The owner account is created only with `php artisan jhunlea:create-owner` (or a one-time setup screen that locks itself after the first owner exists).
-- Enforce access on the server: `EnsureRole` middleware for route groups and Policies for every record and file. Hiding buttons is not security.
+- Public registration always creates `customer`. The owner account is created only with `php artisan jhunlea:create-owner` (hidden password prompt, refuses an existing email, asks for confirmation if an owner already exists). There is no setup screen.
+- `users.role` is cast to `App\Enums\UserRole` and is **never mass-assignable**; server code sets it directly.
+- Enforce access on the server: the `role` middleware alias (`role:owner`, `role:customer`, class `App\Http\Middleware\EnsureRole`) for route groups and Policies for every record and file. Guests go to login, a signed-in user with the wrong role gets 403. Hiding buttons is not security.
+- Route groups: `auth` + `role:customer` for `/my/*`, `auth` + `role:owner` for `/owner/*`. After login, owner goes to `/owner` and customer to `/my/dashboard` (`UserRole::home()`).
 - Customers can never: set owner-controlled statuses, set final prices, confirm their own bookings, or record payments.
 - No Super Admin, Staff or other roles unless the team explicitly approves.
 
@@ -223,6 +229,16 @@ After login: owner → `/owner`, customer → `/my/dashboard`.
 - Currency: `₱1,250.00` with tabular numbers.
 - Never leave buttons or links that do nothing. If a feature is not built yet, do not show its button.
 
+### UI building blocks (built in Phase 1)
+
+- **Components** live in `resources/views/components/ui/` (use as `<x-ui.name>`): logo, icon, button, input, select, textarea, checkbox, field, badge, status-badge, card, notice, modal, toast, empty-state, stepper, timeline, aperture-spinner, page-loader, theme-toggle. The page shells use `resources/views/components/layout/` (skip-link, nav, drawer, user-menu, error-card). Reuse them; do not copy markup.
+- **`/ui-kit`** is a developer gallery of every component in every state. It returns 404 unless `APP_ENV=local`. Check it when you change a component.
+- **Layouts** are `layouts/app` (base), `layouts/public`, `layouts/auth`, `layouts/customer` and `layouts/owner`. Pages fill the `main` section (the `auth` section for auth pages). To add a navigation item, add one line (label, icon, route name) to the `$nav` array at the top of the layout file, and only when the route exists.
+- **`<body x-data>` must stay in `layouts/app`.** Modals, drawers and toasts are opened from buttons through Alpine events, which only work inside an Alpine scope. Every layout must also include `<x-ui.toast />`.
+- **Tailwind scans only `resources/views` and `resources/js`** (see `@source` in `resources/css/app.css`). A class used anywhere else (for example in `design/` or a PHP string outside views) will not be generated. Write full class names, never built-up strings like `'bg-'.$color`.
+- **Error pages** are in `resources/views/errors/` (403, 404, 419 use the public layout; 500 is fully static on purpose, with no layout, session or database).
+- **Every phase includes backend + tests + browser QA** at 360x640, 390x844, 768x1024, 1024x768, 1280x800, 1440x900 and 1920x1080, each in light and dark mode: no horizontal scroll, nothing clipped, tap targets of at least 44px on phones.
+
 ---
 
 ## 12. Security checklist
@@ -252,12 +268,12 @@ After login: owner → `/owner`, customer → `/my/dashboard`.
 
 - [ ] All screens in the phase scope work end to end with real database data (no fake counts, no dead buttons).
 - [ ] Server-side validation and authorization for every action.
-- [ ] Migrations run from scratch: `php artisan migrate:fresh --seed`.
+- [ ] Migrations run cleanly: `php artisan migrate` (and from scratch on a throwaway database).
 - [ ] Feature tests for the main success path, validation errors, and access control.
-- [ ] `php artisan test` passes; `./vendor/bin/pint` run.
-- [ ] Light and dark mode checked; desktop layout matches the design; mobile not broken.
+- [ ] `php artisan test` passes; `./vendor/bin/pint --test` passes; `npm run build` exits 0.
+- [ ] Browser QA at the 7 viewports in light and dark mode; desktop layout matches the design; mobile not broken.
 - [ ] This file's status table and `docs/DEVELOPMENT_PLAN.md` checklist updated.
-- [ ] Pull request reviewed and approved by the other teammate, then merged to `main`.
+- [ ] Reviewed and approved by Claude in the chat, then merged to `main` by the developer (`docs/GIT_WORKFLOW.md`, section F).
 
 ---
 
@@ -265,11 +281,12 @@ After login: owner → `/owner`, customer → `/my/dashboard`.
 
 ### Git rules for agents
 
-- The developer handles ALL git write operations herself: creating branches, `git add`, `git commit`, `git push`, `git pull`, merging. The agent only writes code, runs tests, and reports.
+- The developer handles ALL git write operations herself: creating branches, `git add`, `git commit`, `git push`, `git pull`, merging and untracking files. Claude Code (the agent) only writes code, runs tests, and reports.
 - Read-only git is allowed: `git status`, `git diff`, `git log`, `git branch --show-current`, `git check-ignore`.
-- Never run: `git add`, `commit`, `checkout`, `switch`, `merge`, `rebase`, `reset`, `stash`, `push`, `pull`, `fetch`, or anything that changes history or the working branch.
+- Never run: `git add`, `commit`, `checkout`, `switch`, `merge`, `rebase`, `reset`, `stash`, `push`, `pull`, `fetch`, `rm`, or anything that changes history or the working branch.
 - At the start of every task run `git branch --show-current`. If it is `main` or not the branch the developer named, stop, edit nothing, and tell her.
-- `main` only changes when a Pull Request is merged on GitHub after the teammate approves it.
+- Workflow: one branch per phase, reviewed by Claude in the chat; Claude's approval is final (no partner review, no Pull Request). After approval the developer merges the branch into `main` with `git merge --ff-only` and the next phase starts from that `main`. Large phases may be split into parts on the same branch with backup pushes. See `docs/GIT_WORKFLOW.md`.
+- Never run `php artisan migrate:fresh`, `migrate:reset` or `db:wipe`, and never delete the developer's real accounts or data. Create your own QA users and delete only those.
 
 ### General rules
 

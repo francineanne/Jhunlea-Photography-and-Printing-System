@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
-{{-- Pages fill the `auth` section; `title` is picked up by layouts.app. No page loader here. --}}
+{{-- Pages fill the `auth` section; `title` is picked up by layouts.app. --}}
 @section('content')
+    <x-layout.skip-link />
+    <x-ui.page-loader />
     <x-ui.toast />
 
     <div class="min-h-dvh lg:grid lg:grid-cols-2">
@@ -19,7 +21,7 @@
             <x-ui.aperture-spinner :size="560" class="pointer-events-none absolute -bottom-40 -right-40 animate-none! text-brand/20" />
         </aside>
 
-        <main class="relative flex min-h-dvh flex-col overflow-hidden px-4 py-4 sm:px-8">
+        <main id="main-content" tabindex="-1" class="relative flex min-h-dvh flex-col overflow-hidden px-4 py-4 focus:outline-none sm:px-8">
             <div class="pointer-events-none absolute -left-24 top-1/4 size-72 rounded-full bg-brand/10 blur-3xl" aria-hidden="true"></div>
             <div class="pointer-events-none absolute -bottom-24 right-0 size-72 rounded-full bg-status-violet/10 blur-3xl" aria-hidden="true"></div>
 

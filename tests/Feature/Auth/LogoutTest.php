@@ -24,7 +24,8 @@ class LogoutTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->get('/logout')->assertStatus(405);
+        // There is no GET route, so it falls through to the 404 page (it never logs anyone out)
+        $this->get('/logout')->assertNotFound();
 
         $this->assertAuthenticated();
     }

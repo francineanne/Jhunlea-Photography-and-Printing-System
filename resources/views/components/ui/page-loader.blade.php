@@ -1,6 +1,10 @@
 {{-- Visible from first paint, faded out by Alpine shortly after window load. Skipped with reduced motion (see app.css). --}}
+{{-- Shown once per browser session: the script below runs before the loader is painted and hides it when already seen. --}}
 {{-- The fade is plain CSS, so a throttled background tab can never leave the overlay stuck on screen. --}}
 <noscript><style>.page-loader { display: none !important; }</style></noscript>
+<script>
+    try { if (sessionStorage.getItem('jhunlea-loader-seen')) document.documentElement.classList.add('loader-seen'); } catch (e) {}
+</script>
 
 <div x-data="uiPageLoader" x-on:replay-loader.window="replay()" x-bind:aria-hidden="!show"
     x-bind:class="show || 'pointer-events-none invisible opacity-0'"

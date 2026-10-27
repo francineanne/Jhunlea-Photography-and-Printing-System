@@ -113,6 +113,18 @@ Alpine.data('uiPageLoader', () => ({
         // JS is running, so cancel the CSS failsafe that hides the loader when scripts fail
         this.$el.style.animation = 'none';
 
+        if (root.classList.contains('loader-seen')) {
+            this.show = false;
+
+            return;
+        }
+
+        try {
+            sessionStorage.setItem('jhunlea-loader-seen', '1');
+        } catch (e) {
+            // storage unavailable: the loader simply shows on every page
+        }
+
         const hide = () => setTimeout(() => (this.show = false), 700);
 
         if (document.readyState === 'complete') {
@@ -123,6 +135,8 @@ Alpine.data('uiPageLoader', () => ({
     },
 
     replay() {
+        root.classList.remove('loader-seen');
+
         // Restart the opening animation, which has already run once
         this.$el.querySelectorAll('.animate-aperture-open, .animate-fade-up').forEach((el) => {
             el.style.animation = 'none';

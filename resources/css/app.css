@@ -229,6 +229,11 @@
     }
 }
 
+/* Already shown in this browser session (class set by the script inside the page-loader component) */
+.loader-seen .page-loader {
+    display: none !important;
+}
+
 /* The page loader is a pure-motion splash, so it is skipped entirely when motion is reduced */
 @media (prefers-reduced-motion: reduce) {
     .page-loader {
