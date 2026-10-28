@@ -31,6 +31,27 @@ class MotionMarkupTest extends TestCase
         $this->assertStringNotContainsString('class="pointer-events-none fixed inset-x-0 bottom-4 z-40 px-4 sm:px-6 translate-y-8', $html);
     }
 
+    public function test_the_compare_bar_stays_hidden_until_alpine_starts_but_only_when_scripts_run(): void
+    {
+        PhotographyPackage::factory()->published()->create();
+
+        $html = $this->get('/packages')->assertOk()->getContent();
+
+        // The `js` class is added by a script in the head, so a visitor without scripts never gets the hiding rule
+        $this->assertStringContainsString("document.documentElement.classList.add('js')", $html);
+        // The bar carries the marker, and Alpine removes it when it starts
+        $this->assertStringContainsString('data-alpine-pending x-bind:data-alpine-pending="false"', $html);
+        $this->assertStringNotContainsString('<html lang="en" class="js"', $html);
+    }
+
+    public function test_the_pending_rule_applies_only_under_the_js_class(): void
+    {
+        $css = file_get_contents(resource_path('css/app.css'));
+
+        $this->assertStringContainsString('html.js [data-alpine-pending]', $css);
+        $this->assertDoesNotMatchRegularExpression('/^\s*\[data-alpine-pending\]\s*\{/m', $css);
+    }
+
     public function test_a_card_carries_the_cover_photo_as_a_data_attribute_for_the_bar(): void
     {
         $package = PhotographyPackage::factory()->published()->create(['slug' => 'with-photo']);

@@ -153,6 +153,11 @@
     [x-cloak] {
         display: none !important;
     }
+
+    /* Parts that Alpine animates away on load stay hidden from the first paint, but only when scripts run (see the `js` class in layouts/app). Alpine removes the attribute. */
+    html.js [data-alpine-pending] {
+        visibility: hidden;
+    }
 }
 
 /* Keyboard focus ring for buttons, links and other non-field controls */

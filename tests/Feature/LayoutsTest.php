@@ -14,6 +14,15 @@ class LayoutsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_every_page_points_to_a_real_icon_so_the_browser_does_not_ask_for_favicon_ico(): void
+    {
+        $this->get('/')->assertSee('<link rel="icon" href="'.asset('favicon.svg').'" type="image/svg+xml">', false);
+        $this->get('/login')->assertSee('rel="icon"', false);
+
+        $this->assertGreaterThan(100, filesize(public_path('favicon.svg')));
+        $this->assertStringContainsString('#C62828', file_get_contents(public_path('favicon.svg')));
+    }
+
     public function test_home_page_shows_login_and_register_to_guests(): void
     {
         $this->get('/')

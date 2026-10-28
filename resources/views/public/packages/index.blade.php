@@ -184,6 +184,7 @@
 
                     {{-- Fixed at the bottom as in the design. Without scripts it simply stays visible; Alpine slides it away while nothing is ticked. --}}
                     <div class="pointer-events-none fixed inset-x-0 bottom-4 z-40 px-4 sm:px-6"
+                        data-alpine-pending x-bind:data-alpine-pending="false"
                         x-bind:class="[ready ? 'transition-[opacity,translate] duration-300 ease-out' : '', picked === 0 ? 'translate-y-8 opacity-0' : '']"
                         x-bind:inert="picked === 0" role="region" aria-label="Compare packages">
                         <div class="pointer-events-auto mx-auto flex max-w-[1280px] flex-col gap-2 rounded-2xl bg-ink p-3 sm:gap-3 sm:p-4 text-white shadow-xl backdrop-blur-md md:flex-row md:items-center md:justify-between dark:border dark:border-white/10 dark:bg-neutral-900">
