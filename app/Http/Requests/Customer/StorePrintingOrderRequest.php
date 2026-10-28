@@ -60,6 +60,12 @@ class StorePrintingOrderRequest extends PrintingEstimateRequest
                     $validator->errors()->add("files.{$index}", $file->getClientOriginalName().': '.collect($e->errors())->flatten()->first());
                 }
             }
+
+            try {
+                app(OrderFileService::class)->validateTotal($this->uploads());
+            } catch (ValidationException $e) {
+                $validator->errors()->add('files', collect($e->errors())->flatten()->first());
+            }
         }];
     }
 

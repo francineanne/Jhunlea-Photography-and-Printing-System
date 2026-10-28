@@ -403,7 +403,7 @@ Alpine.data('uiPageLoader', () => ({
 // The printing order wizard. The four steps are sections of one plain form, so it also works without scripts; here they
 // open one at a time. The checks below only help the customer: the server checks every step again on submit. The
 // estimate comes from the server (PricingService), never from arithmetic in the browser.
-Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxQuantity }) => ({
+Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb, maxQuantity }) => ({
     step: start,
     reached: start,
     serviceId: null,
@@ -518,7 +518,9 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxQuantit
                   ? `You can send up to ${maxFiles} files with one order.`
                   : this.files.some((file) => file.error)
                     ? 'Remove the files that cannot be sent first.'
-                    : '',
+                    : this.overTotal()
+                      ? this.totalProblem()
+                      : '',
         };
 
         this.problem = problems[step] ?? '';
@@ -552,7 +554,22 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxQuantit
     readFiles() {
         const picked = [...(this.$refs.files?.files ?? [])];
 
-        this.files = picked.map((file) => ({ name: file.name, size: this.size(file.size), error: this.fileProblem(file) }));
+        this.files = picked.map((file) => ({ name: file.name, bytes: file.size, size: this.size(file.size), error: this.fileProblem(file) }));
+    },
+
+    totalBytes() {
+        return this.files.reduce((sum, file) => sum + file.bytes, 0);
+    },
+
+    // Same limit and wording as the server, which checks it again on submit
+    overTotal() {
+        return this.totalBytes() > maxTotalMb * 1024 * 1024;
+    },
+
+    totalProblem() {
+        const size = (Math.ceil((this.totalBytes() / 1024 / 1024) * 10) / 10).toFixed(1);
+
+        return `Your files together are ${size} MB. The most one order can hold is ${maxTotalMb} MB. Please remove or compress some files.`;
     },
 
     fileProblem(file) {
@@ -600,8 +617,8 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxQuantit
 
     acceptText() {
         return this.rule
-            ? `Accepted: ${this.typesText()} · up to ${this.rule.maxKb / 1024} MB per file · up to ${maxFiles} files.`
-            : `Choose a service in step 1 to see which files it accepts. Up to ${maxFiles} files per order.`;
+            ? `Accepted: ${this.typesText()} · up to ${this.rule.maxKb / 1024} MB per file · up to ${maxFiles} files and ${maxTotalMb} MB in total.`
+            : `Choose a service in step 1 to see which files it accepts. Up to ${maxFiles} files and ${maxTotalMb} MB in total per order.`;
     },
 
     // Estimate

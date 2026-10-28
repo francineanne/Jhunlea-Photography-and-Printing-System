@@ -114,6 +114,7 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Animations gamit ang GSAP (scroll reveal, count-up, timeline draw, page loader) at reduced-motion support
 - [ ] Buong manual test (kasama si Her) ng bawat workflow, security checklist ng AGENTS.md section 12, at pag-aayos ng bugs
 - [ ] Deployment guide, backup notes, owner user manual, at presentation
+- [ ] Server php.ini upload_max_filesize and post_max_size must be at least the values in config/printing.php
 
 ---
 

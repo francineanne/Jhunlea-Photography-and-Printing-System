@@ -48,6 +48,7 @@ class PrintingOrderController extends Controller
             'rules' => $rules,
             'groups' => OptionGroup::cases(),
             'maxFiles' => config('printing.max_files_per_order'),
+            'maxTotalMb' => config('printing.max_total_size_mb'),
             'maxQuantity' => config('printing.max_quantity'),
             'maxPages' => config('printing.max_pages'),
             'startStep' => $this->firstStepWithError(session('errors')),

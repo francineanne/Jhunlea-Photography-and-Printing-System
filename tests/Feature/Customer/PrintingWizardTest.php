@@ -17,6 +17,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use RuntimeException;
 use Tests\TestCase;
@@ -438,6 +439,93 @@ class PrintingWizardTest extends TestCase
         $this->assertNothingSaved();
     }
 
+    // The size of all files together (the real limits: 10 MB per file, 30 MB per order)
+
+    private const MB = 1024 * 1024;
+
+    /** A real PDF of exactly this many bytes. */
+    private function pdfOfSize(string $name, int $bytes): UploadedFile
+    {
+        return $this->upload($name, self::PDF.str_repeat('0', $bytes - strlen(self::PDF)));
+    }
+
+    private function bigFileService(): PrintingService
+    {
+        return PrintingService::factory()->published()->create([
+            'pricing_type' => PricingType::PerCopy,
+            'base_price' => '10.00',
+            'allowed_file_types' => ['pdf'],
+            'max_file_size_mb' => 10,
+        ]);
+    }
+
+    public function test_the_limits_stay_below_what_php_accepts_on_xampp(): void
+    {
+        $this->assertSame(10, config('printing.max_file_size_mb'));
+        $this->assertSame(30, config('printing.max_total_size_mb'));
+        $this->assertLessThan(40, config('printing.max_total_size_mb'));
+    }
+
+    public function test_files_that_together_are_exactly_the_limit_are_accepted(): void
+    {
+        $service = $this->bigFileService();
+        $files = [$this->pdfOfSize('a.pdf', 10 * self::MB), $this->pdfOfSize('b.pdf', 10 * self::MB), $this->pdfOfSize('c.pdf', 5 * self::MB), $this->pdfOfSize('d.pdf', 5 * self::MB)];
+
+        $this->send(['service' => $service->id, 'quantity' => 1, 'files' => $files])->assertSessionHasNoErrors();
+
+        $this->assertSame(30 * self::MB, (int) PrintingOrder::sole()->files()->sum('size_bytes'));
+    }
+
+    public function test_one_byte_over_the_total_is_refused_with_a_clear_message(): void
+    {
+        $service = $this->bigFileService();
+        $files = [$this->pdfOfSize('a.pdf', 10 * self::MB), $this->pdfOfSize('b.pdf', 10 * self::MB), $this->pdfOfSize('c.pdf', 5 * self::MB), $this->pdfOfSize('d.pdf', 5 * self::MB + 1)];
+
+        $this->send(['service' => $service->id, 'quantity' => 1, 'files' => $files])
+            ->assertSessionHasErrors(['files' => 'Your files together are 30.1 MB. The most one order can hold is 30 MB. Please remove or compress some files.']);
+
+        $this->assertNothingSaved();
+    }
+
+    public function test_ten_files_that_each_pass_but_together_are_too_large_are_refused(): void
+    {
+        $service = $this->bigFileService();
+        $files = array_map(fn ($i) => $this->pdfOfSize("part-{$i}.pdf", (int) (3.1 * self::MB)), range(1, 10));
+
+        $response = $this->send(['service' => $service->id, 'quantity' => 1, 'files' => $files]);
+
+        $response->assertSessionHasErrors(['files' => 'Your files together are 31.0 MB. The most one order can hold is 30 MB. Please remove or compress some files.']);
+        // Each file on its own was fine
+        foreach (range(0, 9) as $index) {
+            $response->assertSessionDoesntHaveErrors("files.{$index}");
+        }
+        $this->assertNothingSaved();
+    }
+
+    public function test_the_service_refuses_too_large_a_total_even_when_called_directly(): void
+    {
+        $service = $this->bigFileService();
+        $files = [$this->pdfOfSize('a.pdf', 10 * self::MB), $this->pdfOfSize('b.pdf', 10 * self::MB), $this->pdfOfSize('c.pdf', 10 * self::MB), $this->pdfOfSize('d.pdf', 1 * self::MB)];
+
+        try {
+            app(PrintingOrderService::class)->placeWithFiles($this->customer, $service, [], 1, 1, null, $files);
+            $this->fail('A total over the limit must be refused.');
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString('The most one order can hold is 30 MB.', $e->errors()['files'][0]);
+        }
+
+        $this->assertNothingSaved();
+    }
+
+    public function test_the_files_step_shows_the_per_file_and_total_limits(): void
+    {
+        $html = $this->actingAs($this->customer)->get(route('customer.printing.create'))->getContent();
+
+        $this->assertStringContainsString('Up to 10 files and 30 MB in total per order.', $html);
+        $this->assertStringContainsString('Up to 10 files · 30 MB', $html);
+        $this->assertStringContainsString('the largest file it takes', $html);
+        $this->assertMatchesRegularExpression('/maxTotalMb.{1,8}:30[,}]/', $html);
+    }
     // The confirmation page
 
     public function test_another_customer_cannot_see_the_confirmation_page(): void

@@ -38,6 +38,31 @@ class OrderFileService
         return min($service->max_file_size_mb, config('printing.max_file_size_mb')) * 1024;
     }
 
+    /** All files of one order together, in bytes. */
+    public function maxTotalBytes(): int
+    {
+        return config('printing.max_total_size_mb') * 1024 * 1024;
+    }
+
+    /**
+     * The limit for all files of one order together. Each file is still checked on its own by validate().
+     *
+     * @param  array<int, UploadedFile>  $files
+     *
+     * @throws ValidationException
+     */
+    public function validateTotal(array $files): void
+    {
+        $total = array_sum(array_map(fn (UploadedFile $file) => (int) $file->getSize(), $files));
+
+        if ($total > $this->maxTotalBytes()) {
+            // Rounded up, so a total just over the limit never reads as the limit itself
+            $size = number_format(ceil($total / 1024 / 1024 * 10) / 10, 1);
+
+            throw ValidationException::withMessages(['files' => "Your files together are {$size} MB. The most one order can hold is ".config('printing.max_total_size_mb').' MB. Please remove or compress some files.']);
+        }
+    }
+
     /**
      * Stores one file for an order and records it.
      *

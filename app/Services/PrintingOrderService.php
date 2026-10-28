@@ -77,7 +77,7 @@ class PrintingOrderService
      *
      * @throws AuthorizationException when the user is not a customer
      * @throws InvalidArgumentException when the service, options, quantity or pages are not valid
-     * @throws ValidationException when there is no file, too many files, or a file is not acceptable
+     * @throws ValidationException when there is no file, too many files, a file is not acceptable or the files together are too large
      */
     public function placeWithFiles(User $customer, PrintingService $service, array $optionIds, int $quantity, int $pages, ?string $notes, array $uploads): PrintingOrder
     {
@@ -92,6 +92,8 @@ class PrintingOrderService
         foreach ($uploads as $upload) {
             $this->files->validate($upload, $service);
         }
+
+        $this->files->validateTotal($uploads);
 
         $written = [];
         $orderId = null;

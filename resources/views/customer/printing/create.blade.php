@@ -44,7 +44,7 @@
         </x-ui.card>
     @else
         <form method="POST" action="{{ route('customer.printing.store') }}" enctype="multipart/form-data" novalidate
-            x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxQuantity' => $maxQuantity]))"
+            x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxTotalMb' => $maxTotalMb, 'maxQuantity' => $maxQuantity]))"
             x-on:change="sync()" x-on:submit="submit($event)">
             @csrf
 
@@ -77,7 +77,7 @@
             </div>
 
             <div class="mt-6 grid items-start gap-6 lg:grid-cols-12">
-                <div class="space-y-6 lg:col-span-8">
+                <div class="min-w-0 space-y-6 lg:col-span-8">
 
                     {{-- Step 1: service --}}
                     <section id="step-1" aria-labelledby="step-1-title" x-show="step === 1"
@@ -208,7 +208,7 @@
                     <section id="step-3" aria-labelledby="step-3-title" x-show="step === 3"
                         @if ($startStep !== 3) data-js-hidden x-bind:data-js-hidden="false" @endif
                         class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none">
-                        @include('customer.printing._step-header', ['number' => 3, 'title' => 'Files and notes', 'text' => 'Add the files to print. They stay private: only you and the shop can see them.', 'pill' => 'Up to '.$maxFiles.' files'])
+                        @include('customer.printing._step-header', ['number' => 3, 'title' => 'Files and notes', 'text' => 'Add the files to print. They stay private: only you and the shop can see them.', 'pill' => 'Up to '.$maxFiles.' files · '.$maxTotalMb.' MB'])
 
                         @if ($fileErrors->isNotEmpty())
                             <ul class="mb-4 space-y-1 rounded-control border border-status-red/30 bg-status-red-bg p-3 text-sm text-status-red" role="alert" id="files-error">
@@ -228,7 +228,7 @@
                             <span class="grid size-14 place-items-center rounded-full bg-app-card text-brand shadow-sm" aria-hidden="true"><x-ui.icon name="upload_file" :size="30" /></span>
                             <p class="mt-3 font-semibold"><span x-cloak class="hidden sm:inline">Drag and drop your files here, or choose them below</span><span class="sm:hidden">Choose the files to print</span><span x-show="false" class="hidden sm:inline">Choose the files to print</span></p>
                             <p class="mt-1 max-w-md text-sm text-app-text-2" x-cloak x-text="acceptText()"></p>
-                            <p class="mt-1 max-w-md text-sm text-app-text-2" x-show="false">Each service in step 1 lists the files it accepts. Up to {{ $maxFiles }} files per order.</p>
+                            <p class="mt-1 max-w-md text-sm text-app-text-2" x-show="false">Each service in step 1 lists the files it accepts and the largest file it takes. Up to {{ $maxFiles }} files and {{ $maxTotalMb }} MB in total per order.</p>
                             <label for="files" class="sr-only">Files to print</label>
                             <input id="files" type="file" name="files[]" multiple x-ref="files" x-on:change.stop="readFiles(); sync()"
                                 accept="{{ $allExtensions->map(fn ($ext) => '.'.$ext)->join(',') }}" x-bind:accept="acceptList()"
@@ -239,8 +239,11 @@
                         <div class="mt-5" x-cloak x-show="files.length > 0">
                             <div class="flex items-center justify-between gap-3">
                                 <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Files to send</p>
-                                <p class="font-mono text-xs text-app-text-2"><span x-text="files.length"></span> / {{ $maxFiles }}</p>
+                                <p class="font-mono text-xs" x-bind:class="overTotal() ? 'font-semibold text-status-red' : 'text-app-text-2'"><span x-text="files.length"></span> / {{ $maxFiles }} files · <span x-text="size(totalBytes())"></span> of {{ $maxTotalMb }} MB</p>
                             </div>
+                            <p class="mt-2 flex items-start gap-1 rounded-control border border-status-red/30 bg-status-red-bg p-3 text-sm text-status-red" role="alert" x-show="overTotal()">
+                                <x-ui.icon name="error" :size="16" class="mt-0.5 shrink-0" /><span x-text="totalProblem()"></span>
+                            </p>
                             <ul class="mt-2 space-y-2">
                                 <template x-for="(file, index) in files" x-bind:key="index + file.name">
                                     <li class="flex items-center gap-3 rounded-control p-3"

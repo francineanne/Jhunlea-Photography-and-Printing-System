@@ -12,8 +12,13 @@ return [
 
     'directory' => 'printing-orders',
 
-    // No service may allow more than this, whatever its own limit says
-    'max_file_size_mb' => 25,
+    // No service may allow more than this, whatever its own limit says. Keep it at or below PHP's upload_max_filesize
+    // (10M on XAMPP): PHP drops a bigger file before Laravel can explain why
+    'max_file_size_mb' => 10,
+
+    // All files of one order together. Keep it below PHP's post_max_size (40M on XAMPP), which also counts the rest
+    // of the form: above that PHP throws the whole request away and the visitor sees the 413 page instead of a clear error
+    'max_total_size_mb' => 30,
 
     'max_files_per_order' => 10,
 

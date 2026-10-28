@@ -515,5 +515,8 @@ class PackageImageTest extends TestCase
 
         $this->assertStringContainsString('That upload was too large', $html);
         $this->assertStringContainsString(ini_get('post_max_size'), $html);
+        // The page also serves the printing wizard, where most uploads are documents
+        $this->assertStringContainsString('send fewer or smaller files', $html);
+        $this->assertStringNotContainsString('photos', $html);
     }
 }
