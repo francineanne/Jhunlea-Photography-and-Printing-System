@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
 use App\Exceptions\FileRemovalException;
+use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
@@ -25,6 +26,8 @@ use Throwable;
  */
 class PrintingOrderService
 {
+    public const BOOKING_MESSAGE = 'Prints can be ordered only from your own photoshoot once it is completed.';
+
     public function __construct(
         private readonly ReferenceNumberService $references,
         private readonly PricingService $pricing,
@@ -35,10 +38,14 @@ class PrintingOrderService
     /**
      * @param  array<int, int|string>  $optionIds
      *
+     * A completed photoshoot of the same customer may be attached (prints after the shoot). It only links the two: the
+     * order keeps its own price and status, and the booking's price is never touched.
+     *
      * @throws AuthorizationException when the user is not a customer
      * @throws InvalidArgumentException when the service is not published or the options, quantity or pages are not valid
+     * @throws ValidationException when the booking is not the customer's own completed photoshoot
      */
-    public function place(User $customer, PrintingService $service, array $optionIds, int $quantity, int $pages = 1, ?string $notes = null): PrintingOrder
+    public function place(User $customer, PrintingService $service, array $optionIds, int $quantity, int $pages = 1, ?string $notes = null, ?PhotographyBooking $booking = null): PrintingOrder
     {
         if ($customer->role !== UserRole::Customer) {
             throw new AuthorizationException('Only customers place printing orders.');
@@ -48,7 +55,9 @@ class PrintingOrderService
             throw new InvalidArgumentException('This printing service is not available.');
         }
 
-        return DB::transaction(function () use ($customer, $service, $optionIds, $quantity, $pages, $notes) {
+        return DB::transaction(function () use ($customer, $service, $optionIds, $quantity, $pages, $notes, $booking) {
+            $this->checkBooking($customer, $booking);
+
             $estimate = $this->pricing->estimate($service, $optionIds, $quantity, $pages);
             $notes = $notes === null ? null : trim($notes);
 
@@ -60,6 +69,7 @@ class PrintingOrderService
                 'snapshot' => $estimate->snapshot($service->name, $service->pricing_type->value, $service->base_price),
                 'status' => PrintingOrderStatus::Submitted,
                 'estimated_price' => $estimate->total,
+                'photography_booking_id' => $booking?->getKey(),
             ])->save();
 
             $this->transitions->recordSubmission($order, $customer);
@@ -82,7 +92,7 @@ class PrintingOrderService
      * @throws InvalidArgumentException when the service, options, quantity or pages are not valid
      * @throws ValidationException when there is no file, too many files, a file is not acceptable or the files together are too large
      */
-    public function placeWithFiles(User $customer, PrintingService $service, array $optionIds, int $quantity, int $pages, ?string $notes, array $uploads): PrintingOrder
+    public function placeWithFiles(User $customer, PrintingService $service, array $optionIds, int $quantity, int $pages, ?string $notes, array $uploads, ?PhotographyBooking $booking = null): PrintingOrder
     {
         if ($uploads === []) {
             throw ValidationException::withMessages(['files' => 'Add at least one file to print.']);
@@ -98,8 +108,8 @@ class PrintingOrderService
 
         $this->files->validateTotal($uploads);
 
-        return $this->writingFiles(function (array &$written, ?int &$orderId) use ($customer, $service, $optionIds, $quantity, $pages, $notes, $uploads) {
-            $order = $this->place($customer, $service, $optionIds, $quantity, $pages, $notes);
+        return $this->writingFiles(function (array &$written, ?int &$orderId) use ($customer, $service, $optionIds, $quantity, $pages, $notes, $uploads, $booking) {
+            $order = $this->place($customer, $service, $optionIds, $quantity, $pages, $notes, $booking);
             $orderId = $order->getKey();
 
             foreach ($uploads as $upload) {
@@ -108,6 +118,20 @@ class PrintingOrderService
 
             return $order;
         });
+    }
+
+    /** The attached booking is read again here: it must be this customer's own and completed right now. */
+    private function checkBooking(User $customer, ?PhotographyBooking $booking): void
+    {
+        if ($booking === null) {
+            return;
+        }
+
+        $current = PhotographyBooking::query()->find($booking->getKey());
+
+        if ($current === null || $current->customer_id !== $customer->getKey() || ! $current->status->allowsPrintOrders()) {
+            throw ValidationException::withMessages(['booking' => self::BOOKING_MESSAGE]);
+        }
     }
 
     /**

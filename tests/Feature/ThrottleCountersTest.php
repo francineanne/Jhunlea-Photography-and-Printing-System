@@ -82,7 +82,9 @@ class ThrottleCountersTest extends TestCase
             'GET my/bookings', 'GET my/bookings/{booking}', 'POST my/bookings/{booking}/cancel', 'POST my/bookings/{booking}/accept', 'POST my/bookings/{booking}/another-time',
             'GET owner/bookings', 'GET owner/bookings/{booking}', 'POST owner/bookings/{booking}/confirm', 'POST owner/bookings/{booking}/propose', 'POST owner/bookings/{booking}/reject',
             'POST owner/bookings/{booking}/complete', 'POST owner/bookings/{booking}/cancel', 'POST owner/bookings/{booking}/price', 'POST owner/bookings/{booking}/notes',
-            'GET booking-images/{image}', 'GET booking-images/{image}/download'] as $route) {
+            'GET booking-images/{image}', 'GET booking-images/{image}/download',
+            'GET owner/schedule', 'GET owner/schedule/edit', 'POST owner/schedule/hours', 'POST owner/schedule/settings', 'POST owner/schedule/blocked',
+            'DELETE owner/schedule/blocked/{blockedDate}'] as $route) {
             $this->assertArrayHasKey($route, $named->all(), "{$route} has no throttle");
         }
 

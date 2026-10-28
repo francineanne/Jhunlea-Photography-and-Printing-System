@@ -68,6 +68,11 @@ class BookingTransitionService
                 throw BookingTransitionException::conflict();
             }
 
+            // A time that has already passed is never confirmed, not even "anyway": the studio rejects or cancels it
+            if ($current->starts_at->lte(Carbon::now('UTC'))) {
+                throw BookingTransitionException::timePassed();
+            }
+
             $reasons = $this->availability->ruleViolations($current->durationMinutes(), $current->starts_at);
 
             if ($reasons !== [] && ! $outsideSchedule) {

@@ -20,6 +20,7 @@ use App\Http\Controllers\Owner\PhotographyBookingActionController;
 use App\Http\Controllers\Owner\PhotographyBookingController as OwnerPhotographyBookingController;
 use App\Http\Controllers\Owner\PrintingOrderActionController;
 use App\Http\Controllers\Owner\PrintingOrderController as OwnerPrintingOrderController;
+use App\Http\Controllers\Owner\ScheduleController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\ThemeController;
@@ -112,6 +113,16 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner
         Route::post('/{booking}/price', 'price')->middleware('throttle:30,1,owner-booking-price')->name('price');
         Route::post('/{booking}/notes', 'notes')->middleware('throttle:30,1,owner-booking-notes')->name('notes');
     });
+});
+
+// The owner's schedule (Phase 4D): the calendar, and the editor of opening hours, booking settings and blocked dates
+Route::middleware(['auth', 'role:owner'])->prefix('owner/schedule')->name('owner.schedule.')->controller(ScheduleController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:120,1,owner-schedule-calendar')->name('index');
+    Route::get('/edit', 'edit')->middleware('throttle:60,1,owner-schedule-edit')->name('edit');
+    Route::post('/hours', 'hours')->middleware('throttle:20,1,owner-schedule-hours')->name('hours');
+    Route::post('/settings', 'settings')->middleware('throttle:20,1,owner-schedule-settings')->name('settings');
+    Route::post('/blocked', 'block')->middleware('throttle:20,1,owner-schedule-block')->name('block');
+    Route::delete('/blocked/{blockedDate}', 'unblock')->whereNumber('blockedDate')->middleware('throttle:30,1,owner-schedule-unblock')->name('unblock');
 });
 
 // A reference image of a booking, for the owner or the customer whose booking it is (BookingReferenceImagePolicy).

@@ -53,12 +53,14 @@
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-brand">New time (Philippine time)</dt>
                     <dd class="font-semibold"><x-ui.date :value="$booking->proposed_starts_at" /></dd>
                 </div>
-                @if ($booking->confirmed_price !== null)
-                    <div class="min-w-0 sm:col-span-2">
-                        <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Price with this time</dt>
-                        <dd class="font-semibold tabular-nums">{{ $booking->confirmedText() }}</dd>
-                    </div>
-                @endif
+                @php $price = $booking->priceIfAccepted(); @endphp
+                <div class="min-w-0 sm:col-span-2">
+                    <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">If you accept · {{ $price['label'] }}</dt>
+                    <dd class="font-semibold tabular-nums">{{ $price['text'] }}</dd>
+                    @unless ($price['confirmed'])
+                        <dd class="text-xs text-app-text-2">The studio confirms the final price.</dd>
+                    @endunless
+                </div>
             </dl>
 
             @if ($canRespond)
@@ -113,6 +115,17 @@
                 <x-booking.details :booking="$booking" class="mt-4" />
                 <h3 class="mt-6 flex items-center gap-2 text-sm font-semibold"><x-ui.icon name="photo_library" :size="18" class="text-brand" />Reference images</h3>
                 <x-booking.images :images="$booking->images" class="mt-3" />
+            </section>
+
+            <section id="prints" class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="prints-title">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <h2 id="prints-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="print" :size="22" class="text-brand" />Prints</h2>
+                    @if ($canOrderPrints)
+                        <x-ui.button :href="route('customer.printing.create', ['booking' => $booking->id])" size="sm"><x-ui.icon name="add_photo_alternate" :size="18" />Order prints</x-ui.button>
+                    @endif
+                </div>
+                <p class="mt-1 text-sm text-app-text-2">{{ $canOrderPrints ? 'Order prints of your photos. Prints are priced separately from the photography fee.' : 'Prints can be ordered once the photoshoot is completed. They are priced separately.' }}</p>
+                <x-booking.print-orders :orders="$booking->printingOrders" class="mt-3" />
             </section>
         </div>
 

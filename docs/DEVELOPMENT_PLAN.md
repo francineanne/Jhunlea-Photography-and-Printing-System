@@ -77,11 +77,11 @@ Design refs: `design/customer/request_printing_wizard_estimator`, `my_printing_o
 Design refs: `design/customer/book_a_photoshoot`, `my_photography_bookings`, `booking_detail_tracking`, `design/admin/photography_bookings_list`, `booking_detail_owner`, `schedule_and_availability`
 - [x] Migrations: photography_bookings, booking_reference_images, availability_rules, blocked_dates (4A, plus booking_settings at booking_status_histories)
 - [x] Customer 6-step booking: package, details, schedule (galing sa availability rules ang mga slot), theme/moodboard na may custom theme, optional prints, at review (4B: request lang; "digital only" o "I may want prints", walang presyo ng prints)
-- [ ] Optional prints: gumagawa ng linked printing order (gamit ang Phase 3); hiwalay ang photography fee sa printing fee
-- [x] `ScheduleConflictService`; owner confirm, propose alternative at reject; customer accept o ask for another time (4C; ang "Confirm anyway" ay para lang sa schedule rules, hindi kailanman sa conflict)
-- [ ] Owner schedule calendar na galing sa totoong bookings, at editor ng availability rules
-- [ ] Mark photoshoot completed (tapos sa 4C), at hiwalay na print production status (hindi pa)
-- [ ] Tests: conflict detection, walang dagdag na printing charge kapag "digital only", at hindi makakapag-confirm ang customer ng sariling booking
+- [x] Optional prints: gumagawa ng linked printing order (gamit ang Phase 3); hiwalay ang photography fee sa printing fee (4D: "Order prints" sa Completed booking lang; server code lang ang nagse-set ng `photography_booking_id`; may link sa dalawang panig)
+- [x] `ScheduleConflictService`; owner confirm, propose alternative at reject; customer accept o ask for another time (4C; ang "Confirm anyway" ay para lang sa schedule rules, hindi kailanman sa conflict o sa oras na lumipas na, 4D)
+- [x] Owner schedule calendar na galing sa totoong bookings (month, week, day, at agenda sa phone), at editor ng opening hours, booking settings at blocked dates na may safety net para sa confirmed bookings (4D)
+- [x] Mark photoshoot completed (4C). Walang hiwalay na print production status: ginagamit ng linked printing order ang sarili nitong Phase 3 statuses (4D)
+- [x] Tests: conflict detection, walang dagdag na printing charge kapag "digital only" (hiwalay na order ang prints, at walang nagagawang order nang kusa), at hindi makakapag-confirm ang customer ng sariling booking
 
 ## Phase 5 — Payments, notifications, dashboards (BF)
 Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_overview`, `notifications_customer_messages`, `design/customer/customer_dashboard`, `notifications_center`, `request_history_printing_photography`
@@ -115,6 +115,13 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Buong manual test (kasama si Her) ng bawat workflow, security checklist ng AGENTS.md section 12, at pag-aayos ng bugs
 - [ ] Deployment guide, backup notes, owner user manual, at presentation
 - [ ] Server php.ini upload_max_filesize and post_max_size must be at least the values in config/printing.php
+- [ ] Galing sa Phase 4 (hindi kayang subukan nang buo sa SQLite tests o sa browser pane):
+  - [ ] Totoong MySQL race na dalawang sabay na submit: ang limit sa open booking requests, at ang sabay na confirm ng dalawang booking sa iisang slot (schedule lock)
+  - [ ] JavaScript off (wizard, schedule editor, owner actions) at `prefers-reduced-motion` sa lahat ng booking at schedule screen
+  - [ ] Totoong phones (iOS Safari at Android Chrome): booking wizard, calendar agenda, owner booking detail
+  - [ ] Pagpili ng files mula sa disk sa totoong file picker (reference images at printing files)
+  - [ ] Wording sa calendar ng customer: "Closed" (sarado ang araw o blocked) laban sa "Fully booked" (bukas pero puno)
+  - [ ] Siguraduhing walang developer terminal na naka-export ang `.env` values (APP_, DB_, CACHE_, SESSION_, MAIL_, QUEUE_) bago patakbuhin ang tests
 
 ---
 

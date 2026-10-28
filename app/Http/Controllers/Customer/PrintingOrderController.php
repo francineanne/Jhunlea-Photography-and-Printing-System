@@ -6,11 +6,13 @@ use App\Enums\OptionGroup;
 use App\Enums\PricingType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StorePrintingOrderRequest;
+use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Services\OrderFileService;
 use App\Services\PrintingOrderService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ViewErrorBag;
 use Illuminate\Validation\ValidationException;
@@ -24,11 +26,15 @@ use Throwable;
 class PrintingOrderController extends Controller
 {
     /** Which wizard step holds each field, so a failed submit opens the step with the first problem. */
-    private const STEP_OF_FIELD = ['service' => 1, 'options' => 2, 'quantity' => 2, 'pages' => 2, 'files' => 3, 'notes' => 3];
+    private const STEP_OF_FIELD = ['booking' => 1, 'service' => 1, 'options' => 2, 'quantity' => 2, 'pages' => 2, 'files' => 3, 'notes' => 3];
 
-    public function create(OrderFileService $files): View
+    public function create(Request $request, OrderFileService $files): View
     {
         Gate::authorize('create', PrintingOrder::class);
+
+        // Prints after the shoot (?booking=id): only the customer's own completed photoshoot is attached; anything else
+        // is ignored with a friendly notice, and the wizard works as usual
+        [$booking, $bookingNotice] = $this->bookingForPrints($request);
 
         $services = PrintingService::published()
             ->with(['options' => fn ($query) => $query->active()->orderBy('id')])
@@ -52,6 +58,8 @@ class PrintingOrderController extends Controller
             'maxQuantity' => config('printing.max_quantity'),
             'maxPages' => config('printing.max_pages'),
             'startStep' => $this->firstStepWithError(session('errors')),
+            'booking' => $booking,
+            'bookingNotice' => $bookingNotice,
         ]);
     }
 
@@ -66,6 +74,7 @@ class PrintingOrderController extends Controller
                 $request->pages(),
                 $request->notes(),
                 $request->uploads(),
+                $request->attachedBooking(),
             );
         } catch (ValidationException $e) {
             throw $e;
@@ -85,6 +94,24 @@ class PrintingOrderController extends Controller
         $order->load(['files' => fn ($query) => $query->orderBy('id')]);
 
         return view('customer.printing.placed', ['order' => $order]);
+    }
+
+    /** @return array{0: ?PhotographyBooking, 1: ?string} */
+    private function bookingForPrints(Request $request): array
+    {
+        $id = old('booking', $request->query('booking'));
+
+        if ($id === null || $id === '') {
+            return [null, null];
+        }
+
+        $booking = filter_var($id, FILTER_VALIDATE_INT) !== false ? PhotographyBooking::query()->find((int) $id) : null;
+
+        if ($booking === null || ! Gate::allows('orderPrints', $booking)) {
+            return [null, 'That photoshoot cannot have prints attached (only your own completed photoshoots can), so this is a regular printing order.'];
+        }
+
+        return [$booking, null];
     }
 
     private function firstStepWithError(?ViewErrorBag $errors): int

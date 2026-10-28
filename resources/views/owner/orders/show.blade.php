@@ -42,6 +42,7 @@
                     @endif
                 </div>
                 <p class="mt-2 font-mono text-xs text-app-text-2">Sent: <x-ui.date :value="$order->created_at" /></p>
+                <x-order.from-booking :order="$order" viewer="owner" class="mt-1" />
             </div>
 
             @if ($moves->isNotEmpty() || $canRequestInfo || $canChangePrice)

@@ -76,7 +76,9 @@
                         <x-ui.icon name="event_available" :size="18" />Confirm the requested time
                         <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
                     </summary>
-                    @if ($blocked)
+                    @if ($startedYet)
+                        <p class="mx-4 mb-4 flex items-start gap-1.5 rounded-control bg-status-red-bg p-3 text-sm text-status-red"><x-ui.icon name="history" :size="18" class="mt-0.5 shrink-0" />{{ \App\Exceptions\BookingTransitionException::timePassed()->getMessage() }}</p>
+                    @elseif ($blocked)
                         <p class="mx-4 mb-4 flex items-start gap-1.5 rounded-control bg-status-red-bg p-3 text-sm text-status-red"><x-ui.icon name="block" :size="18" class="mt-0.5 shrink-0" />This time clashes with a confirmed booking (see the schedule below), so it cannot be confirmed. Offer another time instead.</p>
                     @else
                         <form method="POST" action="{{ route('owner.bookings.confirm', $booking) }}" class="grid gap-3 px-4 pb-4 sm:grid-cols-2">
@@ -287,6 +289,12 @@
                 <x-booking.details :booking="$booking" class="mt-4" />
                 <h3 class="mt-6 flex items-center gap-2 text-sm font-semibold"><x-ui.icon name="photo_library" :size="18" class="text-brand" />Reference images ({{ $booking->images->count() }})</h3>
                 <x-booking.images :images="$booking->images" class="mt-3" />
+            </section>
+
+            <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="prints-title">
+                <h2 id="prints-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="print" :size="22" class="text-brand" />Printing orders from this shoot</h2>
+                <p class="mt-1 text-sm text-app-text-2">Each has its own price and status; the photography fee stays separate.</p>
+                <x-booking.print-orders :orders="$booking->printingOrders" viewer="owner" class="mt-3" />
             </section>
         </div>
 

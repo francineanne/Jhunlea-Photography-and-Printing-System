@@ -63,7 +63,12 @@ class MyBookingController extends Controller
     {
         Gate::authorize('view', $booking);
 
-        $booking->load(['images' => fn ($query) => $query->orderBy('id'), 'statusHistories']);
+        // Only this customer's own printing orders, whatever is linked
+        $booking->load([
+            'images' => fn ($query) => $query->orderBy('id'),
+            'statusHistories',
+            'printingOrders' => fn ($query) => $query->where('customer_id', $booking->customer_id)->latest('id'),
+        ]);
 
         $cutoff = (int) config('booking.customer_cancel_cutoff_hours');
 
@@ -71,6 +76,7 @@ class MyBookingController extends Controller
             'booking' => $booking,
             'canCancel' => Gate::allows('cancel', $booking),
             'canRespond' => Gate::allows('respondToProposal', $booking),
+            'canOrderPrints' => Gate::allows('orderPrints', $booking),
             'cutoffHours' => $cutoff,
             // A confirmed session the customer can no longer cancel here: they talk to the studio instead
             'pastCutoff' => $booking->status === BookingStatus::Confirmed && ! Gate::allows('cancel', $booking),

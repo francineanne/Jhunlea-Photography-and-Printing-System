@@ -31,6 +31,7 @@
             </div>
             <h1 class="mt-3 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">{{ $order->serviceName() }}</h1>
             <p class="mt-1 text-sm text-app-text-2">Sent on <x-ui.date :value="$order->created_at" /></p>
+            <x-order.from-booking :order="$order" class="mt-1" />
         </div>
         <div class="shrink-0 rounded-card bg-neutral-100 p-4 md:text-right dark:bg-white/5">
             <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">{{ $order->confirmed_price !== null ? 'Confirmed price' : 'Estimated price' }}</p>

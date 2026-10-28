@@ -97,6 +97,21 @@ class PhotographyBooking extends Model
         return $this->estimated_price === null ? 'Price on request' : Money::format($this->estimated_price);
     }
 
+    /**
+     * The price that applies if the customer accepts a proposed time, as acceptProposal() sets it: the confirmed price
+     * when the studio named one, else the estimate, else nothing yet.
+     *
+     * @return array{label: string, text: string, confirmed: bool}
+     */
+    public function priceIfAccepted(): array
+    {
+        return match (true) {
+            $this->confirmed_price !== null => ['label' => 'Confirmed price', 'text' => Money::format($this->confirmed_price), 'confirmed' => true],
+            $this->estimated_price !== null => ['label' => 'Estimated price', 'text' => Money::format($this->estimated_price), 'confirmed' => false],
+            default => ['label' => 'Price', 'text' => 'Price confirmed by the studio', 'confirmed' => false],
+        };
+    }
+
     public function confirmedText(): ?string
     {
         return $this->confirmed_price === null ? null : Money::format($this->confirmed_price);

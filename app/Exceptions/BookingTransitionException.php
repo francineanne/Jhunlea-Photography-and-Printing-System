@@ -54,6 +54,11 @@ class BookingTransitionException extends DomainException
         return new self('This time is no longer free: another confirmed session is booked then. Propose another time instead.', self::TIME_TAKEN);
     }
 
+    public static function timePassed(): self
+    {
+        return new self('The time of this request has already passed, so it cannot be confirmed. Reject or cancel it, or offer another time.');
+    }
+
     /** @param  list<string>  $reasons */
     public static function outsideSchedule(array $reasons): self
     {

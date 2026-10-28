@@ -128,6 +128,43 @@ class ConfirmOverrideTest extends TestCase
         $this->assertSame('See you then.', BookingStatusHistory::sole()->note);
     }
 
+    public function test_a_time_that_has_passed_is_never_confirmed_even_with_the_override(): void
+    {
+        $booking = $this->booking('2026-11-05 10:00');
+        $this->travelTo($this->manila('2026-11-05 10:30'));
+
+        foreach ([false, true] as $override) {
+            try {
+                app(BookingTransitionService::class)->confirm($booking, $this->owner, null, null, outsideSchedule: $override);
+                $this->fail('A past time must never be confirmed.');
+            } catch (BookingTransitionException $e) {
+                $this->assertSame(BookingTransitionException::timePassed()->getMessage(), $e->getMessage());
+            }
+        }
+
+        $this->assertSame(Status::Requested, $booking->fresh()->status);
+        $this->assertSame(0, BookingStatusHistory::count());
+
+        // It can still be rejected or cancelled
+        app(BookingTransitionService::class)->reject($booking, $this->owner, 'The time has passed.');
+        $this->assertSame(Status::Rejected, $booking->fresh()->status);
+    }
+
+    public function test_the_owner_page_explains_a_passed_time_and_offers_no_confirm(): void
+    {
+        $booking = $this->booking('2026-11-05 10:00');
+        $this->travelTo($this->manila('2026-11-06 08:00'));
+
+        $this->actingAs($this->owner)->get(route('owner.bookings.show', $booking))
+            ->assertSee(BookingTransitionException::timePassed()->getMessage())
+            ->assertDontSee('Confirm booking')
+            ->assertSee('Reject with a reason');
+
+        $this->actingAs($this->owner)->post(route('owner.bookings.confirm', $booking), ['outside_schedule' => '1'])
+            ->assertSessionHas('error', BookingTransitionException::timePassed()->getMessage());
+        $this->assertSame(Status::Requested, $booking->fresh()->status);
+    }
+
     public function test_the_override_still_takes_the_schedule_lock(): void
     {
         $booking = $this->booking('2026-11-05 10:00');

@@ -7,6 +7,7 @@
         ['label' => 'Overview', 'icon' => 'space_dashboard', 'route' => 'owner.dashboard'],
         ['label' => 'Printing orders', 'icon' => 'receipt_long', 'route' => 'owner.orders.index', 'match' => 'owner.orders.*'],
         ['label' => 'Photography bookings', 'icon' => 'photo_camera_front', 'route' => 'owner.bookings.index', 'match' => 'owner.bookings.*'],
+        ['label' => 'Schedule', 'icon' => 'calendar_month', 'route' => 'owner.schedule.index', 'match' => 'owner.schedule.*'],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],
         ['label' => 'Themes', 'icon' => 'palette', 'route' => 'owner.themes.index', 'match' => 'owner.themes.*'],

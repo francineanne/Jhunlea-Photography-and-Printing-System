@@ -52,6 +52,17 @@ return [
         'concurrent_sessions' => 1,
     ],
 
+    // The ranges the owner may choose in the schedule editor, [lowest, highest]. The one place these limits live
+    'limits' => [
+        'buffer_minutes' => [0, 240],
+        'min_notice_hours' => [0, 720],
+        'max_advance_days' => [1, 365],
+        'concurrent_sessions' => [1, 5],
+    ],
+
+    // The optional reason of a blocked date, shown on the owner's calendar
+    'blocked_reason_max' => 120,
+
     // A customer may cancel a CONFIRMED booking themselves until this many hours before it starts; after that they
     // talk to the studio. Requested and proposed bookings can be cancelled at any time
     'customer_cancel_cutoff_hours' => 24,

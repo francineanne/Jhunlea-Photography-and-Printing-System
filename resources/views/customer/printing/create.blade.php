@@ -35,6 +35,26 @@
         <x-ui.notice class="mt-6 !border-status-red/30 !bg-status-red-bg"><p>{{ session('error') }}</p></x-ui.notice>
     @endif
 
+    @if ($bookingNotice)
+        <x-ui.notice class="mt-6"><p>{{ $bookingNotice }}</p></x-ui.notice>
+    @endif
+
+    @error('booking')
+        <x-ui.notice class="mt-6 !border-status-red/30 !bg-status-red-bg"><p>{{ $message }}</p></x-ui.notice>
+    @enderror
+
+    @if ($booking)
+        {{-- Prints after the shoot: the order is linked to the photoshoot, and the two prices stay separate --}}
+        <section class="mt-6 flex items-start gap-3 rounded-card border border-brand/20 bg-brand/5 p-4" aria-labelledby="for-booking-title">
+            <span class="grid size-10 shrink-0 place-items-center rounded-card bg-brand text-white" aria-hidden="true"><x-ui.icon name="photo_library" :size="22" /></span>
+            <div class="min-w-0 text-sm">
+                <h2 id="for-booking-title" class="font-semibold">Prints from your photoshoot <a href="{{ route('customer.bookings.show', $booking) }}" class="inline-flex min-h-11 items-center rounded font-mono text-brand hover:underline focus-ring sm:min-h-0">{{ $booking->reference_number }}</a></h2>
+                <p class="mt-0.5 text-app-text-2">{{ $booking->snapshot['package']['name'] ?? $booking->package?->name }} · <x-ui.date :value="$booking->starts_at" format="M j, Y" /></p>
+                <p class="mt-1 text-app-text-2">This printing order has its own price. It is separate from the photography fee, which does not change.</p>
+            </div>
+        </section>
+    @endif
+
     @if ($services->isEmpty())
         <x-ui.card class="mt-8">
             <x-ui.empty-state icon="print" title="No printing services are open for requests yet"
@@ -47,6 +67,9 @@
             x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxTotalMb' => $maxTotalMb, 'maxQuantity' => $maxQuantity]))"
             x-on:change="sync()" x-on:submit="submit($event)">
             @csrf
+            @if ($booking)
+                <input type="hidden" name="booking" value="{{ $booking->id }}">
+            @endif
 
             {{-- Stepper: four tiles and a track that fills as the steps advance (as in the design). Without scripts the tiles jump to the sections --}}
             <div class="mt-8 rounded-card border border-app-border bg-app-card p-2 shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04),0_1px_4px_-1px_rgba(23,23,23,0.02)] dark:shadow-none sm:p-3">

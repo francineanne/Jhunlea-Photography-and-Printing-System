@@ -18,7 +18,7 @@
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
-| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A and 4B committed. 4C (customer My bookings list and detail with proposal answers and cancelling; owner bookings list, detail, schedule check, confirm with "Confirm anyway" for schedule rules, propose, reject, complete, price, cancel, internal notes; protected reference images) built, waiting for review. 4D schedule editor and calendar, prints after the shoot not started. |
+| 4 | Photography bookings and schedule | Dev (Her) | 4A, 4B and 4C committed. 4D built, waiting for review: owner Schedule page (month, week and day calendar with a phone agenda), schedule editor (opening hours, booking settings, blocked dates, with a "Save anyway" safety net for confirmed bookings), "Confirm anyway" refused once the time has passed, the price shown on a proposal, and prints ordered from a completed photoshoot (linked both ways, fees kept separate). |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
 | 7 | AI customer assistant | BF | Not started |
@@ -167,7 +167,7 @@ Standard notice text: "Payment is made face-to-face at Jhunlea Photography & Pri
 
 **Printing order:** `submitted` → `under_review` → `accepted` | `rejected` → `processing` → `ready_for_pickup` → `completed`. Also `cancelled`. Owner can request more information while in review (`needs_info` flag + message). Rejection requires a reason.
 
-**Photography booking (since Phase 4A, App\Enums\BookingStatus):** `requested` → `confirmed` | `proposed` | `rejected` | `cancelled`; `proposed` → `confirmed` (customer accepts) | `requested` (customer asks for another time) | `cancelled` | `rejected`; `confirmed` → `completed` | `cancelled`. Only `confirmed` and `completed` hold a slot. The customer never confirms a request. (This replaces the earlier draft list.)
+**Photography booking (since Phase 4A, App\Enums\BookingStatus):** `requested` → `confirmed` | `proposed` | `rejected` | `cancelled`; `proposed` → `confirmed` (customer accepts) | `requested` (customer asks for another time) | `cancelled` | `rejected`; `confirmed` → `completed` | `cancelled`. Only `confirmed` and `completed` hold a slot. The customer never confirms a request. "Confirm anyway" can override the schedule rules (hours, notice, blocked day) but never a conflict and never a start time that has already passed. Changing the hours, settings or blocked dates never cancels or moves a booking; confirmed bookings left outside the new rules are listed and the owner must tick "Save anyway". (This replaces the earlier draft list.)
 
 **Print production for a booking (only if prints were requested):** uses the printing order statuses on a linked printing order.
 
@@ -190,13 +190,13 @@ Money columns: `decimal(10,2)`. Never use float. Totals and balances are calcula
 | `package_images` | photography_package_id FK, path, is_cover, sort_order | 2 |
 | `themes` | name, description, image_path, color_swatches json, is_published | 2 |
 | `package_theme` | pivot | 2 |
-| `printing_orders` | **Built in 3A:** reference_number unique (PR-000001), customer_id FK, printing_service_id FK, snapshot json (service, options, prices at order time), quantity, notes, status, estimated_price null, confirmed_price null, rejection_reason, info_request (null = nothing asked), timestamps, soft deletes. `photography_booking_id` comes in Phase 4. | 3 |
+| `printing_orders` | **Built in 3A:** reference_number unique (PR-000001), customer_id FK, printing_service_id FK, snapshot json (service, options, prices at order time), quantity, notes, status, estimated_price null, confirmed_price null, rejection_reason, info_request (null = nothing asked), timestamps, soft deletes. `photography_booking_id` null (added in 4A, used in 4D): set only by PrintingOrderService when a customer orders prints from their own Completed booking; never fillable. The order keeps its own printing price and statuses; the booking's photography price never changes and the two are never added into one total. | 3 |
 | `reference_counters` | prefix (PR, later PB) primary, last_number. One locked row per prefix hands out the next reference number. | 3 |
 | `order_files` | **Built in 3A:** printing_order_id FK, original_name (display only), stored_name (hashName), path (private disk), mime, size_bytes, uploaded_by FK. Page count and image size are not stored yet. | 3 |
 | `order_status_histories` | **Built in 3A, `event` added in 3C:** printing_order_id FK, from_status null, to_status, event null (info_requested / info_answered / price_changed; null = status change), changed_by FK, note, created_at. Phase 4 decides whether bookings get their own history table or a shared one. | 3 |
 | `photography_bookings` | **Built in 4A:** reference_number unique (PB-000001), customer_id FK, photography_package_id FK, theme_id null, custom_theme_text null, snapshot json, starts_at, ends_at, requested_starts_at (UTC), group_size, contact_number (7 to 20 digits), notes, internal_notes null (owner only, hidden from serialization, no history row), wants_prints, status, estimated_price null, confirmed_price null, rejection_reason, proposed_starts_at, proposed_note, cancellation_reason, soft deletes. A customer may have at most config booking.max_open_requests_per_customer (3) requested or proposed bookings. Not built: outfits, colour motif, public remarks. | 4 |
 | `booking_status_histories` | **Built in 4A:** same shape as order_status_histories, event (proposal_sent, proposal_accepted, time_requested_again, price_changed, files_added). | 4 |
-| `booking_settings` | **Built in 4A:** one row: buffer_minutes, min_notice_hours, max_advance_days, concurrent_sessions, lock_version (the schedule lock). Defaults in config/booking.php. | 4 |
+| `booking_settings` | **Built in 4A:** one row: buffer_minutes, min_notice_hours, max_advance_days, concurrent_sessions, lock_version (the schedule lock). Defaults in config/booking.php; the allowed ranges the owner can set are `config('booking.limits')` (4D). The schedule editor never writes lock_version. | 4 |
 | `booking_reference_images` | **Built in 4A:** photography_booking_id FK, original_name, stored_name (hashName), path, mime, size_bytes, uploaded_by. | 4 |
 | `availability_rules` | **Built in 4A:** weekday unique (0 Sunday to 6 Saturday), is_open, opens_at, closes_at (shop local time). Slot step is config booking.slot_step_minutes. | 4 |
 | `blocked_dates` | **Built in 4A:** date unique (shop local day), reason, created_by. | 4 |
@@ -219,7 +219,7 @@ Reference numbers are generated inside a database transaction so two requests ca
 | Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/packages/finder` (all GET, 60 a minute, each with its own named counter since 4B; `compare` and `finder` are reserved package slugs) |
 | Auth | `/` | guest | `/login`, `/register`, `/forgot-password`, `/reset-password/{token}` |
 | Customer | `/my` | auth, role:customer | `/my/dashboard`, `/my/printing/new`, `/my/printing/{order}`, `/my/bookings/new` (`?package=slug`), `/my/bookings/slots` (JSON free times), `/my/bookings/{booking}/sent`, `/my/bookings/{booking}` (4C), `/my/history`, `/my/notifications`, `/my/settings` |
-| Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule`, `/owner/customers`, `/owner/payments`, `/owner/reports`, `/owner/settings` |
+| Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule` (calendar, `?view=month|week|day&date=Y-m-d`), `/owner/schedule/edit` (POST `hours`, `settings`, `blocked`; DELETE `blocked/{blockedDate}`), `/owner/customers`, `/owner/payments`, `/owner/reports`, `/owner/settings` |
 | Files | `/files/{file}` | auth + policy | streams private files after an ownership check |
 | AI | `/assistant/messages` | auth (or throttled guest), throttle | POST only, server-side API key |
 
@@ -250,7 +250,7 @@ Every throttled route names its own counter (`throttle:N,1,name`); `ThrottleCoun
 - Never copy: the Tailwind CDN script, hotlinked image URLs, invented data (camera specs, addresses, calibration IDs, fake statuses), or controls for features the system does not have (design-tool preview switchers, order tracking by slip, terms pages, etc.).
 - Project rules win over the design: 44px tap targets on phones, contrast, visible focus, reduced motion, light and dark, no horizontal scroll.
 - Images saved in `public/images/design-placeholders/` are **temporary Stitch placeholders**. Replace them with the shop's real photos before going live.
-- Done so far: login family and page loader, error pages, the public, customer and owner shells, the owner services screens, and the `ui` components (DESIGN.md values for buttons, cards, modal, pills, notice, checkbox). Remaining differences are listed in the fidelity report.
+- Done so far: login family and page loader, error pages, the public, customer and owner shells, the owner services screens, the owner schedule (`design/admin/schedule_and_availability`, Phase 4D), and the `ui` components (DESIGN.md values for buttons, cards, modal, pills, notice, checkbox). Remaining differences are listed in the fidelity report.
 
 ### UI building blocks (built in Phase 1)
 

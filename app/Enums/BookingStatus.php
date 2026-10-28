@@ -90,6 +90,12 @@ enum BookingStatus: string
         return array_values(array_filter(self::cases(), fn (self $status) => $status->blocksSlot()));
     }
 
+    /** Prints can be ordered from a shoot only once it is done: before that there are no photos to print. */
+    public function allowsPrintOrders(): bool
+    {
+        return $this === self::Completed;
+    }
+
     /** Reference images can be added while the studio has not fixed the session yet. */
     public function acceptsImages(): bool
     {

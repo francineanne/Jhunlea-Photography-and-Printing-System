@@ -53,6 +53,12 @@ class PhotographyBookingPolicy
         return $this->owns($user, $booking) && $booking->status === BookingStatus::Proposed;
     }
 
+    /** Prints after the shoot: the customer whose booking it is, once the photoshoot is completed. */
+    public function orderPrints(User $user, PhotographyBooking $booking): bool
+    {
+        return $this->owns($user, $booking) && $booking->status->allowsPrintOrders();
+    }
+
     /** Confirm, propose, reject, complete, change the price: the studio's work. */
     public function changeStatus(User $user, PhotographyBooking $booking): bool
     {

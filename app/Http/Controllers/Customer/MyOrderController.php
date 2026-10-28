@@ -57,6 +57,7 @@ class MyOrderController extends Controller
         $order->load([
             'files' => fn ($query) => $query->orderBy('id'),
             'statusHistories',
+            'booking',
         ]);
 
         return view('customer.printing.show', [

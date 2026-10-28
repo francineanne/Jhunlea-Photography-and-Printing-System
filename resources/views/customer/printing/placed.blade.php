@@ -38,6 +38,7 @@
                 </div>
             </div>
             <p class="mt-2 text-xs text-app-text-2">Keep this number. Use it when you ask the shop about your order.</p>
+            <x-order.from-booking :order="$order" class="mt-2" />
 
             <dl class="mt-6 grid gap-4 text-sm sm:grid-cols-2 [&>div]:min-w-0">
                 <div class="sm:col-span-2">

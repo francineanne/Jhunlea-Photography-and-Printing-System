@@ -84,6 +84,7 @@ class PhotographyBookingController extends Controller
             'theme',
             'images' => fn ($query) => $query->orderBy('id'),
             'statusHistories.changedBy',
+            'printingOrders' => fn ($query) => $query->latest('id'),
         ]);
 
         // Which buttons to show; the service checks the same table again when one is pressed

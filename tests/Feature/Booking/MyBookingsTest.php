@@ -221,6 +221,25 @@ class MyBookingsTest extends TestCase
         $this->assertSame(BookingEvent::ProposalAccepted, BookingStatusHistory::query()->latest('id')->first()->event);
     }
 
+    public function test_the_proposal_card_always_shows_the_price_that_applies_on_accepting(): void
+    {
+        // Estimate only
+        $estimated = $this->proposed();
+        $this->actingAs($this->customer)->get(route('customer.bookings.show', $estimated))
+            ->assertSee('If you accept · Estimated price')->assertSee('₱1,000.00')->assertSee('The studio confirms the final price.');
+
+        // A price the studio named with the proposal
+        $named = $this->booking(manila: '2026-11-07 10:00');
+        app(BookingTransitionService::class)->propose($named, $this->owner, $this->manila('2026-11-07 14:00'), 'Afternoon?', '1500');
+        $this->actingAs($this->customer)->get(route('customer.bookings.show', $named))
+            ->assertSee('If you accept · Confirmed price')->assertSee('₱1,500.00');
+
+        // No price anywhere yet (a priced-on-request package always gets one with the proposal, so set up directly)
+        $none = $this->booking(Status::Proposed, '2026-11-09 10:00', attributes: ['estimated_price' => null, 'proposed_starts_at' => $this->manila('2026-11-09 14:00')]);
+        $this->actingAs($this->customer)->get(route('customer.bookings.show', $none))
+            ->assertSee('If you accept · Price')->assertSee('Price confirmed by the studio');
+    }
+
     public function test_asking_for_another_time_needs_a_note_of_up_to_500_characters(): void
     {
         $booking = $this->proposed();
