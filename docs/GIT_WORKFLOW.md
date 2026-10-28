@@ -89,6 +89,18 @@ Tips:
 2. I-update ang status table sa `AGENTS.md` at ang checklist sa `docs/DEVELOPMENT_PLAN.md`.
 3. I-commit at i-push ang branch (`git add .`, `git status`, `git commit`, `git push`).
 
+### Running the tests safely
+
+Binubura at ginagawa ulit ng mga test ang bawat table na ginagamit nila. Dapat sa in-memory SQLite lang sila tumakbo, hindi kailanman sa `jhunlea` MySQL database.
+
+- Gumamit ng **malinis na terminal**. Huwag kailanman i-export o i-load ang mga value ng `.env` sa shell; kusang binabasa ng Laravel ang `.env`.
+- Bago mag-test, patakbuhin ito sa PowerShell. Dapat **walang** lumabas:
+  ```powershell
+  Get-ChildItem Env: | Where-Object { $_.Name -match '^(APP_|DB_|CACHE_|SESSION_|MAIL_|QUEUE_)' }
+  ```
+  Kapag may lumabas, hindi ligtas ang terminal na iyon: isara ito at magbukas ng bago. Kung lumalabas pa rin sa bawat bagong terminal, alisin ang mga iyon sa Windows "Edit the system environment variables" (User at System).
+- Kapag lumabas ang **"Refusing to run tests: this would touch the database ..."**, pinigilan ng guard ang test bago may nagalaw. Huwag itong lusutan: magbukas ng malinis na terminal. (Detalye: `AGENTS.md`, "Running the tests safely".)
+
 ## E. Review at pag-apruba
 
 - Ibibigay ng Claude Code ang final report ng phase. Ipapa-review mo ito kay Claude sa chat.

@@ -78,7 +78,11 @@ class ThrottleCountersTest extends TestCase
         // Every throttle is named, the public pages too (since Phase 4B), and no two routes share a name
         $named = $throttles;
 
-        foreach (['GET /', 'GET packages', 'GET packages/{slug}', 'GET my/bookings/new', 'GET my/bookings/slots', 'POST my/bookings', 'GET my/bookings/{booking}/sent'] as $route) {
+        foreach (['GET /', 'GET packages', 'GET packages/{slug}', 'GET my/bookings/new', 'GET my/bookings/slots', 'POST my/bookings', 'GET my/bookings/{booking}/sent',
+            'GET my/bookings', 'GET my/bookings/{booking}', 'POST my/bookings/{booking}/cancel', 'POST my/bookings/{booking}/accept', 'POST my/bookings/{booking}/another-time',
+            'GET owner/bookings', 'GET owner/bookings/{booking}', 'POST owner/bookings/{booking}/confirm', 'POST owner/bookings/{booking}/propose', 'POST owner/bookings/{booking}/reject',
+            'POST owner/bookings/{booking}/complete', 'POST owner/bookings/{booking}/cancel', 'POST owner/bookings/{booking}/price', 'POST owner/bookings/{booking}/notes',
+            'GET booking-images/{image}', 'GET booking-images/{image}/download'] as $route) {
             $this->assertArrayHasKey($route, $named->all(), "{$route} has no throttle");
         }
 

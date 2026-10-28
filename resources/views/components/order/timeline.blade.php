@@ -1,9 +1,10 @@
-@props(['histories', 'customerId', 'viewer' => 'customer', 'newestFirst' => false])
+@props(['histories', 'customerId', 'viewer' => 'customer', 'newestFirst' => false, 'shop' => 'Shop'])
 
 {{--
     The history of a printing order, as in the order designs: a guideline, a marker per step and a card per row; the
     latest row is highlighted and its marker sends out a ring. Customers read "You" or "The shop", never another
-    person's name or email; the owner reads names.
+    person's name or email; the owner reads names ("Shop · name", or "Studio · name" for photography bookings). Used
+    for printing orders and photography bookings, whose history rows have the same shape.
 --}}
 @php
     $rows = $newestFirst ? $histories->sortByDesc('id')->values() : $histories->sortBy('id')->values();
@@ -17,7 +18,7 @@
             $byCustomer = $row->changed_by === $customerId;
             $who = $viewer === 'customer'
                 ? ($byCustomer ? 'You' : 'The shop')
-                : ($byCustomer ? 'Customer' : 'Shop').($row->changedBy ? ' · '.$row->changedBy->name : '');
+                : ($byCustomer ? 'Customer' : $shop).($row->changedBy ? ' · '.$row->changedBy->name : '');
         @endphp
         <li class="relative flex items-start gap-4" @if ($latest) aria-current="step" @endif>
             <span @class([

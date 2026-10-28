@@ -33,6 +33,11 @@ class BookingTransitionService
 {
     public const INTERNAL_NOTE_MAX = 2000;
 
+    // How long the notes and reasons typed with a change may be; the forms read them from here
+    public const NOTE_MAX = 500;
+
+    public const REASON_MAX = 1000;
+
     public function __construct(
         private readonly ScheduleConflictService $conflicts,
         private readonly AvailabilityService $availability,
@@ -47,16 +52,30 @@ class BookingTransitionService
     /**
      * The studio confirms the time the customer asked for. The price defaults to the estimate and may be changed;
      * a package priced on request has no estimate, so the price is required.
+     *
+     * A clash with a confirmed booking always refuses. A time that now breaks one of the schedule rules (for example
+     * the studio blocked the date after the request came in) is confirmed only when the studio says so with
+     * $outsideSchedule, and the history then says which rules were set aside.
      */
-    public function confirm(PhotographyBooking $booking, User $owner, ?string $price = null, ?string $note = null): PhotographyBooking
+    public function confirm(PhotographyBooking $booking, User $owner, ?string $price = null, ?string $note = null, bool $outsideSchedule = false): PhotographyBooking
     {
-        return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $price, $note) {
+        return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $price, $note, $outsideSchedule) {
             $this->check($current, BookingStatus::Confirmed, $owner);
 
             $confirmedPrice = $this->price($price, $current->estimated_price);
 
             if (! $this->conflicts->isFree($current->starts_at, $current->ends_at, $current->id)) {
                 throw BookingTransitionException::conflict();
+            }
+
+            $reasons = $this->availability->ruleViolations($current->durationMinutes(), $current->starts_at);
+
+            if ($reasons !== [] && ! $outsideSchedule) {
+                throw BookingTransitionException::outsideSchedule($reasons);
+            }
+
+            if ($reasons !== []) {
+                $note = trim('Confirmed outside the usual schedule: '.implode(' ', $reasons).' '.($this->clean($note) ?? ''));
             }
 
             $current->confirmed_price = $confirmedPrice;

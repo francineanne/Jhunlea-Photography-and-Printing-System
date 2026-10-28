@@ -104,8 +104,9 @@
             </x-ui.notice>
 
             <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <x-ui.button :href="route('customer.bookings.show', $booking)" class="sm:col-span-2"><x-ui.icon name="timeline" :size="18" />Follow this booking</x-ui.button>
                 <x-ui.button :href="route('customer.bookings.create')" variant="outline"><x-ui.icon name="add_a_photo" :size="18" />Book another photoshoot</x-ui.button>
-                <x-ui.button :href="route('customer.dashboard')"><x-ui.icon name="dashboard" :size="18" />Back to my dashboard</x-ui.button>
+                <x-ui.button :href="route('customer.dashboard')" variant="outline"><x-ui.icon name="dashboard" :size="18" />Back to my dashboard</x-ui.button>
             </div>
         </div>
     </div>

@@ -128,6 +128,10 @@
     --color-app-text-2: var(--app-text-2);
     --color-app-muted: var(--app-muted);
 
+    /* The card token (#F5F5F5 in light) behind photo placeholders and image frames: one step above the dark card
+       surface, so a placeholder never shows as a light block in dark mode */
+    --color-card: #1F1F1F;
+
     /* Status pills: lighter text on translucent fill so they read on dark surfaces */
     --color-status-amber: #FBBF24;
     --color-status-amber-bg: rgb(217 119 6 / 0.18);

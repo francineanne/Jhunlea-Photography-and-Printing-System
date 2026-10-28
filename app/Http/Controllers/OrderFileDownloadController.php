@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderFile;
+use App\Support\DownloadName;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -38,15 +38,6 @@ class OrderFileDownloadController extends Controller
      */
     public static function safeName(OrderFile $file): string
     {
-        $extension = strtolower(pathinfo($file->stored_name, PATHINFO_EXTENSION));
-        $base = pathinfo(basename(str_replace('\\', '/', $file->original_name)), PATHINFO_FILENAME);
-        $base = preg_replace('/[\x00-\x1F\x7F"\/\\\\:*?<>|;]+/u', '', (string) $base) ?? '';
-        $base = trim(Str::limit(trim($base, " .\t"), 150, ''));
-
-        if ($base === '') {
-            $base = 'file';
-        }
-
-        return $extension === '' ? $base : $base.'.'.$extension;
+        return DownloadName::for($file->original_name, $file->stored_name);
     }
 }

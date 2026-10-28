@@ -7,6 +7,7 @@
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'customer.dashboard'],
         ['label' => 'Request printing', 'icon' => 'print', 'route' => 'customer.printing.create', 'match' => 'customer.printing.create'],
         ['label' => 'Book a photoshoot', 'icon' => 'photo_camera', 'route' => 'customer.bookings.create', 'match' => ['customer.bookings.create', 'customer.bookings.sent']],
+        ['label' => 'My bookings', 'icon' => 'event_note', 'route' => 'customer.bookings.index', 'match' => ['customer.bookings.index', 'customer.bookings.show']],
         ['label' => 'My orders', 'icon' => 'receipt_long', 'route' => 'customer.printing.index', 'match' => ['customer.printing.index', 'customer.printing.show', 'customer.printing.placed']],
     ];
 @endphp

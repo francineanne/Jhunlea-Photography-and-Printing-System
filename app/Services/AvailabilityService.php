@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\BookingSetting;
+use App\Support\LocalTime;
 use App\Support\Slot;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
@@ -114,5 +115,57 @@ class AvailabilityService
 
         return $this->slots($durationMinutes, $day, $day, $ignoreBookingId)
             ->contains(fn (Slot $slot) => $slot->startsAt->eq($start));
+    }
+
+    /**
+     * The studio's schedule rules a session of this length starting at this moment breaks, in plain words: a closed
+     * weekday, a blocked date, outside the opening hours, inside the minimum notice, beyond how far ahead one may book.
+     * An empty list means it keeps every rule. Other bookings are NOT looked at here: a clash with a confirmed booking
+     * is ScheduleConflictService's question, and the studio can never override it.
+     *
+     * @return list<string>
+     */
+    public function ruleViolations(int $durationMinutes, CarbonInterface $startsAt): array
+    {
+        $settings = BookingSetting::current();
+        $timezone = config('app.display_timezone');
+        $start = Carbon::instance($startsAt)->utc();
+        $end = $start->copy()->addMinutes($durationMinutes);
+        $day = LocalTime::format($start, 'Y-m-d');
+        $reasons = [];
+
+        $rule = AvailabilityRule::query()->where('weekday', LocalTime::in($start)->dayOfWeek)->first();
+
+        if ($rule === null || ! $rule->is_open || ! $rule->opens_at || ! $rule->closes_at) {
+            $reasons[] = 'The studio is closed on '.LocalTime::format($start, 'l').'s.';
+        } else {
+            $opens = Carbon::parse($day.' '.$rule->opens_at, $timezone);
+            $closes = Carbon::parse($day.' '.$rule->closes_at, $timezone);
+
+            if ($start->lt($opens) || $end->gt($closes)) {
+                $reasons[] = 'It is outside the opening hours ('.LocalTime::format($opens, 'g:i A').' to '.LocalTime::format($closes, 'g:i A').').';
+            }
+        }
+
+        // Read the same way as in slots(), so both agree on which days are blocked
+        $blocked = BlockedDate::query()->whereBetween('date', [$day, $day])->first();
+
+        if ($blocked !== null) {
+            $reasons[] = 'The studio blocked '.LocalTime::format($start, 'D, M j, Y').($blocked->reason ? ' ('.$blocked->reason.')' : '').'.';
+        }
+
+        [$earliest, $latest] = $this->window($settings);
+
+        if ($start->lt($earliest)) {
+            $reasons[] = $start->lte(Carbon::now('UTC'))
+                ? 'The time has already passed.'
+                : "It is less than {$settings->min_notice_hours} hours from now (the minimum notice).";
+        }
+
+        if ($start->gt($latest)) {
+            $reasons[] = "It is more than {$settings->max_advance_days} days ahead (how far ahead one may book).";
+        }
+
+        return $reasons;
     }
 }

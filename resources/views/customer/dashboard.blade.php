@@ -6,6 +6,13 @@
     <h1 class="font-display text-3xl font-semibold sm:text-4xl">Welcome, {{ auth()->user()->name }}</h1>
     <p class="mt-2 text-app-text-2">This is your account home.</p>
 
+    @if ($proposedCount > 0)
+        <x-ui.notice class="mt-6">
+            <p class="font-semibold">The studio offered a new time for {{ $proposedCount }} {{ Str::plural('booking', $proposedCount) }}.</p>
+            <p><a href="{{ route('customer.bookings.index', ['status' => 'proposed']) }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring rounded">Open my bookings</a> to accept it or ask for another time.</p>
+        </x-ui.notice>
+    @endif
+
     @if ($needsInfoCount > 0)
         <x-ui.notice class="mt-6 !border-status-red/30 !bg-status-red-bg">
             <p class="font-semibold">The shop needs more information on {{ $needsInfoCount }} {{ Str::plural('order', $needsInfoCount) }}.</p>
@@ -26,6 +33,19 @@
             <span class="min-w-0">
                 <span class="block font-semibold group-hover:text-brand">Book a photoshoot</span>
                 <span class="mt-0.5 block text-sm text-app-text-2">Choose a package and a free time, then send a request to the studio.</span>
+            </span>
+        </a>
+        <a href="{{ route('customer.bookings.index') }}" class="group flex items-start gap-4 rounded-card border border-app-border bg-app-card p-5 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-brand hover:shadow-md focus-ring dark:shadow-none">
+            <span class="grid size-11 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="event_note" :size="24" /></span>
+            <span class="min-w-0">
+                <span class="block font-semibold group-hover:text-brand">My bookings</span>
+                <span class="mt-0.5 block text-sm text-app-text-2">
+                    @if ($bookingCount === 0)
+                        You have not requested a photoshoot yet.
+                    @else
+                        {{ $bookingCount }} {{ Str::plural('booking', $bookingCount) }}. See their status, time and price.
+                    @endif
+                </span>
             </span>
         </a>
         <a href="{{ route('customer.printing.index') }}" class="group flex items-start gap-4 rounded-card border border-app-border bg-app-card p-5 shadow-sm transition-[border-color,box-shadow] duration-300 hover:border-brand hover:shadow-md focus-ring dark:shadow-none">

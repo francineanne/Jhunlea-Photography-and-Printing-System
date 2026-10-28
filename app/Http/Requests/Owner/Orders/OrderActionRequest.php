@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Owner\Orders;
 
+use App\Http\Requests\Concerns\ValidatesConfirmedPrice;
 use App\Models\PrintingOrder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Gate;
  */
 abstract class OrderActionRequest extends FormRequest
 {
+    use ValidatesConfirmedPrice;
+
     public function authorize(): bool
     {
         return Gate::allows('changeStatus', $this->order());
@@ -33,24 +36,7 @@ abstract class OrderActionRequest extends FormRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return [
-            'note.max' => 'The note can be up to :max characters.',
-            'confirmed_price.required' => 'Enter the confirmed price.',
-            'confirmed_price.numeric' => 'The confirmed price must be a number, for example 250 or 250.50.',
-            'confirmed_price.decimal' => 'The confirmed price can have at most 2 decimal places.',
-            'confirmed_price.min' => 'The confirmed price cannot be below ₱0.00.',
-            'confirmed_price.max' => 'The confirmed price cannot be above ₱99,999,999.99.',
-        ];
-    }
-
-    /**
-     * The one rule for a confirmed price: what the decimal(10,2) column holds, never more than two decimals.
-     *
-     * @return array<int, string>
-     */
-    protected function priceRules(): array
-    {
-        return ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'];
+        return ['note.max' => 'The note can be up to :max characters.'] + $this->priceMessages();
     }
 
     public function order(): PrintingOrder

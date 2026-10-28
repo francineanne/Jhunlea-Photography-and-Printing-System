@@ -4,8 +4,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\BookingReferenceImageController;
 use App\Http\Controllers\Customer\BookingSlotsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\MyBookingController;
 use App\Http\Controllers\Customer\MyOrderController;
 use App\Http\Controllers\Customer\PhotographyBookingController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
@@ -14,6 +16,8 @@ use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
+use App\Http\Controllers\Owner\PhotographyBookingActionController;
+use App\Http\Controllers\Owner\PhotographyBookingController as OwnerPhotographyBookingController;
 use App\Http\Controllers\Owner\PrintingOrderActionController;
 use App\Http\Controllers\Owner\PrintingOrderController as OwnerPrintingOrderController;
 use App\Http\Controllers\Owner\ServiceController;
@@ -82,6 +86,39 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/bookings')->name('custo
     Route::get('/slots', BookingSlotsController::class)->middleware('throttle:120,1,booking-slots')->name('slots');
     Route::post('/', [PhotographyBookingController::class, 'store'])->middleware('throttle:10,1,booking-store')->name('store');
     Route::get('/{booking}/sent', [PhotographyBookingController::class, 'sent'])->whereNumber('booking')->middleware('throttle:60,1,booking-sent')->name('sent');
+
+    // My bookings (Phase 4C): the list, one booking, cancelling and answering a proposed time
+    Route::get('/', [MyBookingController::class, 'index'])->middleware('throttle:60,1,booking-list')->name('index');
+    Route::whereNumber('booking')->controller(MyBookingController::class)->group(function () {
+        Route::get('/{booking}', 'show')->middleware('throttle:60,1,booking-show')->name('show');
+        Route::post('/{booking}/cancel', 'cancel')->middleware('throttle:10,1,booking-cancel')->name('cancel');
+        Route::post('/{booking}/accept', 'accept')->middleware('throttle:10,1,booking-accept')->name('accept');
+        Route::post('/{booking}/another-time', 'anotherTime')->middleware('throttle:10,1,booking-another-time')->name('another-time');
+    });
+});
+
+// The owner's photography bookings (Phase 4C). Every action is a POST that goes through BookingTransitionService
+Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner.bookings.')->group(function () {
+    Route::get('/', [OwnerPhotographyBookingController::class, 'index'])->middleware('throttle:120,1,owner-booking-list')->name('index');
+    Route::get('/{booking}', [OwnerPhotographyBookingController::class, 'show'])->whereNumber('booking')->middleware('throttle:120,1,owner-booking-show')->name('show');
+
+    // 30 a minute for each action, each with its own counter
+    Route::whereNumber('booking')->controller(PhotographyBookingActionController::class)->group(function () {
+        Route::post('/{booking}/confirm', 'confirm')->middleware('throttle:30,1,owner-booking-confirm')->name('confirm');
+        Route::post('/{booking}/propose', 'propose')->middleware('throttle:30,1,owner-booking-propose')->name('propose');
+        Route::post('/{booking}/reject', 'reject')->middleware('throttle:30,1,owner-booking-reject')->name('reject');
+        Route::post('/{booking}/complete', 'complete')->middleware('throttle:30,1,owner-booking-complete')->name('complete');
+        Route::post('/{booking}/cancel', 'cancel')->middleware('throttle:30,1,owner-booking-cancel')->name('cancel');
+        Route::post('/{booking}/price', 'price')->middleware('throttle:30,1,owner-booking-price')->name('price');
+        Route::post('/{booking}/notes', 'notes')->middleware('throttle:30,1,owner-booking-notes')->name('notes');
+    });
+});
+
+// A reference image of a booking, for the owner or the customer whose booking it is (BookingReferenceImagePolicy).
+// Shown in the page only when its content is a real JPEG, PNG or WebP image; the download link always downloads
+Route::middleware('auth')->prefix('booking-images')->name('booking-images.')->whereNumber('image')->controller(BookingReferenceImageController::class)->group(function () {
+    Route::get('/{image}', 'show')->middleware('throttle:240,1,booking-image-show')->name('show');
+    Route::get('/{image}/download', 'download')->middleware('throttle:30,1,booking-image-download')->name('download');
 });
 
 // The owner's printing orders. Every action is a POST that goes through StatusTransitionService

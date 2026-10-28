@@ -18,7 +18,7 @@
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
-| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A (data and logic) committed. 4B (customer booking wizard, slot list, request sent page, Book buttons on the public pages) built, waiting for review. 4C owner screens and customer list/detail, 4D schedule editor not started. |
+| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A and 4B committed. 4C (customer My bookings list and detail with proposal answers and cancelling; owner bookings list, detail, schedule check, confirm with "Confirm anyway" for schedule rules, propose, reject, complete, price, cancel, internal notes; protected reference images) built, waiting for review. 4D schedule editor and calendar, prints after the shoot not started. |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
 | 7 | AI customer assistant | BF | Not started |
@@ -84,6 +84,15 @@ npm run build                 # must exit 0
 ```
 
 `php artisan migrate:fresh --seed` wipes the database. Use it only on a throwaway local database, never on one that has real data.
+
+### Running the tests safely
+
+The tests wipe and rebuild every table they use (`RefreshDatabase`). They must only ever run on an in-memory SQLite database, never on the `jhunlea` MySQL database. This once went wrong: a terminal had the `.env` values exported as environment variables, and the tests ran against the real database.
+
+- Run the tests in a **clean terminal**. Never export or load `.env` values into the shell (no `set`/`$env:` of `APP_`, `DB_`, `CACHE_`, `SESSION_` ... values, and no tool that loads `.env` into the terminal). Laravel reads `.env` by itself.
+- Check before running: `Get-ChildItem Env: | Where-Object { $_.Name -match '^(APP_|DB_|CACHE_|SESSION_|MAIL_|QUEUE_)' }` (PowerShell) must show **nothing**. A terminal that shows any of them is not safe; close it and open a new one. If they come back in every new terminal, remove them from Windows "Edit the system environment variables" (User and System).
+- Two layers protect the database. `phpunit.xml` forces the test values (as `force="true"` env entries **and** `<server>` entries, because Laravel reads `$_SERVER` first). `tests/Support/TestDatabaseGuard.php` checks the result in `tests/TestCase.php::createApplication()`, which runs before `RefreshDatabase`.
+- If you see **"Refusing to run tests: this would touch the database ..."**, the guard stopped the run before anything was touched. Do not work around it: open a clean terminal. Every feature test must extend `Tests\TestCase` and must never override `createApplication()`; a unit test checks this.
 
 ---
 

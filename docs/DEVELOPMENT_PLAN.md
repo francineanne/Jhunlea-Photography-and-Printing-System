@@ -78,9 +78,9 @@ Design refs: `design/customer/book_a_photoshoot`, `my_photography_bookings`, `bo
 - [x] Migrations: photography_bookings, booking_reference_images, availability_rules, blocked_dates (4A, plus booking_settings at booking_status_histories)
 - [x] Customer 6-step booking: package, details, schedule (galing sa availability rules ang mga slot), theme/moodboard na may custom theme, optional prints, at review (4B: request lang; "digital only" o "I may want prints", walang presyo ng prints)
 - [ ] Optional prints: gumagawa ng linked printing order (gamit ang Phase 3); hiwalay ang photography fee sa printing fee
-- [ ] `ScheduleConflictService`; owner confirm, propose alternative at reject; customer accept o ask for another time
+- [x] `ScheduleConflictService`; owner confirm, propose alternative at reject; customer accept o ask for another time (4C; ang "Confirm anyway" ay para lang sa schedule rules, hindi kailanman sa conflict)
 - [ ] Owner schedule calendar na galing sa totoong bookings, at editor ng availability rules
-- [ ] Mark photoshoot completed, at hiwalay na print production status
+- [ ] Mark photoshoot completed (tapos sa 4C), at hiwalay na print production status (hindi pa)
 - [ ] Tests: conflict detection, walang dagdag na printing charge kapag "digital only", at hindi makakapag-confirm ang customer ng sariling booking
 
 ## Phase 5 — Payments, notifications, dashboards (BF)

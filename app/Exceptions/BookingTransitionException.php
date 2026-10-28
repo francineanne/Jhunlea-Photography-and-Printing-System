@@ -8,6 +8,12 @@ use DomainException;
 /** Why a booking could not move or change. Every message can be shown to the person who tried. */
 class BookingTransitionException extends DomainException
 {
+    // Codes for the two refusals a page may want to word for its own reader (the customer accepting a proposed time
+    // reads a customer message instead of the studio's); the messages themselves stay as they are
+    public const TIME_TAKEN = 1;
+
+    public const TIME_NOT_OPEN = 2;
+
     public static function notAllowed(BookingStatus $from, BookingStatus $to): self
     {
         return new self("This booking is {$from->label()}, so it cannot be moved to {$to->label()}. The page may be out of date; please reload it.");
@@ -45,12 +51,18 @@ class BookingTransitionException extends DomainException
 
     public static function conflict(): self
     {
-        return new self('This time is no longer free: another confirmed session is booked then. Propose another time instead.');
+        return new self('This time is no longer free: another confirmed session is booked then. Propose another time instead.', self::TIME_TAKEN);
+    }
+
+    /** @param  list<string>  $reasons */
+    public static function outsideSchedule(array $reasons): self
+    {
+        return new self('This time is outside the usual schedule: '.implode(' ', $reasons).' Tick “Confirm anyway” to confirm it all the same.');
     }
 
     public static function slotNotAvailable(): self
     {
-        return new self('That time is not open for bookings. Pick a free time within opening hours.');
+        return new self('That time is not open for bookings. Pick a free time within opening hours.', self::TIME_NOT_OPEN);
     }
 
     public static function noProposal(): self

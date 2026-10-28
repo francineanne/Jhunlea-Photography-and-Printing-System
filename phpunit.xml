@@ -18,19 +18,56 @@
         </include>
     </source>
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
-        <env name="BCRYPT_ROUNDS" value="4"/>
-        <env name="BROADCAST_CONNECTION" value="null"/>
-        <env name="CACHE_STORE" value="array"/>
-        <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value=":memory:"/>
-        <env name="DB_URL" value=""/>
-        <env name="MAIL_MAILER" value="array"/>
-        <env name="QUEUE_CONNECTION" value="sync"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="PULSE_ENABLED" value="false"/>
-        <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!--
+            The tests always run on an in-memory SQLite database, whatever the terminal holds.
+            force="true" overwrites getenv() and $_ENV, and the <server> copies overwrite $_SERVER, which Laravel reads
+            FIRST: a terminal that exported the .env values (APP_ENV=local, DB_CONNECTION=mysql ...) would otherwise
+            win through $_SERVER even with force="true". tests/TestCase.php checks the result again before any test
+            (TestDatabaseGuard). Do not remove any of these lines.
+        -->
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="BROADCAST_CONNECTION" value="null" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="DB_CONNECTION" value="sqlite" force="true"/>
+        <env name="DB_DATABASE" value=":memory:" force="true"/>
+        <env name="DB_URL" value="" force="true"/>
+        <env name="DB_HOST" value="" force="true"/>
+        <env name="DB_PORT" value="" force="true"/>
+        <env name="DB_USERNAME" value="" force="true"/>
+        <env name="DB_PASSWORD" value="" force="true"/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <!-- The upload disks the tests fake: a terminal value pointing elsewhere would write to real storage -->
+        <env name="FILESYSTEM_DISK" value="local" force="true"/>
+        <env name="PRINTING_FILES_DISK" value="local" force="true"/>
+        <env name="BOOKING_IMAGES_DISK" value="local" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="PULSE_ENABLED" value="false" force="true"/>
+        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <env name="NIGHTWATCH_ENABLED" value="false" force="true"/>
+
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <server name="BCRYPT_ROUNDS" value="4"/>
+        <server name="BROADCAST_CONNECTION" value="null"/>
+        <server name="CACHE_STORE" value="array"/>
+        <server name="DB_CONNECTION" value="sqlite"/>
+        <server name="DB_DATABASE" value=":memory:"/>
+        <server name="DB_URL" value=""/>
+        <server name="DB_HOST" value=""/>
+        <server name="DB_PORT" value=""/>
+        <server name="DB_USERNAME" value=""/>
+        <server name="DB_PASSWORD" value=""/>
+        <server name="MAIL_MAILER" value="array"/>
+        <server name="FILESYSTEM_DISK" value="local"/>
+        <server name="PRINTING_FILES_DISK" value="local"/>
+        <server name="BOOKING_IMAGES_DISK" value="local"/>
+        <server name="QUEUE_CONNECTION" value="sync"/>
+        <server name="SESSION_DRIVER" value="array"/>
+        <server name="PULSE_ENABLED" value="false"/>
+        <server name="TELESCOPE_ENABLED" value="false"/>
+        <server name="NIGHTWATCH_ENABLED" value="false"/>
     </php>
 </phpunit>
