@@ -76,7 +76,7 @@ Design refs: `design/customer/request_printing_wizard_estimator`, `my_printing_o
 ## Phase 4 — Photography bookings (Her)
 Design refs: `design/customer/book_a_photoshoot`, `my_photography_bookings`, `booking_detail_tracking`, `design/admin/photography_bookings_list`, `booking_detail_owner`, `schedule_and_availability`
 - [x] Migrations: photography_bookings, booking_reference_images, availability_rules, blocked_dates (4A, plus booking_settings at booking_status_histories)
-- [ ] Customer 6-step booking: package, details, schedule (galing sa availability rules ang mga slot), theme/moodboard na may custom theme, optional prints, at review
+- [x] Customer 6-step booking: package, details, schedule (galing sa availability rules ang mga slot), theme/moodboard na may custom theme, optional prints, at review (4B: request lang; "digital only" o "I may want prints", walang presyo ng prints)
 - [ ] Optional prints: gumagawa ng linked printing order (gamit ang Phase 3); hiwalay ang photography fee sa printing fee
 - [ ] `ScheduleConflictService`; owner confirm, propose alternative at reject; customer accept o ask for another time
 - [ ] Owner schedule calendar na galing sa totoong bookings, at editor ng availability rules

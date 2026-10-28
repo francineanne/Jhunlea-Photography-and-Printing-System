@@ -23,7 +23,7 @@ class LoginController extends Controller
         // New session id after login, so a session id planted before login is useless
         $request->session()->regenerate();
 
-        return redirect($request->user()->role->home());
+        return redirect($request->user()->role->afterLogin($request->session()->pull('url.intended')));
     }
 
     public function destroy(Request $request): RedirectResponse

@@ -106,6 +106,7 @@
                                         class="mt-1 inline-flex min-h-11 items-center gap-1 rounded text-xs font-semibold text-app-text-2 hover:text-brand focus-ring">
                                         <x-ui.icon name="close" :size="16" />Remove<span class="sr-only"> {{ $package->name }}</span>
                                     </a>
+                                    <x-package.book-button :package="$package" size="sm" class="mt-1 w-full" />
                                 </th>
                             @endforeach
                         </tr>

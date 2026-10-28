@@ -4,7 +4,7 @@
         <span class="grid size-7 shrink-0 place-items-center rounded-lg bg-brand text-sm font-bold text-white" aria-hidden="true">{{ $number }}</span>
         <div class="min-w-0">
             <h2 id="step-{{ $number }}-title" tabindex="-1" class="font-display text-xl font-semibold leading-snug focus:outline-none sm:text-2xl">
-                <span class="sr-only">Step {{ $number }} of 4: </span>{{ $title }}
+                <span class="sr-only">Step {{ $number }} of {{ $total ?? 4 }}: </span>{{ $title }}
             </h2>
             <p class="mt-0.5 text-sm text-app-text-2">{{ $text }}</p>
         </div>

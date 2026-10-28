@@ -682,6 +682,465 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
     },
 }));
 
+// The photoshoot booking wizard. The six steps are sections of one plain form, so it also works without scripts; here
+// they open one at a time. Free times come from the server (AvailabilityService through the slots endpoint): the browser
+// only draws them, it never works out availability. The checks below only help the customer, using the server's own
+// words; the server checks every step again on submit.
+const pad = (n) => String(n).padStart(2, '0');
+const ymd = (y, m, d) => `${y}-${pad(m + 1)}-${pad(d)}`;
+// Calendar days are plain dates (no time, no time zone), so they are read and named in UTC
+const dayName = new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' });
+const monthName = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookableUntil, oldSlot, images, messages, atLimit }) => ({
+    step: start,
+    reached: start,
+    packageId: null,
+    problem: '',
+    submitting: false,
+    atLimit,
+    lengths: { notes: 0, idea: 0 },
+    summary: { package: '', price: '', minutes: '', date: '', time: '', people: '', contact: '', theme: '', idea: '', prints: '', notes: '' },
+
+    // Calendar: the month on screen, the free times by package and month, and the chosen day and time
+    month: { y: 0, m: 0 },
+    days: {},
+    slotState: 'idle',
+    bookableFrom,
+    bookableUntil,
+    selectedDate: '',
+    dayList: [],
+    selected: '',
+    selectedSlot: null,
+    slotRequest: null,
+    slotSeq: 0,
+
+    images: [],
+    dragging: false,
+
+    init() {
+        if (oldSlot) {
+            this.selected = oldSlot.starts_at;
+            this.selectedSlot = oldSlot;
+            this.selectedDate = oldSlot.date;
+        }
+
+        const anchor = oldSlot?.date ?? this.bookableFrom;
+
+        this.month = { y: Number(anchor.slice(0, 4)), m: Number(anchor.slice(5, 7)) - 1 };
+        this.sync();
+    },
+
+    get pkg() {
+        return packages[this.packageId] ?? null;
+    },
+
+    // Reads the form again after any change: the package, then the summary
+    sync() {
+        const ticked = this.$root.querySelector('input[name="package"]:checked');
+        const id = ticked ? Number(ticked.value) : null;
+
+        if (id !== this.packageId) {
+            // The first read keeps a time chosen before a failed submit; a new package needs a new time
+            if (this.packageId !== null) this.clearSlot();
+            this.packageId = id;
+            this.clampPeople();
+            this.loadMonth();
+        }
+
+        // Backdrops of other packages are disabled through x-bind; wait for that before reading the form
+        this.$nextTick(() => this.collect());
+    },
+
+    collect() {
+        const form = this.$root;
+        const pkg = this.pkg;
+        const theme = this.packageId ? form.querySelector(`[data-themes-for="${this.packageId}"] input[name="theme"]:checked`) : null;
+        const prints = form.querySelector('input[name="prints"]:checked');
+        const people = parseInt(this.$refs.people?.value ?? '', 10);
+        const notes = form.querySelector('#notes')?.value ?? '';
+        const idea = form.querySelector('#custom_theme_text')?.value ?? '';
+
+        this.lengths = { notes: notes.length, idea: idea.length };
+        this.summary = {
+            package: pkg?.name ?? '',
+            price: pkg?.price ?? '',
+            minutes: pkg ? `${pkg.minutes} mins` : '',
+            date: this.selectedSlot?.date_text ?? '',
+            time: this.selectedSlot?.time_text ?? '',
+            people: people >= 1 ? `${people} ${people === 1 ? 'person' : 'people'}` : '',
+            contact: (form.querySelector('#contact_number')?.value ?? '').trim(),
+            theme: theme?.dataset.name ?? '',
+            idea: idea.trim(),
+            prints: prints?.dataset.name ?? '',
+            notes: notes.trim(),
+        };
+    },
+
+    // People
+
+    maxPeople() {
+        return this.pkg?.max ?? null;
+    },
+
+    groupRule() {
+        return this.pkg?.groupRule ?? 'Each package says how many people it fits.';
+    },
+
+    changePeople(by) {
+        const input = this.$refs.people;
+
+        input.value = Math.max(1, (parseInt(input.value, 10) || 1) + by);
+        this.clampPeople();
+        this.collect();
+    },
+
+    clampPeople() {
+        const input = this.$refs.people;
+        const max = this.maxPeople();
+
+        if (input && max && parseInt(input.value, 10) > max) input.value = max;
+    },
+
+    // Steps
+
+    next() {
+        if (this.check(this.step)) this.goTo(this.step + 1, true);
+    },
+
+    back() {
+        this.goTo(this.step - 1);
+    },
+
+    goTo(n, checked = false) {
+        if (n < 1 || n > 6) return;
+        // A later step opens only through Continue, so every step before it has been checked
+        if (n > this.reached && !checked) return;
+
+        this.problem = '';
+        this.step = n;
+        this.reached = Math.max(this.reached, n);
+
+        // x-show shows the new step a frame or two later, so wait until it is on screen before moving focus into it
+        const section = this.$root.querySelector(`#step-${n}`);
+        let tries = 30;
+        const reveal = () => {
+            if (this.step !== n) return;
+            if (section.offsetParent === null && tries-- > 0) return requestAnimationFrame(reveal);
+
+            if (section.getBoundingClientRect().top < 0) {
+                section.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+            }
+
+            section.querySelector(`#step-${n}-title`)?.focus({ preventScroll: true });
+        };
+
+        requestAnimationFrame(reveal);
+    },
+
+    check(step) {
+        const people = parseInt(this.$refs.people.value, 10);
+        const theme = this.packageId ? this.$root.querySelector(`[data-themes-for="${this.packageId}"] input[name="theme"]:checked`) : null;
+        const problems = {
+            1: !this.packageId ? messages.package : '',
+            2: !(people >= 1)
+                ? messages.groupSize
+                : this.maxPeople() && people > this.maxPeople()
+                  ? this.groupRule()
+                  : !(this.$root.querySelector('#contact_number')?.value ?? '').trim()
+                    ? messages.contact
+                    : '',
+            3: !this.selected ? messages.slot : '',
+            4: !theme?.value && !this.summary.idea
+                ? messages.theme
+                : this.images.some((image) => image.error)
+                  ? 'Remove the images that cannot be sent first.'
+                  : this.imageTotalProblem(),
+        };
+
+        this.problem = problems[step] ?? '';
+
+        return this.problem === '';
+    },
+
+    // Enter in a field before the last step moves on instead of sending a half-filled request
+    submit(event) {
+        if (this.step < 6) {
+            event.preventDefault();
+            this.next();
+
+            return;
+        }
+
+        for (const step of [1, 2, 3, 4]) {
+            if (!this.check(step)) {
+                event.preventDefault();
+                this.goTo(step);
+
+                return;
+            }
+        }
+
+        if (this.atLimit) {
+            event.preventDefault();
+
+            return;
+        }
+
+        this.submitting = true;
+    },
+
+    // Calendar
+
+    monthKey() {
+        return `${this.packageId}:${this.month.y}-${this.month.m}`;
+    },
+
+    monthSlots() {
+        return this.days[this.monthKey()] ?? {};
+    },
+
+    monthHasSlots() {
+        return Object.keys(this.monthSlots()).length > 0;
+    },
+
+    lastDay(y, m) {
+        return new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    },
+
+    monthLabel() {
+        return monthName.format(new Date(Date.UTC(this.month.y, this.month.m, 1)));
+    },
+
+    // A month can be shown when part of it lies between the first and the last day one may book
+    canMove(by) {
+        const target = new Date(Date.UTC(this.month.y, this.month.m + by, 1));
+        const y = target.getUTCFullYear();
+        const m = target.getUTCMonth();
+
+        return ymd(y, m, this.lastDay(y, m)) >= this.bookableFrom && ymd(y, m, 1) <= this.bookableUntil;
+    },
+
+    moveMonth(by) {
+        if (!this.canMove(by)) return;
+
+        const target = new Date(Date.UTC(this.month.y, this.month.m + by, 1));
+
+        this.month = { y: target.getUTCFullYear(), m: target.getUTCMonth() };
+        this.loadMonth();
+    },
+
+    async loadMonth(force = false) {
+        if (!this.packageId) return;
+
+        const key = this.monthKey();
+        const { y, m } = this.month;
+        const from = [ymd(y, m, 1), this.bookableFrom].sort()[1];
+        const to = [ymd(y, m, this.lastDay(y, m)), this.bookableUntil].sort()[0];
+
+        // An answer still on its way is for another month or package: drop it
+        this.slotRequest?.abort();
+        const seq = ++this.slotSeq;
+
+        if (!force && this.days[key]) {
+            this.slotState = 'ready';
+            this.afterLoad();
+
+            return;
+        }
+
+        if (from > to) {
+            this.days[key] = {};
+            this.slotState = 'ready';
+            this.afterLoad();
+
+            return;
+        }
+
+        this.slotState = 'loading';
+        this.slotRequest = new AbortController();
+
+        try {
+            const response = await fetch(`${slotsUrl}?${new URLSearchParams({ package: this.packageId, from, to })}`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                signal: this.slotRequest.signal,
+            });
+            const body = await response.json().catch(() => ({}));
+
+            if (seq !== this.slotSeq) return;
+
+            if (!response.ok) {
+                this.slotState = 'error';
+
+                return;
+            }
+
+            this.bookableFrom = body.bookable_from;
+            this.bookableUntil = body.bookable_until;
+            this.days[key] = body.days ?? {};
+            this.slotState = 'ready';
+            this.afterLoad();
+        } catch (error) {
+            if (error.name !== 'AbortError' && seq === this.slotSeq) this.slotState = 'error';
+        }
+    },
+
+    // A chosen time that is no longer free (taken meanwhile) is let go, so it cannot be sent by mistake
+    afterLoad() {
+        if (!this.selectedDate || this.selectedDate.slice(0, 7) !== ymd(this.month.y, this.month.m, 1).slice(0, 7)) return;
+
+        this.dayList = this.monthSlots()[this.selectedDate] ?? [];
+
+        if (!this.dayList.length) {
+            this.clearSlot();
+        } else if (this.selected && !this.dayList.some((slot) => slot.starts_at === this.selected)) {
+            this.selected = '';
+            this.selectedSlot = null;
+            this.collect();
+        }
+    },
+
+    cells() {
+        const { y, m } = this.month;
+        const blanks = new Date(Date.UTC(y, m, 1)).getUTCDay();
+        const free = this.monthSlots();
+        const cells = [];
+
+        for (let i = 0; i < blanks; i++) cells.push({ key: `blank-${i}`, state: 'blank', day: '', date: '', label: '' });
+
+        for (let d = 1; d <= this.lastDay(y, m); d++) {
+            const date = ymd(y, m, d);
+            const count = free[date]?.length ?? 0;
+            const inWindow = date >= this.bookableFrom && date <= this.bookableUntil;
+            const state = !inWindow ? 'outside' : this.slotState !== 'ready' ? 'pending' : count > 0 ? 'free' : 'none';
+            const name = dayName.format(new Date(Date.UTC(y, m, d)));
+            const label = state === 'free' ? `${name}: ${count} free ${count === 1 ? 'time' : 'times'}` : state === 'outside' ? `${name}: cannot be booked` : `${name}: no free times`;
+
+            cells.push({ key: date, state, day: d, date, label });
+        }
+
+        return cells;
+    },
+
+    dayClass(cell) {
+        if (cell.state === 'blank') return 'invisible';
+        if (cell.date === this.selectedDate && cell.state === 'free') return 'bg-brand font-bold text-white shadow-md ring-2 ring-brand';
+        if (cell.state === 'free') return 'bg-app-card font-semibold hover:bg-brand/10 dark:bg-white/10 dark:hover:bg-white/15';
+        if (cell.state === 'none') return 'text-app-muted line-through';
+
+        return 'text-app-muted opacity-50';
+    },
+
+    pickDay(cell) {
+        if (cell.state !== 'free') return;
+
+        this.selectedDate = cell.date;
+        this.dayList = this.monthSlots()[cell.date] ?? [];
+
+        if (!this.dayList.some((slot) => slot.starts_at === this.selected)) {
+            this.selected = '';
+            this.selectedSlot = null;
+        }
+
+        this.problem = '';
+        this.collect();
+    },
+
+    daySlots() {
+        return this.dayList;
+    },
+
+    selectedDateText() {
+        return this.dayList[0]?.date_text ?? this.selectedSlot?.date_text ?? '';
+    },
+
+    pickSlot(slot) {
+        this.selected = slot.starts_at;
+        this.selectedSlot = slot;
+        this.problem = '';
+        this.collect();
+    },
+
+    clearSlot() {
+        this.selected = '';
+        this.selectedSlot = null;
+        this.selectedDate = '';
+        this.dayList = [];
+        this.collect();
+    },
+
+    // Images: courtesy checks with the server's limits and words; the server checks every image again
+
+    readImages() {
+        this.images.forEach((image) => image.url && URL.revokeObjectURL(image.url));
+
+        this.images = [...(this.$refs.images?.files ?? [])].map((file, index) => {
+            const error = this.imageProblem(file);
+
+            return {
+                key: `${index}-${file.name}-${file.size}-${file.lastModified}`,
+                name: file.name,
+                bytes: file.size,
+                size: this.size(file.size),
+                error,
+                url: error ? '' : URL.createObjectURL(file),
+            };
+        });
+    },
+
+    imageProblem(file) {
+        const extension = file.name.includes('.') ? file.name.split('.').pop().toLowerCase() : '';
+
+        if (!images.extensions.includes(extension)) return images.wrongType;
+        if (file.size === 0) return 'The file is empty.';
+        if (file.size > images.maxMb * 1024 * 1024) return images.tooLarge;
+
+        return '';
+    },
+
+    imageBytes() {
+        return this.images.reduce((sum, image) => sum + image.bytes, 0);
+    },
+
+    imageTotalProblem() {
+        if (this.images.length > images.max) return images.tooMany;
+
+        if (this.imageBytes() > images.totalMb * 1024 * 1024) {
+            const size = (Math.ceil((this.imageBytes() / 1024 / 1024) * 10) / 10).toFixed(1);
+
+            return `Your files together are ${size} MB. The most one booking can hold is ${images.totalMb} MB. Please remove or compress some files.`;
+        }
+
+        return '';
+    },
+
+    // A file list can only be changed by building a new one
+    replaceImages(list) {
+        const transfer = new DataTransfer();
+
+        list.forEach((file) => transfer.items.add(file));
+        this.$refs.images.files = transfer.files;
+        this.readImages();
+        // A warning about the old list no longer applies
+        this.problem = '';
+        this.collect();
+    },
+
+    removeImage(index) {
+        this.replaceImages([...this.$refs.images.files].filter((file, i) => i !== index));
+        this.$refs.images.focus();
+    },
+
+    dropImages(event) {
+        this.dragging = false;
+        this.replaceImages([...this.$refs.images.files, ...event.dataTransfer.files]);
+    },
+
+    size(bytes) {
+        return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    },
+}));
+
 // "Copy reference" on the order placed page: the label and a small tooltip say "Copied!" for 2 seconds, as in the design
 Alpine.data('copyText', (text) => ({
     copied: false,

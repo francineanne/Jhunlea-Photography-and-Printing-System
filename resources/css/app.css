@@ -170,6 +170,12 @@
     html.js [data-js-hidden] {
         display: none;
     }
+
+    /* Plain fallbacks for visitors without scripts (for example the booking wizard's list of free times). With scripts
+       they never show, not even for the first paint */
+    html.js [data-no-js-only] {
+        display: none !important;
+    }
 }
 
 /* Keyboard focus ring for buttons, links and other non-field controls */

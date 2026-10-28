@@ -159,8 +159,8 @@ class BookingServiceTest extends TestCase
         $from = PhotographyPackage::factory()->published()->create(['price' => '1200.00', 'price_requires_confirmation' => true, 'duration_minutes' => 60, 'max_people' => 2]);
         $onRequest = PhotographyPackage::factory()->published()->create(['price' => null, 'price_requires_confirmation' => false, 'duration_minutes' => 60, 'max_people' => 2]);
 
-        $a = $this->place(['package' => $from, 'theme' => null]);
-        $b = $this->place(['package' => $onRequest, 'theme' => null, 'startsAt' => $this->manila('2026-11-05 13:00')]);
+        $a = $this->place(['package' => $from, 'theme' => null, 'customThemeText' => 'Plain white']);
+        $b = $this->place(['package' => $onRequest, 'theme' => null, 'customThemeText' => 'Plain white', 'startsAt' => $this->manila('2026-11-05 13:00')]);
 
         $this->assertSame('from', $a->snapshot['package']['price_case']);
         $this->assertSame('1200.00', $a->estimated_price);
@@ -238,6 +238,20 @@ class BookingServiceTest extends TestCase
         $this->assertRefused(['groupSize' => 4], 'group_size');
 
         $this->assertSame(3, $this->place(['groupSize' => 3])->group_size);
+    }
+
+    public function test_a_backdrop_or_an_own_idea_is_needed(): void
+    {
+        $this->assertRefused(['theme' => null, 'customThemeText' => '   '], 'theme');
+
+        $this->assertSame($this->theme->id, $this->place(['customThemeText' => null])->theme_id);
+    }
+
+    public function test_notes_can_be_up_to_2000_characters(): void
+    {
+        $this->assertRefused(['notes' => str_repeat('a', 2001)], 'notes');
+
+        $this->assertSame(2000, mb_strlen($this->place(['notes' => str_repeat('a', 2000)])->notes));
     }
 
     public function test_the_contact_number_must_be_7_to_20_digits(): void

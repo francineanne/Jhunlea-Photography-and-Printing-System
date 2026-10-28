@@ -27,6 +27,6 @@ class RegisterController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect($user->role->home());
+        return redirect($user->role->afterLogin($request->session()->pull('url.intended')));
     }
 }

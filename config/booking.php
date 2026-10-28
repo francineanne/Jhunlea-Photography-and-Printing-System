@@ -48,7 +48,7 @@ return [
     'defaults' => [
         'buffer_minutes' => 15,
         'min_notice_hours' => 24,
-        'max_advance_days' => 60,
+        'max_advance_days' => 30,
         'concurrent_sessions' => 1,
     ],
 

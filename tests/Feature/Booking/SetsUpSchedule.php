@@ -9,11 +9,11 @@ use Illuminate\Support\Carbon;
 /**
  * A known week for booking tests. "Now" is Monday 2 November 2026, 08:00 in Manila (00:00 UTC). The studio opens
  * Monday to Saturday 9:00 to 17:00 Manila time and is closed on Sunday. Settings: buffer, notice, days ahead and
- * sessions at once as given (defaults: 0 buffer, 24 hours notice, 60 days, 1 session), so each test states what it needs.
+ * sessions at once as given (defaults: 0 buffer, 24 hours notice, 30 days, 1 session), so each test states what it needs.
  */
 trait SetsUpSchedule
 {
-    protected function setUpSchedule(int $buffer = 0, int $noticeHours = 24, int $advanceDays = 60, int $sessions = 1): void
+    protected function setUpSchedule(int $buffer = 0, int $noticeHours = 24, int $advanceDays = 30, int $sessions = 1): void
     {
         $this->travelTo(Carbon::parse('2026-11-02 00:00:00', 'UTC'));
 
@@ -28,7 +28,7 @@ trait SetsUpSchedule
         $this->settings($buffer, $noticeHours, $advanceDays, $sessions);
     }
 
-    protected function settings(int $buffer = 0, int $noticeHours = 24, int $advanceDays = 60, int $sessions = 1): void
+    protected function settings(int $buffer = 0, int $noticeHours = 24, int $advanceDays = 30, int $sessions = 1): void
     {
         $settings = BookingSetting::query()->find(BookingSetting::ROW_ID) ?? new BookingSetting;
         $settings->fill(['buffer_minutes' => $buffer, 'min_notice_hours' => $noticeHours, 'max_advance_days' => $advanceDays, 'concurrent_sessions' => $sessions]);

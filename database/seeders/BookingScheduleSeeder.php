@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
  * SAMPLE DATA — a starting schedule for development, to be replaced by the owner's real hours (Phase 4D).
  *
  * Monday to Saturday 9:00 to 17:00, Sunday closed; settings from config/booking.php (15-minute buffer, 24 hours notice,
- * 60 days ahead, one session at a time). Safe to run more than once: a weekday or the settings row that already exists
+ * 30 days ahead, one session at a time). Safe to run more than once: a weekday or the settings row that already exists
  * is left alone, so the owner's changes are never overwritten. Creates no bookings and no users.
  */
 class BookingScheduleSeeder extends Seeder

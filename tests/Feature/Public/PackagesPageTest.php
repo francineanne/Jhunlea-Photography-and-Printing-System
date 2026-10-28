@@ -37,13 +37,14 @@ class PackagesPageTest extends TestCase
         $this->assertStringContainsString('width="800" height="500"', $html);
     }
 
-    public function test_it_offers_a_compare_checkbox_per_card_and_never_a_booking_button(): void
+    public function test_it_offers_a_compare_checkbox_and_a_book_link_per_card(): void
     {
         PhotographyPackage::factory()->published()->create(['slug' => 'one']);
 
+        // Since Phase 4B each card opens the booking wizard with its package chosen
         $this->get('/packages')->assertSee('name="packages[]" value="one"', false)
             ->assertSee(route('packages.compare'), false)
-            ->assertDontSee('Book')
+            ->assertSee(e(route('customer.bookings.create', ['package' => 'one'])), false)
             ->assertDontSee('internal_notes');
     }
 

@@ -18,7 +18,7 @@
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
-| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A (data and logic: migrations, BookingStatus table, AvailabilityService, ScheduleConflictService, BookingTransitionService, BookingService, policies) built, waiting for review. 4B customer booking, 4C owner screens, 4D schedule editor not started. |
+| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A (data and logic) committed. 4B (customer booking wizard, slot list, request sent page, Book buttons on the public pages) built, waiting for review. 4C owner screens and customer list/detail, 4D schedule editor not started. |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
 | 7 | AI customer assistant | BF | Not started |
@@ -207,14 +207,16 @@ Reference numbers are generated inside a database transaction so two requests ca
 
 | Area | Prefix | Middleware | Examples |
 |---|---|---|---|
-| Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/packages/finder` (all GET, `throttle:60,1`; `compare` and `finder` are reserved package slugs) |
+| Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/packages/finder` (all GET, 60 a minute, each with its own named counter since 4B; `compare` and `finder` are reserved package slugs) |
 | Auth | `/` | guest | `/login`, `/register`, `/forgot-password`, `/reset-password/{token}` |
-| Customer | `/my` | auth, role:customer | `/my/dashboard`, `/my/printing/new`, `/my/printing/{order}`, `/my/bookings/new`, `/my/bookings/{booking}`, `/my/history`, `/my/notifications`, `/my/settings` |
+| Customer | `/my` | auth, role:customer | `/my/dashboard`, `/my/printing/new`, `/my/printing/{order}`, `/my/bookings/new` (`?package=slug`), `/my/bookings/slots` (JSON free times), `/my/bookings/{booking}/sent`, `/my/bookings/{booking}` (4C), `/my/history`, `/my/notifications`, `/my/settings` |
 | Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule`, `/owner/customers`, `/owner/payments`, `/owner/reports`, `/owner/settings` |
 | Files | `/files/{file}` | auth + policy | streams private files after an ownership check |
 | AI | `/assistant/messages` | auth (or throttled guest), throttle | POST only, server-side API key |
 
-After login: owner → `/owner`, customer → `/my/dashboard`.
+After login: owner → `/owner`, customer → `/my/dashboard`, unless the visitor was sent to login from a page in their own area (`UserRole::afterLogin()`), for example the booking wizard.
+
+Every throttled route names its own counter (`throttle:N,1,name`); `ThrottleCountersTest` fails when two routes share one or a name is missing.
 
 ---
 

@@ -27,6 +27,15 @@ class BookingSetting extends Model
         ];
     }
 
+    /** How early and how far ahead a session can be requested, in the words the booking wizard shows. */
+    public function windowText(): string
+    {
+        $notice = $this->min_notice_hours;
+        $days = $this->max_advance_days;
+
+        return 'Book at least '.$notice.' '.($notice === 1 ? 'hour' : 'hours').' ahead and up to '.$days.' '.($days === 1 ? 'day' : 'days').' ahead.';
+    }
+
     /** The saved settings, or the config defaults when the owner has not saved any (not written to the database). */
     public static function current(): self
     {

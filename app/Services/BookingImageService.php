@@ -34,14 +34,24 @@ class BookingImageService
     /** @throws ValidationException */
     public function validate(UploadedFile $file): void
     {
-        UploadCheck::file(
-            $file,
-            config('booking.types'),
-            $this->maxBytes(),
-            'The image is too large. The most is '.config('booking.max_image_size_mb').' MB per image.',
-            'Reference images must be '.strtoupper(implode(', ', array_keys(config('booking.types')))).' files.',
-            'images',
-        );
+        UploadCheck::file($file, config('booking.types'), $this->maxBytes(), $this->tooLargeMessage(), $this->wrongTypeMessage(), 'images');
+    }
+
+    // The words of the image rules, also shown by the booking wizard before anything is sent
+
+    public function tooLargeMessage(): string
+    {
+        return 'The image is too large. The most is '.config('booking.max_image_size_mb').' MB per image.';
+    }
+
+    public function wrongTypeMessage(): string
+    {
+        return 'Reference images must be '.strtoupper(implode(', ', array_keys(config('booking.types')))).' files.';
+    }
+
+    public function tooManyMessage(): string
+    {
+        return 'A booking can have up to '.(int) config('booking.max_images_per_booking').' reference images.';
     }
 
     /**
@@ -56,7 +66,7 @@ class BookingImageService
         $max = (int) config('booking.max_images_per_booking');
 
         if ($alreadyStored + count($files) > $max) {
-            throw ValidationException::withMessages(['images' => "A booking can have up to {$max} reference images."]);
+            throw ValidationException::withMessages(['images' => $this->tooManyMessage()]);
         }
 
         UploadCheck::total($files, (int) config('booking.max_total_size_mb'), 'one booking', $alreadyStoredBytes, 'images');

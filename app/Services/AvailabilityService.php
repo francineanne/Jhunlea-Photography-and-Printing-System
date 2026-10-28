@@ -43,9 +43,7 @@ class AvailabilityService
         }
 
         $settings = BookingSetting::current();
-        $now = Carbon::now('UTC');
-        $earliest = $now->copy()->addHours($settings->min_notice_hours);
-        $latest = $now->copy()->addDays($settings->max_advance_days);
+        [$earliest, $latest] = $this->window($settings);
         $step = (int) config('booking.slot_step_minutes');
 
         $rules = AvailabilityRule::query()->get()->keyBy('weekday');
@@ -89,6 +87,20 @@ class AvailabilityService
         }
 
         return $slots;
+    }
+
+    /**
+     * The earliest and the latest moment a session may start right now (UTC): the minimum notice from now, and how
+     * far ahead one may book. The wizard's calendar disables the days outside it.
+     *
+     * @return array{0: Carbon, 1: Carbon}
+     */
+    public function window(?BookingSetting $settings = null): array
+    {
+        $settings ??= BookingSetting::current();
+        $now = Carbon::now('UTC');
+
+        return [$now->copy()->addHours($settings->min_notice_hours), $now->copy()->addDays($settings->max_advance_days)];
     }
 
     /**

@@ -29,4 +29,22 @@ final readonly class Slot
     {
         return LocalTime::format($this->startsAt, 'Y-m-d');
     }
+
+    /** The start as a booking form sends it back: the UTC moment, e.g. 2026-11-05T02:00:00Z. */
+    public function value(): string
+    {
+        return LocalTime::iso($this->startsAt);
+    }
+
+    /** @return array{starts_at: string, date: string, time: string, time_text: string, date_text: string} */
+    public function toArray(): array
+    {
+        return [
+            'starts_at' => $this->value(),
+            'date' => $this->localDate(),
+            'time' => LocalTime::format($this->startsAt, 'g:i A'),
+            'time_text' => $this->timeText(),
+            'date_text' => $this->dateText(),
+        ];
+    }
 }

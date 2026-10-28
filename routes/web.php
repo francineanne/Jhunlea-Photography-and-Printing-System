@@ -4,8 +4,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Customer\BookingSlotsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\MyOrderController;
+use App\Http\Controllers\Customer\PhotographyBookingController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
 use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\OrderFileDownloadController;
@@ -24,16 +26,14 @@ use App\Http\Controllers\Public\PackageFinderController as PublicPackageFinderCo
 use App\Http\Controllers\Public\ServiceController as PublicServiceController;
 use Illuminate\Support\Facades\Route;
 
-// Public pages: readable by anyone, and they only ever read published records
-Route::middleware('throttle:60,1')->group(function () {
-    Route::get('/', PublicHomeController::class)->name('home');
-    Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
-    Route::get('/packages', [PublicPackageController::class, 'index'])->name('packages.index');
-    // These two come before {slug}; PhotographyPackage::RESERVED_SLUGS keeps a package from taking their addresses
-    Route::get('/packages/compare', PublicPackageCompareController::class)->name('packages.compare');
-    Route::get('/packages/finder', PublicPackageFinderController::class)->name('packages.finder');
-    Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('packages.show');
-});
+// Public pages: readable by anyone, and they only ever read published records. Each page has its own counter
+Route::get('/', PublicHomeController::class)->middleware('throttle:60,1,public-home')->name('home');
+Route::get('/services', [PublicServiceController::class, 'index'])->middleware('throttle:60,1,public-services')->name('services.index');
+Route::get('/packages', [PublicPackageController::class, 'index'])->middleware('throttle:60,1,public-packages')->name('packages.index');
+// These two come before {slug}; PhotographyPackage::RESERVED_SLUGS keeps a package from taking their addresses
+Route::get('/packages/compare', PublicPackageCompareController::class)->middleware('throttle:60,1,public-packages-compare')->name('packages.compare');
+Route::get('/packages/finder', PublicPackageFinderController::class)->middleware('throttle:60,1,public-packages-finder')->name('packages.finder');
+Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->middleware('throttle:60,1,public-package-show')->name('packages.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -74,6 +74,14 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/printing')->name('custo
     Route::post('/{order}/files', [MyOrderController::class, 'addFiles'])->whereNumber('order')->middleware('throttle:10,1,printing-files-add')->name('files.store');
     // The file is looked up through the order, so it must belong to it (a POST form with _method=DELETE)
     Route::delete('/{order}/files/{file}', [MyOrderController::class, 'removeFile'])->whereNumber(['order', 'file'])->middleware('throttle:10,1,printing-files-remove')->name('files.destroy');
+});
+
+// The customer's photoshoot booking wizard (Phase 4B). The calendar asks /slots for free times; the wizard sends one POST
+Route::middleware(['auth', 'role:customer'])->prefix('my/bookings')->name('customer.bookings.')->group(function () {
+    Route::get('/new', [PhotographyBookingController::class, 'create'])->middleware('throttle:60,1,booking-new')->name('create');
+    Route::get('/slots', BookingSlotsController::class)->middleware('throttle:120,1,booking-slots')->name('slots');
+    Route::post('/', [PhotographyBookingController::class, 'store'])->middleware('throttle:10,1,booking-store')->name('store');
+    Route::get('/{booking}/sent', [PhotographyBookingController::class, 'sent'])->whereNumber('booking')->middleware('throttle:60,1,booking-sent')->name('sent');
 });
 
 // The owner's printing orders. Every action is a POST that goes through StatusTransitionService

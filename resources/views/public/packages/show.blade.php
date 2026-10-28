@@ -111,6 +111,7 @@
                     </dl>
 
                     <div class="mt-6 flex flex-wrap gap-2">
+                        <x-package.book-button :package="$package" label="Book this package" class="w-full sm:w-auto" />
                         <x-ui.button :href="route('packages.index')" variant="outline"><x-ui.icon name="arrow_back" :size="20" />All packages</x-ui.button>
                         <x-ui.button :href="route('packages.finder')" variant="ghost"><x-ui.icon name="auto_awesome" :size="20" />Help me choose</x-ui.button>
                     </div>

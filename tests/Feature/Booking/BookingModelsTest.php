@@ -126,7 +126,7 @@ class BookingModelsTest extends TestCase
         $this->assertSame('09:00:00', $monday->opens_at);
         $this->assertSame('17:00:00', $monday->closes_at);
         $settings = BookingSetting::current();
-        $this->assertSame([15, 24, 60, 1], [$settings->buffer_minutes, $settings->min_notice_hours, $settings->max_advance_days, $settings->concurrent_sessions]);
+        $this->assertSame([15, 24, 30, 1], [$settings->buffer_minutes, $settings->min_notice_hours, $settings->max_advance_days, $settings->concurrent_sessions]);
 
         // The owner changes things; seeding again keeps them
         $monday->update(['opens_at' => '10:00:00']);

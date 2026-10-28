@@ -140,7 +140,10 @@
                                         @endif
 
                                         <div class="mt-auto pt-5">
-                                            <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" size="sm">See details</x-ui.button>
+                                            <div class="flex flex-wrap gap-2">
+                                                <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" size="sm">See details</x-ui.button>
+                                                <x-package.book-button :package="$package" size="sm" />
+                                            </div>
                                         </div>
                                     </x-ui.card>
                                 </li>

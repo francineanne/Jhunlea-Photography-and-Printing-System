@@ -75,9 +75,12 @@ class ThrottleCountersTest extends TestCase
             ->mapWithKeys(fn ($route) => [$route->methods()[0].' '.$route->uri() => collect($route->gatherMiddleware())->first(fn ($m) => is_string($m) && str_starts_with($m, 'throttle:'))])
             ->filter();
 
-        // The public pages share one counter on purpose (they only read); every other throttle is named
-        $named = $throttles->reject(fn ($throttle) => $throttle === 'throttle:60,1');
-        $this->assertSame(['throttle:60,1'], $throttles->diffKeys($named)->unique()->values()->all());
+        // Every throttle is named, the public pages too (since Phase 4B), and no two routes share a name
+        $named = $throttles;
+
+        foreach (['GET /', 'GET packages', 'GET packages/{slug}', 'GET my/bookings/new', 'GET my/bookings/slots', 'POST my/bookings', 'GET my/bookings/{booking}/sent'] as $route) {
+            $this->assertArrayHasKey($route, $named->all(), "{$route} has no throttle");
+        }
 
         foreach (['POST login', 'POST register', 'POST forgot-password', 'POST reset-password'] as $route) {
             $this->assertArrayHasKey($route, $named->all(), "{$route} has no named throttle");

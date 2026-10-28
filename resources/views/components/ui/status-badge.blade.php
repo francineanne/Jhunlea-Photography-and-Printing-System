@@ -11,16 +11,38 @@
         'red' => ['rejected', 'unpaid'],
     ];
 
+    // Photography bookings (App\Enums\BookingStatus) use the booking designs' colours and the enum's own words:
+    // waiting for the studio is amber, a new time waiting for the customer is blue
+    $bookingTones = [
+        'requested' => 'amber',
+        'proposed' => 'blue',
+        'confirmed' => 'green',
+        'rejected' => 'red',
+        'cancelled' => 'gray',
+        'completed' => 'gray',
+    ];
+
+    $booking = $status instanceof \App\Enums\BookingStatus;
+    $label = $booking ? $status->label() : null;
     $status = $status instanceof \BackedEnum ? $status->value : (string) $status;
 
-    $tone = collect($tones)->search(fn ($statuses) => in_array($status, $statuses, true)) ?: 'gray';
+    $tone = $booking
+        ? $bookingTones[$status]
+        : (collect($tones)->search(fn ($statuses) => in_array($status, $statuses, true)) ?: 'gray');
 
-    // live: the dot moves as in the order designs. Work in progress breathes; ready for pickup sends out a ring
-    $pulse = ! $live ? null : match ($status) {
-        'submitted', 'under_review', 'processing', 'awaiting_customer_info', 'awaiting_schedule_confirmation' => 'pulse',
-        'ready_for_pickup' => 'ping',
-        default => null,
-    };
+    // live: the dot moves as in the designs. Work in progress breathes; ready for pickup and a request waiting for the
+    // studio send out a ring (the "pending review" pill of the bookings design)
+    $pulse = ! $live ? null : ($booking
+        ? match ($status) {
+            'requested' => 'ping',
+            'proposed' => 'pulse',
+            default => null,
+        }
+        : match ($status) {
+            'submitted', 'under_review', 'processing', 'awaiting_customer_info', 'awaiting_schedule_confirmation' => 'pulse',
+            'ready_for_pickup' => 'ping',
+            default => null,
+        });
 @endphp
 
-<x-ui.badge :tone="$tone" :pulse="$pulse" {{ $attributes }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</x-ui.badge>
+<x-ui.badge :tone="$tone" :pulse="$pulse" {{ $attributes }}>{{ $label ?? ucfirst(str_replace('_', ' ', $status)) }}</x-ui.badge>

@@ -175,7 +175,10 @@
                                             <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Estimated price</p>
                                             <p class="mt-0.5 font-display text-lg font-bold tabular-nums">{{ $package->priceText() }}</p>
                                         </div>
-                                        <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" class="mt-3 w-full">Details</x-ui.button>
+                                        <div class="mt-3 grid grid-cols-2 gap-2">
+                                            <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" class="w-full">Details</x-ui.button>
+                                            <x-package.book-button :package="$package" class="w-full" />
+                                        </div>
                                     </div>
                                 </x-ui.card>
                             </li>

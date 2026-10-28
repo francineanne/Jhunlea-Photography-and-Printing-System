@@ -120,7 +120,10 @@
                             <div class="mt-auto pt-5">
                                 <div class="flex items-end justify-between gap-3 border-t border-app-border pt-4">
                                     <p class="font-bold tabular-nums">{{ $package->priceText() }}</p>
-                                    <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" size="sm" class="shrink-0">Details</x-ui.button>
+                                    <div class="flex shrink-0 gap-2">
+                                        <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" size="sm">Details</x-ui.button>
+                                        <x-package.book-button :package="$package" size="sm" />
+                                    </div>
                                 </div>
                             </div>
                         </x-ui.card>
