@@ -12,7 +12,11 @@ use Illuminate\Validation\Rule;
 /** Used for both create and update; on update the route's service is excluded from the slug check. */
 class ServiceRequest extends FormRequest
 {
-    public const MAX_FILE_SIZE_MB = 50;
+    /** The largest file a service may accept: never more than the printing wizard itself takes (config/printing.php). */
+    public static function maxFileSizeMb(): int
+    {
+        return (int) config('printing.max_file_size_mb');
+    }
 
     public function authorize(): bool
     {
@@ -51,7 +55,7 @@ class ServiceRequest extends FormRequest
             ],
             'allowed_file_types' => ['required', 'array', 'min:1', 'max:'.count(PrintFileType::cases())],
             'allowed_file_types.*' => ['distinct', Rule::enum(PrintFileType::class)],
-            'max_file_size_mb' => ['required', 'integer', 'between:1,'.self::MAX_FILE_SIZE_MB],
+            'max_file_size_mb' => ['required', 'integer', 'between:1,'.self::maxFileSizeMb()],
             'instructions' => ['nullable', 'string', 'max:2000'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:1000000'],
             'is_published' => ['boolean'],

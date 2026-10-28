@@ -121,7 +121,7 @@ class ServiceManagementTest extends TestCase
             'no file types' => ['allowed_file_types' => []],
             'file types not an array' => ['allowed_file_types' => 'pdf'],
             'size zero' => ['max_file_size_mb' => 0],
-            'size too big' => ['max_file_size_mb' => 51],
+            'size too big' => ['max_file_size_mb' => 11],
             'bad slug' => ['slug' => 'Not A Slug!'],
         ];
 
@@ -144,7 +144,20 @@ class ServiceManagementTest extends TestCase
         $owner = $this->owner();
 
         $this->actingAs($owner)->post('/owner/services', $this->validData(['name' => 'One', 'max_file_size_mb' => 1]))->assertSessionHasNoErrors();
-        $this->actingAs($owner)->post('/owner/services', $this->validData(['name' => 'Fifty', 'max_file_size_mb' => 50]))->assertSessionHasNoErrors();
+        $this->actingAs($owner)->post('/owner/services', $this->validData(['name' => 'Ten', 'max_file_size_mb' => 10]))->assertSessionHasNoErrors();
+    }
+
+    public function test_a_service_can_never_promise_a_bigger_file_than_the_printing_wizard_accepts(): void
+    {
+        $owner = $this->owner();
+        $limit = config('printing.max_file_size_mb');
+
+        $this->actingAs($owner)->post('/owner/services', $this->validData(['name' => 'Over', 'max_file_size_mb' => $limit + 1]))->assertSessionHasErrors('max_file_size_mb');
+        $this->actingAs($owner)->post('/owner/services', $this->validData(['name' => 'Exact', 'max_file_size_mb' => $limit]))->assertSessionHasNoErrors();
+        $this->assertSame([$limit], PrintingService::pluck('max_file_size_mb')->all());
+
+        // The form tells the owner the same limit
+        $this->actingAs($owner)->get('/owner/services/create')->assertSee('max="'.$limit.'"', false);
     }
 
     public function test_old_input_and_errors_are_shown_again(): void
