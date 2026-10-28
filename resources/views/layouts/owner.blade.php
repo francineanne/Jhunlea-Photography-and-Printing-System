@@ -5,6 +5,7 @@
     // One entry = label, icon, route name
     $nav = [
         ['label' => 'Overview', 'icon' => 'space_dashboard', 'route' => 'owner.dashboard'],
+        ['label' => 'Printing orders', 'icon' => 'receipt_long', 'route' => 'owner.orders.index', 'match' => 'owner.orders.*'],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],
         ['label' => 'Themes', 'icon' => 'palette', 'route' => 'owner.themes.index', 'match' => 'owner.themes.*'],

@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -95,25 +96,78 @@ class PrintingOrderService
 
         $this->files->validateTotal($uploads);
 
+        return $this->writingFiles(function (array &$written, ?int &$orderId) use ($customer, $service, $optionIds, $quantity, $pages, $notes, $uploads) {
+            $order = $this->place($customer, $service, $optionIds, $quantity, $pages, $notes);
+            $orderId = $order->getKey();
+
+            foreach ($uploads as $upload) {
+                $written[] = $this->files->store($order, $upload, $customer)->path;
+            }
+
+            return $order;
+        });
+    }
+
+    /**
+     * Adds files to an existing order (customer or owner), with the same per-file, count and total rules as a new
+     * order. All files are checked first and saved together; if the customer was asked for more information,
+     * adding files answers it (StatusTransitionService::recordFilesAdded).
+     *
+     * @param  list<UploadedFile>  $uploads
+     *
+     * @throws AuthorizationException when the user may not add files to this order
+     * @throws ValidationException when a file, the count or the total is not acceptable
+     */
+    public function addFiles(PrintingOrder $order, User $actor, array $uploads): PrintingOrder
+    {
+        $service = $order->service;
+        $existing = $order->files()->count();
+
+        if ($uploads === []) {
+            throw ValidationException::withMessages(['files' => 'Add at least one file.']);
+        }
+
+        if ($existing + count($uploads) > config('printing.max_files_per_order')) {
+            $room = max(0, config('printing.max_files_per_order') - $existing);
+
+            throw ValidationException::withMessages(['files' => 'An order can hold up to '.config('printing.max_files_per_order').' files. '.($room > 0 ? "You can add {$room} more." : 'It is full.')]);
+        }
+
+        foreach ($uploads as $upload) {
+            $this->files->validate($upload, $service);
+        }
+
+        $this->files->validateTotal($uploads, (int) $order->files()->sum('size_bytes'));
+
+        return $this->writingFiles(function (array &$written) use ($order, $actor, $uploads) {
+            foreach ($uploads as $upload) {
+                $written[] = $this->files->store($order, $upload, $actor)->path;
+            }
+
+            return $this->transitions->recordFilesAdded($order, $actor, count($uploads));
+        });
+    }
+
+    /**
+     * Runs the work in one transaction. If anything fails after a file was written, every file written is deleted,
+     * and so is the folder of an order that was rolled back, so no orphan file is left behind.
+     *
+     * @param  Closure(array<int, string>&, ?int&): PrintingOrder  $work
+     */
+    private function writingFiles(Closure $work): PrintingOrder
+    {
         $written = [];
         $orderId = null;
 
         try {
-            return DB::transaction(function () use ($customer, $service, $optionIds, $quantity, $pages, $notes, $uploads, &$written, &$orderId) {
-                $order = $this->place($customer, $service, $optionIds, $quantity, $pages, $notes);
-                $orderId = $order->getKey();
-
-                foreach ($uploads as $upload) {
-                    $written[] = $this->files->store($order, $upload, $customer)->path;
-                }
-
-                return $order;
+            return DB::transaction(function () use ($work, &$written, &$orderId) {
+                return $work($written, $orderId);
             });
         } catch (Throwable $e) {
             $disk = Storage::disk(config('printing.disk'));
             $disk->delete($written);
 
-            // The order id was rolled back with the order and is not handed out again, so its folder holds nothing else
+            // A rolled-back order id is not handed out again, so its folder holds nothing else; it goes when empty
             if ($orderId !== null && $disk->allFiles(config('printing.directory').'/'.$orderId) === []) {
                 $disk->deleteDirectory(config('printing.directory').'/'.$orderId);
             }

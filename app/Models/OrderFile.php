@@ -21,6 +21,14 @@ class OrderFile extends Model
         return ['size_bytes' => 'integer'];
     }
 
+    /** The size as people read it: 820 KB, 3.4 MB. */
+    public function sizeText(): string
+    {
+        return $this->size_bytes >= 1024 * 1024
+            ? number_format($this->size_bytes / 1024 / 1024, 1).' MB'
+            : max(1, (int) round($this->size_bytes / 1024)).' KB';
+    }
+
     /** @return BelongsTo<PrintingOrder, $this> */
     public function order(): BelongsTo
     {

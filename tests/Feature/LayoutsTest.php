@@ -76,7 +76,10 @@ class LayoutsTest extends TestCase
 
     public function test_dashboards_have_no_invented_content(): void
     {
-        $this->actingAs(User::factory()->create())->get('/my/dashboard')->assertSee('Nothing here yet');
+        // The customer dashboard shows only real numbers: a new customer has no orders
+        $this->actingAs(User::factory()->create())->get('/my/dashboard')
+            ->assertSee('You have not sent a printing request yet.')
+            ->assertDontSee('The shop needs more information');
         $this->actingAs(User::factory()->owner()->create())->get('/owner')->assertSee('Nothing here yet');
     }
 

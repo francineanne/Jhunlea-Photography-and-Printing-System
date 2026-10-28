@@ -228,7 +228,7 @@ class PrintingWizardTest extends TestCase
             ->assertSee('thesis.pdf')
             ->assertSee('What happens next')
             ->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false)
-            ->assertDontSee('Track this order');
+            ->assertSee(route('customer.printing.show', $order), false);
     }
 
     public function test_a_quotation_service_shows_price_quoted_after_review_and_no_figure(): void

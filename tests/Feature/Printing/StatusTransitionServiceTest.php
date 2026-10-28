@@ -68,7 +68,8 @@ class StatusTransitionServiceTest extends TestCase
             $this->expectException(InvalidStatusTransitionException::class);
         }
 
-        $this->service()->transition($order, $to, $owner, 'A reason');
+        // Accepting also needs the confirmed price; every other move ignores it
+        $this->service()->transition($order, $to, $owner, 'A reason', '150.00');
 
         $this->assertSame($to, $order->fresh()->status);
         $this->assertSame(1, OrderStatusHistory::where('printing_order_id', $order->id)->count());
@@ -139,7 +140,7 @@ class StatusTransitionServiceTest extends TestCase
         $order = PrintingOrder::factory()->status(Status::Submitted)->create();
 
         $this->service()->transition($order, Status::UnderReview, $owner, 'Looking at the file');
-        $this->service()->transition($order, Status::Accepted, $owner);
+        $this->service()->transition($order, Status::Accepted, $owner, null, '150.00');
 
         $rows = $order->statusHistories()->get();
 
@@ -211,7 +212,7 @@ class StatusTransitionServiceTest extends TestCase
         // The owner accepts the order after the customer's page was loaded
         $copy = PrintingOrder::find($stale->id);
         $this->service()->transition($copy, Status::UnderReview, $owner);
-        $this->service()->transition($copy, Status::Accepted, $owner);
+        $this->service()->transition($copy, Status::Accepted, $owner, null, '150.00');
 
         $this->assertSame(Status::Submitted, $stale->status);
 

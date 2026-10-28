@@ -39,7 +39,7 @@
             </div>
             <p class="mt-2 text-xs text-app-text-2">Keep this number. Use it when you ask the shop about your order.</p>
 
-            <dl class="mt-6 grid gap-4 text-sm sm:grid-cols-2">
+            <dl class="mt-6 grid gap-4 text-sm sm:grid-cols-2 [&>div]:min-w-0">
                 <div class="sm:col-span-2">
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Service</dt>
                     <dd class="mt-0.5 font-semibold">{{ $snapshot['service']['name'] ?? $order->service->name }}</dd>
@@ -50,7 +50,7 @@
                 </div>
                 <div>
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Sent on</dt>
-                    <dd class="mt-0.5">{{ $order->created_at->timezone(config('app.display_timezone'))->format('M j, Y g:i A') }}</dd>
+                    <dd class="mt-0.5"><x-ui.date :value="$order->created_at" /></dd>
                 </div>
                 <div>
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Copies</dt>
@@ -108,8 +108,9 @@
             </x-ui.notice>
 
             <div class="mt-6 grid gap-3 sm:grid-cols-2">
-                <x-ui.button :href="route('customer.dashboard')" variant="outline">Back to my dashboard</x-ui.button>
-                <x-ui.button :href="route('customer.printing.create')">Place another order</x-ui.button>
+                <x-ui.button :href="route('customer.printing.show', $order)" class="sm:col-span-2"><x-ui.icon name="timeline" :size="18" />Track this order</x-ui.button>
+                <x-ui.button :href="route('customer.printing.index')" variant="outline">All my orders</x-ui.button>
+                <x-ui.button :href="route('customer.printing.create')" variant="outline">Place another order</x-ui.button>
             </div>
         </div>
     </div>

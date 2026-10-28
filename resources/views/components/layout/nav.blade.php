@@ -1,10 +1,10 @@
 @props(['items', 'label' => 'Main', 'variant' => 'stack'])
 
-{{-- items: [['label' => ..., 'icon' => ..., 'route' => route name, 'match' => optional route pattern such as 'owner.services.*'], ...]; the active route gets aria-current="page" --}}
+{{-- items: [['label' => ..., 'icon' => ..., 'route' => route name, 'match' => optional route pattern such as 'owner.services.*', or a list of them], ...]; the active route gets aria-current="page" --}}
 <nav aria-label="{{ $label }}" {{ $attributes }}>
     <ul @class(['flex items-center gap-1' => $variant === 'top', 'space-y-1' => $variant !== 'top'])>
         @foreach ($items as $item)
-            @php $active = request()->routeIs($item['match'] ?? $item['route']); @endphp
+            @php $active = request()->routeIs(...(array) ($item['match'] ?? $item['route'])); @endphp
             <li>
                 <a href="{{ route($item['route']) }}" @if ($active) aria-current="page" @endif
                     @class([

@@ -77,4 +77,16 @@ enum PrintingOrderStatus: string
     {
         return in_array($this, [self::Submitted, self::UnderReview], true);
     }
+
+    /** The shop may ask for more information only while the customer can still answer it by adding files. */
+    public function allowsInfoRequest(): bool
+    {
+        return $this->acceptsFiles();
+    }
+
+    /** The owner may change the confirmed price after accepting, until the prints are ready. */
+    public function allowsPriceChange(): bool
+    {
+        return in_array($this, [self::Accepted, self::Processing], true);
+    }
 }

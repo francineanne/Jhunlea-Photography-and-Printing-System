@@ -1,4 +1,4 @@
-@props(['tone' => 'gray', 'dot' => true])
+@props(['tone' => 'gray', 'dot' => true, 'pulse' => null])
 
 @php
     $tones = [
@@ -13,7 +13,13 @@
 
 <span {{ $attributes->class(['inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold', $tones[$tone] ?? $tones['gray']]) }}>
     @if ($dot)
-        <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+        {{-- pulse: the dot breathes (work in progress); ping: a ring spreads from it (waiting for the customer), as in the order designs --}}
+        <span class="relative flex size-1.5" aria-hidden="true">
+            @if ($pulse === 'ping')
+                <span class="absolute inline-flex size-full animate-ping rounded-full bg-current opacity-75"></span>
+            @endif
+            <span @class(['relative size-1.5 rounded-full bg-current', 'animate-pulse' => $pulse === 'pulse'])></span>
+        </span>
     @endif
     {{ $slot }}
 </span>

@@ -5,11 +5,15 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\MyOrderController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
 use App\Http\Controllers\Customer\PrintingOrderController;
+use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
+use App\Http\Controllers\Owner\PrintingOrderActionController;
+use App\Http\Controllers\Owner\PrintingOrderController as OwnerPrintingOrderController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\ThemeController;
@@ -59,7 +63,37 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/printing')->name('custo
     Route::get('/estimate', PrintingEstimateController::class)->middleware('throttle:120,1')->name('estimate');
     Route::post('/', [PrintingOrderController::class, 'store'])->middleware('throttle:10,1')->name('store');
     Route::get('/{order}/placed', [PrintingOrderController::class, 'placed'])->whereNumber('order')->middleware('throttle:60,1')->name('placed');
+
+    // My orders (Phase 3C)
+    Route::get('/', [MyOrderController::class, 'index'])->middleware('throttle:60,1')->name('index');
+    Route::get('/{order}', [MyOrderController::class, 'show'])->whereNumber('order')->middleware('throttle:60,1')->name('show');
+    Route::post('/{order}/cancel', [MyOrderController::class, 'cancel'])->whereNumber('order')->middleware('throttle:10,1')->name('cancel');
+    Route::post('/{order}/files', [MyOrderController::class, 'addFiles'])->whereNumber('order')->middleware('throttle:10,1')->name('files.store');
 });
+
+// The owner's printing orders. Every action is a POST that goes through StatusTransitionService
+Route::middleware(['auth', 'role:owner'])->prefix('owner/printing-orders')->name('owner.orders.')->group(function () {
+    Route::get('/', [OwnerPrintingOrderController::class, 'index'])->name('index');
+    Route::get('/{order}', [OwnerPrintingOrderController::class, 'show'])->whereNumber('order')->name('show');
+
+    Route::middleware('throttle:30,1')->whereNumber('order')->controller(PrintingOrderActionController::class)->group(function () {
+        Route::post('/{order}/review', 'review')->name('review');
+        Route::post('/{order}/accept', 'accept')->name('accept');
+        Route::post('/{order}/reject', 'reject')->name('reject');
+        Route::post('/{order}/info', 'requestInfo')->name('info');
+        Route::post('/{order}/processing', 'processing')->name('processing');
+        Route::post('/{order}/ready', 'ready')->name('ready');
+        Route::post('/{order}/complete', 'complete')->name('complete');
+        Route::post('/{order}/cancel', 'cancel')->name('cancel');
+        Route::post('/{order}/price', 'price')->name('price');
+    });
+});
+
+// A file of a printing order, for the owner or the customer who sent it (OrderFilePolicy). Always a download
+Route::get('/files/{file}', OrderFileDownloadController::class)
+    ->whereNumber('file')
+    ->middleware(['auth', 'throttle:30,1'])
+    ->name('files.download');
 
 Route::get('/owner', OwnerDashboardController::class)
     ->middleware(['auth', 'role:owner'])

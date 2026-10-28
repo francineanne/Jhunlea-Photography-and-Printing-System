@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Customer;
 
-use App\Services\OrderFileService;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Concerns\ValidatesOrderFiles;
 use Illuminate\Validation\Validator;
 
 /**
@@ -13,12 +11,12 @@ use Illuminate\Validation\Validator;
  */
 class StorePrintingOrderRequest extends PrintingEstimateRequest
 {
+    use ValidatesOrderFiles;
+
     /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        return parent::rules() + [
-            'files' => ['required', 'array', 'min:1', 'max:'.config('printing.max_files_per_order')],
-            'files.*' => ['required', 'file'],
+        return parent::rules() + $this->fileRules(config('printing.max_files_per_order')) + [
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }
@@ -26,12 +24,7 @@ class StorePrintingOrderRequest extends PrintingEstimateRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return parent::messages() + [
-            'files.required' => 'Add at least one file to print.',
-            'files.min' => 'Add at least one file to print.',
-            'files.max' => 'You can send up to :max files with one order.',
-            'files.*.required' => 'One of the files did not arrive. Please choose it again.',
-            'files.*.file' => 'One of the files did not upload completely. Please choose it again.',
+        return parent::messages() + $this->fileMessages() + [
             'notes.max' => 'Special instructions can be up to :max characters.',
         ];
     }
@@ -39,40 +32,7 @@ class StorePrintingOrderRequest extends PrintingEstimateRequest
     /** @return array<int, \Closure> */
     public function after(): array
     {
-        return [...parent::after(), function (Validator $validator) {
-            $service = $this->service();
-
-            foreach ($this->uploads() as $index => $file) {
-                // PHP drops a file bigger than its own limit before Laravel sees it: say so plainly
-                if (in_array($file->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
-                    $validator->errors()->add("files.{$index}", $file->getClientOriginalName().' is bigger than this server accepts ('.ini_get('upload_max_filesize').' per file).');
-
-                    continue;
-                }
-
-                if ($service === null || $validator->errors()->has("files.{$index}")) {
-                    continue;
-                }
-
-                try {
-                    app(OrderFileService::class)->validate($file, $service);
-                } catch (ValidationException $e) {
-                    $validator->errors()->add("files.{$index}", $file->getClientOriginalName().': '.collect($e->errors())->flatten()->first());
-                }
-            }
-
-            try {
-                app(OrderFileService::class)->validateTotal($this->uploads());
-            } catch (ValidationException $e) {
-                $validator->errors()->add('files', collect($e->errors())->flatten()->first());
-            }
-        }];
-    }
-
-    /** @return list<UploadedFile> */
-    public function uploads(): array
-    {
-        return array_values(array_filter((array) $this->file('files', []), fn ($file) => $file instanceof UploadedFile));
+        return [...parent::after(), fn (Validator $validator) => $this->checkFiles($validator, $this->service())];
     }
 
     public function notes(): ?string

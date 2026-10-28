@@ -68,10 +68,10 @@ Design refs: `design/customer/request_printing_wizard_estimator`, `my_printing_o
 - [x] Migrations: printing_orders, order_files, order_status_histories (3A; plus `reference_counters` for safe numbering)
 - [x] `ReferenceNumberService` (PR-000001), `PricingService` para sa estimate, `StatusTransitionService`, policies at private file storage (3A, naghihintay ng review)
 - [x] Customer 4-step wizard na may secure upload (type, MIME at size checks; private storage), review step, at success screen (3B, naghihintay ng review)
-- [ ] Customer: listahan at detail na may timeline, re-upload kapag humingi ng info ang owner, at cancel habang `submitted` pa
-- [ ] Owner: listahan na may filters at tabs; detail na may accept, reject (may reason), request info, update status, at confirmed price
-- [ ] Protected file download gamit ang policy
-- [ ] Tests: hindi makikita ng customer A ang order o file ni customer B, at hindi puwedeng magpalit ng status ang customer
+- [x] Customer: listahan at detail na may timeline, re-upload kapag humingi ng info ang owner, at cancel habang `submitted` pa (3C)
+- [x] Owner: listahan na may filters at tabs; detail na may accept, reject (may reason), request info, update status, at confirmed price (3C)
+- [x] Protected file download gamit ang policy (3C)
+- [x] Tests: hindi makikita ng customer A ang order o file ni customer B, at hindi puwedeng magpalit ng status ang customer (3C)
 
 ## Phase 4 — Photography bookings (Her)
 Design refs: `design/customer/book_a_photoshoot`, `my_photography_bookings`, `booking_detail_tracking`, `design/admin/photography_bookings_list`, `booking_detail_owner`, `schedule_and_availability`

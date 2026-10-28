@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OptionGroup;
 use App\Enums\PrintingOrderStatus;
 use App\Support\Money;
 use Database\Factories\PrintingOrderFactory;
@@ -64,6 +65,38 @@ class PrintingOrder extends Model
     public function estimateText(): string
     {
         return $this->estimated_price === null ? 'Price quoted after review' : Money::format($this->estimated_price);
+    }
+
+    /** The confirmed price as people read it, or null while the shop has not confirmed one. */
+    public function confirmedText(): ?string
+    {
+        return $this->confirmed_price === null ? null : Money::format($this->confirmed_price);
+    }
+
+    /** The service name as it was when the order was placed (the catalog may have changed since). */
+    public function serviceName(): string
+    {
+        return $this->snapshot['service']['name'] ?? $this->service?->name ?? 'Printing service';
+    }
+
+    /**
+     * The options chosen, as they were when the order was placed.
+     *
+     * @return list<array{group: string, label: string, price: string}>
+     */
+    public function chosenOptions(): array
+    {
+        return collect($this->snapshot['options'] ?? [])->map(fn (array $option) => [
+            'group' => OptionGroup::tryFrom($option['group'] ?? '')?->label() ?? (string) ($option['group'] ?? ''),
+            'label' => (string) ($option['label'] ?? ''),
+            'price' => Money::modifier($option['price_modifier'] ?? null),
+        ])->values()->all();
+    }
+
+    /** Pages count only for a service priced per page; null otherwise. */
+    public function pages(): ?int
+    {
+        return isset($this->snapshot['pages']) ? (int) $this->snapshot['pages'] : null;
     }
 
     /** The owner asked for more information and the customer has not answered yet. */

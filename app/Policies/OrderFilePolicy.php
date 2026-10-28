@@ -15,6 +15,7 @@ class OrderFilePolicy
             return true;
         }
 
-        return $user->role === UserRole::Customer && $file->order->customer_id === $user->id;
+        // A file of an order that was deleted has no order to check against, so only the owner keeps access
+        return $user->role === UserRole::Customer && $file->order !== null && $file->order->customer_id === $user->id;
     }
 }

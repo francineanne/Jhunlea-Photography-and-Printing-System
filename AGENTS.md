@@ -17,7 +17,7 @@
 | 0 | Repo cleanup and docs | Dev (Her) | Done (Bootstrap removed, Tailwind 4 setup) |
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
-| 3 | Printing orders | Dev (Her) | In progress: 3A (data and logic) approved. 3B (customer wizard at /my/printing/new, live estimate, "Order placed" page) built, waiting for review. 3C (order list and detail, owner screens, downloads) not started. |
+| 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
 | 4 | Photography bookings and schedule | Dev (Her) | Not started |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
@@ -184,7 +184,7 @@ Money columns: `decimal(10,2)`. Never use float. Totals and balances are calcula
 | `printing_orders` | **Built in 3A:** reference_number unique (PR-000001), customer_id FK, printing_service_id FK, snapshot json (service, options, prices at order time), quantity, notes, status, estimated_price null, confirmed_price null, rejection_reason, info_request (null = nothing asked), timestamps, soft deletes. `photography_booking_id` comes in Phase 4. | 3 |
 | `reference_counters` | prefix (PR, later PB) primary, last_number. One locked row per prefix hands out the next reference number. | 3 |
 | `order_files` | **Built in 3A:** printing_order_id FK, original_name (display only), stored_name (hashName), path (private disk), mime, size_bytes, uploaded_by FK. Page count and image size are not stored yet. | 3 |
-| `order_status_histories` | **Built in 3A:** printing_order_id FK, from_status null, to_status, changed_by FK, note, created_at. Phase 4 decides whether bookings get their own history table or a shared one. | 3 |
+| `order_status_histories` | **Built in 3A, `event` added in 3C:** printing_order_id FK, from_status null, to_status, event null (info_requested / info_answered / price_changed; null = status change), changed_by FK, note, created_at. Phase 4 decides whether bookings get their own history table or a shared one. | 3 |
 | `photography_bookings` | reference_no unique (PB-000001), customer_id FK, photography_package_id null FK, status, contact_number, people_count, venue, notes, theme_id null, custom_theme, background, color_motif, outfit_notes, requested_start_at, confirmed_start_at null, confirmed_end_at null, proposed_start_at null, photography_fee_estimate, photography_fee_confirmed null, wants_prints, rejection_reason, customer_remarks, internal_notes | 4 |
 | `booking_reference_images` | photography_booking_id FK, path, original_name | 4 |
 | `availability_rules` | weekday, is_open, open_time, close_time, slot_minutes | 4 |

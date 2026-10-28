@@ -16,7 +16,7 @@ use Throwable;
 /**
  * Checks and stores the files of a printing order on the private disk. The rules (disk, types, sizes, limits) all
  * live in config/printing.php. A stored file has a generated name (hashName); the customer's own file name is kept
- * only as text for display. There is no way to download a file yet: that comes with an authorized route in Phase 3C.
+ * only as text for display. Files are handed out only by OrderFileDownloadController, after OrderFilePolicy allows it.
  */
 class OrderFileService
 {
@@ -45,15 +45,16 @@ class OrderFileService
     }
 
     /**
-     * The limit for all files of one order together. Each file is still checked on its own by validate().
+     * The limit for all files of one order together, counting the files it already holds. Each file is still checked
+     * on its own by validate().
      *
      * @param  array<int, UploadedFile>  $files
      *
      * @throws ValidationException
      */
-    public function validateTotal(array $files): void
+    public function validateTotal(array $files, int $alreadyStoredBytes = 0): void
     {
-        $total = array_sum(array_map(fn (UploadedFile $file) => (int) $file->getSize(), $files));
+        $total = $alreadyStoredBytes + array_sum(array_map(fn (UploadedFile $file) => (int) $file->getSize(), $files));
 
         if ($total > $this->maxTotalBytes()) {
             // Rounded up, so a total just over the limit never reads as the limit itself

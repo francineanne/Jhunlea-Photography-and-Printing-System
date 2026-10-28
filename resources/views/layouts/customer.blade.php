@@ -5,7 +5,8 @@
     // One entry = label, icon, route name
     $nav = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'customer.dashboard'],
-        ['label' => 'Request printing', 'icon' => 'print', 'route' => 'customer.printing.create', 'match' => 'customer.printing.*'],
+        ['label' => 'Request printing', 'icon' => 'print', 'route' => 'customer.printing.create', 'match' => 'customer.printing.create'],
+        ['label' => 'My orders', 'icon' => 'receipt_long', 'route' => 'customer.printing.index', 'match' => ['customer.printing.index', 'customer.printing.show', 'customer.printing.placed']],
     ];
 @endphp
 

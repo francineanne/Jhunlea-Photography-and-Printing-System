@@ -1,4 +1,4 @@
-@props(['status'])
+@props(['status', 'live' => false])
 
 @php
     // Single source of truth for status -> tone (statuses from AGENTS.md section 8)
@@ -14,6 +14,13 @@
     $status = $status instanceof \BackedEnum ? $status->value : (string) $status;
 
     $tone = collect($tones)->search(fn ($statuses) => in_array($status, $statuses, true)) ?: 'gray';
+
+    // live: the dot moves as in the order designs. Work in progress breathes; ready for pickup sends out a ring
+    $pulse = ! $live ? null : match ($status) {
+        'submitted', 'under_review', 'processing', 'awaiting_customer_info', 'awaiting_schedule_confirmation' => 'pulse',
+        'ready_for_pickup' => 'ping',
+        default => null,
+    };
 @endphp
 
-<x-ui.badge :tone="$tone" {{ $attributes }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</x-ui.badge>
+<x-ui.badge :tone="$tone" :pulse="$pulse" {{ $attributes }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</x-ui.badge>

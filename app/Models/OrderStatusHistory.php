@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OrderEvent;
 use App\Enums\PrintingOrderStatus;
 use Database\Factories\OrderStatusHistoryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,7 +25,18 @@ class OrderStatusHistory extends Model
         return [
             'from_status' => PrintingOrderStatus::class,
             'to_status' => PrintingOrderStatus::class,
+            'event' => OrderEvent::class,
         ];
+    }
+
+    /** What happened, in a few words: the event, the first row of the order, or the status it moved to. */
+    public function title(): string
+    {
+        return match (true) {
+            $this->event !== null => $this->event->label(),
+            $this->from_status === null => 'Order placed',
+            default => $this->to_status->label(),
+        };
     }
 
     /** @return BelongsTo<PrintingOrder, $this> */
