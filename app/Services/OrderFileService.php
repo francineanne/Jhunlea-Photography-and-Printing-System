@@ -7,6 +7,7 @@ use App\Models\OrderFile;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use App\Support\UploadCheck;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -54,14 +55,7 @@ class OrderFileService
      */
     public function validateTotal(array $files, int $alreadyStoredBytes = 0): void
     {
-        $total = $alreadyStoredBytes + array_sum(array_map(fn (UploadedFile $file) => (int) $file->getSize(), $files));
-
-        if ($total > $this->maxTotalBytes()) {
-            // Rounded up, so a total just over the limit never reads as the limit itself
-            $size = number_format(ceil($total / 1024 / 1024 * 10) / 10, 1);
-
-            throw ValidationException::withMessages(['files' => "Your files together are {$size} MB. The most one order can hold is ".config('printing.max_total_size_mb').' MB. Please remove or compress some files.']);
-        }
+        UploadCheck::total($files, (int) config('printing.max_total_size_mb'), 'one order', $alreadyStoredBytes);
     }
 
     /**
@@ -86,7 +80,7 @@ class OrderFileService
             $record = new OrderFile;
             $record->forceFill([
                 'printing_order_id' => $order->getKey(),
-                'original_name' => $this->displayName($file->getClientOriginalName()),
+                'original_name' => UploadCheck::displayName($file->getClientOriginalName()),
                 'stored_name' => basename($path),
                 'path' => $path,
                 'mime' => $file->getMimeType(),
@@ -105,49 +99,19 @@ class OrderFileService
     /** @throws ValidationException */
     public function validate(UploadedFile $file, PrintingService $service, ?PrintingOrder $order = null): void
     {
-        if (! $file->isValid()) {
-            $this->fail('The file did not upload completely. Please try again.');
-        }
-
         if ($order !== null && $order->files()->count() >= config('printing.max_files_per_order')) {
-            $this->fail('This order already has the most files it can hold ('.config('printing.max_files_per_order').').');
-        }
-
-        $size = $file->getSize();
-
-        if (! $size) {
-            $this->fail('The file is empty.');
+            throw ValidationException::withMessages(['file' => 'This order already has the most files it can hold ('.config('printing.max_files_per_order').').']);
         }
 
         $maxKb = $this->maxKilobytes($service);
 
-        if ($size > $maxKb * 1024) {
-            $this->fail('The file is too large. The most this service accepts is '.intdiv($maxKb, 1024).' MB.');
-        }
-
-        $extension = strtolower($file->getClientOriginalExtension());
-        $type = $this->typeFor($service, $extension);
-
-        if ($type === null) {
-            $this->fail('This service accepts only '.strtoupper(implode(', ', $service->allowed_file_types ?? [])).' files.');
-        }
-
-        // The type the server finds by reading the file itself, not the one the browser claims
-        if (! in_array($file->getMimeType(), config("printing.types.{$type}.mimes"), true)) {
-            $this->fail('The contents of this file do not match a .'.$extension.' file.');
-        }
-    }
-
-    /** The config key (pdf, jpg...) of the type this service accepts for the given extension, or null. */
-    private function typeFor(PrintingService $service, string $extension): ?string
-    {
-        foreach ($service->allowed_file_types ?? [] as $type) {
-            if (in_array($extension, config("printing.types.{$type}.extensions", []), true)) {
-                return $type;
-            }
-        }
-
-        return null;
+        UploadCheck::file(
+            $file,
+            collect($service->allowed_file_types ?? [])->mapWithKeys(fn (string $type) => [$type => config("printing.types.{$type}")])->filter()->all(),
+            $maxKb * 1024,
+            'The file is too large. The most this service accepts is '.intdiv($maxKb, 1024).' MB.',
+            'This service accepts only '.strtoupper(implode(', ', $service->allowed_file_types ?? [])).' files.',
+        );
     }
 
     private function authorize(PrintingOrder $order, User $uploader): void
@@ -164,20 +128,5 @@ class OrderFileService
         if ($status === null || ! $status->acceptsFiles()) {
             throw new AuthorizationException('Files can no longer be added to this order.');
         }
-    }
-
-    /** Only for showing to people: no folders, no control characters, a sensible length. */
-    private function displayName(string $name): string
-    {
-        $name = basename(str_replace('\\', '/', $name));
-        $name = preg_replace('/[\x00-\x1F\x7F]/u', '', $name) ?? '';
-        $name = trim($name);
-
-        return mb_substr($name === '' ? 'file' : $name, 0, 255);
-    }
-
-    private function fail(string $message): never
-    {
-        throw ValidationException::withMessages(['file' => $message]);
     }
 }

@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         // Placeholder catalog for development only, never on a real (production) database
         if (app()->environment('local')) {
-            $this->call([SampleCatalogSeeder::class, SamplePackagesSeeder::class]);
+            $this->call([SampleCatalogSeeder::class, SamplePackagesSeeder::class, BookingScheduleSeeder::class]);
         }
     }
 }

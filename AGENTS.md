@@ -18,7 +18,7 @@
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
-| 4 | Photography bookings and schedule | Dev (Her) | Not started |
+| 4 | Photography bookings and schedule | Dev (Her) | In progress: 4A (data and logic: migrations, BookingStatus table, AvailabilityService, ScheduleConflictService, BookingTransitionService, BookingService, policies) built, waiting for review. 4B customer booking, 4C owner screens, 4D schedule editor not started. |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
 | 7 | AI customer assistant | BF | Not started |
@@ -158,7 +158,7 @@ Standard notice text: "Payment is made face-to-face at Jhunlea Photography & Pri
 
 **Printing order:** `submitted` → `under_review` → `accepted` | `rejected` → `processing` → `ready_for_pickup` → `completed`. Also `cancelled`. Owner can request more information while in review (`needs_info` flag + message). Rejection requires a reason.
 
-**Photography booking:** `submitted`, `under_review`, `awaiting_customer_info`, `awaiting_schedule_confirmation`, `confirmed`, `reschedule_proposed`, `rejected`, `cancelled`, `photoshoot_completed`.
+**Photography booking (since Phase 4A, App\Enums\BookingStatus):** `requested` → `confirmed` | `proposed` | `rejected` | `cancelled`; `proposed` → `confirmed` (customer accepts) | `requested` (customer asks for another time) | `cancelled` | `rejected`; `confirmed` → `completed` | `cancelled`. Only `confirmed` and `completed` hold a slot. The customer never confirms a request. (This replaces the earlier draft list.)
 
 **Print production for a booking (only if prints were requested):** uses the printing order statuses on a linked printing order.
 
@@ -185,10 +185,12 @@ Money columns: `decimal(10,2)`. Never use float. Totals and balances are calcula
 | `reference_counters` | prefix (PR, later PB) primary, last_number. One locked row per prefix hands out the next reference number. | 3 |
 | `order_files` | **Built in 3A:** printing_order_id FK, original_name (display only), stored_name (hashName), path (private disk), mime, size_bytes, uploaded_by FK. Page count and image size are not stored yet. | 3 |
 | `order_status_histories` | **Built in 3A, `event` added in 3C:** printing_order_id FK, from_status null, to_status, event null (info_requested / info_answered / price_changed; null = status change), changed_by FK, note, created_at. Phase 4 decides whether bookings get their own history table or a shared one. | 3 |
-| `photography_bookings` | reference_no unique (PB-000001), customer_id FK, photography_package_id null FK, status, contact_number, people_count, venue, notes, theme_id null, custom_theme, background, color_motif, outfit_notes, requested_start_at, confirmed_start_at null, confirmed_end_at null, proposed_start_at null, photography_fee_estimate, photography_fee_confirmed null, wants_prints, rejection_reason, customer_remarks, internal_notes | 4 |
-| `booking_reference_images` | photography_booking_id FK, path, original_name | 4 |
-| `availability_rules` | weekday, is_open, open_time, close_time, slot_minutes | 4 |
-| `blocked_dates` | date, reason | 4 |
+| `photography_bookings` | **Built in 4A:** reference_number unique (PB-000001), customer_id FK, photography_package_id FK, theme_id null, custom_theme_text null, snapshot json, starts_at, ends_at, requested_starts_at (UTC), group_size, contact_number (7 to 20 digits), notes, internal_notes null (owner only, hidden from serialization, no history row), wants_prints, status, estimated_price null, confirmed_price null, rejection_reason, proposed_starts_at, proposed_note, cancellation_reason, soft deletes. A customer may have at most config booking.max_open_requests_per_customer (3) requested or proposed bookings. Not built: outfits, colour motif, public remarks. | 4 |
+| `booking_status_histories` | **Built in 4A:** same shape as order_status_histories, event (proposal_sent, proposal_accepted, time_requested_again, price_changed, files_added). | 4 |
+| `booking_settings` | **Built in 4A:** one row: buffer_minutes, min_notice_hours, max_advance_days, concurrent_sessions, lock_version (the schedule lock). Defaults in config/booking.php. | 4 |
+| `booking_reference_images` | **Built in 4A:** photography_booking_id FK, original_name, stored_name (hashName), path, mime, size_bytes, uploaded_by. | 4 |
+| `availability_rules` | **Built in 4A:** weekday unique (0 Sunday to 6 Saturday), is_open, opens_at, closes_at (shop local time). Slot step is config booking.slot_step_minutes. | 4 |
+| `blocked_dates` | **Built in 4A:** date unique (shop local day), reason, created_by. | 4 |
 | `payments` | morphs payable (printing order or booking), amount, method, received_at, recorded_by FK, receipt_reference, note | 5 |
 | `notifications` | Laravel database notifications table | 5 |
 | `faqs` | question, answer, is_active, sort_order | 6 |

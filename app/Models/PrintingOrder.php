@@ -49,6 +49,16 @@ class PrintingOrder extends Model
         return $this->belongsTo(PrintingService::class, 'printing_service_id')->withTrashed();
     }
 
+    /**
+     * The photoshoot this printing order was started from, if any (Phase 4: nothing sets it yet).
+     *
+     * @return BelongsTo<PhotographyBooking, $this>
+     */
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(PhotographyBooking::class, 'photography_booking_id')->withTrashed();
+    }
+
     /** @return HasMany<OrderFile, $this> */
     public function files(): HasMany
     {

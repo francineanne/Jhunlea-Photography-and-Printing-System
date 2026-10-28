@@ -15,6 +15,8 @@ class ReferenceNumberService
 {
     public const PRINTING = 'PR';
 
+    public const BOOKING = 'PB';
+
     public function next(string $prefix = self::PRINTING): string
     {
         return DB::transaction(function () use ($prefix) {

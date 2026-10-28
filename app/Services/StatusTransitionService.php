@@ -210,11 +210,7 @@ class StatusTransitionService
             throw InvalidStatusTransitionException::priceRequired();
         }
 
-        if (! preg_match('/^\d{1,8}(\.\d{1,2})?$/', $value)) {
-            throw InvalidStatusTransitionException::priceOutOfRange();
-        }
-
-        return Money::fromCents(Money::toCents($value));
+        return Money::normalizePrice($value) ?? throw InvalidStatusTransitionException::priceOutOfRange();
     }
 
     private function clean(?string $text): ?string
