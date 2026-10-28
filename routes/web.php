@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\PrintingEstimateController;
+use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
@@ -50,6 +52,14 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::get('/my/dashboard', CustomerDashboardController::class)
     ->middleware(['auth', 'role:customer'])
     ->name('customer.dashboard');
+
+// The customer's printing order wizard. Every change is a POST; the order list and detail pages come in Phase 3C
+Route::middleware(['auth', 'role:customer'])->prefix('my/printing')->name('customer.printing.')->group(function () {
+    Route::get('/new', [PrintingOrderController::class, 'create'])->middleware('throttle:60,1')->name('create');
+    Route::get('/estimate', PrintingEstimateController::class)->middleware('throttle:120,1')->name('estimate');
+    Route::post('/', [PrintingOrderController::class, 'store'])->middleware('throttle:10,1')->name('store');
+    Route::get('/{order}/placed', [PrintingOrderController::class, 'placed'])->whereNumber('order')->middleware('throttle:60,1')->name('placed');
+});
 
 Route::get('/owner', OwnerDashboardController::class)
     ->middleware(['auth', 'role:owner'])

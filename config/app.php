@@ -67,6 +67,9 @@ return [
 
     'timezone' => 'UTC',
 
+    // Dates are stored in UTC and shown to people in the shop's own time zone
+    'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Manila'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

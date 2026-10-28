@@ -5,6 +5,7 @@
     // One entry = label, icon, route name
     $nav = [
         ['label' => 'Dashboard', 'icon' => 'dashboard', 'route' => 'customer.dashboard'],
+        ['label' => 'Request printing', 'icon' => 'print', 'route' => 'customer.printing.create', 'match' => 'customer.printing.*'],
     ];
 @endphp
 

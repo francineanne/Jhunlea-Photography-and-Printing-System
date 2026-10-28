@@ -66,7 +66,7 @@ class PricingService
         $total = $unit * $quantity * ($perPage ? $pages : 1);
 
         if ($total > self::MAX_CENTS) {
-            throw new InvalidArgumentException('The estimated total is too large.');
+            throw new InvalidArgumentException('This order is too large to estimate. Please lower the copies or pages, or talk to the shop.');
         }
 
         return new PriceEstimate(Money::fromCents($total), Money::fromCents($unit), $snapshotOptions, $quantity, $snapshotPages);

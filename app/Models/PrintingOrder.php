@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PrintingOrderStatus;
+use App\Support\Money;
 use Database\Factories\PrintingOrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,6 +58,12 @@ class PrintingOrder extends Model
     public function statusHistories(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class)->orderBy('id');
+    }
+
+    /** The estimate as customers read it. No estimate means the shop quotes the price after reviewing the request. */
+    public function estimateText(): string
+    {
+        return $this->estimated_price === null ? 'Price quoted after review' : Money::format($this->estimated_price);
     }
 
     /** The owner asked for more information and the customer has not answered yet. */

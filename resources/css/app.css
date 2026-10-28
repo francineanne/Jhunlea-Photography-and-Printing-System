@@ -57,6 +57,7 @@
     --animate-aperture-open: aperture-open 500ms var(--ease-brand) both;
     --animate-draw: draw-line 500ms var(--ease-brand) both;
     --animate-fade-up: fade-up 500ms var(--ease-brand) 300ms both;
+    --animate-pop-in: pop-in 200ms var(--ease-brand) both;
     --animate-aperture-turn: aperture-turn 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     --animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
 
@@ -88,6 +89,12 @@
     @keyframes fade-up {
         from { opacity: 0; transform: translateY(8px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* The success card of the printing wizard design: fades in while growing from 95% */
+    @keyframes pop-in {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
     }
 }
 
@@ -157,6 +164,11 @@
     /* Parts that Alpine animates away on load stay hidden from the first paint, but only when scripts run (see the `js` class in layouts/app). Alpine removes the attribute. */
     html.js [data-alpine-pending] {
         visibility: hidden;
+    }
+
+    /* Wizard steps other than the open one: shown to visitors without scripts, left out of the first paint otherwise. Alpine removes the attribute and x-show takes over */
+    html.js [data-js-hidden] {
+        display: none;
     }
 }
 

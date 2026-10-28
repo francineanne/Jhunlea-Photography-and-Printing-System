@@ -67,7 +67,7 @@ Design refs: `design/public/*`, `design/admin/services_printing_catalog_manageme
 Design refs: `design/customer/request_printing_wizard_estimator`, `my_printing_orders`, `printing_order_detail_tracking`, `design/admin/printing_orders_list`, `printing_order_detail_owner`
 - [x] Migrations: printing_orders, order_files, order_status_histories (3A; plus `reference_counters` for safe numbering)
 - [x] `ReferenceNumberService` (PR-000001), `PricingService` para sa estimate, `StatusTransitionService`, policies at private file storage (3A, naghihintay ng review)
-- [ ] Customer 4-step wizard na may secure upload (type, MIME at size checks; private storage), review step, at success screen
+- [x] Customer 4-step wizard na may secure upload (type, MIME at size checks; private storage), review step, at success screen (3B, naghihintay ng review)
 - [ ] Customer: listahan at detail na may timeline, re-upload kapag humingi ng info ang owner, at cancel habang `submitted` pa
 - [ ] Owner: listahan na may filters at tabs; detail na may accept, reject (may reason), request info, update status, at confirmed price
 - [ ] Protected file download gamit ang policy

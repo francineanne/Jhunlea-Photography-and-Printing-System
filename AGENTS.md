@@ -17,7 +17,7 @@
 | 0 | Repo cleanup and docs | Dev (Her) | Done (Bootstrap removed, Tailwind 4 setup) |
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
-| 3 | Printing orders | Dev (Her) | In progress: 3A (data and logic: migrations, models, ReferenceNumberService, PricingService, StatusTransitionService, policies, private file storage) built, waiting for review. 3B wizard, customer and owner screens, 3C downloads not started. |
+| 3 | Printing orders | Dev (Her) | In progress: 3A (data and logic) approved. 3B (customer wizard at /my/printing/new, live estimate, "Order placed" page) built, waiting for review. 3C (order list and detail, owner screens, downloads) not started. |
 | 4 | Photography bookings and schedule | Dev (Her) | Not started |
 | 5 | Payments, notifications, dashboards | BF | Not started |
 | 6 | Customers, reports, settings, profile | BF | Not started |
