@@ -123,6 +123,15 @@ class StatusTransitionService
     }
 
     /**
+     * Records that the customer removed one of their files. It does not answer a request for information: only
+     * adding a file does (see clearInfoRequest()). Called by PrintingOrderService inside its own locked transaction.
+     */
+    public function recordFileRemoved(PrintingOrder $order, User $actor, string $fileName): void
+    {
+        $this->writeHistory($order, $order->status, $order->status, $actor, 'Removed '.$fileName, OrderEvent::FileRemoved);
+    }
+
+    /**
      * Changes the confirmed price after the order was accepted, until the prints are ready.
      *
      * @throws InvalidStatusTransitionException when the status does not allow it or the price is out of range

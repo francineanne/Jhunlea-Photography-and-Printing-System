@@ -49,7 +49,7 @@
                             <p class="text-[11px] font-bold uppercase tracking-wider text-brand">Action needed</p>
                             <h2 id="info-title" class="font-semibold">The shop asked for more information</h2>
                             <blockquote class="mt-3 whitespace-pre-line break-words rounded-control bg-app-card p-3 text-sm italic">{{ $order->info_request }}</blockquote>
-                            <p class="mt-3 text-sm text-app-text-2">Reply by adding the file the shop needs in <a href="#files" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring rounded">Files</a>, or talk to the shop. Adding a file marks the request as answered.</p>
+                            <p class="mt-3 text-sm text-app-text-2">Reply by adding the file the shop needs in <a href="#files" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring rounded">Files</a>, or talk to the shop. To replace a file, remove it and add the new one. Adding a file marks the request as answered.</p>
                         </div>
                     </div>
                 </section>
@@ -68,14 +68,30 @@
                 <x-order.timeline :histories="$order->statusHistories" :customer-id="$order->customer_id" class="mt-5" />
             </section>
 
-            <section id="files" class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="files-title">
+            <section id="files" class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="files-title" x-data="{ target: { name: '', action: '' } }">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 id="files-title" class="font-display text-xl font-semibold">Files</h2>
                     <span class="font-mono text-xs text-app-text-2">{{ $order->files->count() }} / {{ $maxFiles }}</span>
                 </div>
                 <p class="mt-1 text-sm text-app-text-2">Only you and the shop can open these files.</p>
 
-                <x-order.files :files="$order->files" :customer-id="$order->customer_id" class="mt-4" />
+                <x-order.files :files="$order->files" :customer-id="$order->customer_id" :removable="$removable" class="mt-4" />
+
+                @if ($removable !== [])
+                    <x-ui.modal name="remove-file" title="Remove this file?">
+                        <p class="text-app-text-2">
+                            Remove <strong class="break-words text-app-text" x-text="target.name"></strong>? You can add it again while the shop is still reviewing.
+                        </p>
+                        <form id="remove-file-form" method="POST" x-bind:action="target.action">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                        <x-slot:footer>
+                            <x-ui.button variant="outline" x-on:click="$dispatch('close-modal')">Keep the file</x-ui.button>
+                            <x-ui.button type="submit" form="remove-file-form" variant="danger">Remove file</x-ui.button>
+                        </x-slot:footer>
+                    </x-ui.modal>
+                @endif
 
                 @if ($canAddFiles)
                     <form method="POST" action="{{ route('customer.printing.files.store', $order) }}" enctype="multipart/form-data" class="mt-5 border-t border-app-border pt-5">
@@ -85,7 +101,7 @@
                             @if ($room > 0)
                                 You can add {{ $room }} more {{ Str::plural('file', $room) }}, up to {{ $maxFileMb }} MB each and {{ $maxTotalMb }} MB for all the files of this order.
                             @else
-                                This order already has the most files it can hold.
+                                This order has the most files it can hold. Remove one to add another.
                             @endif
                         </p>
 

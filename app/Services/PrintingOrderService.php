@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
+use App\Exceptions\FileRemovalException;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -145,6 +147,64 @@ class PrintingOrderService
             }
 
             return $this->transitions->recordFilesAdded($order, $actor, count($uploads));
+        });
+    }
+
+    /**
+     * A customer removes one of their own files from an order that still takes files.
+     *
+     * The order row is locked and read again, and every rule is checked again inside the transaction: the customer's
+     * order, a file they uploaded themselves, a status that takes files, and never the last file. The file on the disk
+     * is deleted only after the transaction commits, so a failed save never leaves a row pointing at a missing file.
+     * A failed disk delete is reported for the shop and not shown to the customer: the row is already gone.
+     *
+     * @throws AuthorizationException when it is not the customer's order or not their upload
+     * @throws FileRemovalException when the order no longer takes files, it is the last file, or the file is already gone
+     */
+    public function removeFile(PrintingOrder $order, int $fileId, User $customer): string
+    {
+        return DB::transaction(function () use ($order, $fileId, $customer) {
+            $current = PrintingOrder::query()->lockForUpdate()->findOrFail($order->getKey());
+
+            if ($customer->role !== UserRole::Customer || $current->customer_id !== $customer->id) {
+                throw new AuthorizationException('This order belongs to another customer.');
+            }
+
+            $file = $current->files()->whereKey($fileId)->lockForUpdate()->first();
+
+            if ($file === null) {
+                throw FileRemovalException::gone();
+            }
+
+            if ($file->uploaded_by !== $customer->id) {
+                throw new AuthorizationException('Files added by the shop cannot be removed.');
+            }
+
+            if (! $current->status->acceptsFiles()) {
+                throw FileRemovalException::closed($current->status);
+            }
+
+            if ($current->files()->count() <= 1) {
+                throw FileRemovalException::lastFile();
+            }
+
+            $path = $file->path;
+            $name = $file->original_name;
+
+            $file->delete();
+            $this->transitions->recordFileRemoved($current, $customer, $name);
+
+            DB::afterCommit(function () use ($path) {
+                try {
+                    if (! Storage::disk(config('printing.disk'))->delete($path)) {
+                        report(new RuntimeException("A removed order file could not be deleted from the disk: {$path}"));
+                    }
+                } catch (Throwable $e) {
+                    report($e);
+                }
+            });
+
+            return $name;
         });
     }
 

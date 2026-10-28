@@ -37,18 +37,19 @@ Route::middleware('throttle:60,1')->group(function () {
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
-    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:20,1');
+    // Each throttle names its own counter, so failed logins never block registering or a password reset
+    Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:20,1,login');
 
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
-    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1');
+    Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1,register');
 
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('throttle:6,1')
+        ->middleware('throttle:6,1,password-email')
         ->name('password.email');
 
     Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
-    Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+    Route::post('/reset-password', [NewPasswordController::class, 'store'])->middleware('throttle:6,1,password-reset')->name('password.update');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
@@ -57,18 +58,22 @@ Route::get('/my/dashboard', CustomerDashboardController::class)
     ->middleware(['auth', 'role:customer'])
     ->name('customer.dashboard');
 
-// The customer's printing order wizard. Every change is a POST; the order list and detail pages come in Phase 3C
+// The customer's printing order wizard. Every change is a POST.
+// Each throttle has its own name (the third value): without it Laravel keeps ONE counter per user for every
+// throttled route, so typing in the wizard (live estimate) could use up the limit for sending the order
 Route::middleware(['auth', 'role:customer'])->prefix('my/printing')->name('customer.printing.')->group(function () {
-    Route::get('/new', [PrintingOrderController::class, 'create'])->middleware('throttle:60,1')->name('create');
-    Route::get('/estimate', PrintingEstimateController::class)->middleware('throttle:120,1')->name('estimate');
-    Route::post('/', [PrintingOrderController::class, 'store'])->middleware('throttle:10,1')->name('store');
-    Route::get('/{order}/placed', [PrintingOrderController::class, 'placed'])->whereNumber('order')->middleware('throttle:60,1')->name('placed');
+    Route::get('/new', [PrintingOrderController::class, 'create'])->middleware('throttle:60,1,printing-new')->name('create');
+    Route::get('/estimate', PrintingEstimateController::class)->middleware('throttle:120,1,printing-estimate')->name('estimate');
+    Route::post('/', [PrintingOrderController::class, 'store'])->middleware('throttle:10,1,printing-store')->name('store');
+    Route::get('/{order}/placed', [PrintingOrderController::class, 'placed'])->whereNumber('order')->middleware('throttle:60,1,printing-placed')->name('placed');
 
     // My orders (Phase 3C)
-    Route::get('/', [MyOrderController::class, 'index'])->middleware('throttle:60,1')->name('index');
-    Route::get('/{order}', [MyOrderController::class, 'show'])->whereNumber('order')->middleware('throttle:60,1')->name('show');
-    Route::post('/{order}/cancel', [MyOrderController::class, 'cancel'])->whereNumber('order')->middleware('throttle:10,1')->name('cancel');
-    Route::post('/{order}/files', [MyOrderController::class, 'addFiles'])->whereNumber('order')->middleware('throttle:10,1')->name('files.store');
+    Route::get('/', [MyOrderController::class, 'index'])->middleware('throttle:60,1,printing-list')->name('index');
+    Route::get('/{order}', [MyOrderController::class, 'show'])->whereNumber('order')->middleware('throttle:60,1,printing-show')->name('show');
+    Route::post('/{order}/cancel', [MyOrderController::class, 'cancel'])->whereNumber('order')->middleware('throttle:10,1,printing-cancel')->name('cancel');
+    Route::post('/{order}/files', [MyOrderController::class, 'addFiles'])->whereNumber('order')->middleware('throttle:10,1,printing-files-add')->name('files.store');
+    // The file is looked up through the order, so it must belong to it (a POST form with _method=DELETE)
+    Route::delete('/{order}/files/{file}', [MyOrderController::class, 'removeFile'])->whereNumber(['order', 'file'])->middleware('throttle:10,1,printing-files-remove')->name('files.destroy');
 });
 
 // The owner's printing orders. Every action is a POST that goes through StatusTransitionService
@@ -76,23 +81,24 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/printing-orders')->name
     Route::get('/', [OwnerPrintingOrderController::class, 'index'])->name('index');
     Route::get('/{order}', [OwnerPrintingOrderController::class, 'show'])->whereNumber('order')->name('show');
 
-    Route::middleware('throttle:30,1')->whereNumber('order')->controller(PrintingOrderActionController::class)->group(function () {
-        Route::post('/{order}/review', 'review')->name('review');
-        Route::post('/{order}/accept', 'accept')->name('accept');
-        Route::post('/{order}/reject', 'reject')->name('reject');
-        Route::post('/{order}/info', 'requestInfo')->name('info');
-        Route::post('/{order}/processing', 'processing')->name('processing');
-        Route::post('/{order}/ready', 'ready')->name('ready');
-        Route::post('/{order}/complete', 'complete')->name('complete');
-        Route::post('/{order}/cancel', 'cancel')->name('cancel');
-        Route::post('/{order}/price', 'price')->name('price');
+    // 30 a minute for each action, each with its own counter, so a busy run of one action never blocks another
+    Route::whereNumber('order')->controller(PrintingOrderActionController::class)->group(function () {
+        Route::post('/{order}/review', 'review')->middleware('throttle:30,1,owner-order-review')->name('review');
+        Route::post('/{order}/accept', 'accept')->middleware('throttle:30,1,owner-order-accept')->name('accept');
+        Route::post('/{order}/reject', 'reject')->middleware('throttle:30,1,owner-order-reject')->name('reject');
+        Route::post('/{order}/info', 'requestInfo')->middleware('throttle:30,1,owner-order-info')->name('info');
+        Route::post('/{order}/processing', 'processing')->middleware('throttle:30,1,owner-order-processing')->name('processing');
+        Route::post('/{order}/ready', 'ready')->middleware('throttle:30,1,owner-order-ready')->name('ready');
+        Route::post('/{order}/complete', 'complete')->middleware('throttle:30,1,owner-order-complete')->name('complete');
+        Route::post('/{order}/cancel', 'cancel')->middleware('throttle:30,1,owner-order-cancel')->name('cancel');
+        Route::post('/{order}/price', 'price')->middleware('throttle:30,1,owner-order-price')->name('price');
     });
 });
 
 // A file of a printing order, for the owner or the customer who sent it (OrderFilePolicy). Always a download
 Route::get('/files/{file}', OrderFileDownloadController::class)
     ->whereNumber('file')
-    ->middleware(['auth', 'throttle:30,1'])
+    ->middleware(['auth', 'throttle:30,1,files-download'])
     ->name('files.download');
 
 Route::get('/owner', OwnerDashboardController::class)

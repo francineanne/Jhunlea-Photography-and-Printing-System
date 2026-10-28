@@ -8,6 +8,7 @@ enum OrderEvent: string
     case InfoRequested = 'info_requested';
     case InfoAnswered = 'info_answered';
     case PriceChanged = 'price_changed';
+    case FileRemoved = 'file_removed';
 
     public function label(): string
     {
@@ -15,6 +16,7 @@ enum OrderEvent: string
             self::InfoRequested => 'More information requested',
             self::InfoAnswered => 'Files added in reply',
             self::PriceChanged => 'Confirmed price changed',
+            self::FileRemoved => 'File removed',
         };
     }
 }

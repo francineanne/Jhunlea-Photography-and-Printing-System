@@ -1,6 +1,10 @@
-@props(['files', 'customerId', 'viewer' => 'customer'])
+@props(['files', 'customerId', 'viewer' => 'customer', 'removable' => []])
 
-{{-- The files of an order: names only, never a path. Each downloads through the protected route. --}}
+{{--
+    The files of an order: names only, never a path. Each downloads through the protected route.
+    removable: ids of the files the customer may remove. Each gets a plain form, so it works without scripts; with
+    scripts the button opens the "remove-file" confirmation modal of the page instead (it reads `target`).
+--}}
 @if ($files->isEmpty())
     <p {{ $attributes->class('text-sm text-app-text-2') }}>No files yet.</p>
 @else
@@ -19,10 +23,24 @@
                         @endif
                     </p>
                 </div>
-                <a href="{{ route('files.download', $file) }}" aria-label="Download {{ $file->original_name }}"
-                    class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-control border border-app-border bg-app-card px-3 text-sm font-semibold transition-colors hover:border-brand hover:text-brand focus-ring sm:min-h-9">
-                    <x-ui.icon name="download" :size="18" /><span>Download</span>
-                </a>
+                <div class="flex shrink-0 flex-wrap gap-2">
+                    <a href="{{ route('files.download', $file) }}" aria-label="Download {{ $file->original_name }}"
+                        class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-control border border-app-border bg-app-card px-3 text-sm font-semibold transition-colors hover:border-brand hover:text-brand focus-ring sm:min-h-9">
+                        <x-ui.icon name="download" :size="18" /><span>Download</span>
+                    </a>
+                    @if (in_array($file->id, $removable, true))
+                        @php $action = route('customer.printing.files.destroy', ['order' => $file->printing_order_id, 'file' => $file->id]); @endphp
+                        <form method="POST" action="{{ $action }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" aria-label="Remove {{ $file->original_name }}"
+                                x-on:click.prevent="target = { name: {{ \Illuminate\Support\Js::from($file->original_name) }}, action: {{ \Illuminate\Support\Js::from($action) }} }; $dispatch('open-modal', 'remove-file')"
+                                class="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-control px-3 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring sm:min-h-9">
+                                <x-ui.icon name="delete" :size="18" /><span>Remove</span>
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </li>
         @endforeach
     </ul>
