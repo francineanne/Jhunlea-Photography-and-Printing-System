@@ -11,10 +11,22 @@ use App\Http\Controllers\Owner\PackageImageController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\ThemeController;
+use App\Http\Controllers\Public\HomeController as PublicHomeController;
+use App\Http\Controllers\Public\PackageCompareController as PublicPackageCompareController;
+use App\Http\Controllers\Public\PackageController as PublicPackageController;
+use App\Http\Controllers\Public\PackageFinderController as PublicPackageFinderController;
+use App\Http\Controllers\Public\ServiceController as PublicServiceController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+// Public pages: readable by anyone, and they only ever read published records
+Route::middleware('throttle:60,1')->group(function () {
+    Route::get('/', PublicHomeController::class)->name('home');
+    Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
+    Route::get('/packages', [PublicPackageController::class, 'index'])->name('packages.index');
+    // These two come before {slug}; PhotographyPackage::RESERVED_SLUGS keeps a package from taking their addresses
+    Route::get('/packages/compare', PublicPackageCompareController::class)->name('packages.compare');
+    Route::get('/packages/finder', PublicPackageFinderController::class)->name('packages.finder');
+    Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->name('packages.show');
 });
 
 Route::middleware('guest')->group(function () {

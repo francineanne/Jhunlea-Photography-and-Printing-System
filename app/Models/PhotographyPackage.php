@@ -20,6 +20,9 @@ class PhotographyPackage extends Model
     /** @use HasFactory<PhotographyPackageFactory> */
     use HasFactory, SoftDeletes;
 
+    /** Addresses the public pages use themselves (/packages/compare, /packages/finder), so no package may take them. */
+    public const RESERVED_SLUGS = ['compare', 'finder'];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
@@ -92,7 +95,7 @@ class PhotographyPackage extends Model
         $slug = $base;
         $number = 2;
 
-        while (static::withTrashed()->where('slug', $slug)->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))->exists()) {
+        while (in_array($slug, self::RESERVED_SLUGS, true) || static::withTrashed()->where('slug', $slug)->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))->exists()) {
             $slug = $base.'-'.$number++;
         }
 

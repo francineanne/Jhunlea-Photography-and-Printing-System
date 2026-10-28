@@ -57,11 +57,11 @@ Design refs: `design/login/*`, ang sidebar at header mula sa `design/admin/owner
 
 ## Phase 2 — Catalog (Her)
 Design refs: `design/public/*`, `design/admin/services_printing_catalog_management`, `photography_packages_studio_tier_manager`, `themes_and_backgrounds_backdrops_sets`
-- [ ] Migrations, models at seeders na may labeled sample data: printing_services, printing_service_options, photography_packages, package_images, themes, package_theme
-- [ ] Owner CRUD: services kasama ang options, packages kasama ang gallery upload, themes, at publish/unpublish
-- [ ] Public pages: landing (galing sa database ang featured packages), services, packages na may filters, package detail, compare (2–3), package finder
-- [ ] Ang published items lang ang makikita ng publiko
-- [ ] Tests: hindi makakagawa ng service ang customer, at hindi lumalabas sa publiko ang unpublished
+- [x] Migrations, models at seeders na may labeled sample data: printing_services, printing_service_options, photography_packages, package_images, themes, package_theme
+- [x] Owner CRUD: services kasama ang options, packages kasama ang gallery upload, themes, at publish/unpublish
+- [x] Public pages: landing (galing sa database ang featured packages), services, packages na may filters, package detail, compare (2–3), package finder
+- [x] Ang published items lang ang makikita ng publiko
+- [x] Tests: hindi makakagawa ng service ang customer, at hindi lumalabas sa publiko ang unpublished
 
 ## Phase 3 — Printing orders (Her)
 Design refs: `design/customer/request_printing_wizard_estimator`, `my_printing_orders`, `printing_order_detail_tracking`, `design/admin/printing_orders_list`, `printing_order_detail_owner`

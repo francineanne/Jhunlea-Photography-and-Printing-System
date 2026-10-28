@@ -2,8 +2,12 @@
 
 {{-- Public page shell. Pages fill the `main` section. Add a header link by adding one line here. --}}
 @php
-    // One entry = label, icon, route name. Empty for now: no public page besides the home page exists yet.
-    $links = [];
+    // One entry = label, icon, route name (and the route names that keep it highlighted). Only pages that exist.
+    $links = [
+        ['label' => 'Printing services', 'icon' => 'print', 'route' => 'services.index'],
+        ['label' => 'Photography packages', 'icon' => 'photo_camera', 'route' => 'packages.index', 'match' => ['packages.index', 'packages.show', 'packages.compare']],
+        ['label' => 'Package finder', 'icon' => 'auto_awesome', 'route' => 'packages.finder'],
+    ];
 
     // rescue(): this layout also wraps the error pages, which must never throw (session store down, odd role value)
     $home = rescue(fn () => auth()->user()?->role->home(), null, false);
@@ -31,7 +35,7 @@
 
             <div class="flex items-center gap-2">
                 @if (count($links))
-                    <x-layout.nav :items="$links" variant="top" class="hidden md:block" />
+                    <x-layout.nav :items="$links" variant="top" class="hidden lg:block" />
                 @endif
 
                 <x-ui.theme-toggle />
@@ -50,14 +54,14 @@
                 </div>
 
                 <button type="button" x-on:click="$dispatch('open-modal', 'public-menu')" aria-haspopup="dialog" aria-label="Open menu"
-                    class="grid size-11 shrink-0 place-items-center rounded-control border border-app-border bg-app-card focus-ring sm:hidden">
+                    class="grid size-11 shrink-0 place-items-center rounded-control border border-app-border bg-app-card focus-ring lg:hidden">
                     <x-ui.icon name="menu" />
                 </button>
             </div>
         </div>
     </header>
 
-    <x-layout.drawer name="public-menu" label="Menu" side="right" :close-at="640">
+    <x-layout.drawer name="public-menu" label="Menu" side="right" :close-at="1024">
         <x-slot:heading><x-ui.logo /></x-slot:heading>
 
         @if (count($links))
@@ -84,7 +88,16 @@
 
     <footer class="border-t border-app-border bg-neutral-100 dark:bg-white/5">
         <div class="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
-            <x-ui.logo />
+            <div class="space-y-3">
+                <x-ui.logo />
+                <nav aria-label="Footer">
+                    <ul class="flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold">
+                        @foreach ($links as $link)
+                            <li><a href="{{ route($link['route']) }}" class="inline-flex min-h-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">{{ $link['label'] }}</a></li>
+                        @endforeach
+                    </ul>
+                </nav>
+            </div>
             <div class="space-y-1 text-sm text-app-text-2 md:text-right">
                 <p>Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
                 <p>&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing</p>

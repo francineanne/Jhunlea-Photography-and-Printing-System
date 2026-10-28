@@ -291,6 +291,64 @@ Alpine.data('passwordStrength', (rules) => ({
     },
 }));
 
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// The compare bar of the packages list. It is plain HTML first (the form works without scripts); once Alpine runs, the bar
+// slides away while nothing is ticked and shows what is ticked. Names and photos are read from the ticked checkboxes.
+Alpine.data('packageCompare', (max = 3) => ({
+    max,
+    picked: 0,
+    names: [],
+    covers: [],
+    ready: false,
+
+    init() {
+        this.count();
+        // Switch the slide transition on only after the first state is applied, so the bar does not fade out on every load
+        setTimeout(() => (this.ready = true), 100);
+    },
+
+    count() {
+        const ticked = [...this.$root.querySelectorAll('input[name="packages[]"]:checked')];
+
+        this.picked = ticked.length;
+        this.names = ticked.map((box) => box.dataset.name);
+        this.covers = ticked.map((box) => box.dataset.cover).filter(Boolean).slice(0, 3);
+    },
+
+    clear() {
+        this.$root.reset();
+        this.count();
+        // The button disappears with the selection, so keep keyboard focus on the list instead of dropping it to the page
+        this.$root.querySelector('input[name="packages[]"]')?.focus();
+    },
+}));
+
+// The photo gallery of a package. The first photo is plain HTML, so the page works without scripts. Switching photos
+// dips the main photo to 70% for 150ms, as in the design, unless motion is reduced.
+Alpine.data('packageGallery', (slides) => ({
+    slides,
+    i: 0,
+    dim: false,
+    dimTimer: null,
+
+    go(n) {
+        this.show((n + this.slides.length) % this.slides.length);
+    },
+
+    show(n) {
+        if (n === this.i) return;
+
+        this.i = n;
+
+        if (reducedMotion()) return;
+
+        this.dim = true;
+        clearTimeout(this.dimTimer);
+        this.dimTimer = setTimeout(() => (this.dim = false), 150);
+    },
+}));
+
 Alpine.data('uiPageLoader', () => ({
     show: true,
     pct: 0,

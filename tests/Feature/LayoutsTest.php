@@ -18,7 +18,7 @@ class LayoutsTest extends TestCase
     {
         $this->get('/')
             ->assertOk()
-            ->assertSee('Our full website is coming soon.')
+            ->assertSee('Capture it.')
             ->assertSee(route('login'), false)
             ->assertSee(route('register'), false)
             ->assertDontSee('Log out');

@@ -68,7 +68,7 @@ class PackageRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:120'],
-            'slug' => ['nullable', 'string', 'max:150', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::unique('photography_packages', 'slug')->ignore($current?->id)],
+            'slug' => ['nullable', 'string', 'max:150', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::notIn(PhotographyPackage::RESERVED_SLUGS), Rule::unique('photography_packages', 'slug')->ignore($current?->id)],
             'category' => ['required', 'string', 'max:60'],
             'short_description' => ['required', 'string', 'max:200'],
             'description' => ['nullable', 'string', 'max:3000'],
@@ -92,6 +92,7 @@ class PackageRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'slug.not_in' => 'This web address is used by the website itself. Choose another one.',
             'slug.regex' => 'The address can only use lowercase letters, numbers and single dashes.',
             'price.decimal' => 'The price can have at most 2 decimal places.',
             'inclusions.max' => 'Add at most '.self::MAX_INCLUSIONS.' inclusions, one per line.',

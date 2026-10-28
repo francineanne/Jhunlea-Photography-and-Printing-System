@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PricingType;
+use App\Support\Money;
 use Database\Factories\PrintingServiceFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,6 +37,22 @@ class PrintingService extends Model
     public function options(): HasMany
     {
         return $this->hasMany(PrintingServiceOption::class);
+    }
+
+    /**
+     * The price as customers read it. The base price is what the service starts from: the options a customer picks
+     * (paper size, finish and so on) may add to it.
+     */
+    public function priceText(): string
+    {
+        $price = $this->base_price === null ? null : Money::format($this->base_price);
+
+        return match (true) {
+            $this->pricing_type === PricingType::Quotation => $price ? "From {$price} — price quoted after review" : 'Price quoted after review',
+            $price === null => 'Price on request',
+            $this->pricing_type === PricingType::PerPage => "From {$price} per page",
+            default => "From {$price} per copy",
+        };
     }
 
     /** @param Builder<PrintingService> $query */

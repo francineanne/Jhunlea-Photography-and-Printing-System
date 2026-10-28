@@ -16,7 +16,7 @@
 |---|---|---|---|
 | 0 | Repo cleanup and docs | Dev (Her) | Done (Bootstrap removed, Tailwind 4 setup) |
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
-| 2 | Catalog: services, packages, themes, public pages | Dev (Her) | In progress: 2A services and 2B packages, gallery and themes built (owner side); 2C public pages not started |
+| 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Not started |
 | 4 | Photography bookings and schedule | Dev (Her) | Not started |
 | 5 | Payments, notifications, dashboards | BF | Not started |
@@ -204,7 +204,7 @@ Reference numbers are generated inside a database transaction so two requests ca
 
 | Area | Prefix | Middleware | Examples |
 |---|---|---|---|
-| Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/package-finder` |
+| Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/packages/finder` (all GET, `throttle:60,1`; `compare` and `finder` are reserved package slugs) |
 | Auth | `/` | guest | `/login`, `/register`, `/forgot-password`, `/reset-password/{token}` |
 | Customer | `/my` | auth, role:customer | `/my/dashboard`, `/my/printing/new`, `/my/printing/{order}`, `/my/bookings/new`, `/my/bookings/{booking}`, `/my/history`, `/my/notifications`, `/my/settings` |
 | Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule`, `/owner/customers`, `/owner/payments`, `/owner/reports`, `/owner/settings` |
@@ -245,6 +245,7 @@ After login: owner → `/owner`, customer → `/my/dashboard`.
 - **Layouts** are `layouts/app` (base), `layouts/public`, `layouts/auth`, `layouts/customer` and `layouts/owner`. Pages fill the `main` section (the `auth` section for auth pages). To add a navigation item, add one line (label, icon, route name) to the `$nav` array at the top of the layout file, and only when the route exists.
 - **`<body x-data>` must stay in `layouts/app`.** Modals, drawers and toasts are opened from buttons through Alpine events, which only work inside an Alpine scope. Every layout must also include `<x-ui.toast />`.
 - **Tailwind scans only `resources/views` and `resources/js`** (see `@source` in `resources/css/app.css`). A class used anywhere else (for example in `design/` or a PHP string outside views) will not be generated. Write full class names, never built-up strings like `'bg-'.$color`.
+- **Public pages SEO:** put `<x-seo title description [image] [noindex]>` in the page file, *outside* `@section` (it pushes into the `@stack('head')` of `layouts/app`, which is rendered before the sections). The canonical address never carries the query string; filtered, compare and finder results are `noindex`.
 - **Error pages** are in `resources/views/errors/` (403, 404, 419 use the public layout; 500 is fully static on purpose, with no layout, session or database).
 - **Every phase includes backend + tests + browser QA** at 360x640, 390x844, 768x1024, 1024x768, 1280x800, 1440x900 and 1920x1080, each in light and dark mode: no horizontal scroll, nothing clipped, tap targets of at least 44px on phones.
 
