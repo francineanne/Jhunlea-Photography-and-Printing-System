@@ -113,7 +113,7 @@
                 <x-ui.icon name="palette" :size="18" class="text-brand" /> Customer view preview
             </p>
 
-            <div class="overflow-hidden rounded-card border border-app-border bg-app-card shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04),0_1px_4px_-1px_rgba(23,23,23,0.02)] transition-[transform,box-shadow] duration-300 ease-brand hover:-translate-y-1 hover:shadow-[0_12px_24px_-6px_rgba(23,23,23,0.08)] dark:shadow-none">
+            <div class="overflow-hidden rounded-card border border-app-border bg-app-card shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04),0_1px_4px_-1px_rgba(23,23,23,0.02)] transition-[transform,translate,box-shadow] duration-300 ease-brand hover:-translate-y-1 hover:shadow-[0_12px_24px_-6px_rgba(23,23,23,0.08)] dark:shadow-none">
                 <div class="relative aspect-[4/3] overflow-hidden">
                     <template x-if="imageUrl"><img x-bind:src="imageUrl" alt="" class="size-full object-cover"></template>
                     <template x-if="! imageUrl"><x-ui.image-placeholder icon="palette" class="size-full" /></template>

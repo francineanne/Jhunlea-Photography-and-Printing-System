@@ -109,7 +109,7 @@
                 <x-ui.icon name="devices" :size="18" class="text-brand" /> Customer view preview
             </p>
 
-            <div class="rounded-card border border-app-border bg-app-card p-5 shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04),0_1px_4px_-1px_rgba(23,23,23,0.02)] transition-[transform,box-shadow] duration-300 ease-brand hover:-translate-y-1 hover:shadow-[0_12px_24px_-6px_rgba(23,23,23,0.08)] dark:shadow-none sm:p-6">
+            <div class="rounded-card border border-app-border bg-app-card p-5 shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04),0_1px_4px_-1px_rgba(23,23,23,0.02)] transition-[transform,translate,box-shadow] duration-300 ease-brand hover:-translate-y-1 hover:shadow-[0_12px_24px_-6px_rgba(23,23,23,0.08)] dark:shadow-none sm:p-6">
                 <div class="flex items-center justify-between gap-2">
                     <span class="rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white" x-text="preview.category || 'Category'"></span>
                     <span class="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold"
