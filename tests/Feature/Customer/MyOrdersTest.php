@@ -311,8 +311,8 @@ class MyOrdersTest extends TestCase
         $order = $this->order($this->alice, Status::UnderReview, ['info_request' => 'Need a PDF.']);
 
         $this->actingAs($this->alice)->get(route('customer.dashboard'))
-            ->assertSee(route('customer.printing.index'), false)
-            ->assertSee('The shop needs more information on 1 order.');
+            ->assertSee(route('customer.printing.show', $order), false)
+            ->assertSee('The shop needs more information');
 
         $this->actingAs($this->alice)->get(route('customer.printing.placed', $order))
             ->assertSee(route('customer.printing.show', $order), false)

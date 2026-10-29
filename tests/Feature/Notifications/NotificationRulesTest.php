@@ -151,14 +151,33 @@ class NotificationRulesTest extends TestCase
 
     public function test_nobody_is_told_about_their_own_action_and_unlisted_moves_tell_nobody(): void
     {
-        // The owner cancels and starts a review: not in the list, so nobody is told
+        // The owner starts a review: not in the list, so nobody is told
         $this->orders()->transition($this->order(Status::Submitted), Status::UnderReview, $this->owner);
-        $this->orders()->transition($this->order(Status::Accepted, '10.00'), Status::Cancelled, $this->owner);
-        $this->bookings()->cancel($this->booking(BookingStatus::Confirmed), $this->owner, 'Studio closed.');
         // A customer removing a file
         $this->orders()->recordFileRemoved($this->order(Status::Submitted), $this->customer, 'scan.pdf');
 
         $this->assertSame([], $this->sent());
+    }
+
+    public function test_a_cancel_tells_the_other_side_only_and_never_the_reason(): void
+    {
+        // Phase 5C: the shop cancelling tells the customer; the customer cancelling still tells every owner
+        $this->orders()->transition($order = $this->order(Status::Accepted, '10.00'), Status::Cancelled, $this->owner, 'Out of A3 paper, secret note.');
+        $this->bookings()->cancel($booking = $this->booking(BookingStatus::Confirmed), $this->owner, 'Studio closed for repairs, secret.');
+        $this->orders()->transition($this->order(Status::Submitted), Status::Cancelled, $this->customer);
+        $this->bookings()->cancel($this->booking(BookingStatus::Requested, '2026-11-09 10:00'), $this->customer, 'Plans changed, secret.');
+
+        $this->assertSent(['customer:order_cancelled_by_shop', 'customer:booking_cancelled_by_shop',
+            'owner:order_cancelled_by_customer', 'owner2:order_cancelled_by_customer', 'owner:booking_cancelled_by_customer', 'owner2:booking_cancelled_by_customer']);
+
+        $shop = DatabaseNotification::query()->where('type', 'order_cancelled_by_shop')->sole();
+        $this->assertSame('The shop cancelled your order '.$order->reference_number.'. Open it to see the details.', NotificationKind::OrderCancelledByShop->message($shop->data));
+        $studio = DatabaseNotification::query()->where('type', 'booking_cancelled_by_shop')->sole();
+        $this->assertSame('The studio cancelled your booking '.$booking->reference_number.'. Open it to see the details.', NotificationKind::BookingCancelledByShop->message($studio->data));
+
+        foreach (DatabaseNotification::all() as $row) {
+            $this->assertStringNotContainsStringIgnoringCase('secret', json_encode($row->data).NotificationKind::from($row->data['kind'])->message($row->data));
+        }
     }
 
     public function test_a_double_submit_or_stale_page_notifies_once_and_a_refused_action_notifies_nobody(): void
@@ -233,6 +252,6 @@ class NotificationRulesTest extends TestCase
             $kind->anchor();
         }
 
-        $this->assertCount(21, NotificationKind::cases());
+        $this->assertCount(23, NotificationKind::cases());
     }
 }

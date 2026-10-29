@@ -91,8 +91,11 @@ Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_ove
 - [x] Release gate (Completed lang kapag bayad o ₱0.00) at price lock habang may naka-record na bayad; void na may dahilan hanggang ma-release (5A)
 - [x] Payment card sa customer order at booking detail; payments ledger ng owner na may filters, totals ng recorded payments at listahan ng naghihintay ng bayad (5A)
 - [x] Database notifications (5B): `NotificationDispatcher` lang ang nagpapasya kung sino ang sasabihan; tinatawag ito ng `writeHistory()` ng dalawang status service, kaya walang notification kung walang history row. Customer: accepted (may confirmed price), rejected, more info, processing, ready for pickup, completed, price changed; booking confirmed, new time, rejected, price changed, completed; payment recorded at payment record cancelled. Lahat ng owner: bagong order, bagong booking request, cancel ng customer, tinanggap ang proposed time, humingi ng ibang oras, nag-add ng files bilang sagot. Bell na may unread badge (99+), dropdown ng huling 8, notifications page (All at Unread) sa customer at owner
-- [ ] Customer dashboard at owner overview na totoong data ang counts
-- [ ] Request history (pinagsamang printing at bookings)
+- [x] Customer dashboard at owner overview na totoong data ang counts (5C: `DashboardService`, gamit ang parehong rules ng lists at ng ledger; walang revenue chart o trend)
+- [x] Request history (5C: `/my/requests`, pinagsamang printing at bookings sa iisang UNION query, may filters at pagination)
+- [x] Notification kapag ang shop o studio ang nag-cancel (5C)
+
+**Tapos na ang Phase 5** (5A payments, 5B notifications, 5C dashboards at history). Nananatiling kanselado ang partial-payment setting.
 - [x] Tests: tama ang derived status at ang amount, owner lang ang makakapag-record, at hiwalay ang payment status sa order status (5A; walang balance dahil walang partial payment)
 
 ## Phase 6 — Admin tools and settings (BF)
@@ -128,6 +131,10 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Galing sa Phase 5A:
   - [ ] Totoong MySQL race na dalawang payment record sa iisang sandali (iisang order, at iisang GCash reference sa dalawang order); sa 5A, sa SQLite file lang ito nasubukan
   - [ ] Tingnan ang payments ledger at ang payment card sa totoong phone
+- [ ] Galing sa Phase 5C:
+  - [ ] Tingnan ang dashboards (customer at owner) sa totoong phones
+  - [ ] Index sa notifications (notifiable, created_at) kung bumagal ang bell kapag marami nang rows
+  - [ ] Totoong MySQL check ng combined history query (UNION) na maraming rows
 - [ ] Galing sa Phase 5B:
   - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
   - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page

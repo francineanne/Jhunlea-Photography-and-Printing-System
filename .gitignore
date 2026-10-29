@@ -26,6 +26,3 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-# Local-only AI agent files
-AGENTS.md
-CLAUDE.md

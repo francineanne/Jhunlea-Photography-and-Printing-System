@@ -80,7 +80,8 @@ class NotificationPagesTest extends TestCase
         $count = function (): int {
             DB::flushQueryLog();
             DB::enableQueryLog();
-            $this->actingAs($this->customer)->get(route('customer.dashboard'))->assertOk();
+            // A page without dashboard numbers, so only the bell reads notifications
+            $this->actingAs($this->customer)->get(route('customer.printing.index'))->assertOk();
             $queries = collect(DB::getQueryLog())->filter(fn ($q) => str_contains($q['query'], 'notifications'))->count();
             DB::disableQueryLog();
 

@@ -43,7 +43,8 @@ class NotificationDispatcher
             $to === PrintingOrderStatus::Processing => NotificationKind::OrderProcessing,
             $to === PrintingOrderStatus::ReadyForPickup => NotificationKind::OrderReady,
             $to === PrintingOrderStatus::Completed => NotificationKind::OrderCompleted,
-            $to === PrintingOrderStatus::Cancelled => NotificationKind::OrderCancelledByCustomer,
+            // Who cancelled decides who is told: a customer tells the owners, the shop tells the customer
+            $to === PrintingOrderStatus::Cancelled => $actor->role === UserRole::Customer ? NotificationKind::OrderCancelledByCustomer : NotificationKind::OrderCancelledByShop,
             default => null,
         };
 
@@ -65,7 +66,7 @@ class NotificationDispatcher
             $to === BookingStatus::Confirmed => NotificationKind::BookingConfirmed,
             $to === BookingStatus::Rejected => NotificationKind::BookingRejected,
             $to === BookingStatus::Completed => NotificationKind::BookingCompleted,
-            $to === BookingStatus::Cancelled => NotificationKind::BookingCancelledByCustomer,
+            $to === BookingStatus::Cancelled => $actor->role === UserRole::Customer ? NotificationKind::BookingCancelledByCustomer : NotificationKind::BookingCancelledByShop,
             default => null,
         };
 

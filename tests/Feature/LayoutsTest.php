@@ -76,11 +76,11 @@ class LayoutsTest extends TestCase
 
     public function test_dashboards_have_no_invented_content(): void
     {
-        // The customer dashboard shows only real numbers: a new customer has no orders
+        // The dashboards show only real numbers: a new customer and a fresh shop have none (Phase 5C)
         $this->actingAs(User::factory()->create())->get('/my/dashboard')
-            ->assertSee('You have not sent a printing request yet.')
+            ->assertSee('No printing orders or photoshoots yet')
             ->assertDontSee('The shop needs more information');
-        $this->actingAs(User::factory()->owner()->create())->get('/owner')->assertSee('Nothing here yet');
+        $this->actingAs(User::factory()->owner()->create())->get('/owner')->assertSee('No printing orders are waiting for review.');
     }
 
     public function test_every_shell_has_a_logout_form_that_works(): void

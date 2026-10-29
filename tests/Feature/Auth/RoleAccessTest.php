@@ -29,10 +29,10 @@ class RoleAccessTest extends TestCase
     public function test_each_role_reaches_its_own_dashboard(): void
     {
         $this->actingAs(User::factory()->create(['name' => 'Cora Customer']))
-            ->get('/my/dashboard')->assertOk()->assertSee('Welcome, Cora Customer');
+            ->get('/my/dashboard')->assertOk()->assertSee('Welcome back, Cora');
 
         $this->actingAs(User::factory()->owner()->create(['name' => 'Olive Owner']))
-            ->get('/owner')->assertOk()->assertSee('Welcome, Olive Owner');
+            ->get('/owner')->assertOk()->assertSee(', Olive')->assertSee('Owner overview');
     }
 
     public function test_the_greeting_escapes_the_name(): void

@@ -83,24 +83,48 @@ class PaymentLedgerService
      */
     public function awaiting(): array
     {
-        $orders = PrintingOrder::query()
-            ->whereIn('status', [PrintingOrderStatus::Accepted, PrintingOrderStatus::Processing, PrintingOrderStatus::ReadyForPickup])
-            ->where('confirmed_price', '>', 0)
-            ->whereDoesntHave('recordedPayment');
-
-        $bookings = PhotographyBooking::query()
-            ->where('status', BookingStatus::Confirmed)
-            ->where('confirmed_price', '>', 0)
-            ->whereDoesntHave('recordedPayment');
-
-        $sum = fn (Builder $query) => (int) (clone $query)->toBase()->selectRaw('SUM(ROUND(confirmed_price * 100)) as cents')->value('cents');
+        $orders = $this->awaitingOrders();
+        $bookings = $this->awaitingBookings();
 
         return [
             'orders' => (clone $orders)->with('customer:id,name')->oldest('id')->limit(self::AWAITING_LIMIT)->get(),
             'bookings' => (clone $bookings)->with('customer:id,name')->orderBy('starts_at')->limit(self::AWAITING_LIMIT)->get(),
             'count' => (clone $orders)->count() + (clone $bookings)->count(),
-            'cents' => $sum($orders) + $sum($bookings),
+            'cents' => $this->sumConfirmedCents($orders) + $this->sumConfirmedCents($bookings),
         ];
+    }
+
+    /**
+     * THE rule for an order that waits for its payment (the ledger, the owner overview and the customer dashboard all
+     * use it): accepted and still open, a confirmed price above zero, no recorded payment. Never the estimate.
+     *
+     * @return Builder<PrintingOrder>
+     */
+    public function awaitingOrders(): Builder
+    {
+        return PrintingOrder::query()
+            ->whereIn('status', [PrintingOrderStatus::Accepted, PrintingOrderStatus::Processing, PrintingOrderStatus::ReadyForPickup])
+            ->where('confirmed_price', '>', 0)
+            ->whereDoesntHave('recordedPayment');
+    }
+
+    /**
+     * THE rule for a photoshoot that waits for its payment: confirmed, a confirmed price above zero, no recorded payment.
+     *
+     * @return Builder<PhotographyBooking>
+     */
+    public function awaitingBookings(): Builder
+    {
+        return PhotographyBooking::query()
+            ->where('status', BookingStatus::Confirmed)
+            ->where('confirmed_price', '>', 0)
+            ->whereDoesntHave('recordedPayment');
+    }
+
+    /** Whole centavos of the confirmed prices a query finds (one query). */
+    public function sumConfirmedCents(Builder $query): int
+    {
+        return (int) (clone $query)->toBase()->selectRaw('SUM(ROUND(confirmed_price * 100)) as cents')->value('cents');
     }
 
     /**

@@ -73,7 +73,7 @@
                 </div>
                 <ul class="space-y-3">
                     @foreach ($rows as $item)
-                        <li @class(['group relative rounded-card border bg-app-card shadow-sm transition-colors dark:shadow-none',
+                        <li @class(['group overflow-hidden rounded-card border bg-app-card shadow-sm transition-colors dark:shadow-none',
                             'border-app-border border-l-4 border-l-brand' => ! $item['read'],
                             'border-app-border' => $item['read']])>
                             <form method="POST" action="{{ route($area.'.notifications.open', $item['id']) }}">
@@ -103,9 +103,11 @@
                                     </span>
                                 </button>
                             </form>
-                            {{-- A plain link that goes without marking it read (for a new tab, for example) --}}
-                            <a href="{{ route($area.'.notifications.go', $item['id']) }}" class="absolute bottom-3 right-3 inline-flex min-h-11 items-center gap-1 rounded-control px-2 font-mono text-xs font-semibold text-app-text-2 hover:text-brand hover:underline focus-ring sm:bottom-4 sm:right-4"
-                                aria-label="{{ $item['reference'] }}, open without marking as read">{{ $item['reference'] }}<x-ui.icon name="open_in_new" :size="14" /></a>
+                            {{-- A plain link that goes without marking it read (for a new tab, for example), in its own footer row so it never covers the card button --}}
+                            <div class="flex justify-end border-t border-app-border px-2 sm:px-3">
+                                <a href="{{ route($area.'.notifications.go', $item['id']) }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 font-mono text-xs font-semibold text-app-text-2 hover:text-brand hover:underline focus-ring"
+                                    aria-label="{{ $item['reference'] }}, open without marking as read">{{ $item['reference'] }}<x-ui.icon name="open_in_new" :size="14" /></a>
+                            </div>
                         </li>
                     @endforeach
                 </ul>

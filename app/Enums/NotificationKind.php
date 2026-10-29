@@ -29,6 +29,8 @@ enum NotificationKind: string
     case BookingCompleted = 'booking_completed';
     case PaymentRecorded = 'payment_recorded';
     case PaymentVoided = 'payment_voided';
+    case OrderCancelledByShop = 'order_cancelled_by_shop';
+    case BookingCancelledByShop = 'booking_cancelled_by_shop';
 
     // To the owner, when a customer does it
     case OrderPlaced = 'order_placed';
@@ -66,6 +68,8 @@ enum NotificationKind: string
             self::BookingCompleted => 'Photoshoot completed',
             self::PaymentRecorded => 'Payment recorded',
             self::PaymentVoided => 'Payment record cancelled',
+            self::OrderCancelledByShop => 'Order cancelled by the shop',
+            self::BookingCancelledByShop => 'Booking cancelled by the studio',
             self::OrderPlaced => 'New printing order',
             self::BookingRequested => 'New photoshoot request',
             self::OrderCancelledByCustomer => 'Order cancelled by the customer',
@@ -102,6 +106,9 @@ enum NotificationKind: string
             self::BookingCompleted => "Your photoshoot {$ref} is completed. Thank you!",
             self::PaymentRecorded => "Payment {$pay} of {$amount} was recorded for {$ref}. This is a payment record, not an official receipt.",
             self::PaymentVoided => "The {$place} cancelled payment record {$pay} for {$ref}. Please contact the {$place}.",
+            // No reason or note here: the customer reads it on the order or booking
+            self::OrderCancelledByShop => "The shop cancelled your order {$ref}. Open it to see the details.",
+            self::BookingCancelledByShop => "The studio cancelled your booking {$ref}. Open it to see the details.",
             self::OrderPlaced => "A customer sent a new printing order, {$ref}.",
             self::BookingRequested => "A customer requested a photoshoot, {$ref}.",
             self::OrderCancelledByCustomer => "The customer cancelled order {$ref}.",
@@ -117,6 +124,7 @@ enum NotificationKind: string
         return match ($this) {
             self::OrderAccepted, self::BookingConfirmed, self::ProposalAccepted => 'check_circle',
             self::OrderRejected, self::BookingRejected, self::OrderCancelledByCustomer, self::BookingCancelledByCustomer => 'block',
+            self::OrderCancelledByShop, self::BookingCancelledByShop => 'cancel',
             self::OrderInfoRequested, self::InfoAnswered => 'help',
             self::OrderProcessing => 'print',
             self::OrderReady => 'inventory_2',

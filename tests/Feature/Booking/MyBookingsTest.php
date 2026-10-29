@@ -344,6 +344,6 @@ class MyBookingsTest extends TestCase
 
         $this->actingAs($this->customer)->get(route('customer.dashboard'))
             ->assertSee(route('customer.bookings.index'), false)
-            ->assertSee('The studio offered a new time for 1 booking.');
+            ->assertSee('A new time was proposed');
     }
 }

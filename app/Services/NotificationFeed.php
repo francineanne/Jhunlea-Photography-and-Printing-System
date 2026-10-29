@@ -35,9 +35,15 @@ class NotificationFeed
     public function bell(User $user): array
     {
         return [
-            'unread' => $user->unreadNotifications()->reorder()->count(),
+            'unread' => $this->unreadCount($user),
             'items' => $user->notifications()->latest()->limit(self::DROPDOWN)->get()->map(fn (DatabaseNotification $row) => $this->present($user, $row))->filter()->values(),
         ];
+    }
+
+    /** One query, also used by the dashboards. reorder(): MySQL refuses ORDER BY next to COUNT. */
+    public function unreadCount(User $user): int
+    {
+        return $user->unreadNotifications()->reorder()->count();
     }
 
     /** @return LengthAwarePaginator<int, DatabaseNotification> */

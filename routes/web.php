@@ -12,6 +12,7 @@ use App\Http\Controllers\Customer\MyOrderController;
 use App\Http\Controllers\Customer\PhotographyBookingController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
 use App\Http\Controllers\Customer\PrintingOrderController;
+use App\Http\Controllers\Customer\RequestHistoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
@@ -63,8 +64,13 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::get('/my/dashboard', CustomerDashboardController::class)
-    ->middleware(['auth', 'role:customer'])
+    ->middleware(['auth', 'role:customer', 'throttle:60,1,customer-dashboard'])
     ->name('customer.dashboard');
+
+// All of the customer's printing orders and bookings in one list (Phase 5C)
+Route::get('/my/requests', RequestHistoryController::class)
+    ->middleware(['auth', 'role:customer', 'throttle:60,1,customer-requests'])
+    ->name('customer.requests.index');
 
 // The customer's printing order wizard. Every change is a POST.
 // Each throttle has its own name (the third value): without it Laravel keeps ONE counter per user for every
@@ -191,7 +197,7 @@ Route::get('/files/{file}', OrderFileDownloadController::class)
     ->name('files.download');
 
 Route::get('/owner', OwnerDashboardController::class)
-    ->middleware(['auth', 'role:owner'])
+    ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-dashboard'])
     ->name('owner.dashboard');
 
 Route::middleware(['auth', 'role:owner'])->prefix('owner/services')->name('owner.services.')->group(function () {
