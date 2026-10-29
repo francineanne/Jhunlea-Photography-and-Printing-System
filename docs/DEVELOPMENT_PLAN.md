@@ -85,18 +85,21 @@ Design refs: `design/customer/book_a_photoshoot`, `my_photography_bookings`, `bo
 
 ## Phase 5 — Payments, notifications, dashboards (BF)
 Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_overview`, `notifications_customer_messages`, `design/customer/customer_dashboard`, `notifications_center`, `request_history_printing_photography`
-- [ ] payments migration (polymorphic), `PaymentService` (sa backend kinukuwenta ang total, paid at balance), at record payment modal na may confirm step
-- [ ] Payment card sa customer order at booking detail; payments ledger ng owner
+**Mga patakaran ng shop sa bayad (galing sa may-ari; huwag baguhin):** walang partial payment at walang downpayment. Buong confirmed price ang binabayaran, face to face sa shop (sa photoshoot, sa araw mismo ng shoot). Cash at GCash lang. Ire-release ang order o ang mga litrato kapag bayad na nang buo. Nire-record at mino-monitor lang ng system ang bayad; hindi ito tumatanggap ng bayad online. **Kanselado** na ang dating "partial payments on/off" setting.
+
+- [x] payments migration (polymorphic, morph map), `PaymentService` (ang confirmed price ang amount, walang tina-type na halaga), derived payment status (awaiting price, unpaid, paid, no charge), at record payment modal na may confirm step (5A)
+- [x] Release gate (Completed lang kapag bayad o ₱0.00) at price lock habang may naka-record na bayad; void na may dahilan hanggang ma-release (5A)
+- [x] Payment card sa customer order at booking detail; payments ledger ng owner na may filters, totals ng recorded payments at listahan ng naghihintay ng bayad (5A)
 - [ ] Database notifications sa bawat status change, quotation update, schedule proposal at ready for pickup; bell dropdown at notifications page
 - [ ] Customer dashboard at owner overview na totoong data ang counts
 - [ ] Request history (pinagsamang printing at bookings)
-- [ ] Tests: tama ang balance computation, owner lang ang makakapag-record, at hiwalay ang payment status sa order status
+- [x] Tests: tama ang derived status at ang amount, owner lang ang makakapag-record, at hiwalay ang payment status sa order status (5A; walang balance dahil walang partial payment)
 
 ## Phase 6 — Admin tools and settings (BF)
 Design refs: `design/admin/customers_client_directory_profiles`, `reports_analytics_atelier_performance`, `settings_studio_configuration_rules`, `design/customer/profile_account_settings`
 - [ ] Customers directory at detail (history at payments)
 - [ ] Reports: orders at bookings kada period, popular services at packages, status summary, recorded payments vs outstanding balance (hindi revenue ang estimates)
-- [ ] Settings: business info at hours, booking rules (kasama ang partial payments on/off), upload rules, FAQ editor
+- [ ] Settings: business info at hours, booking rules, upload rules (ang partial payments on/off ay kanselado na sa 5A: walang partial payment ang shop), FAQ editor
 - [ ] Customer profile at settings: info, password, appearance, notification preferences
 - [ ] Tests: owner lang ang makakakita ng reports at settings
 
@@ -122,6 +125,9 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
   - [ ] Pagpili ng files mula sa disk sa totoong file picker (reference images at printing files)
   - [ ] Wording sa calendar ng customer: "Closed" (sarado ang araw o blocked) laban sa "Fully booked" (bukas pero puno)
   - [ ] Siguraduhing walang developer terminal na naka-export ang `.env` values (APP_, DB_, CACHE_, SESSION_, MAIL_, QUEUE_) bago patakbuhin ang tests
+- [ ] Galing sa Phase 5A:
+  - [ ] Totoong MySQL race na dalawang payment record sa iisang sandali (iisang order, at iisang GCash reference sa dalawang order); sa 5A, sa SQLite file lang ito nasubukan
+  - [ ] Tingnan ang payments ledger at ang payment card sa totoong phone
 
 ---
 
@@ -129,6 +135,6 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 1. Totoong listahan ng printing services, paper options at presyo
 2. Totoong photography packages, presyo, inclusions, add-ons, at mga litrato na puwedeng gamitin
 3. Oras ng shop, mga araw na puwede ang shoot, haba ng session, at cancellation/reschedule policy
-4. Pinapayagan ba ang partial payment o downpayment, at puwede bang i-release kahit may balance pa?
-5. Anong payment methods ang tinatanggap sa counter (cash, GCash na ipinapakita sa shop, at iba pa)?
+4. ~~Pinapayagan ba ang partial payment o downpayment?~~ Sagot (5A): hindi; buong bayad lang, at ire-release lang kapag bayad na.
+5. ~~Anong payment methods ang tinatanggap?~~ Sagot (5A): cash at GCash, face to face.
 6. Kailangan ba ng account bago makapag-request? (Assumption natin: oo)

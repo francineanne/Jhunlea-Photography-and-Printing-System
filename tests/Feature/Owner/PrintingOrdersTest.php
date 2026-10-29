@@ -4,6 +4,7 @@ namespace Tests\Feature\Owner;
 
 use App\Enums\OrderEvent;
 use App\Enums\PrintingOrderStatus as Status;
+use App\Exceptions\PaymentException;
 use App\Models\OrderStatusHistory;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
@@ -184,13 +185,16 @@ class PrintingOrdersTest extends TestCase
         $this->as()->post(route('owner.orders.price', $order), ['confirmed_price' => '500', 'reason' => 'Extra page.'])->assertSessionHas('status');
         $this->as()->post(route('owner.orders.processing', $order))->assertSessionHas('status');
         $this->as()->post(route('owner.orders.ready', $order))->assertSessionHas('status');
+        // Phase 5A: released only when fully paid
+        $this->as()->post(route('owner.orders.complete', $order))->assertSessionHas('error', PaymentException::RELEASE_MESSAGE);
+        $this->as()->post(route('owner.orders.payments.store', $order), ['method' => 'cash', 'confirm' => '1'])->assertSessionHas('status');
         $this->as()->post(route('owner.orders.complete', $order))->assertSessionHas('status');
 
         $order->refresh();
         $this->assertSame(Status::Completed, $order->status);
         $this->assertSame('500.00', $order->confirmed_price);
         $this->assertSame(
-            [null, 'info_requested', null, 'price_changed', null, null, null],
+            [null, 'info_requested', null, 'price_changed', null, null, 'payment_recorded', null],
             $order->statusHistories->map(fn ($row) => $row->event?->value)->all(),
         );
         $this->assertSame('Checked.', $order->statusHistories[2]->note);

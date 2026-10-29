@@ -9,6 +9,8 @@ enum OrderEvent: string
     case InfoAnswered = 'info_answered';
     case PriceChanged = 'price_changed';
     case FileRemoved = 'file_removed';
+    case PaymentRecorded = 'payment_recorded';
+    case PaymentVoided = 'payment_voided';
 
     public function label(): string
     {
@@ -17,6 +19,8 @@ enum OrderEvent: string
             self::InfoAnswered => 'Files added in reply',
             self::PriceChanged => 'Confirmed price changed',
             self::FileRemoved => 'File removed',
+            self::PaymentRecorded => 'Payment recorded',
+            self::PaymentVoided => 'Payment record cancelled by the shop',
         };
     }
 }

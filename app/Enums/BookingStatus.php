@@ -107,4 +107,19 @@ enum BookingStatus: string
     {
         return $this === self::Confirmed;
     }
+
+    /**
+     * A photoshoot is paid on the day of the shoot, so a payment can be recorded once the session is confirmed (its time
+     * and price are fixed). Before that the price can still change or be cleared by a new time request.
+     */
+    public function takesPayment(): bool
+    {
+        return in_array($this, [self::Confirmed, self::Completed], true);
+    }
+
+    /** Rejected or cancelled: nothing is due, so no payment is recorded. */
+    public function isClosed(): bool
+    {
+        return in_array($this, [self::Rejected, self::Cancelled], true);
+    }
 }

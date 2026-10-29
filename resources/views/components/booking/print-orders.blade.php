@@ -2,7 +2,7 @@
 
 {{--
     The printing orders started from a photoshoot (prints after the shoot). Each keeps its own status and price; the
-    photography fee is never added to them, so no combined total is shown.
+    photography fee is never added to them, so no combined total is shown. Each is also paid on its own (Phase 5A).
 --}}
 @if ($orders->isEmpty())
     <p {{ $attributes->class('text-sm text-app-text-2') }}>No prints ordered from this photoshoot.</p>
@@ -20,7 +20,7 @@
                         <span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">{{ $order->confirmed_price !== null ? 'Confirmed' : 'Estimate' }}</span>
                         {{ $order->confirmedText() ?? $order->estimateText() }}
                     </span>
-                    <x-ui.status-badge :status="$order->status" />
+                    <span class="flex flex-col items-end gap-1"><x-ui.status-badge :status="$order->status" /><x-payment.badge :payable="$order" /></span>
                 </div>
             </li>
         @endforeach

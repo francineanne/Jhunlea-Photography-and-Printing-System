@@ -89,4 +89,16 @@ enum PrintingOrderStatus: string
     {
         return in_array($this, [self::Accepted, self::Processing], true);
     }
+
+    /** A payment can be recorded once the order is accepted (it has a confirmed price), and never on a closed order. */
+    public function takesPayment(): bool
+    {
+        return in_array($this, [self::Accepted, self::Processing, self::ReadyForPickup, self::Completed], true);
+    }
+
+    /** Rejected or cancelled: nothing is due, so no payment is recorded. */
+    public function isClosed(): bool
+    {
+        return in_array($this, [self::Rejected, self::Cancelled], true);
+    }
 }

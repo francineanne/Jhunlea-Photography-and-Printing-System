@@ -39,7 +39,7 @@ class PhotographyBookingController extends Controller
         $search = $request->search();
 
         $bookings = PhotographyBooking::query()
-            ->with(['customer', 'package'])
+            ->with(['customer', 'package', 'recordedPayment'])
             ->when($status, fn (Builder $query) => $query->where('status', $status))
             ->when($search !== '', function (Builder $query) use ($search) {
                 // Bound parameters, and % _ \ typed by the owner are matched literally instead of as wildcards
@@ -85,6 +85,10 @@ class PhotographyBookingController extends Controller
             'images' => fn ($query) => $query->orderBy('id'),
             'statusHistories.changedBy',
             'printingOrders' => fn ($query) => $query->latest('id'),
+            'printingOrders.recordedPayment',
+            'payments.receiver',
+            'payments.voider',
+            'recordedPayment',
         ]);
 
         // Which buttons to show; the service checks the same table again when one is pressed
@@ -115,7 +119,8 @@ class PhotographyBookingController extends Controller
             'canPropose' => $canPropose,
             'proposeFrom' => $proposeFrom,
             'proposalDays' => $proposalDays,
-            'canChangePrice' => $booking->status->allowsPriceChange(),
+            // A recorded payment locks the price (BookingTransitionService refuses the change until it is voided)
+            'canChangePrice' => $booking->status->allowsPriceChange() && $booking->recordedPayment === null,
             'startedYet' => $booking->starts_at->lte(Carbon::now('UTC')),
         ]);
     }

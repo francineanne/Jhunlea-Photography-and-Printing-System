@@ -1,0 +1,131 @@
+<?php
+
+namespace App\Services;
+
+use App\Enums\BookingStatus;
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentRecordStatus;
+use App\Enums\PrintingOrderStatus;
+use App\Models\Payment;
+use App\Models\PhotographyBooking;
+use App\Models\PrintingOrder;
+use App\Support\LocalTime;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Collection;
+
+/**
+ * What the owner's payments ledger reads: the payments (recorded and voided), the totals of RECORDED payments for the
+ * filtered period by method (voided ones never count), and the orders and bookings that wait for their payment. The
+ * totals are recorded payments only, never revenue or sales: estimates and unpaid prices are not in them.
+ */
+class PaymentLedgerService
+{
+    public const PER_PAGE = 20;
+
+    /** How many orders and how many bookings the "awaiting payment" list shows; the totals count all of them. */
+    public const AWAITING_LIMIT = 25;
+
+    /**
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @return LengthAwarePaginator<int, Payment>
+     */
+    public function payments(array $filters): LengthAwarePaginator
+    {
+        return $this->filtered($filters)
+            ->when($filters['status'], fn (Builder $query, PaymentRecordStatus $status) => $query->where('status', $status))
+            ->with(['receiver:id,name', 'voider:id,name'])
+            ->with(['payable' => fn (MorphTo $morph) => $morph->morphWith([
+                PrintingOrder::class => ['customer:id,name'],
+                PhotographyBooking::class => ['customer:id,name'],
+            ])])
+            ->latest('received_at')
+            ->latest('id')
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+    }
+
+    /**
+     * Recorded payments in the filtered period, in whole centavos, by method and in all. The status filter does not
+     * apply: voided payments are never counted.
+     *
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @return array{methods: array<string, array{count: int, cents: int}>, count: int, cents: int}
+     */
+    public function totals(array $filters): array
+    {
+        $rows = $this->filtered($filters)
+            ->where('status', PaymentRecordStatus::Recorded)
+            ->toBase()
+            ->selectRaw('method, COUNT(*) as total, SUM(ROUND(amount * 100)) as cents')
+            ->groupBy('method')
+            ->get()
+            ->keyBy('method');
+
+        $methods = collect(PaymentMethod::cases())->mapWithKeys(fn (PaymentMethod $method) => [$method->value => [
+            'count' => (int) ($rows[$method->value]->total ?? 0),
+            'cents' => (int) ($rows[$method->value]->cents ?? 0),
+        ]])->all();
+
+        return [
+            'methods' => $methods,
+            'count' => array_sum(array_column($methods, 'count')),
+            'cents' => array_sum(array_column($methods, 'cents')),
+        ];
+    }
+
+    /**
+     * Orders and bookings with a confirmed price above zero and no recorded payment, that are still open (not
+     * rejected, cancelled or completed): the payments the shop is waiting for.
+     *
+     * @return array{orders: Collection<int, PrintingOrder>, bookings: Collection<int, PhotographyBooking>, count: int, cents: int}
+     */
+    public function awaiting(): array
+    {
+        $orders = PrintingOrder::query()
+            ->whereIn('status', [PrintingOrderStatus::Accepted, PrintingOrderStatus::Processing, PrintingOrderStatus::ReadyForPickup])
+            ->where('confirmed_price', '>', 0)
+            ->whereDoesntHave('recordedPayment');
+
+        $bookings = PhotographyBooking::query()
+            ->where('status', BookingStatus::Confirmed)
+            ->where('confirmed_price', '>', 0)
+            ->whereDoesntHave('recordedPayment');
+
+        $sum = fn (Builder $query) => (int) (clone $query)->toBase()->selectRaw('SUM(ROUND(confirmed_price * 100)) as cents')->value('cents');
+
+        return [
+            'orders' => (clone $orders)->with('customer:id,name')->oldest('id')->limit(self::AWAITING_LIMIT)->get(),
+            'bookings' => (clone $bookings)->with('customer:id,name')->orderBy('starts_at')->limit(self::AWAITING_LIMIT)->get(),
+            'count' => (clone $orders)->count() + (clone $bookings)->count(),
+            'cents' => $sum($orders) + $sum($bookings),
+        ];
+    }
+
+    /**
+     * The date range (the shop's calendar days, as UTC ranges), method and search. Search matches the PAY reference,
+     * the GCash reference, the PR or PB reference and the customer's name; % _ \ are matched literally.
+     *
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @return Builder<Payment>
+     */
+    private function filtered(array $filters): Builder
+    {
+        $search = $filters['search'];
+
+        return Payment::query()
+            ->when($filters['from'], fn (Builder $query, string $from) => $query->where('received_at', '>=', LocalTime::dayStartUtc($from)))
+            ->when($filters['to'], fn (Builder $query, string $to) => $query->where('received_at', '<=', LocalTime::dayEndUtc($to)))
+            ->when($filters['method'], fn (Builder $query, PaymentMethod $method) => $query->where('method', $method))
+            ->when($search !== '', function (Builder $query) use ($search) {
+                $like = '%'.addcslashes($search, '%_\\').'%';
+                $query->where(fn (Builder $inner) => $inner
+                    ->where('reference_number', 'like', $like)
+                    ->orWhere('gcash_reference', 'like', $like)
+                    ->orWhereHasMorph('payable', [PrintingOrder::class, PhotographyBooking::class], fn (Builder $payable) => $payable
+                        ->where('reference_number', 'like', $like)
+                        ->orWhereHas('customer', fn (Builder $customer) => $customer->where('name', 'like', $like))));
+            });
+    }
+}

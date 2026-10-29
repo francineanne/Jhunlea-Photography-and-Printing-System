@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Enums\OrderEvent;
+use App\Enums\PaymentStatus;
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
 use App\Exceptions\InvalidStatusTransitionException;
 use App\Models\OrderStatusHistory;
+use App\Models\Payment;
 use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Support\Money;
@@ -56,6 +58,11 @@ class StatusTransitionService
 
             if ($to === PrintingOrderStatus::Rejected && $note === null) {
                 throw InvalidStatusTransitionException::noteRequired($to);
+            }
+
+            // The release gate: an order is handed over (Completed) only when it is fully paid, or costs nothing
+            if ($to === PrintingOrderStatus::Completed && ! PaymentStatus::derive($current->confirmed_price, Payment::recordedFor($current)->exists())->isSettled()) {
+                throw InvalidStatusTransitionException::notPaid();
             }
 
             if ($to === PrintingOrderStatus::Accepted) {
@@ -132,6 +139,15 @@ class StatusTransitionService
     }
 
     /**
+     * Writes the history row of a payment recorded or voided on the order. Called by PaymentService inside its own
+     * locked transaction; the status does not change.
+     */
+    public function recordPaymentEvent(PrintingOrder $order, User $owner, OrderEvent $event, ?string $note): void
+    {
+        $this->writeHistory($order, $order->status, $order->status, $owner, $note, $event);
+    }
+
+    /**
      * Changes the confirmed price after the order was accepted, until the prints are ready.
      *
      * @throws InvalidStatusTransitionException when the status does not allow it or the price is out of range
@@ -145,6 +161,10 @@ class StatusTransitionService
 
             if (! $current->status->allowsPriceChange()) {
                 throw InvalidStatusTransitionException::priceChangeNotAllowed($current->status);
+            }
+
+            if (Payment::recordedFor($current)->exists()) {
+                throw InvalidStatusTransitionException::priceLocked();
             }
 
             $new = $this->price($price);

@@ -18,8 +18,8 @@
 | 1 | Foundation: design system, layouts, authentication | Dev (Her) | Done (components, layouts, auth, roles, error pages) |
 | 2 | Catalog: services, packages, themes, public pages | Dev (Her) | Built, waiting for review: 2A services, 2B packages, gallery and themes (owner side), 2C public pages (landing, services, packages with filters, detail, compare, finder). Online request and booking buttons come in Phases 3 and 4. |
 | 3 | Printing orders | Dev (Her) | Built, waiting for review: 3A data and logic, 3B customer wizard, 3C order lists and details (customer and owner), owner actions through StatusTransitionService, protected file download. |
-| 4 | Photography bookings and schedule | Dev (Her) | 4A, 4B and 4C committed. 4D built, waiting for review: owner Schedule page (month, week and day calendar with a phone agenda), schedule editor (opening hours, booking settings, blocked dates, with a "Save anyway" safety net for confirmed bookings), "Confirm anyway" refused once the time has passed, the price shown on a proposal, and prints ordered from a completed photoshoot (linked both ways, fees kept separate). |
-| 5 | Payments, notifications, dashboards | BF | Not started |
+| 4 | Photography bookings and schedule | Dev (Her) | Done (4A to 4D merged into main): booking wizard, owner booking pages, schedule calendar and editor, prints after the shoot. |
+| 5 | Payments, notifications, dashboards | BF | In progress: 5A payments (payments table, PaymentService, derived payment status, release gate, price lock, payment cards, owner ledger) built, waiting for review. 5B and 5C not started. |
 | 6 | Customers, reports, settings, profile | BF | Not started |
 | 7 | AI customer assistant | BF | Not started |
 | 8 | Testing, mobile pass, animation polish, deployment | BF (Her reviews) | Not started |
@@ -161,6 +161,8 @@ Rules:
 
 Standard notice text: "Payment is made face-to-face at Jhunlea Photography & Printing."
 
+**The shop's payment rules (Phase 5A, from the shop owner; do not change them):** no partial payment and no downpayment: the customer pays the FULL confirmed price in one payment, face to face (for a photoshoot, on the day of the shoot). The shop takes cash and GCash. An order or the photos are released (Completed) only when fully paid. The system only records and monitors payments; it never takes one online. The old "partial payments on/off" setting is cancelled.
+
 ---
 
 ## 8. Status models
@@ -171,7 +173,7 @@ Standard notice text: "Payment is made face-to-face at Jhunlea Photography & Pri
 
 **Print production for a booking (only if prints were requested):** uses the printing order statuses on a linked printing order.
 
-**Payment status (computed):** `unpaid` (paid = 0), `partially_paid` (0 < paid < total), `paid` (paid >= total). `refunded` only if refunds are implemented later.
+**Payment status (derived, since Phase 5A, App\Enums\PaymentStatus::derive()):** `awaiting_price` (no confirmed price yet), `unpaid` (a confirmed price above zero and no recorded payment), `paid` (a recorded payment), `no_charge` (confirmed price exactly 0.00; nothing is due). Never typed in a form and never stored. The amount due is always the confirmed price, never the estimate. Paid and no charge are "settled": only then may StatusTransitionService move an order Ready for pickup → Completed and BookingTransitionService move a booking Confirmed → Completed (the release gate). While a payment is recorded, changePrice is refused ("Void the payment first"). A payment row is `recorded` or `voided` (App\Enums\PaymentRecordStatus); a voided payment never counts. Orders take a payment from Accepted on, bookings from Confirmed on; never on Rejected or Cancelled. A payment can be voided (reason required, kept in the payments table only) until the order or booking is Completed. There are no partial payments and no refunds workflow.
 
 Allowed transitions live in one place (`StatusTransitionService` or the Enum) and are validated on the server.
 
@@ -200,7 +202,7 @@ Money columns: `decimal(10,2)`. Never use float. Totals and balances are calcula
 | `booking_reference_images` | **Built in 4A:** photography_booking_id FK, original_name, stored_name (hashName), path, mime, size_bytes, uploaded_by. | 4 |
 | `availability_rules` | **Built in 4A:** weekday unique (0 Sunday to 6 Saturday), is_open, opens_at, closes_at (shop local time). Slot step is config booking.slot_step_minutes. | 4 |
 | `blocked_dates` | **Built in 4A:** date unique (shop local day), reason, created_by. | 4 |
-| `payments` | morphs payable (printing order or booking), amount, method, received_at, recorded_by FK, receipt_reference, note | 5 |
+| `payments` | **Built in 5A:** reference_number unique (PAY-000001, ReferenceNumberService prefix PAY), payable_type + payable_id (morph map aliases `printing_order`, `photography_booking`; `Relation::enforceMorphMap` in AppServiceProvider), amount decimal(10,2) (always the confirmed price at the moment of recording), method (cash, gcash), gcash_reference null (uppercase, 6 to 40 letters, digits or hyphens), received_by FK, received_at (UTC), status (recorded, voided), voided_by, voided_at, void_reason (owner only), `active` (1 while recorded, NULL when voided) with unique indexes (payable_type, payable_id, active) and (gcash_reference, active), so the database itself refuses a second recorded payment or a reused GCash reference. No soft deletes: a payment row is never deleted. Written only by PaymentService. | 5 |
 | `notifications` | Laravel database notifications table | 5 |
 | `faqs` | question, answer, is_active, sort_order | 6 |
 | `settings` | key unique, value json (business info, hours, booking rules, upload rules) | 6 |
@@ -219,7 +221,7 @@ Reference numbers are generated inside a database transaction so two requests ca
 | Public | `/` | none | `/`, `/services`, `/packages`, `/packages/{slug}`, `/packages/compare`, `/packages/finder` (all GET, 60 a minute, each with its own named counter since 4B; `compare` and `finder` are reserved package slugs) |
 | Auth | `/` | guest | `/login`, `/register`, `/forgot-password`, `/reset-password/{token}` |
 | Customer | `/my` | auth, role:customer | `/my/dashboard`, `/my/printing/new`, `/my/printing/{order}`, `/my/bookings/new` (`?package=slug`), `/my/bookings/slots` (JSON free times), `/my/bookings/{booking}/sent`, `/my/bookings/{booking}` (4C), `/my/history`, `/my/notifications`, `/my/settings` |
-| Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule` (calendar, `?view=month|week|day&date=Y-m-d`), `/owner/schedule/edit` (POST `hours`, `settings`, `blocked`; DELETE `blocked/{blockedDate}`), `/owner/customers`, `/owner/payments`, `/owner/reports`, `/owner/settings` |
+| Owner | `/owner` | auth, role:owner | `/owner`, `/owner/printing-orders`, `/owner/bookings`, `/owner/services`, `/owner/packages`, `/owner/themes`, `/owner/schedule` (calendar, `?view=month|week|day&date=Y-m-d`), `/owner/schedule/edit` (POST `hours`, `settings`, `blocked`; DELETE `blocked/{blockedDate}`), `/owner/payments` (ledger, 5A; payments are recorded with POST `/owner/printing-orders/{order}/payments` or `/owner/bookings/{booking}/payments` and voided with POST `.../payments/{payment}/void`), `/owner/customers`, `/owner/reports`, `/owner/settings` |
 | Files | `/files/{file}` | auth + policy | streams private files after an ownership check |
 | AI | `/assistant/messages` | auth (or throttled guest), throttle | POST only, server-side API key |
 

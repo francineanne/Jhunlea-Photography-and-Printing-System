@@ -34,7 +34,7 @@ class MyOrderController extends Controller
         $mine = fn () => PrintingOrder::query()->where('customer_id', $request->user()->id);
 
         $orders = $mine()
-            ->with('service')
+            ->with(['service', 'recordedPayment'])
             ->withCount('files')
             ->when($status, fn ($query) => $query->where('status', $status))
             ->latest()
@@ -58,6 +58,8 @@ class MyOrderController extends Controller
             'files' => fn ($query) => $query->orderBy('id'),
             'statusHistories',
             'booking',
+            'payments',
+            'recordedPayment',
         ]);
 
         return view('customer.printing.show', [

@@ -5,8 +5,10 @@ namespace Tests\Feature\Booking;
 use App\Enums\BookingEvent;
 use App\Enums\BookingStatus as Status;
 use App\Exceptions\BookingTransitionException;
+use App\Exceptions\PaymentException;
 use App\Models\BlockedDate;
 use App\Models\BookingStatusHistory;
+use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\User;
@@ -299,6 +301,9 @@ class OwnerBookingsTest extends TestCase
         $this->assertSame(Status::Confirmed, $booking->fresh()->status);
 
         $this->travelTo($this->manila('2026-11-05 10:05'));
+        // Phase 5A: the photos are released only when the shoot is fully paid
+        $this->act('complete', $booking)->assertSessionHas('error', PaymentException::RELEASE_MESSAGE);
+        Payment::factory()->paying($booking->fresh())->create();
         $this->act('complete', $booking, ['note' => 'Great shoot.'])->assertSessionHas('status');
         $this->assertSame(Status::Completed, $booking->fresh()->status);
     }

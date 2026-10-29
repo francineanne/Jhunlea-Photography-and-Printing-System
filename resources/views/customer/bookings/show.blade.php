@@ -152,6 +152,8 @@
                 </x-ui.notice>
             </section>
 
+            <x-payment.card :payable="$booking" />
+
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="cancel-title">
                 <h2 id="cancel-title" class="flex items-center gap-2 font-semibold">
                     <x-ui.icon :name="$canCancel ? 'lock_open' : 'lock'" :size="20" class="text-app-text-2" />Changing or cancelling

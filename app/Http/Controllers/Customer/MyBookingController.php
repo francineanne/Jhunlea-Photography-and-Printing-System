@@ -41,7 +41,7 @@ class MyBookingController extends Controller
         $upcoming = 'case when status = ? and starts_at >= ? then 0 else 1 end';
 
         $bookings = $mine()
-            ->with('package.coverImage')
+            ->with(['package.coverImage', 'recordedPayment'])
             ->withCount('images')
             ->when($status, fn ($query) => $query->where('status', $status))
             ->orderByRaw($upcoming, [BookingStatus::Confirmed->value, $now])
@@ -68,6 +68,9 @@ class MyBookingController extends Controller
             'images' => fn ($query) => $query->orderBy('id'),
             'statusHistories',
             'printingOrders' => fn ($query) => $query->where('customer_id', $booking->customer_id)->latest('id'),
+            'printingOrders.recordedPayment',
+            'payments',
+            'recordedPayment',
         ]);
 
         $cutoff = (int) config('booking.customer_cancel_cutoff_hours');

@@ -332,9 +332,11 @@
                     </details>
                 @endif
                 <x-ui.notice variant="payment" class="mt-4">
-                    <p class="text-app-text-2">The system records prices; it never takes payment online.</p>
+                    <p class="text-app-text-2">The system records payments received at the studio (cash or GCash, on the day of the shoot); it never takes payment online.</p>
                 </x-ui.notice>
             </section>
+
+            <x-payment.card :payable="$booking" viewer="owner" />
 
             {{-- The studio's private notes: never shown to the customer and never written to the history --}}
             <section id="internal-notes" class="scroll-mt-24 rounded-card border border-status-amber/30 bg-status-amber-bg/60 p-4 sm:p-6" aria-labelledby="notes-title">

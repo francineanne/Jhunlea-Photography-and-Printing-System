@@ -141,7 +141,7 @@
                                     <p class="text-xs text-app-text-2">Est. {{ $booking->estimateText() }}</p>
                                     <p class="font-bold tabular-nums {{ $booking->confirmed_price !== null ? 'text-brand' : 'text-app-text-2' }}">{{ $booking->confirmedText() ?? 'Not confirmed' }}</p>
                                 </td>
-                                <td class="px-3 py-4 align-top"><x-ui.status-badge :status="$booking->status" live /></td>
+                                <td class="px-3 py-4 align-top"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$booking->status" live /><x-payment.badge :payable="$booking" /></span></td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -156,7 +156,7 @@
                         <a href="{{ route('owner.bookings.show', $booking) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span>
-                                <x-ui.status-badge :status="$booking->status" live />
+                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$booking->status" live /><x-payment.badge :payable="$booking" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
                             <span class="block break-words text-sm text-app-text-2">{{ $booking->snapshot['package']['name'] ?? $booking->package?->name }} · {{ $booking->group_size }} {{ $booking->group_size === 1 ? 'person' : 'people' }}</span>

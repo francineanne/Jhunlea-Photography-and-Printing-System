@@ -183,6 +183,8 @@
             <x-ui.notice variant="payment">
                 <p class="text-app-text-2">Nothing is charged online. The shop confirms the final price before you pay.</p>
             </x-ui.notice>
+
+            <x-payment.card :payable="$order" />
         </aside>
     </div>
 @endsection

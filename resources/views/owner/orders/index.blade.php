@@ -110,7 +110,7 @@
                                     <p class="font-bold tabular-nums {{ $order->confirmed_price !== null ? 'text-brand' : 'text-app-text-2' }}">{{ $order->confirmedText() ?? 'Not confirmed' }}</p>
                                 </td>
                                 <td class="px-4 py-4">
-                                    <x-ui.status-badge :status="$order->status" live />
+                                    <span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span>
                                     @if ($order->needsInfo())
                                         <p class="mt-1 text-xs font-semibold text-status-amber">Waiting for the customer</p>
                                     @endif
@@ -132,7 +132,7 @@
                         <a href="{{ route('owner.orders.show', $order) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="font-mono text-sm font-bold text-brand">{{ $order->reference_number }}</span>
-                                <x-ui.status-badge :status="$order->status" live />
+                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ $order->customer?->name ?? 'Deleted account' }}</span>
                             <span class="block break-words text-sm text-app-text-2">{{ $order->serviceName() }} · {{ $order->quantity }} {{ Str::plural('copy', $order->quantity) }}</span>

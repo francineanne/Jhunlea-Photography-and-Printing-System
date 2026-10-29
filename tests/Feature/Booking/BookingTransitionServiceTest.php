@@ -95,8 +95,8 @@ class BookingTransitionServiceTest extends TestCase
     public function test_the_owner_can_make_exactly_the_listed_moves(Status $from, Status $to): void
     {
         $attributes = $from === Status::Proposed ? ['proposed_starts_at' => $this->manila('2026-11-06 14:00')] : [];
-        // Completing needs a session that has started
-        $booking = $this->booking($from, $to === Status::Completed ? '2026-11-02 07:00' : '2026-11-05 10:00', $attributes);
+        // Completing needs a session that has started, and (Phase 5A) one that is settled: a ₱0.00 price needs no payment
+        $booking = $this->booking($from, $to === Status::Completed ? '2026-11-02 07:00' : '2026-11-05 10:00', $attributes + ($to === Status::Completed ? ['confirmed_price' => '0.00'] : []));
         $allowed = in_array("{$from->value}>{$to->value}", self::OWNER_MOVES, true);
 
         if (! $allowed) {
@@ -459,7 +459,7 @@ class BookingTransitionServiceTest extends TestCase
 
     public function test_completing_before_the_start_is_refused(): void
     {
-        $booking = $this->booking(Status::Confirmed, '2026-11-02 09:00');
+        $booking = $this->booking(Status::Confirmed, '2026-11-02 09:00', ['confirmed_price' => '0.00']);
 
         try {
             $this->service()->complete($booking, $this->owner);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OptionGroup;
 use App\Enums\PrintingOrderStatus;
+use App\Models\Concerns\HasPayments;
 use App\Support\Money;
 use Database\Factories\PrintingOrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PrintingOrder extends Model
 {
     /** @use HasFactory<PrintingOrderFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasPayments, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array

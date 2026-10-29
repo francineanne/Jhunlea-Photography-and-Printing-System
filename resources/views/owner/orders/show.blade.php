@@ -136,7 +136,7 @@
     </section>
 
     <x-ui.notice variant="payment" class="mt-6">
-        <p class="text-app-text-2">The system records orders and prices; it never takes payment online.</p>
+        <p class="text-app-text-2">The system records payments received at the shop (cash or GCash); it never takes payment online.</p>
     </x-ui.notice>
 
     <div class="mt-6 grid items-start gap-6 xl:grid-cols-12">
@@ -225,6 +225,8 @@
                     </details>
                 @endif
             </section>
+
+            <x-payment.card :payable="$order" viewer="owner" />
 
             @if ($order->needsInfo())
                 <section class="rounded-card border border-status-amber/30 bg-status-amber-bg p-4" aria-labelledby="asked-title">

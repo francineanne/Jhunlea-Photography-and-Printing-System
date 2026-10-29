@@ -52,6 +52,12 @@ class PrintingOrderPolicy
         return $this->isOwner($user) || $this->owns($user, $order);
     }
 
+    /** Record or void a payment: the shop only. PaymentService checks the rules again inside its transaction. */
+    public function recordPayment(User $user, PrintingOrder $order): bool
+    {
+        return $this->isOwner($user);
+    }
+
     private function isOwner(User $user): bool
     {
         return $user->role === UserRole::Owner;

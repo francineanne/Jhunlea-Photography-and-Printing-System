@@ -47,4 +47,14 @@ class InvalidStatusTransitionException extends DomainException
     {
         return new self("The confirmed price can only be changed while an order is Accepted or Processing. This order is {$status->label()}.");
     }
+
+    public static function notPaid(): self
+    {
+        return new self(PaymentException::RELEASE_MESSAGE);
+    }
+
+    public static function priceLocked(): self
+    {
+        return new self(PaymentException::PRICE_LOCKED_MESSAGE);
+    }
 }

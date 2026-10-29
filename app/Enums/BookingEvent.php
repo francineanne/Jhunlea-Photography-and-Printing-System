@@ -13,6 +13,8 @@ enum BookingEvent: string
     case TimeRequestedAgain = 'time_requested_again';
     case PriceChanged = 'price_changed';
     case FilesAdded = 'files_added';
+    case PaymentRecorded = 'payment_recorded';
+    case PaymentVoided = 'payment_voided';
 
     public function label(): string
     {
@@ -22,6 +24,8 @@ enum BookingEvent: string
             self::TimeRequestedAgain => 'Another time requested',
             self::PriceChanged => 'Confirmed price changed',
             self::FilesAdded => 'Reference images added',
+            self::PaymentRecorded => 'Payment recorded',
+            self::PaymentVoided => 'Payment record cancelled by the shop',
         };
     }
 }

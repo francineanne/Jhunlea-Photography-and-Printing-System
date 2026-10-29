@@ -89,4 +89,14 @@ class BookingTransitionException extends DomainException
     {
         return new self('A photoshoot can be marked completed only after its start time.');
     }
+
+    public static function notPaid(): self
+    {
+        return new self(PaymentException::RELEASE_MESSAGE);
+    }
+
+    public static function priceLocked(): self
+    {
+        return new self(PaymentException::PRICE_LOCKED_MESSAGE);
+    }
 }

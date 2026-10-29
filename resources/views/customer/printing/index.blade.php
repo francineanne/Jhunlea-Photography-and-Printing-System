@@ -99,7 +99,7 @@
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-4 font-mono text-xs text-app-text-2"><x-ui.date :value="$order->created_at" /></td>
                                 <td class="px-4 py-4 tabular-nums">{{ $order->quantity }}</td>
-                                <td class="px-4 py-4"><x-ui.status-badge :status="$order->status" live /></td>
+                                <td class="px-4 py-4"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span></td>
                                 <td class="whitespace-nowrap px-4 py-4">
                                     <p class="font-semibold tabular-nums">{{ $order->confirmedText() ?? $order->estimateText() }}</p>
                                     <p class="font-mono text-[11px] uppercase text-app-text-2">{{ $order->confirmed_price !== null ? 'Confirmed' : ($order->estimated_price !== null ? 'Estimate' : '') }}</p>
@@ -122,7 +122,7 @@
                         <a href="{{ route('customer.printing.show', $order) }}" @class(['block rounded-card border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none', 'border-status-red/40' => $order->needsInfo(), 'border-app-border' => ! $order->needsInfo()])>
                             <span class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="rounded bg-neutral-100 px-2 py-1 font-mono text-xs font-semibold dark:bg-white/10">{{ $order->reference_number }}</span>
-                                <x-ui.status-badge :status="$order->status" live />
+                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span>
                             </span>
                             <span class="mt-3 block break-words font-semibold">{{ $order->serviceName() }}</span>
                             @if ($order->needsInfo())

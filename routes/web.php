@@ -16,6 +16,8 @@ use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
+use App\Http\Controllers\Owner\PaymentActionController;
+use App\Http\Controllers\Owner\PaymentController;
 use App\Http\Controllers\Owner\PhotographyBookingActionController;
 use App\Http\Controllers\Owner\PhotographyBookingController as OwnerPhotographyBookingController;
 use App\Http\Controllers\Owner\PrintingOrderActionController;
@@ -113,6 +115,12 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner
         Route::post('/{booking}/price', 'price')->middleware('throttle:30,1,owner-booking-price')->name('price');
         Route::post('/{booking}/notes', 'notes')->middleware('throttle:30,1,owner-booking-notes')->name('notes');
     });
+
+    // Payments (Phase 5A): a photoshoot is paid on the day, once it is confirmed
+    Route::whereNumber(['booking', 'payment'])->controller(PaymentActionController::class)->group(function () {
+        Route::post('/{booking}/payments', 'recordBooking')->middleware('throttle:20,1,owner-booking-payment-record')->name('payments.store');
+        Route::post('/{booking}/payments/{payment}/void', 'voidBooking')->middleware('throttle:20,1,owner-booking-payment-void')->name('payments.void');
+    });
 });
 
 // The owner's schedule (Phase 4D): the calendar, and the editor of opening hours, booking settings and blocked dates
@@ -124,6 +132,11 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/schedule')->name('owner
     Route::post('/blocked', 'block')->middleware('throttle:20,1,owner-schedule-block')->name('block');
     Route::delete('/blocked/{blockedDate}', 'unblock')->whereNumber('blockedDate')->middleware('throttle:30,1,owner-schedule-unblock')->name('unblock');
 });
+
+// The owner's payments ledger (Phase 5A): recorded and voided payments, recorded totals and what is still unpaid
+Route::get('/owner/payments', [PaymentController::class, 'index'])
+    ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-payments-ledger'])
+    ->name('owner.payments.index');
 
 // A reference image of a booking, for the owner or the customer whose booking it is (BookingReferenceImagePolicy).
 // Shown in the page only when its content is a real JPEG, PNG or WebP image; the download link always downloads
@@ -148,6 +161,12 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/printing-orders')->name
         Route::post('/{order}/complete', 'complete')->middleware('throttle:30,1,owner-order-complete')->name('complete');
         Route::post('/{order}/cancel', 'cancel')->middleware('throttle:30,1,owner-order-cancel')->name('cancel');
         Route::post('/{order}/price', 'price')->middleware('throttle:30,1,owner-order-price')->name('price');
+    });
+
+    // Payments (Phase 5A): recorded and voided only through PaymentService
+    Route::whereNumber(['order', 'payment'])->controller(PaymentActionController::class)->group(function () {
+        Route::post('/{order}/payments', 'recordOrder')->middleware('throttle:20,1,owner-order-payment-record')->name('payments.store');
+        Route::post('/{order}/payments/{payment}/void', 'voidOrder')->middleware('throttle:20,1,owner-order-payment-void')->name('payments.void');
     });
 });
 

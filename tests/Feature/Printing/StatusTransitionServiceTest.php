@@ -61,7 +61,8 @@ class StatusTransitionServiceTest extends TestCase
     public function test_the_owner_can_make_exactly_the_listed_moves(Status $from, Status $to): void
     {
         $owner = User::factory()->owner()->create();
-        $order = PrintingOrder::factory()->status($from)->create();
+        // Phase 5A: completing needs a settled order; a ₱0.00 price needs no payment
+        $order = PrintingOrder::factory()->status($from)->create($to === Status::Completed ? ['confirmed_price' => '0.00'] : []);
         $allowed = in_array("{$from->value}>{$to->value}", self::OWNER_MOVES, true);
 
         if (! $allowed) {

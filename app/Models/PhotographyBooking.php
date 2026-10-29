@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Models\Concerns\HasPayments;
 use App\Support\Money;
 use Database\Factories\PhotographyBookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class PhotographyBooking extends Model
 {
     /** @use HasFactory<PhotographyBookingFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasPayments, SoftDeletes;
 
     /** @return array<string, string> */
     protected function casts(): array

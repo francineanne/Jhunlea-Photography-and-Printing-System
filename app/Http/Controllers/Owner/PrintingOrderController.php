@@ -23,7 +23,7 @@ class PrintingOrderController extends Controller
         $search = $request->search();
 
         $orders = PrintingOrder::query()
-            ->with(['customer', 'service'])
+            ->with(['customer', 'service', 'recordedPayment'])
             ->withCount('files')
             ->when($status, fn (Builder $query) => $query->where('status', $status))
             ->when($search !== '', function (Builder $query) use ($search) {
@@ -62,6 +62,9 @@ class PrintingOrderController extends Controller
             'files' => fn ($query) => $query->orderBy('id'),
             'files.uploader',
             'statusHistories.changedBy',
+            'payments.receiver',
+            'payments.voider',
+            'recordedPayment',
         ]);
 
         // Which buttons to show; the service checks the same table again when one is pressed
@@ -74,7 +77,8 @@ class PrintingOrderController extends Controller
             'order' => $order,
             'moves' => $moves,
             'canRequestInfo' => $order->status->allowsInfoRequest(),
-            'canChangePrice' => $order->status->allowsPriceChange(),
+            // A recorded payment locks the price (StatusTransitionService refuses the change until it is voided)
+            'canChangePrice' => $order->status->allowsPriceChange() && $order->recordedPayment === null,
         ]);
     }
 }

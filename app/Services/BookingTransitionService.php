@@ -4,10 +4,12 @@ namespace App\Services;
 
 use App\Enums\BookingEvent;
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Enums\UserRole;
 use App\Exceptions\BookingTransitionException;
 use App\Models\BookingSetting;
 use App\Models\BookingStatusHistory;
+use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\User;
 use App\Support\LocalTime;
@@ -207,6 +209,11 @@ class BookingTransitionService
                 throw BookingTransitionException::notStartedYet();
             }
 
+            // The release gate: the photos are released (Completed) only when the shoot is fully paid, or costs nothing
+            if (! PaymentStatus::derive($current->confirmed_price, Payment::recordedFor($current)->exists())->isSettled()) {
+                throw BookingTransitionException::notPaid();
+            }
+
             $this->move($current, BookingStatus::Completed, $owner, $this->clean($note));
         });
     }
@@ -223,6 +230,10 @@ class BookingTransitionService
                 throw BookingTransitionException::priceChangeNotAllowed($current->status);
             }
 
+            if (Payment::recordedFor($current)->exists()) {
+                throw BookingTransitionException::priceLocked();
+            }
+
             $new = Money::normalizePrice($price) ?? throw BookingTransitionException::priceOutOfRange();
             $old = $current->confirmed_price;
 
@@ -236,6 +247,15 @@ class BookingTransitionService
             $note = 'Confirmed price changed from '.Money::format($old).' to '.Money::format($new).'.'.($reason ? ' '.$reason : '');
             $this->writeHistory($current, $current->status, $current->status, $owner, $note, BookingEvent::PriceChanged);
         });
+    }
+
+    /**
+     * Writes the history row of a payment recorded or voided on the booking. Called by PaymentService inside its own
+     * locked transaction; the status does not change.
+     */
+    public function recordPaymentEvent(PhotographyBooking $booking, User $owner, BookingEvent $event, ?string $note): void
+    {
+        $this->writeHistory($booking, $booking->status, $booking->status, $owner, $note, $event);
     }
 
     /**

@@ -17,6 +17,8 @@ class ReferenceNumberService
 
     public const BOOKING = 'PB';
 
+    public const PAYMENT = 'PAY';
+
     public function next(string $prefix = self::PRINTING): string
     {
         return DB::transaction(function () use ($prefix) {

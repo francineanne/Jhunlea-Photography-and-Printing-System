@@ -65,6 +65,12 @@ class PhotographyBookingPolicy
         return $this->isOwner($user);
     }
 
+    /** Record or void a payment: the studio only. PaymentService checks the rules again inside its transaction. */
+    public function recordPayment(User $user, PhotographyBooking $booking): bool
+    {
+        return $this->isOwner($user);
+    }
+
     private function isOwner(User $user): bool
     {
         return $user->role === UserRole::Owner;
