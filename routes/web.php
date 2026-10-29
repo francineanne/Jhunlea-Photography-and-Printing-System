@@ -12,6 +12,7 @@ use App\Http\Controllers\Customer\MyOrderController;
 use App\Http\Controllers\Customer\PhotographyBookingController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
 use App\Http\Controllers\Customer\PrintingOrderController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
@@ -132,6 +133,19 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/schedule')->name('owner
     Route::post('/blocked', 'block')->middleware('throttle:20,1,owner-schedule-block')->name('block');
     Route::delete('/blocked/{blockedDate}', 'unblock')->whereNumber('blockedDate')->middleware('throttle:30,1,owner-schedule-unblock')->name('unblock');
 });
+
+// Notifications (Phase 5B): each area reads and marks only its own person's rows. Marking is always a POST
+foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
+    Route::middleware(['auth', "role:{$area}"])->prefix("{$prefix}/notifications")->name("{$area}.notifications.")->controller(NotificationController::class)->group(function () use ($area) {
+        Route::get('/', 'index')->middleware("throttle:60,1,{$area}-notifications")->name('index');
+        Route::post('/read-all', 'readAll')->middleware("throttle:20,1,{$area}-notifications-read-all")->name('read-all');
+        Route::whereUuid('notification')->group(function () use ($area) {
+            Route::get('/{notification}', 'go')->middleware("throttle:60,1,{$area}-notification-go")->name('go');
+            Route::post('/{notification}/open', 'open')->middleware("throttle:60,1,{$area}-notification-open")->name('open');
+            Route::post('/{notification}/read', 'read')->middleware("throttle:60,1,{$area}-notification-read")->name('read');
+        });
+    });
+}
 
 // The owner's payments ledger (Phase 5A): recorded and voided payments, recorded totals and what is still unpaid
 Route::get('/owner/payments', [PaymentController::class, 'index'])

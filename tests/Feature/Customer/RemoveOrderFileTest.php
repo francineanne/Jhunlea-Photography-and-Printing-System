@@ -9,6 +9,7 @@ use App\Models\OrderStatusHistory;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use App\Services\NotificationDispatcher;
 use App\Services\PrintingOrderService;
 use App\Services\StatusTransitionService;
 use Illuminate\Contracts\Debug\ExceptionHandler;
@@ -281,7 +282,7 @@ class RemoveOrderFileTest extends TestCase
         $file = $this->file($order);
 
         // The history row fails to save, so the whole removal is rolled back
-        $this->app->instance(StatusTransitionService::class, new class extends StatusTransitionService
+        $this->app->instance(StatusTransitionService::class, new class(app(NotificationDispatcher::class)) extends StatusTransitionService
         {
             public function recordFileRemoved(PrintingOrder $order, User $actor, string $fileName): void
             {

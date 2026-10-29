@@ -90,7 +90,7 @@ Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_ove
 - [x] payments migration (polymorphic, morph map), `PaymentService` (ang confirmed price ang amount, walang tina-type na halaga), derived payment status (awaiting price, unpaid, paid, no charge), at record payment modal na may confirm step (5A)
 - [x] Release gate (Completed lang kapag bayad o ₱0.00) at price lock habang may naka-record na bayad; void na may dahilan hanggang ma-release (5A)
 - [x] Payment card sa customer order at booking detail; payments ledger ng owner na may filters, totals ng recorded payments at listahan ng naghihintay ng bayad (5A)
-- [ ] Database notifications sa bawat status change, quotation update, schedule proposal at ready for pickup; bell dropdown at notifications page
+- [x] Database notifications (5B): `NotificationDispatcher` lang ang nagpapasya kung sino ang sasabihan; tinatawag ito ng `writeHistory()` ng dalawang status service, kaya walang notification kung walang history row. Customer: accepted (may confirmed price), rejected, more info, processing, ready for pickup, completed, price changed; booking confirmed, new time, rejected, price changed, completed; payment recorded at payment record cancelled. Lahat ng owner: bagong order, bagong booking request, cancel ng customer, tinanggap ang proposed time, humingi ng ibang oras, nag-add ng files bilang sagot. Bell na may unread badge (99+), dropdown ng huling 8, notifications page (All at Unread) sa customer at owner
 - [ ] Customer dashboard at owner overview na totoong data ang counts
 - [ ] Request history (pinagsamang printing at bookings)
 - [x] Tests: tama ang derived status at ang amount, owner lang ang makakapag-record, at hiwalay ang payment status sa order status (5A; walang balance dahil walang partial payment)
@@ -128,6 +128,10 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Galing sa Phase 5A:
   - [ ] Totoong MySQL race na dalawang payment record sa iisang sandali (iisang order, at iisang GCash reference sa dalawang order); sa 5A, sa SQLite file lang ito nasubukan
   - [ ] Tingnan ang payments ledger at ang payment card sa totoong phone
+- [ ] Galing sa Phase 5B:
+  - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
+  - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page
+  - [ ] Tingnan ang bell dropdown sa totoong phone (iOS Safari at Android Chrome)
 
 ---
 

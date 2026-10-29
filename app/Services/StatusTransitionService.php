@@ -27,6 +27,8 @@ use Illuminate\Support\Facades\DB;
  */
 class StatusTransitionService
 {
+    public function __construct(private readonly NotificationDispatcher $notifications) {}
+
     /** Writes the first history row of a new order (nothing to nothing-before-it). Called by PrintingOrderService. */
     public function recordSubmission(PrintingOrder $order, User $actor): void
     {
@@ -142,9 +144,10 @@ class StatusTransitionService
      * Writes the history row of a payment recorded or voided on the order. Called by PaymentService inside its own
      * locked transaction; the status does not change.
      */
-    public function recordPaymentEvent(PrintingOrder $order, User $owner, OrderEvent $event, ?string $note): void
+    /** @param  array{payment?: string, amount?: string}  $context  for the customer's notification (never the GCash reference) */
+    public function recordPaymentEvent(PrintingOrder $order, User $owner, OrderEvent $event, ?string $note, array $context = []): void
     {
-        $this->writeHistory($order, $order->status, $order->status, $owner, $note, $event);
+        $this->writeHistory($order, $order->status, $order->status, $owner, $note, $event, $context);
     }
 
     /**
@@ -240,7 +243,13 @@ class StatusTransitionService
         return $text === '' ? null : $text;
     }
 
-    private function writeHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, User $actor, ?string $note, ?OrderEvent $event = null): void
+    /**
+     * Every history row is written here, and only here the notifications start (NotificationDispatcher decides who is
+     * told, after the transaction commits): no history row, no notification.
+     *
+     * @param  array{payment?: string, amount?: string}  $context
+     */
+    private function writeHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, User $actor, ?string $note, ?OrderEvent $event = null, array $context = []): void
     {
         $history = new OrderStatusHistory;
         $history->forceFill([
@@ -251,5 +260,7 @@ class StatusTransitionService
             'changed_by' => $actor->getKey(),
             'note' => $note,
         ])->save();
+
+        $this->notifications->orderHistory($order, $from, $to, $event, $actor, $context);
     }
 }

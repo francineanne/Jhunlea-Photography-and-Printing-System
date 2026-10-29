@@ -77,7 +77,7 @@ class PaymentService
 
                 // The customer reads this history: the GCash reference stays out of it
                 $note = 'Payment recorded ('.$method->label().'): '.$payment->reference_number.', '.Money::format($payment->amount).'.';
-                $this->history($current, $owner, 'recorded', $note);
+                $this->history($current, $owner, 'recorded', $note, ['payment' => $payment->reference_number, 'amount' => $payment->amount]);
 
                 $payable->unsetRelation('recordedPayment')->unsetRelation('payments');
 
@@ -131,7 +131,7 @@ class PaymentService
                 'void_reason' => $reason,
             ])->save();
 
-            $this->history($current, $owner, 'voided', null);
+            $this->history($current, $owner, 'voided', null, ['payment' => $row->reference_number]);
 
             $payment->setRawAttributes($row->getAttributes(), true);
             $payable->unsetRelation('recordedPayment')->unsetRelation('payments');
@@ -199,12 +199,13 @@ class PaymentService
     }
 
     /** Through the status services' own history code, so the timeline reads it like any other step. */
-    private function history(PrintingOrder|PhotographyBooking $current, User $owner, string $kind, ?string $note): void
+    /** @param  array{payment?: string, amount?: string}  $context  for the customer's notification: the PAY reference and amount, never the GCash reference or a void reason */
+    private function history(PrintingOrder|PhotographyBooking $current, User $owner, string $kind, ?string $note, array $context = []): void
     {
         if ($current instanceof PrintingOrder) {
-            $this->orders->recordPaymentEvent($current, $owner, $kind === 'recorded' ? OrderEvent::PaymentRecorded : OrderEvent::PaymentVoided, $note);
+            $this->orders->recordPaymentEvent($current, $owner, $kind === 'recorded' ? OrderEvent::PaymentRecorded : OrderEvent::PaymentVoided, $note, $context);
         } else {
-            $this->bookings->recordPaymentEvent($current, $owner, $kind === 'recorded' ? BookingEvent::PaymentRecorded : BookingEvent::PaymentVoided, $note);
+            $this->bookings->recordPaymentEvent($current, $owner, $kind === 'recorded' ? BookingEvent::PaymentRecorded : BookingEvent::PaymentVoided, $note, $context);
         }
     }
 

@@ -1,6 +1,6 @@
 @props(['items', 'label' => 'Main', 'variant' => 'stack'])
 
-{{-- items: [['label' => ..., 'icon' => ..., 'route' => route name, 'match' => optional route pattern such as 'owner.services.*', or a list of them], ...]; the active route gets aria-current="page" --}}
+{{-- items: [['label' => ..., 'icon' => ..., 'route' => route name, 'match' => optional route pattern such as 'owner.services.*', or a list of them, 'badge' => optional count], ...]; the active route gets aria-current="page" --}}
 <nav aria-label="{{ $label }}" {{ $attributes }}>
     <ul @class(['flex items-center gap-1' => $variant === 'top', 'space-y-1' => $variant !== 'top'])>
         @foreach ($items as $item)
@@ -16,6 +16,9 @@
                     ])>
                     <x-ui.icon :name="$item['icon']" :size="20" />
                     {{ $item['label'] }}
+                    @if (($item['badge'] ?? 0) > 0)
+                        <span @class(['ml-auto rounded-full px-2 py-0.5 text-[11px] font-bold tabular-nums', 'bg-white text-brand' => $active, 'bg-brand text-white' => ! $active])><span class="sr-only">, </span>{{ $item['badge'] > \App\Services\NotificationFeed::BADGE_MAX ? \App\Services\NotificationFeed::BADGE_MAX.'+' : $item['badge'] }}<span class="sr-only"> unread</span></span>
+                    @endif
                 </a>
             </li>
         @endforeach

@@ -43,6 +43,7 @@ class BookingTransitionService
     public function __construct(
         private readonly ScheduleConflictService $conflicts,
         private readonly AvailabilityService $availability,
+        private readonly NotificationDispatcher $notifications,
     ) {}
 
     /** Writes the first history row of a new booking. Called by BookingService. */
@@ -253,9 +254,10 @@ class BookingTransitionService
      * Writes the history row of a payment recorded or voided on the booking. Called by PaymentService inside its own
      * locked transaction; the status does not change.
      */
-    public function recordPaymentEvent(PhotographyBooking $booking, User $owner, BookingEvent $event, ?string $note): void
+    /** @param  array{payment?: string, amount?: string}  $context  for the customer's notification (never the GCash reference) */
+    public function recordPaymentEvent(PhotographyBooking $booking, User $owner, BookingEvent $event, ?string $note, array $context = []): void
     {
-        $this->writeHistory($booking, $booking->status, $booking->status, $owner, $note, $event);
+        $this->writeHistory($booking, $booking->status, $booking->status, $owner, $note, $event, $context);
     }
 
     /**
@@ -359,7 +361,13 @@ class BookingTransitionService
         return $text === '' ? null : $text;
     }
 
-    private function writeHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, User $actor, ?string $note, ?BookingEvent $event = null): void
+    /**
+     * Every history row is written here, and only here the notifications start (NotificationDispatcher decides who is
+     * told, after the transaction commits): no history row, no notification.
+     *
+     * @param  array{payment?: string, amount?: string}  $context
+     */
+    private function writeHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, User $actor, ?string $note, ?BookingEvent $event = null, array $context = []): void
     {
         $history = new BookingStatusHistory;
         $history->forceFill([
@@ -370,5 +378,7 @@ class BookingTransitionService
             'changed_by' => $actor->getKey(),
             'note' => $note,
         ])->save();
+
+        $this->notifications->bookingHistory($booking, $from, $to, $event, $actor, $context);
     }
 }

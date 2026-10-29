@@ -9,6 +9,7 @@
         ['label' => 'Photography bookings', 'icon' => 'photo_camera_front', 'route' => 'owner.bookings.index', 'match' => 'owner.bookings.*'],
         ['label' => 'Schedule', 'icon' => 'calendar_month', 'route' => 'owner.schedule.index', 'match' => 'owner.schedule.*'],
         ['label' => 'Payments', 'icon' => 'point_of_sale', 'route' => 'owner.payments.index', 'match' => 'owner.payments.*'],
+        ['label' => 'Notifications', 'icon' => 'notifications', 'route' => 'owner.notifications.index', 'match' => 'owner.notifications.*', 'badge' => $bell['unread'] ?? 0],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],
         ['label' => 'Themes', 'icon' => 'palette', 'route' => 'owner.themes.index', 'match' => 'owner.themes.*'],
@@ -58,6 +59,7 @@
             </div>
 
             <div class="flex items-center gap-2">
+                <x-notifications.bell :bell="$bell" area="owner" />
                 <x-ui.theme-toggle />
                 <x-layout.user-menu :user="auth()->user()" />
             </div>

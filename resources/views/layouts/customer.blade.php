@@ -24,13 +24,14 @@
                     <x-ui.icon name="menu" />
                 </button>
                 <a href="{{ route('customer.dashboard') }}" class="group inline-flex min-h-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, my dashboard">
-                    <x-ui.logo mark compact />
+                    <x-ui.logo mark compact tight />
                 </a>
                 {{-- From 1280px, as in the customer designs (hidden xl:flex): four items and the account menu need the room --}}
                 <x-layout.nav :items="$nav" variant="top" class="hidden xl:block" />
             </div>
 
             <div class="flex items-center gap-2">
+                <x-notifications.bell :bell="$bell" area="customer" />
                 <x-ui.theme-toggle />
                 <x-layout.user-menu :user="auth()->user()" />
             </div>
