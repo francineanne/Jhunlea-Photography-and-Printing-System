@@ -6,8 +6,10 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BookingReferenceImageController;
+use App\Http\Controllers\Customer\AssistantConversationController;
 use App\Http\Controllers\Customer\BookingSlotsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\MessageController as CustomerMessageController;
 use App\Http\Controllers\Customer\MyBookingController;
 use App\Http\Controllers\Customer\MyOrderController;
 use App\Http\Controllers\Customer\PhotographyBookingController;
@@ -19,6 +21,8 @@ use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
+use App\Http\Controllers\Owner\MessageController as OwnerMessageController;
+use App\Http\Controllers\Owner\OwnerPresenceController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
 use App\Http\Controllers\Owner\PaymentActionController;
@@ -294,6 +298,40 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/themes')->name('owner.t
     Route::put('/{theme}', [ThemeController::class, 'update'])->name('update');
     Route::delete('/{theme}', [ThemeController::class, 'destroy'])->name('destroy');
     Route::post('/{theme}/publish', [ThemeController::class, 'publish'])->name('publish');
+});
+
+// Messaging (Phase 7B), JSON only until the screens of 7C and 7D. The customer's studio thread and Ask Lumi
+// conversations; another person's conversation answers 404 (ConversationPolicy)
+Route::middleware(['auth', 'role:customer'])->prefix('my/messages')->name('customer.messages.')->controller(CustomerMessageController::class)->group(function () {
+    Route::get('/studio', 'studio')->middleware('throttle:30,1,chat-open')->name('studio');
+    Route::whereNumber('conversation')->group(function () {
+        Route::get('/{conversation}', 'show')->middleware('throttle:60,1,chat-poll')->name('show');
+        Route::post('/{conversation}', 'store')->middleware('throttle:20,1,chat-send')->name('store');
+        Route::post('/{conversation}/lumi', 'lumi')->middleware('throttle:12,1,chat-lumi')->name('lumi');
+        Route::post('/{conversation}/read', 'read')->middleware('throttle:60,1,chat-read')->name('read');
+    });
+});
+
+Route::middleware(['auth', 'role:customer'])->prefix('my/assistant/conversations')->name('customer.assistant.')->controller(AssistantConversationController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:60,1,chat-assistant-list')->name('index');
+    Route::post('/', 'store')->middleware('throttle:10,1,chat-assistant-new')->name('store');
+    Route::get('/{conversation}/handoff-draft', 'handoffDraft')->whereNumber('conversation')->middleware('throttle:20,1,chat-handoff-draft')->name('handoff-draft');
+});
+
+// The owner's studio inbox, threads and presence; Ask Lumi conversations are never reachable here
+Route::middleware(['auth', 'role:owner'])->prefix('owner/messages')->name('owner.messages.')->group(function () {
+    Route::get('/presence', [OwnerPresenceController::class, 'show'])->middleware('throttle:60,1,owner-chat-presence')->name('presence');
+    Route::post('/presence', [OwnerPresenceController::class, 'update'])->middleware('throttle:20,1,owner-chat-presence-set')->name('presence.update');
+
+    Route::controller(OwnerMessageController::class)->group(function () {
+        Route::get('/', 'index')->middleware('throttle:60,1,owner-chat-inbox')->name('index');
+        Route::whereNumber('conversation')->group(function () {
+            Route::get('/{conversation}', 'show')->middleware('throttle:60,1,owner-chat-poll')->name('show');
+            Route::post('/{conversation}', 'store')->middleware('throttle:30,1,owner-chat-send')->name('store');
+            Route::post('/{conversation}/resolve', 'resolve')->middleware('throttle:30,1,owner-chat-resolve')->name('resolve');
+            Route::post('/{conversation}/read', 'read')->middleware('throttle:60,1,owner-chat-read')->name('read');
+        });
+    });
 });
 
 // Component gallery for developers. Hidden outside the local environment.

@@ -8,10 +8,13 @@ use App\Enums\NotificationKind;
 use App\Enums\OrderEvent;
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
+use App\Models\Conversation;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Notifications\ActivityNotification;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
@@ -71,6 +74,53 @@ class NotificationDispatcher
         };
 
         $this->send($kind, $booking, $actor, $context);
+    }
+
+    /** A customer wrote in their studio thread: every owner is told, once until they read it (Phase 7B). */
+    public function messageReceived(Conversation $conversation, User $customer): void
+    {
+        $this->sendMessageNotice(NotificationKind::MessageReceived, $conversation, $customer,
+            fn () => User::query()->where('role', UserRole::Owner)->whereKeyNot($customer->id)->get());
+    }
+
+    /** The owner replied in a studio thread: the customer is told, once until they read it. Lumi's replies tell nobody. */
+    public function messageReplied(Conversation $conversation, User $owner): void
+    {
+        $this->sendMessageNotice(NotificationKind::MessageReplied, $conversation, $owner,
+            fn () => User::query()->whereKey($conversation->customer_id)->where('role', UserRole::Customer)->get());
+    }
+
+    /** Opening a thread marks the reader's unread message notices of that conversation read. */
+    public function markConversationRead(User $reader, Conversation $conversation): void
+    {
+        $reader->unreadNotifications()->reorder()
+            ->whereIn('type', [NotificationKind::MessageReceived->value, NotificationKind::MessageReplied->value])
+            ->where('data->conversation_id', $conversation->id)
+            ->update(['read_at' => now()]);
+    }
+
+    /**
+     * Coalesced: a recipient who still has an UNREAD notice of the same kind for this conversation gets no second one.
+     * The data is the conversation id and the sender's name only, never the message.
+     *
+     * @param  callable(): Collection<int, User>  $recipients
+     */
+    private function sendMessageNotice(NotificationKind $kind, Conversation $conversation, User $sender, callable $recipients): void
+    {
+        $data = ['kind' => $kind->value, 'conversation_id' => (int) $conversation->id, 'sender_name' => (string) $sender->name];
+
+        DB::afterCommit(function () use ($kind, $data, $recipients) {
+            try {
+                $waiting = DatabaseNotification::query()->where('type', $kind->value)->whereNull('read_at')
+                    ->where('data->conversation_id', $data['conversation_id'])->pluck('notifiable_id')->map(fn ($id) => (int) $id)->all();
+
+                $to = $recipients()->reject(fn (User $user) => in_array($user->id, $waiting, true));
+
+                Notification::sendNow($to, new ActivityNotification($data));
+            } catch (Throwable $e) {
+                Log::warning('A notification could not be saved.', ['kind' => $kind->value, 'conversation' => $data['conversation_id'], 'error' => $e::class]);
+            }
+        });
     }
 
     /** @param  array{payment?: string, amount?: string}  $context */

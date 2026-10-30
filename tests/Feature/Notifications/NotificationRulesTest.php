@@ -246,12 +246,16 @@ class NotificationRulesTest extends TestCase
 
         foreach (NotificationKind::cases() as $kind) {
             $this->assertNotSame('', $kind->title(), $kind->value);
-            $this->assertStringContainsString('PR-000001', $kind->message(['kind' => $kind->value] + $data), $kind->value);
             $this->assertNotSame('', $kind->icon(), $kind->value);
             $kind->audience();
             $kind->anchor();
+
+            // The chat notices (Phase 7B) point to a conversation, not to a PR or PB reference
+            if (! $kind->isMessage()) {
+                $this->assertStringContainsString('PR-000001', $kind->message(['kind' => $kind->value] + $data), $kind->value);
+            }
         }
 
-        $this->assertCount(23, NotificationKind::cases());
+        $this->assertCount(25, NotificationKind::cases());
     }
 }

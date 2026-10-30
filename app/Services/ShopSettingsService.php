@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\OwnerPresenceMode;
 use App\Models\ShopSetting;
 use App\Support\ShopSettings;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,12 @@ class ShopSettingsService
     public function saveLimits(array $limits): void
     {
         $this->write(array_map('intval', array_intersect_key($limits, ShopSettings::LIMITS)));
+    }
+
+    /** The owner's presence mode of the studio chat (Phase 7B). */
+    public function savePresence(OwnerPresenceMode $mode): void
+    {
+        $this->write(['owner_presence' => $mode->value]);
     }
 
     /** Back to the starting defaults in config: every stored limit is cleared. The business info is kept. */

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\OwnerPresenceMode;
 use App\Support\ShopSettings;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,8 @@ class ShopSetting extends Model
             'booking_max_image_mb' => 'integer',
             'booking_max_images' => 'integer',
             'booking_max_total_mb' => 'integer',
+            'owner_presence' => OwnerPresenceMode::class,
+            'owner_last_active_at' => 'datetime',
         ];
     }
 

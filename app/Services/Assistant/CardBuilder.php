@@ -22,29 +22,47 @@ class CardBuilder
      */
     public function build(array $recommend): array
     {
-        $ids = fn (AssistantCardType $type) => array_column(array_filter($recommend, fn ($item) => $item['type'] === $type), 'id');
+        return $this->buildMany([$recommend])[0];
+    }
+
+    /**
+     * The cards of several replies at once (a page of chat messages), with at most one query per catalog type for all of
+     * them together, and none for a type nobody recommended.
+     *
+     * @param  array<array-key, list<array{type: AssistantCardType, id: int}>>  $lists
+     * @return array<array-key, list<array{type: string, id: int, name: string, price: ?string, summary: ?string, inclusions: list<string>, url: string}>>
+     */
+    public function buildMany(array $lists): array
+    {
+        $all = array_merge([], ...array_values($lists));
+        $ids = fn (AssistantCardType $type) => array_values(array_unique(array_column(array_filter($all, fn ($item) => $item['type'] === $type), 'id')));
+        $load = fn (AssistantCardType $type, string $model) => $ids($type) === [] ? collect() : $model::query()->published()->whereKey($ids($type))->get()->keyBy('id');
 
         $records = [
-            AssistantCardType::Service->value => PrintingService::query()->published()->whereKey($ids(AssistantCardType::Service))->get()->keyBy('id'),
-            AssistantCardType::Package->value => PhotographyPackage::query()->published()->whereKey($ids(AssistantCardType::Package))->get()->keyBy('id'),
-            AssistantCardType::Theme->value => Theme::query()->published()->whereKey($ids(AssistantCardType::Theme))->get()->keyBy('id'),
+            AssistantCardType::Service->value => $load(AssistantCardType::Service, PrintingService::class),
+            AssistantCardType::Package->value => $load(AssistantCardType::Package, PhotographyPackage::class),
+            AssistantCardType::Theme->value => $load(AssistantCardType::Theme, Theme::class),
         ];
 
-        $cards = [];
+        $dropped = 0;
+        $result = [];
 
-        foreach ($recommend as $item) {
-            $record = $records[$item['type']->value]->get($item['id']);
+        foreach ($lists as $key => $recommend) {
+            $cards = [];
 
-            if ($record !== null) {
-                $cards[] = $this->card($record);
+            foreach ($recommend as $item) {
+                $record = $records[$item['type']->value]->get($item['id']);
+                $record === null ? $dropped++ : $cards[] = $this->card($record);
             }
+
+            $result[$key] = array_slice($cards, 0, (int) config('assistant.max_cards'));
         }
 
-        if (count($cards) < count($recommend)) {
-            Log::info('assistant.cards_dropped', ['dropped' => count($recommend) - count($cards)]);
+        if ($dropped > 0) {
+            Log::info('assistant.cards_dropped', ['dropped' => $dropped]);
         }
 
-        return array_slice($cards, 0, (int) config('assistant.max_cards'));
+        return $result;
     }
 
     /** @return array{type: string, id: int, name: string, price: ?string, summary: ?string, inclusions: list<string>, url: string} */

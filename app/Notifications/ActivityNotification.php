@@ -11,7 +11,11 @@ use Illuminate\Notifications\Notification;
  */
 class ActivityNotification extends Notification
 {
-    /** @param  array{kind: string, payable_type: string, payable_id: int, reference: string, amount?: ?string, payment?: ?string}  $data */
+    /**
+     * An order or booking notice, or (Phase 7B) a studio chat notice with only the conversation id and sender name.
+     *
+     * @param  array{kind: string, payable_type?: string, payable_id?: int, reference?: string, amount?: ?string, payment?: ?string, conversation_id?: int, sender_name?: string}  $data
+     */
     public function __construct(public readonly array $data) {}
 
     /** @return list<string> */

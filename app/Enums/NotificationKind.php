@@ -10,7 +10,8 @@ use App\Support\Money;
  * message fails (the match has no default) and NotificationKindTest catches it.
  *
  * Stored data: kind, payable_type (morph map alias), payable_id, reference (PR or PB), and where a kind needs them the
- * amount and the PAY reference. Never a GCash reference, a void or rejection reason, a note, a phone or an email.
+ * amount and the PAY reference. Never a GCash reference, a void or rejection reason, a note, a phone or an email. The
+ * message kinds store only kind, conversation_id and sender_name: never the message text.
  */
 enum NotificationKind: string
 {
@@ -41,12 +42,16 @@ enum NotificationKind: string
     case AnotherTimeRequested = 'another_time_requested';
     case InfoAnswered = 'info_answered';
 
+    // Studio chat (Phase 7B): only the conversation id and the sender's name are stored, never the message text
+    case MessageReceived = 'message_received';
+    case MessageReplied = 'message_replied';
+
     /** Who receives it. Nobody is told about their own action: the other side always made it. */
     public function audience(): UserRole
     {
         return match ($this) {
             self::OrderPlaced, self::BookingRequested, self::OrderCancelledByCustomer, self::BookingCancelledByCustomer,
-            self::ProposalAccepted, self::AnotherTimeRequested, self::InfoAnswered => UserRole::Owner,
+            self::ProposalAccepted, self::AnotherTimeRequested, self::InfoAnswered, self::MessageReceived => UserRole::Owner,
             default => UserRole::Customer,
         };
     }
@@ -77,6 +82,8 @@ enum NotificationKind: string
             self::ProposalAccepted => 'Proposed time accepted',
             self::AnotherTimeRequested => 'Another time requested',
             self::InfoAnswered => 'Customer added files',
+            self::MessageReceived => 'New message',
+            self::MessageReplied => 'The studio replied',
         };
     }
 
@@ -116,6 +123,8 @@ enum NotificationKind: string
             self::ProposalAccepted => "The customer accepted the proposed time for {$ref}. It is now confirmed.",
             self::AnotherTimeRequested => "The customer asked for another time for {$ref}.",
             self::InfoAnswered => "The customer added files to {$ref} in reply to your request.",
+            self::MessageReceived => 'New message from '.((string) ($data['sender_name'] ?? '') ?: 'a customer').'.',
+            self::MessageReplied => 'The studio replied to your message.',
         };
     }
 
@@ -134,7 +143,14 @@ enum NotificationKind: string
             self::PaymentRecorded, self::PaymentVoided => 'point_of_sale',
             self::OrderPlaced => 'receipt_long',
             self::BookingRequested => 'photo_camera',
+            self::MessageReceived, self::MessageReplied => 'chat',
         };
+    }
+
+    /** A studio chat notice: it points to a conversation, not to an order or booking. */
+    public function isMessage(): bool
+    {
+        return $this === self::MessageReceived || $this === self::MessageReplied;
     }
 
     /** Where on the target page to land. */

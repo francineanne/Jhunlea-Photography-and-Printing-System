@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\NotificationKind;
 use App\Enums\UserRole;
+use App\Models\Conversation;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
@@ -82,6 +83,13 @@ class NotificationFeed
     public function target(User $user, DatabaseNotification $row): ?string
     {
         $data = $row->data;
+
+        if (NotificationKind::tryFrom((string) ($data['kind'] ?? ''))?->isMessage()) {
+            $conversation = Conversation::query()->find((int) ($data['conversation_id'] ?? 0));
+
+            return $conversation === null || Gate::forUser($user)->denies('view', $conversation) ? null : $this->url($user, $data);
+        }
+
         $class = Relation::getMorphedModel((string) ($data['payable_type'] ?? ''));
 
         if (! in_array($class, [PrintingOrder::class, PhotographyBooking::class], true)) {
@@ -116,7 +124,8 @@ class NotificationFeed
             'kind' => $kind,
             'title' => $kind->title(),
             'message' => $kind->message($data),
-            'reference' => (string) ($data['reference'] ?? ''),
+            // A chat notice has no PR or PB reference; the label says where it leads instead
+            'reference' => $kind->isMessage() ? 'Messages' : (string) ($data['reference'] ?? ''),
             'icon' => $kind->icon(),
             'read' => $row->read_at !== null,
             'created_at' => $row->created_at,
@@ -129,7 +138,12 @@ class NotificationFeed
     {
         $owner = $user->role === UserRole::Owner;
         $id = (int) ($data['payable_id'] ?? 0);
-        $anchor = NotificationKind::tryFrom((string) ($data['kind'] ?? ''))?->anchor() ?? '';
+        $kind = NotificationKind::tryFrom((string) ($data['kind'] ?? ''));
+        $anchor = $kind?->anchor() ?? '';
+
+        if ($kind?->isMessage()) {
+            return route($owner ? 'owner.messages.show' : 'customer.messages.show', (int) ($data['conversation_id'] ?? 0));
+        }
 
         return match ($data['payable_type'] ?? null) {
             'printing_order' => route($owner ? 'owner.orders.show' : 'customer.printing.show', $id),
