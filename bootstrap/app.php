@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['role' => EnsureRole::class]);
 
+        // Trust X-Forwarded-* only from a tunnel on this machine (ngrok), so asset links use https; never '*' (spoofable IPs break rate limits)
+        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
+
         // Check the role before route model binding, so a customer gets 403 (not 404) for an id that does not exist
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureRole::class);
 
