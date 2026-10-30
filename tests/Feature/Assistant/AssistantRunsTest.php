@@ -64,7 +64,8 @@ class AssistantRunsTest extends TestCase
             [AssistantOutcome::Answered, AssistantOutcome::FallbackUnavailable, AssistantOutcome::RejectedInput, AssistantOutcome::FallbackDisabled],
             AssistantRun::query()->orderBy('id')->get()->pluck('outcome')->all(),
         );
-        $this->assertSame([true, true, false, false], AssistantRun::query()->orderBy('id')->get()->map(fn ($run) => $run->latency_ms !== null)->all());
+        // Only the answered call has a latency: the second never got a response from the provider, so it does not count
+        $this->assertSame([true, false, false, false], AssistantRun::query()->orderBy('id')->get()->map(fn ($run) => $run->latency_ms !== null)->all());
 
         $stored = json_encode(AssistantRun::query()->get()->toArray());
         $this->assertStringNotContainsString('Secret customer question', $stored);

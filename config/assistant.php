@@ -70,6 +70,8 @@ return [
         'limit_user' => 'You have reached today\'s limit for Lumi. It resets at midnight. You can still message the studio.',
         'studio_away' => 'The studio received your message and will reply when we open.',
         'owner_assist' => 'The suggestion is not available right now. You can still reply manually.',
+        // Used when PriceGuard removed every sentence of a reply because each named a price the shop never gave
+        'price_unverified' => 'Pasensya na po, hindi ako sigurado sa eksaktong presyo. Please message the studio for the exact price.',
         'away_cap' => 'Lumi has replied several times in a row. The studio will reply to you directly when we open.',
         'empty' => 'Please type a message first.',
         'too_long' => 'Your message is too long. Please keep it under :max characters.',

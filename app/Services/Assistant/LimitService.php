@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\RateLimiter;
 
 /**
  * Decides whether one more call may reach the provider. The per-minute limit uses Laravel's RateLimiter under its own
- * name; the daily limits and the shop's daily budget are counted from assistant_runs rows that really called the
- * provider, for the current Manila day (midnight to midnight, Asia/Manila; rows are stored in UTC).
+ * name; the daily limits and the shop's daily budget are counted from assistant_runs rows the provider answered (see
+ * AssistantEngine::countCall), for the current Manila day (midnight to midnight, Asia/Manila; rows are stored in UTC).
  */
 class LimitService
 {
@@ -48,7 +48,7 @@ class LimitService
         return null;
     }
 
-    /** Counts one call against the per-minute limit, right before the provider is called. */
+    /** Counts one call against the per-minute limit, once the provider has answered it. */
     public function hit(AssistantActor $actor): void
     {
         RateLimiter::hit($this->minuteKey($actor), 60);

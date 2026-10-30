@@ -6,6 +6,7 @@
 - Full requirements: `docs/SYSTEM_SPEC.md` (source of truth for business rules)
 - Phase plan and task split: `docs/DEVELOPMENT_PLAN.md`
 - Git workflow: `docs/GIT_WORKFLOW.md`
+- XAMPP setup (certificates for the AI provider, memory and upload limits for the tests): `docs/XAMPP_SETUP.md`
 - UI designs (Google Stitch exports): `design/` (each screen has `code.html` + `screen.png`; design tokens in `design/*/studio_atelier/DESIGN.md`)
 
 ---
@@ -292,11 +293,27 @@ Every throttled route names its own counter (`throttle:N,1,name`); `ThrottleCoun
 
 ## 13. AI assistant rules (Phase 7)
 
-- Provider chosen in Phase 7 after checking current free tiers (Gemini or Groq). Key in `.env` (`AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL`).
-- Server builds the prompt from published services, packages, themes, FAQs and settings. The model never receives other customers' data or uploaded files.
-- Topic restriction is enforced in application code (a classifier/keyword gate before calling the model), not only in the prompt. Off-topic reply: "I'm here to help with Jhunlea's photography and printing services. I can help you explore packages, printing options, booking requirements, and request updates. What service are you interested in?"
-- The assistant cannot confirm bookings, change prices or statuses, or record payments.
-- Missing key or provider error → friendly fallback message and a link to contact the owner; the app keeps working.
+- **Persona:** "Lumi" (name in `config/assistant.php`). Lumi is always shown and always says it is an AI, never a person.
+- **Two conversations:**
+  - **Ask Lumi:** the customer and the AI only.
+  - **Studio chat:** the customer and the owner. Lumi answers inside this thread only while the owner is away, stops as soon as the owner replies, and stops after 5 AI replies in a row (`studio_away_max_consecutive`).
+- **Owner assist:** a DRAFT reply and a thread summary. The owner edits and sends them; nothing is ever sent automatically.
+- **Where the AI lives:** only inside the chat, nowhere else in the system.
+- **No tools:** the AI cannot book, confirm, change a price or status, or record a payment. It only writes text; recommendation cards are built by code.
+- **Provider:** Gemini behind the `AssistantProvider` interface (`app/Services/Assistant/Providers`). The key is only in `.env` (`AI_PROVIDER`, `AI_API_KEY`, `AI_MODEL`, `AI_ENABLED`), sent only in the `x-goog-api-key` header, and never logged. `FakeProvider` gives scripted replies for tests and local work. Every test uses it or `Http::fake` with `Http::preventStrayRequests()`.
+- **One entry point:** `AssistantEngine::handle()`. It never throws and never shows an error page. Every problem (switched off, a limit, no key, provider down or rate limiting, a reply that breaks the JSON contract) ends in one of the fixed fallback texts in `config('assistant.messages')`. Each call writes one `assistant_runs` row with metadata only, never message text.
+- **Limits:**
+  - 1000 characters per message.
+  - 6 a minute and 40 a day per signed-in user; guests 10 a day, keyed by a hash of the IP (the raw IP is never stored).
+  - A global daily budget split by feature (`global_shares`).
+  - Days run midnight to midnight in Manila.
+  - A call counts only when the provider sent an HTTP response (`AssistantEngine::countCall`). A connection, certificate or timeout failure, a missing key or an unknown provider never uses up anyone's quota.
+  - A 429 pauses every call for its retry-after (at most 5 minutes).
+- **Data sent to the provider:** only the published catalog (services, options, packages, themes), the published FAQs, the business info, hours and booking rules, and the typed text. Customer text is redacted first (emails, phone numbers, long digit runs) and always goes in the user role. Never users, orders, bookings, payments, notifications, files or other conversations.
+- **Cards and prices:** cards (name, price, link) come from the database, and only for published records. `PriceGuard` removes every sentence of a reply that names a peso amount not found in the shop knowledge or in what the customer or thread already said. When nothing is left, it shows the fixed "message the studio for the exact price" text.
+- **Off-topic:** gets this fixed reply, whatever the model wrote: "I'm here to help with Jhunlea's photography and printing services. I can help you explore packages, printing options, booking requirements, and request updates. What service are you interested in?"
+- **Provider tier:** use the free tier only with fake data. Real customers need the paid tier, because the free tier may use the content to improve the provider's products.
+- **XAMPP on Windows:** needs a CA bundle in php.ini, or every call falls back with cURL error 60 (`docs/XAMPP_SETUP.md`).
 
 ---
 

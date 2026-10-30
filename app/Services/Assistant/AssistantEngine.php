@@ -7,6 +7,7 @@ use App\Enums\AssistantIntent;
 use App\Enums\AssistantOutcome;
 use App\Models\AssistantRun;
 use App\Services\Assistant\Exceptions\ProviderBadResponse;
+use App\Services\Assistant\Exceptions\ProviderFailure;
 use App\Services\Assistant\Exceptions\ProviderRateLimited;
 use App\Services\Assistant\Exceptions\ProviderUnavailable;
 use App\Services\Assistant\Providers\AssistantProvider;
@@ -21,7 +22,8 @@ use Throwable;
  * one of the fixed fallback texts. Each call writes exactly one assistant_runs row with metadata only.
  *
  * Order: input checks, the off switch, the studio_away cap, the limits, the provider cooldown, then the provider.
- * Only a call that reaches the provider counts toward the limits.
+ * Only a call the provider answered counts toward the limits (countCall). Every reply then passes PriceGuard, so no
+ * price the shop never gave reaches the customer.
  */
 class AssistantEngine
 {
@@ -38,6 +40,7 @@ class AssistantEngine
         private readonly CardBuilder $cards,
         private readonly LimitService $limits,
         private readonly ProviderCooldown $cooldown,
+        private readonly PriceGuard $prices,
     ) {}
 
     public function handle(AssistantInput $input): AssistantResult
@@ -95,37 +98,53 @@ class AssistantEngine
         }
 
         $request = $this->prompts->build(new AssistantInput($input->feature, $input->actor, $message, $input->history, $input->consecutiveAiReplies));
-        $this->limits->hit($input->actor);
         $started = hrtime(true);
 
         try {
             $this->response = $this->provider->generate($request);
-            $reply = $this->validator->parse($this->response->json);
-        } catch (ProviderRateLimited $exception) {
-            $this->cooldown->start($exception->retryAfterSeconds);
+        } catch (ProviderRateLimited|ProviderUnavailable|ProviderBadResponse $exception) {
+            if ($exception->reachedProvider()) {
+                $this->countCall($input->actor, $started);
+            }
 
-            return $this->fallback($input->feature, AssistantOutcome::FallbackUnavailable, $exception);
-        } catch (ProviderUnavailable $exception) {
-            return $this->fallback($input->feature, AssistantOutcome::FallbackUnavailable, $exception);
-        } catch (ProviderBadResponse $exception) {
-            return $this->fallback($input->feature, AssistantOutcome::FallbackError, $exception);
-        } finally {
-            $this->latencyMs = (int) round((hrtime(true) - $started) / 1_000_000);
+            if ($exception instanceof ProviderRateLimited) {
+                $this->cooldown->start($exception->retryAfterSeconds);
+            }
+
+            return $this->fallback($input->feature, $exception instanceof ProviderBadResponse ? AssistantOutcome::FallbackError : AssistantOutcome::FallbackUnavailable, $exception);
         }
 
-        return match ($reply->intent) {
-            AssistantIntent::OffTopic => new AssistantResult(config('assistant.messages.off_topic'), AssistantOutcome::Refused, $reply->intent),
-            AssistantIntent::Handoff => new AssistantResult($reply->reply, AssistantOutcome::Handoff, $reply->intent, needsOwner: true),
-            default => new AssistantResult(
-                $reply->reply,
-                AssistantOutcome::Answered,
-                $reply->intent,
-                $input->feature->showsCards() ? $this->cards->build($reply->recommend) : [],
-            ),
-        };
+        $this->countCall($input->actor, $started);
+
+        try {
+            $reply = $this->validator->parse($this->response->json);
+        } catch (ProviderBadResponse $exception) {
+            return $this->fallback($input->feature, AssistantOutcome::FallbackError, $exception);
+        }
+
+        if ($reply->intent === AssistantIntent::OffTopic) {
+            return new AssistantResult(config('assistant.messages.off_topic'), AssistantOutcome::Refused, $reply->intent);
+        }
+
+        $text = $this->prices->guard($reply->reply, $request);
+
+        return $reply->intent === AssistantIntent::Handoff
+            ? new AssistantResult($text, AssistantOutcome::Handoff, $reply->intent, needsOwner: true)
+            : new AssistantResult($text, AssistantOutcome::Answered, $reply->intent, $input->feature->showsCards() ? $this->cards->build($reply->recommend) : []);
     }
 
-    private function fallback(AssistantFeature $feature, AssistantOutcome $outcome, ProviderUnavailable|ProviderRateLimited|ProviderBadResponse|null $cause = null): AssistantResult
+    /**
+     * THE counting rule: a call counts toward every limit (the per-minute limiter now, and the daily limits and budget
+     * through the latency_ms of its assistant_runs row) only once the provider sent an HTTP response. A call that never
+     * got one (no key, no provider, a connection, certificate or timeout error) counts toward nothing.
+     */
+    private function countCall(AssistantActor $actor, int $started): void
+    {
+        $this->latencyMs = (int) round((hrtime(true) - $started) / 1_000_000);
+        $this->limits->hit($actor);
+    }
+
+    private function fallback(AssistantFeature $feature, AssistantOutcome $outcome, ?ProviderFailure $cause = null): AssistantResult
     {
         if ($cause !== null) {
             // The kind, HTTP status and cURL error number say why; never the body, prompt, message, key or URL

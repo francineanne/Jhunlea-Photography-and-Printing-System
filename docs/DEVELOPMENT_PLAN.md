@@ -117,12 +117,13 @@ Design refs: `design/admin/customers_client_directory_profiles`, `reports_analyt
 
 ## Phase 7 — AI assistant (BF)
 Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/command_palette_ctrl_k`
-- [ ] Pumili ng provider (Gemini o Groq) pagkatapos i-check ang kasalukuyang free tier; ilagay ang key sa `.env`
-- [ ] Prompt na binubuo ng server mula sa published catalog, FAQs at settings; topic gate sa code; rate limit
-- [ ] Chat UI: launcher, suggested prompts, recommendation cards na may link, typing indicator, new conversation, at handoff sa owner
-- [ ] Fallback kapag walang key o down ang provider
-- [ ] Owner command palette (Ctrl+K) para maghanap ng requests at customers
-- [ ] Tests: off-topic refusal, walang private data na lumalabas, at fallback kapag walang key
+- [x] 7A Lumi engine (walang UI): Gemini sa likod ng `AssistantProvider` interface (key sa `.env` lang), FakeProvider para sa tests, prompt mula sa published catalog, FAQs at settings, redaction ng email at phone, JSON output contract, cards mula sa database, limits (per minute, per day, guest IP hash, global budget), fallback texts, `assistant_runs` (metadata lang), `php artisan assistant:ask`
+- [ ] 7A.1 Hardening: PriceGuard (tinatanggal ang presyong inimbento ng AI), hindi binibilang ang tawag na hindi umabot sa provider (connection o certificate error), docs at XAMPP setup note
+- [ ] 7B Messaging core: conversations at messages (Ask Lumi at Studio chat), sino ang puwedeng magbasa ng alin, at ang away rule ng Studio chat
+- [ ] 7C Ask Lumi UI: launcher, suggested prompts, recommendation cards na may link, typing indicator, new conversation, at handoff sa owner
+- [ ] 7D Studio chat, owner inbox at owner assist: sumasagot si Lumi habang wala ang owner (tumitigil kapag sumagot ang owner o pagkatapos ng 5 AI replies), draft reply at summary na ine-edit at ipinapadala ng owner
+- [ ] 7E Owner command palette (Ctrl+K) para maghanap ng requests at customers, at polish
+- [ ] Tests sa bawat part: off-topic refusal, walang private data na lumalabas, fallback kapag walang key o down ang provider
 
 ## Phase 8 — Polish and release (BF, may review mula kay Claude at kay Her)
 - [ ] Mobile responsive pass sa lahat ng screen (puwedeng gamitin ang mobile prompt sa Stitch bilang reference)

@@ -56,7 +56,7 @@ class GeminiProvider implements AssistantProvider
 
         if (! $response->successful()) {
             // 400 (bad request), 401/403 (key refused) and 5xx all mean "not usable right now" for the customer
-            throw new ProviderUnavailable('http', $response->status());
+            throw new ProviderUnavailable(ProviderUnavailable::HTTP, $response->status());
         }
 
         $data = $response->json();
