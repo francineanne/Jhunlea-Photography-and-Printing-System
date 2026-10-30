@@ -7,6 +7,11 @@ use Illuminate\Validation\Rules\Password;
 
 class RegisterRequest extends FormRequest
 {
+    // The one phone rule: registration and the account page (Phase 6C) both use it. Optional
+    public const PHONE_PATTERN = '/^[0-9+\-\s()]{7,20}$/';
+
+    public const PHONE_MESSAGE = 'Enter a valid phone number, for example 0917 123 4567.';
+
     public function authorize(): bool
     {
         return true;
@@ -28,7 +33,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'regex:/^[0-9+\-\s()]{7,20}$/'],
+            'phone' => ['nullable', 'string', 'regex:'.self::PHONE_PATTERN],
             'password' => ['required', 'confirmed', Password::defaults()],
         ];
     }
@@ -36,6 +41,6 @@ class RegisterRequest extends FormRequest
     /** @return array<string, string> */
     public function messages(): array
     {
-        return ['phone.regex' => 'Enter a valid phone number, for example 0917 123 4567.'];
+        return ['phone.regex' => self::PHONE_MESSAGE];
     }
 }

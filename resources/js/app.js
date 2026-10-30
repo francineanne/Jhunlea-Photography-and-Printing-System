@@ -4,14 +4,43 @@ window.Alpine = Alpine;
 
 const root = document.documentElement;
 
+// Apply a theme now: light, dark or system (follow the device). Tells the account page so its choice stays in step
+const applyTheme = (theme) => {
+    const dark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.classList.toggle('dark', dark);
+    if (root.dataset.theme !== 'guest') {
+        root.dataset.theme = theme;
+    }
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: theme }));
+};
+window.applyTheme = applyTheme;
+
+// The header button switches between light and dark. A signed-in person's choice is saved to their account (users.theme,
+// Phase 6C) so it follows them to other devices; a guest's stays in this browser only
 document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
     button.addEventListener('click', () => {
-        const dark = root.classList.toggle('dark');
+        const theme = root.classList.contains('dark') ? 'light' : 'dark';
+        applyTheme(theme);
 
         try {
-            localStorage.setItem('theme', dark ? 'dark' : 'light');
+            localStorage.setItem('theme', theme);
         } catch (e) {
             // storage unavailable; theme still applies for this page view
+        }
+
+        const saveUrl = document.querySelector('meta[name="theme-save-url"]')?.content;
+        if (saveUrl) {
+            fetch(saveUrl, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                },
+                body: JSON.stringify({ theme }),
+            }).catch(() => {
+                // offline: the page keeps the theme; the account keeps the old choice until the next save
+            });
         }
     });
 });

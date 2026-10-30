@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -68,6 +69,17 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+
+// The account page (Phase 6C): one controller for both areas, each in its own role group. Viewing is relaxed; the
+// profile, password and appearance forms each have their own, stricter counter
+foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
+    Route::middleware(['auth', "role:{$area}"])->prefix("{$prefix}/account")->name("{$area}.account.")->controller(AccountController::class)->group(function () use ($area) {
+        Route::get('/', 'show')->middleware("throttle:60,1,{$area}-account")->name('show');
+        Route::post('/profile', 'profile')->middleware("throttle:10,1,{$area}-account-profile")->name('profile');
+        Route::post('/password', 'password')->middleware("throttle:6,1,{$area}-account-password")->name('password');
+        Route::post('/theme', 'theme')->middleware("throttle:30,1,{$area}-account-theme")->name('theme');
+    });
+}
 
 Route::get('/my/dashboard', CustomerDashboardController::class)
     ->middleware(['auth', 'role:customer', 'throttle:60,1,customer-dashboard'])

@@ -5,7 +5,7 @@
 <div x-data="{ open: false }" x-on:keydown.escape="if (open) { open = false; $refs.button.focus() }"
     x-on:click.outside="open = false" x-on:focusout="if ($event.relatedTarget && ! $el.contains($event.relatedTarget)) open = false" class="relative">
     <button x-ref="button" type="button" aria-haspopup="menu" x-bind:aria-expanded="open" aria-label="Account menu, {{ $user->name }}"
-        x-on:click="open = ! open; if (open) $nextTick(() => $refs.menu.querySelector('button')?.focus())"
+        x-on:click="open = ! open; if (open) $nextTick(() => $refs.menu.querySelector('[role=menuitem]')?.focus())"
         class="flex min-h-11 items-center gap-2 rounded-control border border-app-border bg-app-card py-1 pl-1.5 pr-2.5 focus-ring">
         <span class="grid size-8 place-items-center rounded-full bg-brand text-sm font-semibold text-white" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user->name, 0, 1)) }}</span>
         <span @class(['hidden max-w-[10rem] truncate text-sm font-semibold sm:inline', 'xl:hidden 2xl:inline' => $tight])>{{ $user->name }}</span>
@@ -19,7 +19,12 @@
             <p class="truncate text-sm font-semibold">{{ $user->name }}</p>
             <p class="truncate text-xs text-app-text-2">{{ $user->email }}</p>
         </div>
-        <form method="POST" action="{{ route('logout') }}" class="mt-2">
+        @php($accountRoute = $user->role === \App\Enums\UserRole::Owner ? 'owner.account.show' : 'customer.account.show')
+        <a href="{{ route($accountRoute) }}" role="menuitem" @if (request()->routeIs(str_replace('.show', '.*', $accountRoute))) aria-current="page" @endif
+            class="mt-2 flex min-h-11 w-full items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10">
+            <x-ui.icon name="manage_accounts" :size="20" /> Account
+        </a>
+        <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" role="menuitem"
                 class="flex min-h-11 w-full items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10">

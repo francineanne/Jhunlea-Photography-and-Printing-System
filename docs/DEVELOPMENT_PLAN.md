@@ -108,7 +108,11 @@ Design refs: `design/admin/customers_client_directory_profiles`, `reports_analyt
 - [x] Mga bagong table (6B): `shop_settings` (isang row, id 1, NULL = gamitin ang default sa config) at `faqs` (question, answer, position 1..N, is_published).
 - [x] Isang class lang ang nagbabasa ng upload limits: `App\Support\ShopSettings` (ang naka-save na value, kung wala ang default sa config, at hindi lalampas sa `ServerUploadLimits` na galing sa php.ini). May test na babagsak kapag may ibang code na nagbasa ng `config('printing.max_*')` o `config('booking.max_image*')`.
 - [x] FAQ editor (6B, `/owner/faqs`): add, edit, delete na may confirm, show/hide, move up/down (POST, gumagana kahit walang JavaScript), hanggang 50, bawal ang dobleng tanong. Public `/faq` page na published lang, at FAQ link sa footer kapag may published.
-- [ ] Customer profile at settings: info, password, appearance. **Kanselado** ang notification preferences: in-app lang ang notifications at walang email o SMS channel na puwedeng i-on o i-off.
+- [x] Account page (6C) para sa customer (`/my/account`) at sa owner (`/owner/account`): iisang controller, service at Blade component. Name, email (kailangan ang current password para palitan), phone (parehong rule ng registration), password (parehong `PasswordRules` ng registration at reset; pagkatapos magpalit, bagong session id at naka-sign out ang lahat ng ibang device), at appearance (Light, Dark, System) na naka-save sa `users.theme`.
+- [x] Sa `/owner/account` na rin pinapalitan ng owner ang sarili niyang password.
+- **Kanselado pa rin ang notification preferences:** in-app lang ang notifications at walang email o SMS channel na puwedeng i-on o i-off.
+
+**Tapos na ang Phase 6** (6A customers at reports, 6B settings, upload limits at FAQ, 6C account page).
 - [x] Tests: owner lang ang makakakita ng reports at settings (6A at 6B)
 
 ## Phase 7 — AI assistant (BF)
@@ -147,6 +151,11 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
   - [ ] Sa totoong server, itaas nang sabay ang php.ini `upload_max_filesize` at `post_max_size` kapag itataas ang upload limits sa Settings (ipinapakita ng Settings page ang cap ng server)
   - [ ] Tingnan ang Settings, FAQ editor at public FAQ page sa totoong phone
   - [ ] Totoong file picker ng phone at ng desktop sa upload na nasa limit at lampas sa limit
+- [ ] Galing sa Phase 6C:
+  - [ ] Email verification at kumpirmasyon ng email change kapag may mail channel na
+  - [ ] Optional na two-factor authentication
+  - [ ] Patakaran sa pag-delete ng account (wala pang delete account sa system)
+  - [ ] Tingnan ang account page sa totoong phone
 - [ ] Galing sa Phase 5B:
   - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
   - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page

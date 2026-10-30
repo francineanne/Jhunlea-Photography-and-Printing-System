@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\ColorScheme;
 use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +25,7 @@ class UserRoleTest extends TestCase
         $user = User::factory()->create()->fresh();
 
         $this->assertSame(UserRole::Customer, $user->role);
-        $this->assertSame('system', $user->theme);
+        $this->assertSame(ColorScheme::System, $user->theme);
     }
 
     public function test_role_cannot_be_mass_assigned(): void
