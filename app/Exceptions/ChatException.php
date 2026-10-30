@@ -33,6 +33,11 @@ class ChatException extends RuntimeException
         return new self('daily_cap', config('chat.messages.daily_cap'), 429);
     }
 
+    public static function tooManyConversations(): self
+    {
+        return new self('too_many_conversations', config('chat.messages.too_many_conversations'), 429);
+    }
+
     public static function conversationFull(): self
     {
         return new self('conversation_full', config('chat.messages.conversation_full'), 409);

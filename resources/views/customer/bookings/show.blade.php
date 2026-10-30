@@ -26,6 +26,7 @@
             <p class="font-mono text-xs font-bold uppercase tracking-wider text-brand">Booking {{ $booking->reference_number }}</p>
             <h1 class="mt-1 break-words font-display text-3xl font-semibold leading-tight sm:text-4xl">{{ $packageName }}</h1>
             <p class="mt-1 text-sm text-app-text-2">Sent on <x-ui.date :value="$booking->created_at" /></p>
+            <a href="{{ route('customer.assistant.page', ['tab' => 'studio', 'about' => 'photography_booking:'.$booking->id]) }}" class="mt-1 inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="forum" :size="18" />Message the studio about this request</a>
         </div>
         <x-ui.status-badge :status="$booking->status" live class="self-start md:self-auto" />
     </header>

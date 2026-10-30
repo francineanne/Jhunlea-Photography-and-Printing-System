@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Gate;
 
 /**
  * The owner's studio inbox and threads, JSON only (Phase 7B). Only studio threads: an Ask Lumi conversation answers 404.
- * Opening or polling the inbox or a thread, and replying, counts as the owner being active (OwnerPresence::touch).
+ * Opening the inbox or a thread, replying and resolving count as the owner being active (OwnerPresence::touch); the
+ * background polls (?poll=1 on the inbox, ?after= or ?before= on a thread) do not.
  */
 class MessageController extends Controller
 {
@@ -32,7 +33,10 @@ class MessageController extends Controller
 
     public function index(InboxRequest $request, StudioInbox $inbox): JsonResponse
     {
-        $this->presence->touch();
+        if (! $request->isPoll()) {
+            $this->presence->touch();
+        }
+
         $page = $inbox->page($request->filter(), $request->search());
 
         return response()->json([
@@ -56,11 +60,14 @@ class MessageController extends Controller
     public function show(ThreadRequest $request, Conversation $conversation, ThreadReader $reader): JsonResponse
     {
         Gate::authorize('view', $conversation);
-        $this->presence->touch();
+
+        if ($request->afterId() === null && $request->beforeId() === null) {
+            $this->presence->touch();
+        }
 
         $page = $reader->page($conversation, $request->afterId(), $request->beforeId());
 
-        return response()->json($this->presenter->thread($conversation, $request->user(), $page['messages'], $page['has_more_before']));
+        return response()->json($this->presenter->thread($conversation, $request->user(), $page['messages'], $page['has_more_before'], $page['has_more_after']));
     }
 
     public function store(SendMessageRequest $request, Conversation $conversation): JsonResponse
@@ -80,6 +87,7 @@ class MessageController extends Controller
     {
         Gate::authorize('resolve', $conversation);
 
+        $this->presence->touch();
         $this->messages->resolve($conversation);
 
         return response()->json(['state' => $this->presenter->state($conversation, $request->user(), false)]);

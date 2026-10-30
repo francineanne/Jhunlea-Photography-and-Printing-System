@@ -38,13 +38,14 @@ return Application::configure(basePath: dirname(__DIR__))
         // The chat endpoints (Phase 7B) always answer {code, message}: a missing or someone else's conversation, a
         // wrong role, or too many requests. Their own refusals come from ChatException
         $exceptions->render(function (HttpExceptionInterface $e, Request $request) {
-            if (! $request->routeIs('customer.messages.*', 'customer.assistant.*', 'owner.messages.*')) {
+            if (! $request->routeIs('customer.messages.*', 'customer.assistant.index', 'customer.assistant.store', 'customer.assistant.handoff-draft', 'owner.messages.*', 'assistant.guest')) {
                 return null;
             }
 
             $code = match ($e->getStatusCode()) {
                 404 => 'not_found',
                 403 => 'forbidden',
+                419 => 'session_expired',
                 429 => 'rate_limited',
                 default => 'error',
             };

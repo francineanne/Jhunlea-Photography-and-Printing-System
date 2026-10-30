@@ -22,6 +22,14 @@ class OwnerPresenceController extends Controller
         ]);
     }
 
+    /** Sent by a tab that is visible and in use (Phase 7D): the one way to stay "present" without clicking anything. */
+    public function heartbeat(ChatPresenter $presenter): JsonResponse
+    {
+        $this->presence->touch();
+
+        return $this->show($presenter);
+    }
+
     public function update(PresenceRequest $request, ChatPresenter $presenter): JsonResponse
     {
         $this->presence->setMode($request->mode());

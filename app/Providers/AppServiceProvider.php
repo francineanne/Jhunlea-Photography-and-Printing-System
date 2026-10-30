@@ -47,6 +47,9 @@ class AppServiceProvider extends ServiceProvider
             $view->with('hasFaq', rescue(fn () => Faq::query()->published()->exists(), false, false));
         });
 
+        // Error pages stay as simple as possible: the public layout leaves the floating chat out of them (Phase 7C)
+        View::composer(['errors.*', 'errors::*'], fn ($view) => $view->with('isErrorPage', true));
+
         // The bell of the customer and owner shells: the unread count and the latest few, once per page (Phase 5B)
         View::composer(['layouts.customer', 'layouts.owner'], function ($view) {
             $user = auth()->user();

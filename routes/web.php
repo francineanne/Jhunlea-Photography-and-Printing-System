@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BookingReferenceImageController;
 use App\Http\Controllers\Customer\AssistantConversationController;
+use App\Http\Controllers\Customer\AssistantPageController;
 use App\Http\Controllers\Customer\BookingSlotsController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\MessageController as CustomerMessageController;
@@ -38,6 +39,7 @@ use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\ThemeController;
 use App\Http\Controllers\Public\FaqController as PublicFaqController;
+use App\Http\Controllers\Public\GuestAssistantController;
 use App\Http\Controllers\Public\HomeController as PublicHomeController;
 use App\Http\Controllers\Public\PackageCompareController as PublicPackageCompareController;
 use App\Http\Controllers\Public\PackageController as PublicPackageController;
@@ -300,10 +302,15 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/themes')->name('owner.t
     Route::post('/{theme}/publish', [ThemeController::class, 'publish'])->name('publish');
 });
 
+// The guest chat on the public pages (7C): nothing is stored in the chat tables. Signed-in customers use their stored
+// conversations, so the guest middleware sends a signed-in person to their home like the other guest-only routes
+Route::post('/assistant/messages', GuestAssistantController::class)->middleware(['guest', 'throttle:10,1,assistant-guest'])->name('assistant.guest');
+
 // Messaging (Phase 7B), JSON only until the screens of 7C and 7D. The customer's studio thread and Ask Lumi
 // conversations; another person's conversation answers 404 (ConversationPolicy)
 Route::middleware(['auth', 'role:customer'])->prefix('my/messages')->name('customer.messages.')->controller(CustomerMessageController::class)->group(function () {
     Route::get('/studio', 'studio')->middleware('throttle:30,1,chat-open')->name('studio');
+    Route::get('/unread', 'unread')->middleware('throttle:60,1,chat-unread')->name('unread');
     Route::whereNumber('conversation')->group(function () {
         Route::get('/{conversation}', 'show')->middleware('throttle:60,1,chat-poll')->name('show');
         Route::post('/{conversation}', 'store')->middleware('throttle:20,1,chat-send')->name('store');
@@ -311,6 +318,9 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/messages')->name('custo
         Route::post('/{conversation}/read', 'read')->middleware('throttle:60,1,chat-read')->name('read');
     });
 });
+
+// The full-size chat page (7C); the same chat component as the floating panel
+Route::get('/my/assistant', AssistantPageController::class)->middleware(['auth', 'role:customer', 'throttle:60,1,chat-page'])->name('customer.assistant.page');
 
 Route::middleware(['auth', 'role:customer'])->prefix('my/assistant/conversations')->name('customer.assistant.')->controller(AssistantConversationController::class)->group(function () {
     Route::get('/', 'index')->middleware('throttle:60,1,chat-assistant-list')->name('index');
@@ -322,6 +332,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/assistant/conversations
 Route::middleware(['auth', 'role:owner'])->prefix('owner/messages')->name('owner.messages.')->group(function () {
     Route::get('/presence', [OwnerPresenceController::class, 'show'])->middleware('throttle:60,1,owner-chat-presence')->name('presence');
     Route::post('/presence', [OwnerPresenceController::class, 'update'])->middleware('throttle:20,1,owner-chat-presence-set')->name('presence.update');
+    Route::post('/presence/heartbeat', [OwnerPresenceController::class, 'heartbeat'])->middleware('throttle:6,1,owner-chat-heartbeat')->name('presence.heartbeat');
 
     Route::controller(OwnerMessageController::class)->group(function () {
         Route::get('/', 'index')->middleware('throttle:60,1,owner-chat-inbox')->name('index');

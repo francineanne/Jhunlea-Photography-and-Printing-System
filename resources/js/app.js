@@ -1,4 +1,5 @@
 import Alpine from 'alpinejs';
+import chatWindow from './chat';
 
 window.Alpine = Alpine;
 
@@ -1206,5 +1207,7 @@ Alpine.data('copyText', (text) => ({
         }
     },
 }));
+
+Alpine.data('chatWindow', chatWindow);
 
 Alpine.start();

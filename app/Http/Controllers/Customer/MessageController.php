@@ -35,6 +35,14 @@ class MessageController extends Controller
         return $this->thread($request, $conversations->studioFor($request->user()));
     }
 
+    /** The launcher's badge. Never creates the studio thread: a customer who never opened it simply has nothing unread. */
+    public function unread(Request $request): JsonResponse
+    {
+        $studio = Conversation::query()->studio()->forCustomer($request->user())->first();
+
+        return response()->json(['studio_unread' => $studio === null ? 0 : $this->messages->unreadCount($studio, $request->user())]);
+    }
+
     public function show(ThreadRequest $request, Conversation $conversation): JsonResponse
     {
         Gate::authorize('view', $conversation);
@@ -83,6 +91,6 @@ class MessageController extends Controller
     {
         $page = $this->reader->page($conversation, $after, $before);
 
-        return response()->json($this->presenter->thread($conversation, $request->user(), $page['messages'], $page['has_more_before']));
+        return response()->json($this->presenter->thread($conversation, $request->user(), $page['messages'], $page['has_more_before'], $page['has_more_after']));
     }
 }

@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Whether the owner counts as away in the studio chat, so Lumi may answer there (Phase 7B). "away" and "available" are
- * the owner's own choice; "auto" counts the owner as away after config chat.presence.active_minutes without opening
- * or polling the inbox or a thread, or replying. The opening hours never decide it: they only word the away notice.
+ * the owner's own choice; "auto" counts the owner as away after config chat.presence.active_minutes without real
+ * activity: opening the inbox or a thread, replying, resolving, or a heartbeat from a tab in use. Background polling
+ * never counts, so a tab left open does not keep the owner "present". The opening hours never decide it: they only word
+ * the away notice.
  */
 class OwnerPresence
 {
@@ -30,8 +32,8 @@ class OwnerPresence
     }
 
     /**
-     * The owner is active right now. Written straight to the row (never through the per-request ShopSettings copy) and
-     * at most once per config chat.presence.touch_interval_seconds, so polling does not write on every request.
+     * The owner really did something just now. Written straight to the row (never through the per-request ShopSettings
+     * copy) and at most once per config chat.presence.touch_interval_seconds.
      */
     public function touch(): void
     {
@@ -115,11 +117,35 @@ class OwnerPresence
         return null;
     }
 
-    /** The notice shown while the owner is away: with the next opening when known, or the AI-off wording. */
+    /** True when the shop is inside today's opening hours in Manila, and today is not a blocked date. */
+    public function shopOpenNow(): bool
+    {
+        $zone = config('app.display_timezone');
+        $now = Carbon::now($zone);
+        $rule = AvailabilityRule::week()[$now->dayOfWeek];
+
+        if (! $rule->is_open || ! $rule->opens_at || ! $rule->closes_at || BlockedDate::query()->whereDate('date', $now->toDateString())->exists()) {
+            return false;
+        }
+
+        $opens = Carbon::parse($now->toDateString().' '.substr($rule->opens_at, 0, 5), $zone);
+        $closes = Carbon::parse($now->toDateString().' '.substr($rule->closes_at, 0, 5), $zone);
+
+        return $now->greaterThanOrEqualTo($opens) && $now->lessThan($closes);
+    }
+
+    /**
+     * The notice shown while the owner is away. It never promises "tomorrow" while the shop is open: then the owner is
+     * only away from messages. The next opening is worded only when the shop is closed now; the AI-off wording comes first.
+     */
     public function awayNotice(): string
     {
         if (! config('assistant.enabled')) {
             return config('chat.messages.owner_unavailable_ai_off');
+        }
+
+        if ($this->shopOpenNow()) {
+            return config('chat.messages.away_notice_open');
         }
 
         $opens = $this->nextOpeningText();

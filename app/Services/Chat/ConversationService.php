@@ -5,10 +5,13 @@ namespace App\Services\Chat;
 use App\Enums\ConversationKind;
 use App\Enums\MessageSender;
 use App\Enums\SystemMessageKind;
+use App\Exceptions\ChatException;
 use App\Models\ChatMessage;
 use App\Models\Conversation;
 use App\Models\User;
+use App\Support\LocalTime;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -31,10 +34,22 @@ class ConversationService
         }
     }
 
-    /** A new Ask Lumi conversation that opens with Lumi's fixed introduction (no AI call, no assistant run). */
+    /**
+     * A new Ask Lumi conversation that opens with Lumi's fixed introduction (no AI call, no assistant run), at most config
+     * chat.assistant_conversations_per_day per Manila day. The lock on the customer's row keeps two requests from both
+     * taking the last one.
+     */
     public function startAssistantConversation(User $customer): Conversation
     {
         return DB::transaction(function () use ($customer) {
+            User::query()->whereKey($customer->id)->lockForUpdate()->first();
+
+            $today = LocalTime::dayStartUtc(Carbon::now(config('app.display_timezone'))->toDateString());
+
+            if (Conversation::query()->assistant()->forCustomer($customer)->where('created_at', '>=', $today)->count() >= (int) config('chat.assistant_conversations_per_day')) {
+                throw ChatException::tooManyConversations();
+            }
+
             $conversation = $this->create($customer, ConversationKind::Assistant);
 
             $intro = new ChatMessage;

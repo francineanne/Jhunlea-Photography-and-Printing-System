@@ -20,6 +20,9 @@ final class LumiReply
     // The situation changed while the model was answering (the owner replied, another reply was stored): nothing stored
     public const DISCARDED = 'discarded';
 
+    // Another request for this conversation is waiting for the model right now: ask again shortly
+    public const IN_PROGRESS = 'in_progress';
+
     /** @param list<ChatMessage> $messages */
     public function __construct(
         public readonly string $status,

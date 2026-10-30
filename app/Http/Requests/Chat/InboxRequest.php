@@ -15,7 +15,14 @@ class InboxRequest extends ChatRequest
             'filter' => ['nullable', Rule::in(StudioInbox::FILTERS)],
             'q' => ['nullable', 'string', 'max:60'],
             'page' => ['nullable', 'integer', 'min:1'],
+            'poll' => ['nullable', 'boolean'],
         ];
+    }
+
+    /** A background refresh: it says nothing about the owner being at the screen. */
+    public function isPoll(): bool
+    {
+        return $this->boolean('poll');
     }
 
     public function filter(): ?string

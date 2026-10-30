@@ -348,6 +348,29 @@
     display: none !important;
 }
 
+/* The chat window (Phase 7C), the one place besides the login panel and modals that may use glass. A browser without
+   backdrop-filter keeps the solid card color; the fill stays nearly opaque so text keeps its contrast in both themes */
+.chat-glass {
+    background-color: var(--app-card);
+}
+
+@supports ((backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px))) {
+    .chat-glass {
+        background-color: color-mix(in srgb, var(--app-card) 94%, transparent);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+    }
+}
+
+/* On phones the panel is a full-height sheet that follows the visible area, so the keyboard never covers the composer */
+@media (max-width: 639.98px) {
+    .chat-sheet {
+        top: var(--chat-top, 0);
+        height: var(--chat-height, 100dvh);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
 /* The page loader is a pure-motion splash, so it is skipped entirely when motion is reduced */
 @media (prefers-reduced-motion: reduce) {
     .page-loader {

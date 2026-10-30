@@ -24,8 +24,11 @@ return [
     // Every message of one Ask Lumi conversation together (customer, Lumi and notices); then a new one is started
     'assistant_conversation_max_messages' => 60,
 
+    // New Ask Lumi conversations one customer may start in one Manila day
+    'assistant_conversations_per_day' => 20,
+
     'presence' => [
-        // In "auto" the owner counts as away after this long without opening or polling the inbox or replying
+        // In "auto" the owner counts as away after this long without real activity (background polling does not count)
         'active_minutes' => 15,
         // owner_last_active_at is written at most this often
         'touch_interval_seconds' => 30,
@@ -41,8 +44,17 @@ return [
     // Characters of the last message kept for the inbox and conversation lists
     'preview_chars' => 120,
 
+    // The fixed suggestions of an empty Ask Lumi conversation; tapping one sends it
+    'suggested_prompts' => [
+        'What photography packages do you offer?',
+        'What printing options are available?',
+        'What do I need to book a photoshoot?',
+        'What are your opening hours?',
+    ],
+
     'messages' => [
         'away_notice' => 'The studio is away right now and will be back :opens. Lumi, our AI assistant, can help you in the meantime. Babalikan ka namin agad.',
+        'away_notice_open' => 'The studio is open, but the owner is away from messages for a moment and will reply as soon as possible. Lumi, our AI assistant, can help you in the meantime.',
         'away_notice_no_time' => 'The studio is away right now. Lumi, our AI assistant, can help you in the meantime. Babalikan ka namin agad.',
         'lumi_intro' => 'Hi! I\'m Lumi, the AI assistant of Jhunlea Photography & Printing. I can help you explore our photography packages, printing services, booking rules and policies. Ano ang maitutulong ko?',
         'handoff_to_owner' => 'The studio is now with you.',
@@ -50,10 +62,14 @@ return [
         'conversation_full' => 'This conversation is full. Please start a new conversation with Lumi.',
         'owner_unavailable_ai_off' => 'The studio is away right now and will reply to your message when we are back.',
         'daily_cap' => 'You have reached today\'s message limit. You can send more messages tomorrow.',
+        'too_many_conversations' => 'You have started many new conversations today. Please continue in this one, or try again tomorrow.',
+        // Added to a guest's handoff reply: only signed-in customers can message the studio
+        'guest_handoff_signin' => 'Please sign in to message the studio directly.',
         'invalid_message' => 'Please type a message of up to :max characters.',
         'invalid_about' => 'That order or booking could not be found in your account.',
         'invalid_from_assistant' => 'That Ask Lumi conversation could not be found in your account.',
         'rate_limited' => 'You are sending messages too quickly. Please wait a moment.',
+        'session_expired' => 'Your session has expired. Please reload the page and try again.',
         'not_found' => 'This conversation could not be found.',
         'forbidden' => 'You cannot do that here.',
     ],

@@ -142,7 +142,8 @@ class NotificationFeed
         $anchor = $kind?->anchor() ?? '';
 
         if ($kind?->isMessage()) {
-            return route($owner ? 'owner.messages.show' : 'customer.messages.show', (int) ($data['conversation_id'] ?? 0));
+            // The customer's chat page (7C). The owner's link stays on the JSON thread until the inbox page of 7D
+            return $owner ? route('owner.messages.show', (int) ($data['conversation_id'] ?? 0)) : route('customer.assistant.page', ['tab' => 'studio']);
         }
 
         return match ($data['payable_type'] ?? null) {

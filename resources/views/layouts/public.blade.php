@@ -11,6 +11,9 @@
 
     // rescue(): this layout also wraps the error pages, which must never throw (session store down, odd role value)
     $home = rescue(fn () => auth()->user()?->role->home(), null, false);
+
+    // The floating chat, for guests and customers; never on the error pages, which must stay as simple as possible
+    $showChat = ! ($isErrorPage ?? false) && rescue(fn () => auth()->user()?->role !== \App\Enums\UserRole::Owner, false, false);
 @endphp
 
 @section('content')
@@ -87,7 +90,7 @@
     </main>
 
     <footer class="border-t border-app-border bg-neutral-100 dark:bg-white/5">
-        <div class="mx-auto flex max-w-[1280px] flex-col gap-4 px-4 py-8 sm:px-6 md:flex-row md:items-center md:justify-between">
+        <div @class(['mx-auto flex max-w-[1280px] flex-col gap-4 px-4 pt-8 sm:px-6 md:flex-row md:items-center md:justify-between', 'pb-24' => $showChat, 'pb-8' => ! $showChat])>
             <div class="space-y-3">
                 <x-ui.logo />
                 <nav aria-label="Footer">
@@ -124,4 +127,8 @@
         </div>
     </footer>
     </div>
+
+    @if ($showChat)
+        <x-chat.window mode="compact" />
+    @endif
 @endsection

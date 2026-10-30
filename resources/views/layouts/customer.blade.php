@@ -11,6 +11,13 @@
         ['label' => 'My bookings', 'icon' => 'event_note', 'route' => 'customer.bookings.index', 'match' => ['customer.bookings.index', 'customer.bookings.show']],
         ['label' => 'My orders', 'icon' => 'receipt_long', 'route' => 'customer.printing.index', 'match' => ['customer.printing.index', 'customer.printing.show', 'customer.printing.placed']],
     ];
+
+    // The menu of phones and tablets also lists the chat page. The top bar has no room for a seventh item at 1280px; there
+    // the floating chat links to the page
+    $menu = [...$nav, ['label' => 'Messages', 'icon' => 'forum', 'route' => 'customer.assistant.page']];
+
+    // The floating chat, except on the full chat page, which is the chat itself
+    $showChat = ! request()->routeIs('customer.assistant.page');
 @endphp
 
 @section('content')
@@ -41,14 +48,14 @@
 
     <x-layout.drawer name="customer-menu" label="Menu">
         <x-slot:heading><x-ui.logo /></x-slot:heading>
-        <x-layout.nav :items="$nav" label="Menu" />
+        <x-layout.nav :items="$menu" label="Menu" />
     </x-layout.drawer>
 
     <main id="main-content" tabindex="-1" class="mx-auto max-w-[1280px] px-4 py-8 focus:outline-none sm:px-6 sm:py-10">
         @yield('main')
     </main>
 
-    <footer class="mx-auto max-w-[1280px] px-4 pb-8 sm:px-6">
+    <footer @class(['mx-auto max-w-[1280px] px-4 sm:px-6', 'pb-24' => $showChat, 'pb-8' => ! $showChat])>
         <div class="flex items-center gap-4 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
             <span class="grid size-10 shrink-0 place-items-center rounded-control bg-app-card text-brand" aria-hidden="true"><x-ui.icon name="storefront" :size="22" /></span>
             <div class="min-w-0 text-sm">
@@ -58,4 +65,8 @@
         </div>
         <p class="mt-4 text-xs text-app-text-2">&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing. All rights reserved.</p>
     </footer>
+
+    @if ($showChat)
+        <x-chat.window mode="compact" />
+    @endif
 @endsection

@@ -32,6 +32,7 @@
             <h1 class="mt-3 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">{{ $order->serviceName() }}</h1>
             <p class="mt-1 text-sm text-app-text-2">Sent on <x-ui.date :value="$order->created_at" /></p>
             <x-order.from-booking :order="$order" class="mt-1" />
+            <a href="{{ route('customer.assistant.page', ['tab' => 'studio', 'about' => 'printing_order:'.$order->id]) }}" class="mt-1 inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="forum" :size="18" />Message the studio about this request</a>
         </div>
         <div class="shrink-0 rounded-card bg-neutral-100 p-4 md:text-right dark:bg-white/5">
             <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">{{ $order->confirmed_price !== null ? 'Confirmed price' : 'Estimated price' }}</p>

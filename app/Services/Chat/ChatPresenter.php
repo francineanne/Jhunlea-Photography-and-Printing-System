@@ -33,12 +33,12 @@ class ChatPresenter
      * @param  Collection<int, ChatMessage>  $messages
      * @return array<string, mixed>
      */
-    public function thread(Conversation $conversation, User $viewer, Collection $messages, bool $hasMoreBefore): array
+    public function thread(Conversation $conversation, User $viewer, Collection $messages, bool $hasMoreBefore, bool $hasMoreAfter = false): array
     {
         return [
             'conversation' => $this->conversation($conversation, $viewer),
             'messages' => $this->messages($conversation, $viewer, $messages),
-            'state' => $this->state($conversation, $viewer, $hasMoreBefore),
+            'state' => $this->state($conversation, $viewer, $hasMoreBefore, $hasMoreAfter),
         ];
     }
 
@@ -87,7 +87,7 @@ class ChatPresenter
     }
 
     /** @return array<string, mixed> */
-    public function state(Conversation $conversation, User $viewer, bool $hasMoreBefore): array
+    public function state(Conversation $conversation, User $viewer, bool $hasMoreBefore, bool $hasMoreAfter = false): array
     {
         $studio = null;
 
@@ -107,6 +107,7 @@ class ChatPresenter
             'unread_count' => $this->messages->unreadCount($conversation, $viewer),
             'poll' => config('chat.poll'),
             'has_more_before' => $hasMoreBefore,
+            'has_more_after' => $hasMoreAfter,
         ];
     }
 

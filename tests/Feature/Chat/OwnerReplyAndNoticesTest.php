@@ -162,6 +162,6 @@ class OwnerReplyAndNoticesTest extends TestCase
         $this->assertNotNull($row->fresh()->read_at);
 
         $customerRow = $customer->notifications()->first();
-        $this->actingAs($customer)->get(route('customer.notifications.go', $customerRow->id))->assertRedirect(route('customer.messages.show', $studio));
+        $this->actingAs($customer)->get(route('customer.notifications.go', $customerRow->id))->assertRedirect(route('customer.assistant.page', ['tab' => 'studio']));
     }
 }

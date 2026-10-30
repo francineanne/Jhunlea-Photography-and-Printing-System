@@ -15,20 +15,26 @@ use App\Services\Assistant\AssistantEngine;
 use App\Services\Assistant\AssistantInput;
 use App\Services\Assistant\AssistantResult;
 use App\Services\Assistant\ThreadMessage;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Lets Lumi answer the newest customer message of a conversation (Phase 7B). In an Ask Lumi conversation Lumi always
  * answers; in the studio thread only while the owner is away and the thread does not wait for the owner.
  *
- * The engine runs OUTSIDE any lock (it can take seconds). Its result is stored only if, under a lock on the
- * conversation, the situation is still the same: otherwise it is thrown away. A model reply becomes an assistant
+ * The engine runs OUTSIDE any database lock (it can take seconds), under a short cache lock per conversation so a double
+ * click costs one model call. Its result is stored only if, under a lock on the conversation row, the situation is
+ * still the same: otherwise it is thrown away. A model reply becomes an assistant
  * message holding references only; a fallback becomes a system notice, never words in Lumi's mouth. Lumi's replies
  * notify nobody.
  */
 class LumiReplyService
 {
     private const HISTORY = 8;
+
+    public const LOCK_PREFIX = 'chat-lumi:';
+
+    private const LOCK_SECONDS = 30;
 
     public function __construct(
         private readonly AssistantEngine $engine,
@@ -54,12 +60,41 @@ class LumiReplyService
             return new LumiReply(LumiReply::NOT_ALLOWED);
         }
 
+        $aiReplies = $conversation->isStudio() ? $this->aiRepliesSinceOwner($conversation) : 0;
+
+        // The cap was already announced in this stretch: one notice is enough, and the engine is not asked again
+        if ($aiReplies >= (int) config('assistant.limits.studio_away_max_consecutive') && $this->lastNonCustomer($conversation)?->systemKind() === SystemMessageKind::AwayCap) {
+            return new LumiReply(LumiReply::NOT_ALLOWED);
+        }
+
+        $lock = Cache::lock(self::LOCK_PREFIX.$conversation->id, self::LOCK_SECONDS);
+
+        if (! $lock->get()) {
+            return new LumiReply(LumiReply::IN_PROGRESS);
+        }
+
+        try {
+            // A request that held the lock may have stored the reply just before this one got it
+            $answered = $this->repliesAfter($conversation, $question);
+
+            if ($answered !== []) {
+                return new LumiReply(LumiReply::ALREADY_ANSWERED, $answered);
+            }
+
+            return $this->askAndStore($conversation, $customer, $question, $aiReplies);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function askAndStore(Conversation $conversation, User $customer, ChatMessage $question, int $aiReplies): LumiReply
+    {
         $result = $this->engine->handle(new AssistantInput(
             $conversation->isStudio() ? AssistantFeature::StudioAway : AssistantFeature::AskLumi,
             AssistantActor::user($customer->id),
             $question->body,
             $this->history($conversation, $question),
-            $conversation->isStudio() ? $this->aiRepliesSinceOwner($conversation) : 0,
+            $aiReplies,
         ));
 
         return DB::transaction(function () use ($conversation, $question, $result) {
@@ -137,17 +172,24 @@ class LumiReplyService
             ->values()->all();
     }
 
+    /** Lumi's replies after the owner's last message, from the last 24 hours: a customer who comes back days later is not silenced. */
     private function aiRepliesSinceOwner(Conversation $conversation): int
     {
         $lastOwner = (int) $conversation->messages()->where('sender_type', MessageSender::Owner)->max('id');
 
-        return $conversation->messages()->where('sender_type', MessageSender::Assistant)->where('id', '>', $lastOwner)->count();
+        return $conversation->messages()->where('sender_type', MessageSender::Assistant)->where('id', '>', $lastOwner)
+            ->where('created_at', '>=', now()->subDay())->count();
+    }
+
+    private function lastNonCustomer(Conversation $conversation): ?ChatMessage
+    {
+        return $conversation->messages()->where('sender_type', '!=', MessageSender::Customer)->latest('id')->first();
     }
 
     /** True when Lumi has not been answering since the owner's last reply: the away notice comes first, once. */
     private function startsAwayStretch(Conversation $conversation): bool
     {
-        $last = $conversation->messages()->where('sender_type', '!=', MessageSender::Customer)->latest('id')->first();
+        $last = $this->lastNonCustomer($conversation);
 
         return $last === null
             || $last->sender_type === MessageSender::Owner
