@@ -28,10 +28,10 @@ class PaymentLedgerService
     public const AWAITING_LIMIT = 25;
 
     /**
-     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string, customer?: int}  $filters
      * @return LengthAwarePaginator<int, Payment>
      */
-    public function payments(array $filters): LengthAwarePaginator
+    public function payments(array $filters, string $pageName = 'page'): LengthAwarePaginator
     {
         return $this->filtered($filters)
             ->when($filters['status'], fn (Builder $query, PaymentRecordStatus $status) => $query->where('status', $status))
@@ -42,7 +42,7 @@ class PaymentLedgerService
             ])])
             ->latest('received_at')
             ->latest('id')
-            ->paginate(self::PER_PAGE)
+            ->paginate(self::PER_PAGE, pageName: $pageName)
             ->withQueryString();
     }
 
@@ -50,7 +50,7 @@ class PaymentLedgerService
      * Recorded payments in the filtered period, in whole centavos, by method and in all. The status filter does not
      * apply: voided payments are never counted.
      *
-     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string, customer?: int}  $filters
      * @return array{methods: array<string, array{count: int, cents: int}>, count: int, cents: int}
      */
     public function totals(array $filters): array
@@ -131,7 +131,7 @@ class PaymentLedgerService
      * The date range (the shop's calendar days, as UTC ranges), method and search. Search matches the PAY reference,
      * the GCash reference, the PR or PB reference and the customer's name; % _ \ are matched literally.
      *
-     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string}  $filters
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string, customer?: int}  $filters
      * @return Builder<Payment>
      */
     private function filtered(array $filters): Builder
@@ -139,6 +139,10 @@ class PaymentLedgerService
         $search = $filters['search'];
 
         return Payment::query()
+            // One customer's payments (Phase 6A): on their orders and bookings, removed ones included
+            ->when($filters['customer'] ?? null, fn (Builder $query, int $customer) => $query->where(fn (Builder $own) => $own
+                ->where(fn (Builder $orders) => $orders->where('payable_type', 'printing_order')->whereIn('payable_id', PrintingOrder::withTrashed()->select('id')->where('customer_id', $customer)))
+                ->orWhere(fn (Builder $bookings) => $bookings->where('payable_type', 'photography_booking')->whereIn('payable_id', PhotographyBooking::withTrashed()->select('id')->where('customer_id', $customer)))))
             ->when($filters['from'], fn (Builder $query, string $from) => $query->where('received_at', '>=', LocalTime::dayStartUtc($from)))
             ->when($filters['to'], fn (Builder $query, string $to) => $query->where('received_at', '<=', LocalTime::dayEndUtc($to)))
             ->when($filters['method'], fn (Builder $query, PaymentMethod $method) => $query->where('method', $method))

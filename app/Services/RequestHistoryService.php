@@ -32,16 +32,17 @@ class RequestHistoryService
 
     /**
      * @param  array{kind: ?string, status: ?string, search: string, from: ?string, to: ?string}  $filters
+     * @param  bool  $withRemoved  the owner's customer page (6A) also lists removed (soft deleted) requests; the customer's own list never does
      * @return LengthAwarePaginator<int, PrintingOrder|PhotographyBooking>
      */
-    public function page(User $customer, array $filters): LengthAwarePaginator
+    public function page(User $customer, array $filters, string $pageName = 'page', bool $withRemoved = false): LengthAwarePaginator
     {
-        $page = DB::query()->fromSub($this->union($customer, $filters), 'requests')
+        $page = DB::query()->fromSub($this->union($customer, $filters, $withRemoved), 'requests')
             ->orderByDesc('created_at')->orderBy('kind')->orderByDesc('id')
-            ->paginate(self::PER_PAGE)
+            ->paginate(self::PER_PAGE, pageName: $pageName)
             ->withQueryString();
 
-        return $page->setCollection($this->hydrate($page->getCollection()));
+        return $page->setCollection($this->hydrate($page->getCollection(), $withRemoved));
     }
 
     /** @return Collection<int, PrintingOrder|PhotographyBooking> the latest few, for the dashboard */
@@ -65,11 +66,11 @@ class RequestHistoryService
     }
 
     /** @param  array{kind: ?string, status: ?string, search: string, from: ?string, to: ?string}  $filters */
-    private function union(User $customer, array $filters): QueryBuilder
+    private function union(User $customer, array $filters, bool $withRemoved = false): QueryBuilder
     {
-        $orders = $this->side(PrintingOrder::query(), 'printing', $customer, $filters, PrintingOrderStatus::tryFrom((string) $filters['status']),
+        $orders = $this->side(PrintingOrder::query()->when($withRemoved, fn (Builder $q) => $q->withTrashed()), 'printing', $customer, $filters, PrintingOrderStatus::tryFrom((string) $filters['status']),
             fn (Builder $query, string $like) => $query->orWhereHas('service', fn (Builder $service) => $service->where('name', 'like', $like)));
-        $bookings = $this->side(PhotographyBooking::query(), 'photography', $customer, $filters, BookingStatus::tryFrom((string) $filters['status']),
+        $bookings = $this->side(PhotographyBooking::query()->when($withRemoved, fn (Builder $q) => $q->withTrashed()), 'photography', $customer, $filters, BookingStatus::tryFrom((string) $filters['status']),
             fn (Builder $query, string $like) => $query->orWhereHas('package', fn (Builder $package) => $package->where('name', 'like', $like)));
 
         return match ($filters['kind']) {
@@ -110,13 +111,13 @@ class RequestHistoryService
      * @param  Collection<int, object>  $rows
      * @return Collection<int, PrintingOrder|PhotographyBooking>
      */
-    private function hydrate(Collection $rows): Collection
+    private function hydrate(Collection $rows, bool $withRemoved = false): Collection
     {
         $orderIds = $rows->where('kind', 'printing')->pluck('id')->all();
         $bookingIds = $rows->where('kind', 'photography')->pluck('id')->all();
 
-        $orders = $orderIds === [] ? collect() : PrintingOrder::query()->with(['service', 'recordedPayment'])->whereKey($orderIds)->get()->keyBy('id');
-        $bookings = $bookingIds === [] ? collect() : PhotographyBooking::query()->with(['package', 'recordedPayment'])->whereKey($bookingIds)->get()->keyBy('id');
+        $orders = $orderIds === [] ? collect() : PrintingOrder::query()->when($withRemoved, fn (Builder $q) => $q->withTrashed())->with(['service', 'recordedPayment'])->whereKey($orderIds)->get()->keyBy('id');
+        $bookings = $bookingIds === [] ? collect() : PhotographyBooking::query()->when($withRemoved, fn (Builder $q) => $q->withTrashed())->with(['package', 'recordedPayment'])->whereKey($bookingIds)->get()->keyBy('id');
 
         return $rows->map(fn ($row) => $row->kind === 'printing' ? $orders->get($row->id) : $bookings->get($row->id))->filter()->values();
     }

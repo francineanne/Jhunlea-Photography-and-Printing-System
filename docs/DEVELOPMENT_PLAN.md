@@ -100,10 +100,11 @@ Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_ove
 
 ## Phase 6 — Admin tools and settings (BF)
 Design refs: `design/admin/customers_client_directory_profiles`, `reports_analytics_atelier_performance`, `settings_studio_configuration_rules`, `design/customer/profile_account_settings`
-- [ ] Customers directory at detail (history at payments)
-- [ ] Reports: orders at bookings kada period, popular services at packages, status summary, recorded payments vs outstanding balance (hindi revenue ang estimates)
-- [ ] Settings: business info at hours, booking rules, upload rules (ang partial payments on/off ay kanselado na sa 5A: walang partial payment ang shop), FAQ editor
-- [ ] Customer profile at settings: info, password, appearance, notification preferences
+- [x] Customers directory at detail (6A: `CustomerDirectoryService`; customers lang, pinakabago muna, 20 kada page, search sa name, email at phone, filter na "may awaiting payment", tiles; detail na read only na may orders at bookings (kasama ang mga na-remove, walang link) at payments)
+- [x] Reports (6A: `ReportService`; period sa Manila days, default ngayong buwan; bawat status kasama ang zero; top 5 services at packages mula sa snapshot name; "Recorded payments" sa period at hiwalay na "Awaiting payment right now" na hindi limitado sa period)
+- **Patakaran sa salita ng pera (6A):** "Recorded payments" (ang talagang natanggap ng shop) at "Awaiting payment" (confirmed price na wala pang bayad) lang. Hindi kailanman "revenue", "sales", "profit" o "income", walang average order value, growth o comparison, at hindi kailanman binibilang ang estimates. Hindi pinagsasama ang dalawa sa iisang total.
+- [ ] Settings: business info, upload rules at FAQ editor (ang partial payments on/off ay kanselado na sa 5A: walang partial payment ang shop). Ang hours at booking rules ay nananatili sa Schedule editor (`/owner/schedule/edit`); link lang ito sa 6B.
+- [ ] Customer profile at settings: info, password, appearance. **Kanselado** ang notification preferences: in-app lang ang notifications at walang email o SMS channel na puwedeng i-on o i-off.
 - [ ] Tests: owner lang ang makakakita ng reports at settings
 
 ## Phase 7 — AI assistant (BF)
@@ -135,6 +136,9 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
   - [ ] Tingnan ang dashboards (customer at owner) sa totoong phones
   - [ ] Index sa notifications (notifiable, created_at) kung bumagal ang bell kapag marami nang rows
   - [ ] Totoong MySQL check ng combined history query (UNION) na maraming rows
+- [ ] Galing sa Phase 6A:
+  - [ ] Totoong MySQL check ng customer directory at report queries na maraming rows (subselects, grouped counts, at ang LIKE search na may % at _ na literal)
+  - [ ] Tingnan ang customer directory, customer detail at reports sa totoong phone
 - [ ] Galing sa Phase 5B:
   - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
   - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page

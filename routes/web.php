@@ -15,6 +15,7 @@ use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\Customer\RequestHistoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
+use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Owner\PhotographyBookingActionController;
 use App\Http\Controllers\Owner\PhotographyBookingController as OwnerPhotographyBookingController;
 use App\Http\Controllers\Owner\PrintingOrderActionController;
 use App\Http\Controllers\Owner\PrintingOrderController as OwnerPrintingOrderController;
+use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\ScheduleController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
@@ -157,6 +159,17 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 Route::get('/owner/payments', [PaymentController::class, 'index'])
     ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-payments-ledger'])
     ->name('owner.payments.index');
+
+// The owner's customers (Phase 6A): the directory and one customer's page, read only. An id that is not a customer is 404
+Route::middleware(['auth', 'role:owner'])->prefix('owner/customers')->name('owner.customers.')->controller(CustomerController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:120,1,owner-customers')->name('index');
+    Route::get('/{customer}', 'show')->whereNumber('customer')->middleware('throttle:120,1,owner-customer-show')->name('show');
+});
+
+// The owner's reports (Phase 6A): requests created and payments received in a period
+Route::get('/owner/reports', [ReportController::class, 'index'])
+    ->middleware(['auth', 'role:owner', 'throttle:60,1,owner-reports'])
+    ->name('owner.reports.index');
 
 // A reference image of a booking, for the owner or the customer whose booking it is (BookingReferenceImagePolicy).
 // Shown in the page only when its content is a real JPEG, PNG or WebP image; the download link always downloads

@@ -9,6 +9,8 @@
         ['label' => 'Photography bookings', 'icon' => 'photo_camera_front', 'route' => 'owner.bookings.index', 'match' => 'owner.bookings.*'],
         ['label' => 'Schedule', 'icon' => 'calendar_month', 'route' => 'owner.schedule.index', 'match' => 'owner.schedule.*'],
         ['label' => 'Payments', 'icon' => 'point_of_sale', 'route' => 'owner.payments.index', 'match' => 'owner.payments.*'],
+        ['label' => 'Customers', 'icon' => 'group', 'route' => 'owner.customers.index', 'match' => 'owner.customers.*'],
+        ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.index', 'match' => 'owner.reports.*'],
         ['label' => 'Notifications', 'icon' => 'notifications', 'route' => 'owner.notifications.index', 'match' => 'owner.notifications.*', 'badge' => $bell['unread'] ?? 0],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],

@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -31,5 +32,21 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
+    }
+
+    /**
+     * A customer's printing orders (Phase 6A, for the owner's customer directory).
+     *
+     * @return HasMany<PrintingOrder, $this>
+     */
+    public function printingOrders(): HasMany
+    {
+        return $this->hasMany(PrintingOrder::class, 'customer_id');
+    }
+
+    /** @return HasMany<PhotographyBooking, $this> */
+    public function photographyBookings(): HasMany
+    {
+        return $this->hasMany(PhotographyBooking::class, 'customer_id');
     }
 }

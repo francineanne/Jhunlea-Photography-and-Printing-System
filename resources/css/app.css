@@ -61,6 +61,7 @@
     --animate-aperture-turn: aperture-turn 6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     --animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
     --animate-ring-sweep: ring-sweep 900ms var(--ease-brand) 200ms both;
+    --animate-bar-grow: bar-grow 700ms var(--ease-brand) 200ms both;
 
     @keyframes aperture-turn {
         0% { transform: rotate(0deg); }
@@ -101,6 +102,11 @@
     /* The method breakdown ring of the payments ledger design: each arc sweeps in from nothing (pathLength="100") */
     @keyframes ring-sweep {
         from { stroke-dasharray: 0 100; }
+    }
+
+    /* The bars of the reports design: each grows from the left edge to its width */
+    @keyframes bar-grow {
+        from { transform: scaleX(0); }
     }
 }
 
