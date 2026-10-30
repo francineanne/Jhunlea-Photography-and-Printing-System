@@ -24,6 +24,8 @@ Allow customers to submit required files
 Allow owner to review and update requests
 Track request progress
 Maintain organized customer and transaction records
+Record walk-in customers and their in-person printing orders, bookings and payments
+Show the daily transactions and the total income of the business
 
 
 # System Users
@@ -40,6 +42,8 @@ Manage photography packages
 Update request status
 Confirm schedules
 Record face-to-face payments
+Record walk-in orders and bookings
+View daily transactions and income reports
 View order history
 
 
@@ -106,6 +110,9 @@ Handles:
 Payment records
 Paid amount
 Remaining balance
+Walk-in transactions
+Payments logbook
+Income reports
 
 Payments are recorded face-to-face only.
 

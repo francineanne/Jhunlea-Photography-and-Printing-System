@@ -560,6 +560,7 @@ Use a maintained server-side image library to create thumbnails or optimize pack
 - Document which features require an API key and how to run the application when the key is absent.
 - Do not send customer printing documents or private photos to an AI provider unless necessary, disclosed, and explicitly supported by the design.
 PART 13 — IMPLEMENTATION PLAN
+Note (October 30, 2026): the phases below are the original outline. The working phase plan and numbering are in docs/DEVELOPMENT_PLAN.md (Phase 8 is walk-in logging and income reports; Phase 9 is polish and release).
 Develop the project in stages. Do not try to build every module in one uncontrolled code-generation step.
 Phase 1: Requirements and Architecture
 - Confirm the initial feature scope and business rules.
@@ -627,6 +628,13 @@ Phase 9: Deployment and Documentation
 - Document owner setup and the process for updating services, packages, and themes.
 - Prepare user instructions and project presentation materials.
 Deliverable: A deployable system and documentation suitable for project demonstration.
+PART 13A — ADDITIONAL REQUIREMENT (October 30, 2026): WALK-IN LOGGING AND INCOME REPORTS
+Added at the request of the project adviser. The shop currently logs walk-in printing, in-person bookings and payments by hand and has no single view of its total income. The system must be that log.
+- The owner can create printing orders and photography bookings for a walk-in customer (a customer record with a name and a phone number and no login). The same schedule conflict checks apply, so a walk-in booking blocks the time for online customers. Every order and booking records its source (online or walk-in).
+- The Payments module contains the counter: record the full payment of an existing order or booking (cash or GCash, face to face, with cash tendered and change due as a counter aid), and a quick walk-in flow that creates the order and records the payment in one transaction. A printable payment slip (an acknowledgment of a recorded payment, not an official BIR receipt) is available.
+- The payments logbook lists every recorded payment (online and walk-in) and can be filtered and printed.
+- The reports show, for any chosen day or period (default today, with previous and next day, presets and all time): the income (the sum of recorded, non-voided payments; never estimates and never awaiting amounts), the number of transactions, cash vs GCash, online vs walk-in, printing vs photography, per service and package, and the outstanding balance; the list of that period's transactions with their details; charts; and a CSV and print export. Voided payments stay visible with their reason but are not counted.
+- The shop rules do not change: no partial payment or downpayment, full payment face to face, release only when fully paid, and the system only records payments.
 PART 14 — TESTING AND ACCEPTANCE CRITERIA
 The system is not considered complete until the relevant requirements have been implemented and tested.
 Authentication and Roles

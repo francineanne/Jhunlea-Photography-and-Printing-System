@@ -13,19 +13,20 @@ Bawat phase = isang branch → review ni Claude sa chat → kapag aprubado, ime-
 | 4 | Her | `phase-4-bookings` | Photography bookings, schedule, conflicts |
 | 5 | BF | `phase-5-payments` | Payments, notifications, dashboards, history |
 | 6 | BF | `phase-6-admin-tools` | Customers, reports, settings, FAQ, profile |
-| 7 | BF | `phase-7-assistant` | AI assistant, command palette |
-| 8 | BF | `phase-8-polish` | Testing, mobile, animations, security, docs, deployment |
+| 7 | BF | `phase-7-assistant` | Chat (customer–owner) at AI "Lumi", command palette |
+| 8 | Her at BF (itatakda) | `phase-8-walkin-income` | Walk-in logging, counter sa Payments, logbook, income reports na may charts |
+| 9 | BF | `phase-9-polish` | Testing, mobile, animations, security, docs, deployment |
 
-**Hatian:** si **Her** ang Phase 0–4: pundasyon, catalog, printing at bookings, ang core workflows. Si **BF** ang Phase 5–8: payments, dashboards, admin tools, AI, at polish. Dahil sunod-sunod ang phases, maghihintay si BF hanggang matapos ang Phase 4. Gamitin niya ang oras na iyon sa mga gawain sa ibaba, para pagdating ng Phase 5 ay kabisado na niya ang code.
+**Hatian:** si **Her** ang Phase 0–4: pundasyon, catalog, printing at bookings, ang core workflows. Si **BF** ang Phase 5–7 at 9: payments, dashboards, admin tools, AI, at polish. Ang Phase 8 (walk-in logging, counter, logbook at income reports) ay humahawak sa printing orders at bookings ni Her at sa payments at reports ni BF, kaya itatakda nila kung sino ang gagawa. Dahil sunod-sunod ang phases, maghihintay si BF hanggang matapos ang Phase 4. Gamitin niya ang oras na iyon sa mga gawain sa ibaba, para pagdating ng Phase 5 ay kabisado na niya ang code.
 
 **Habang naghihintay si BF (Phase 0–4), gagawin niya:**
 - I-setup ang project sa sarili niyang laptop (`docs/GIT_WORKFLOW.md`, section A)
-- Basahin ang code ng bawat aprubadong phase ni Her at i-test ang mga natapos na feature, para makilala niya ang code na gagamitin niya sa Phase 5–8
+- Basahin ang code ng bawat aprubadong phase ni Her at i-test ang mga natapos na feature, para makilala niya ang code na gagamitin niya sa Phase 5–9
 - Kunin mula sa shop ang totoong data: presyo, packages, litrato, oras, policies
 - Alamin ang Laravel basics: routes, controllers, Blade, Eloquent, migrations
 - I-research at i-test ang AI provider para sa Phase 7 (Gemini at Groq free tiers)
 
-**Habang nagko-code si BF (Phase 5–8), si Her ang magbabasa ng code at magte-test ng bawat natapos na phase niya. Si Claude ang nagre-review bago i-merge.**
+**Habang nagko-code si BF (Phase 5–7 at 9), si Her ang magbabasa ng code at magte-test ng bawat natapos na phase niya. Si Claude ang nagre-review bago i-merge.**
 
 **Pangkalahatang gawain ng hindi nagko-code:**
 - binabasa ang code at tine-test ang phase na katatapos lang
@@ -102,7 +103,7 @@ Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `owner_ove
 Design refs: `design/admin/customers_client_directory_profiles`, `reports_analytics_atelier_performance`, `settings_studio_configuration_rules`, `design/customer/profile_account_settings`
 - [x] Customers directory at detail (6A: `CustomerDirectoryService`; customers lang, pinakabago muna, 20 kada page, search sa name, email at phone, filter na "may awaiting payment", tiles; detail na read only na may orders at bookings (kasama ang mga na-remove, walang link) at payments)
 - [x] Reports (6A: `ReportService`; period sa Manila days, default ngayong buwan; bawat status kasama ang zero; top 5 services at packages mula sa snapshot name; "Recorded payments" sa period at hiwalay na "Awaiting payment right now" na hindi limitado sa period)
-- **Patakaran sa salita ng pera (6A):** "Recorded payments" (ang talagang natanggap ng shop) at "Awaiting payment" (confirmed price na wala pang bayad) lang. Hindi kailanman "revenue", "sales", "profit" o "income", walang average order value, growth o comparison, at hindi kailanman binibilang ang estimates. Hindi pinagsasama ang dalawa sa iisang total.
+- **Patakaran sa salita ng pera (6A):** "Recorded payments" (ang talagang natanggap ng shop) at "Awaiting payment" (confirmed price na wala pang bayad) lang. Hindi kailanman "revenue", "sales", "profit" o "income", walang average order value, growth o comparison, at hindi kailanman binibilang ang estimates. Hindi pinagsasama ang dalawa sa iisang total. **Binago sa Phase 8:** puwede nang gamitin ang "Income" para sa eksaktong kabuuan ng recorded at hindi naka-void na bayad sa napiling panahon, kasama ang average kada transaksiyon at paghahambing sa nakaraang panahon; nananatiling bawal ang "revenue", "sales" at "profit", hindi binibilang ang estimates, at hindi idinadagdag ang "Awaiting payment" sa income.
 - [x] Settings (6B, `/owner/settings`): business info (shop name, address, phone, email; makikita sa public footer kapag may laman lang), upload rules (anim na limit, hindi lalampas sa kaya ng server), at fixed na payment rules (read only, walang switch). Ang partial payments on/off ay kanselado na sa 5A.
 - **Ang hours at booking rules ay nananatili sa Schedule editor (`/owner/schedule/edit`).** Ipinapakita lang ng Settings page ang mga value nila (read only) at may link papunta sa editor; walang form field para sa kanila sa Settings.
 - [x] Mga bagong table (6B): `shop_settings` (isang row, id 1, NULL = gamitin ang default sa config) at `faqs` (question, answer, position 1..N, is_published).
@@ -115,17 +116,28 @@ Design refs: `design/admin/customers_client_directory_profiles`, `reports_analyt
 **Tapos na ang Phase 6** (6A customers at reports, 6B settings, upload limits at FAQ, 6C account page).
 - [x] Tests: owner lang ang makakakita ng reports at settings (6A at 6B)
 
-## Phase 7 — AI assistant (BF)
-Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/command_palette_ctrl_k`
+## Phase 7 — Chat at AI assistant "Lumi" (BF)
+Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/notifications_customer_messages`, `design/admin/command_palette_ctrl_k`
+Dalawang usapan: **Ask Lumi** (customer ↔ AI, mga mungkahi) at **Studio chat** (customer ↔ owner; si Lumi ang sumasagot sa thread kapag away ang owner at humihinto kapag sumagot ang owner). Owner assist: Suggest reply (draft lang, hindi kusang ipinapadala) at Summarize. AI sa chat lang; walang kapangyarihang mag-book, magbago ng presyo o status, o mag-record ng bayad. Provider: Gemini API (Flash-Lite); libre habang nagde-develop (gawa-gawang data lang), paid sa presentation at totoong shop. Buong plano: Claude Project "JHUNLEA" (`phase-7-plan`, `lumi-quality-plan`).
 - [x] 7A Lumi engine (walang UI): Gemini sa likod ng `AssistantProvider` interface (key sa `.env` lang), FakeProvider para sa tests, prompt mula sa published catalog, FAQs at settings, redaction ng email at phone, JSON output contract, cards mula sa database, limits (per minute, per day, guest IP hash, global budget), fallback texts, `assistant_runs` (metadata lang), `php artisan assistant:ask`
-- [ ] 7A.1 Hardening: PriceGuard (tinatanggal ang presyong inimbento ng AI), hindi binibilang ang tawag na hindi umabot sa provider (connection o certificate error), docs at XAMPP setup note
-- [ ] 7B Messaging core: conversations at messages (Ask Lumi at Studio chat), sino ang puwedeng magbasa ng alin, at ang away rule ng Studio chat
-- [ ] 7C Ask Lumi UI: launcher, suggested prompts, recommendation cards na may link, typing indicator, new conversation, at handoff sa owner
-- [ ] 7D Studio chat, owner inbox at owner assist: sumasagot si Lumi habang wala ang owner (tumitigil kapag sumagot ang owner o pagkatapos ng 5 AI replies), draft reply at summary na ine-edit at ipinapadala ng owner
-- [ ] 7E Owner command palette (Ctrl+K) para maghanap ng requests at customers, at polish
+- [x] 7A.1 Hardening: PriceGuard (tinatanggal ang presyong inimbento ng AI), hindi binibilang ang tawag na hindi umabot sa provider (connection o certificate error), docs at XAMPP setup note
+- [x] 7B Messaging core: `conversations` at `chat_messages` (Ask Lumi at Studio chat), `ConversationService`, `MessageService`, `LumiReplyService`, `OwnerPresence`, polling endpoints, notifications (MessageReceived at MessageReplied), at ang away rule: Available, Away o Auto (Auto = batay sa tunay na aktibidad ng owner; ang oras ng shop ay para lang sa wording ng away notice), hanggang 5 magkasunod na sagot ng AI
+- [x] 7C Customer chat UI: iisang component para sa floating panel at buong pahina (`/my/assistant`), dalawang tab (Ask Lumi at Studio), suggested prompts, recommendation cards na may link, typing indicator, new conversation, Contact the owner (draft lang, ang customer ang nagpapadala), guest mode, polling at unread badge (approved Oct 30)
+- [ ] 7D Owner side: mga ayos mula sa 7C review (isang away notice lang, tamang wording ng fallback, walang card sa handoff, inline Contact the owner, "You" sa sariling bubble, Discard sa failed bubble, friendly na 429), owner inbox at thread view, composer, Resolve, Suggest reply, Summarize, presence toggle at heartbeat
+- [ ] 7E Lumi quality pass: mapa ng mga tanong at eval set (`php artisan assistant:eval`), ClaimGuard, Taglish synonyms, live facts, prompt at paghahambing ng model; ang totoong eval ay pinapatakbo ng developer
+- [ ] 7F Owner command palette (Ctrl+K) para maghanap ng requests at customers, docs (AGENTS.md section 13), at polish
 - [ ] Tests sa bawat part: off-topic refusal, walang private data na lumalabas, fallback kapag walang key o down ang provider
 
-## Phase 8 — Polish and release (BF, may review mula kay Claude at kay Her)
+## Phase 8 — Walk-in logging, counter, logbook at income reports (Her at BF, itatakda)
+Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng bayad, at walang malinaw na kabuuang kita. Design refs: `design/admin/payments_in_store_ledger_counter_cashier`, `reports_analytics_atelier_performance`, `printing_order_detail_owner`, `booking_detail_owner`. Buong plano: Claude Project "JHUNLEA" (`phase-8-walkin-and-income`). Rekomendadong pagkakasunod: 7D, Phase 8, 7E, 7F, Phase 9.
+- [ ] 8A Walk-in foundation: customer na walang login (pangalan at numero), printing order at photography booking na ginagawa ng owner para sa walk-in (gumagana ang parehong conflict checks, kaya nagba-block ng oras ang walk-in booking), `source` (online o walk_in) sa bawat order at booking na may "Walk-in" badge sa mga listahan, at walang notification sa customer na walang account
+- [ ] 8B Counter sa Payments module (`/owner/payments`, walang bagong item sa sidebar): "Record payment" modal (hanapin ang order o booking, buong halaga lang, Cash o GCash, cash tendered at change due, GCash reference, physically-collected checkbox, printable payment slip) at "New walk-in" na may Quick walk-in (order at bayad sa isang transaksiyon). Walang Maya QR, POS/Debit o gawa-gawang pangalan mula sa design. Hindi opisyal na resibo ng BIR ang slip. Hindi puwedeng ma-record nang dalawang beses ang parehong bayad
+- [ ] 8C Reports and Analytics (`/owner/reports`): kita ng araw (default ngayon) na may Previous at Next, date picker at mga preset (Today, Yesterday, This week, This month, Custom, All time); kabuuan (income, bilang ng transaksiyon, average, cash, GCash, natitirang balanse, voided), listahan ng mga transaksiyon ng panahong iyon na may mga detalye at link, mga chart (kita sa paglipas ng panahon, cash vs GCash, online vs walk-in, printing vs photography, kada serbisyo at package), paghahambing sa nakaraang panahon, CSV at print. Ang Payments logbook at ang Reports ay iisang pinagmulan ng data
+- [ ] Kinukuwenta sa backend (sentimo, araw sa Asia/Manila); walang CDN sa charts; may katumbas na table ang bawat chart; may pagination
+- [ ] Tests: hindi kasama ang void sa kita, hangganan ng araw, kabuuan ng report = kabuuan ng logbook = kabuuan ng listahan, walk-in conflicts, atomic na Quick walk-in at walang double-record, release lang kapag fully paid, owner-only
+- [ ] Bago ang disenyo: suriin ang customer model, ang payments table at ang 6A reports, at sagutin ang mga tanong (walang account ba ang walk-in, ano ang itatala, 24 oras na abiso, refund, format ng mga ulat, lumang log, official receipt, cash drawer count)
+
+## Phase 9 — Polish and release (BF, may review mula kay Claude at kay Her) · dating Phase 8
 - [ ] Mobile responsive pass sa lahat ng screen (puwedeng gamitin ang mobile prompt sa Stitch bilang reference)
 - [ ] Animations gamit ang GSAP (scroll reveal, count-up, timeline draw, page loader) at reduced-motion support
 - [ ] Buong manual test (kasama si Her) ng bawat workflow, security checklist ng AGENTS.md section 12, at pag-aayos ng bugs
@@ -161,6 +173,17 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
   - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
   - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page
   - [ ] Tingnan ang bell dropdown sa totoong phone (iOS Safari at Android Chrome)
+- [ ] Galing sa Phase 7:
+  - [ ] Totoong MySQL test ng chat: sabay na paggawa ng studio thread, dobleng `client_id`, at history na maraming rows
+  - [ ] JavaScript off, `prefers-reduced-motion`, totoong phones at ang tunay na soft keyboard (hindi pa nasusubukan ang sheet na sumusunod sa keyboard), at ang native file picker sa chat
+  - [ ] Trusted proxies at tunay na client IP sa hosting (kung hindi, iisa ang limit ng lahat ng guest)
+  - [ ] APP_DEBUG=false, bagong APP_KEY (magbabago ang guest hashes, walang masama) at tamang `php.ini` limits
+  - [ ] 3 kilalang failing upload tests (antivirus sa %TEMP% at `finfo`): PackageImageTest "php renamed to jpg" at "php with a double extension", at isang ThemeManagementTest data set
+  - [ ] Retention policy ng chat messages; tingnan ang sessions cleanup
+  - [ ] Backup AI provider (Groq, opsyonal), paid-tier billing sa account ng may-ari, at budget alert
+  - [ ] Tabs accessibility sa chat (`aria-controls` at arrow keys); thumbs up at down sa mga sagot ni Lumi at handoff rate
+  - [ ] Totoong shop data para kay Lumi (packages, services, 25 hanggang 40 FAQ, mga patakaran), KnowledgeBuilder truncation sa napakalaking catalog, Redactor false positives (halimbawa "10 20 30 40"), at ang `?q=` at `?theme=` card links sa browser
+- [ ] Paghahanda para sa defense: gabay kada phase, mga posibleng tanong ng panel, demo script at plan B
 
 ---
 
