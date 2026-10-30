@@ -56,7 +56,7 @@
                             <span class="grid size-7 shrink-0 place-items-center rounded-full bg-neutral-100 font-mono text-xs font-bold dark:bg-white/10">{{ $position }}</span>
                             <div class="min-w-0">
                                 <p class="flex flex-wrap items-center gap-2">
-                                    <span class="break-words font-semibold">{{ $faq->question }}</span>
+                                    <span class="min-w-0 max-w-full break-words font-semibold">{{ $faq->question }}</span>
                                     <x-ui.badge :tone="$faq->is_published ? 'green' : 'gray'">{{ $faq->is_published ? 'Shown' : 'Hidden' }}</x-ui.badge>
                                 </p>
                                 <p class="mt-1 line-clamp-2 whitespace-pre-line break-words text-sm text-app-text-2">{{ $faq->answer }}</p>
