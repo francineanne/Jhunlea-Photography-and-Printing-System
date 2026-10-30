@@ -147,9 +147,7 @@ class ScheduleController extends Controller
     /** @return Collection<int, AvailabilityRule> every weekday, keyed 0 (Sunday) to 6, a closed placeholder where no row exists */
     private function rules(): Collection
     {
-        $saved = AvailabilityRule::query()->get()->keyBy('weekday');
-
-        return collect(range(0, 6))->mapWithKeys(fn (int $weekday) => [$weekday => $saved->get($weekday) ?? tap(new AvailabilityRule(['is_open' => false]), fn ($rule) => $rule->weekday = $weekday)]);
+        return AvailabilityRule::week();
     }
 
     /** @return Collection<int, BlockedDate> */

@@ -9,6 +9,7 @@ use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use App\Support\ShopSettings;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
@@ -33,6 +34,7 @@ class PrintingOrderService
         private readonly PricingService $pricing,
         private readonly StatusTransitionService $transitions,
         private readonly OrderFileService $files,
+        private readonly ShopSettings $settings,
     ) {}
 
     /**
@@ -98,8 +100,8 @@ class PrintingOrderService
             throw ValidationException::withMessages(['files' => 'Add at least one file to print.']);
         }
 
-        if (count($uploads) > config('printing.max_files_per_order')) {
-            throw ValidationException::withMessages(['files' => 'You can send up to '.config('printing.max_files_per_order').' files with one order.']);
+        if (count($uploads) > $this->settings->printingMaxFiles()) {
+            throw ValidationException::withMessages(['files' => 'You can send up to '.$this->settings->printingMaxFiles().' files with one order.']);
         }
 
         foreach ($uploads as $upload) {
@@ -153,10 +155,10 @@ class PrintingOrderService
             throw ValidationException::withMessages(['files' => 'Add at least one file.']);
         }
 
-        if ($existing + count($uploads) > config('printing.max_files_per_order')) {
-            $room = max(0, config('printing.max_files_per_order') - $existing);
+        if ($existing + count($uploads) > $this->settings->printingMaxFiles()) {
+            $room = max(0, $this->settings->printingMaxFiles() - $existing);
 
-            throw ValidationException::withMessages(['files' => 'An order can hold up to '.config('printing.max_files_per_order').' files. '.($room > 0 ? "You can add {$room} more." : 'It is full.')]);
+            throw ValidationException::withMessages(['files' => 'An order can hold up to '.$this->settings->printingMaxFiles().' files. '.($room > 0 ? "You can add {$room} more." : 'It is full.')]);
         }
 
         foreach ($uploads as $upload) {

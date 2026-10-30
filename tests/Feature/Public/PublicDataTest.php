@@ -332,7 +332,8 @@ class PublicDataTest extends TestCase
 
         $counts = [];
 
-        foreach (['/' => 5, '/services' => 5, '/packages' => 6, '/packages/many-1' => 5, '/packages/compare?packages[]=many-1&packages[]=many-2&packages[]=many-3' => 5, '/packages/finder?category=X&people=2' => 6] as $url => $limit) {
+        // Each page's own queries, plus 2 for the footer since Phase 6B (the shop's contact details and whether a FAQ is published)
+        foreach (['/' => 7, '/services' => 7, '/packages' => 8, '/packages/many-1' => 7, '/packages/compare?packages[]=many-1&packages[]=many-2&packages[]=many-3' => 7, '/packages/finder?category=X&people=2' => 8, '/faq' => 3] as $url => $limit) {
             DB::flushQueryLog();
             DB::enableQueryLog();
             $this->get($url)->assertOk();

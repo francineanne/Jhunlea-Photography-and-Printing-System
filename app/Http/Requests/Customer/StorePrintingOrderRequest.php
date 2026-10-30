@@ -5,6 +5,7 @@ namespace App\Http\Requests\Customer;
 use App\Http\Requests\Concerns\ValidatesOrderFiles;
 use App\Models\PhotographyBooking;
 use App\Services\PrintingOrderService;
+use App\Support\ShopSettings;
 use Illuminate\Validation\Validator;
 
 /**
@@ -18,7 +19,7 @@ class StorePrintingOrderRequest extends PrintingEstimateRequest
     /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        return parent::rules() + $this->fileRules(config('printing.max_files_per_order')) + [
+        return parent::rules() + $this->fileRules(app(ShopSettings::class)->printingMaxFiles()) + [
             'notes' => ['nullable', 'string', 'max:2000'],
             // Prints after the shoot: the customer's own completed booking, checked again by PrintingOrderService
             'booking' => ['nullable', 'integer'],

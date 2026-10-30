@@ -4,6 +4,7 @@ namespace App\Http\Requests\Customer;
 
 use App\Http\Requests\Concerns\ValidatesOrderFiles;
 use App\Models\PrintingOrder;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Validator;
@@ -27,13 +28,13 @@ class AddOrderFilesRequest extends FormRequest
     /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        return $this->fileRules(config('printing.max_files_per_order') - $this->order()->files()->count());
+        return $this->fileRules(app(ShopSettings::class)->printingMaxFiles() - $this->order()->files()->count());
     }
 
     /** @return array<string, string> */
     public function messages(): array
     {
-        $room = config('printing.max_files_per_order') - $this->order()->files()->count();
+        $room = app(ShopSettings::class)->printingMaxFiles() - $this->order()->files()->count();
 
         return ['files.max' => $room > 0 ? "This order can take {$room} more ".($room === 1 ? 'file' : 'files').'.' : 'This order already has the most files it can hold.'] + $this->fileMessages();
     }

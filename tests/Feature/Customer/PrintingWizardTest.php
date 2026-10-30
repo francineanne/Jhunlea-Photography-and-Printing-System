@@ -13,6 +13,7 @@ use App\Models\PrintingServiceOption;
 use App\Models\User;
 use App\Services\OrderFileService;
 use App\Services\PrintingOrderService;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -393,7 +394,7 @@ class PrintingWizardTest extends TestCase
 
     public function test_a_failure_after_the_first_file_is_written_leaves_no_order_and_no_file(): void
     {
-        $this->app->instance(OrderFileService::class, new class extends OrderFileService
+        $this->app->instance(OrderFileService::class, new class(app(ShopSettings::class)) extends OrderFileService
         {
             public int $calls = 0;
 

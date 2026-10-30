@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Models\BookingReferenceImage;
 use App\Models\PhotographyBooking;
 use App\Models\User;
+use App\Support\ShopSettings;
 use App\Support\UploadCheck;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
@@ -14,15 +15,17 @@ use Illuminate\Validation\ValidationException;
 use Throwable;
 
 /**
- * Checks and stores the reference images of a booking on the private disk. The rules (disk, types, sizes, how many)
- * live in config/booking.php; the checking itself is UploadCheck, shared with printing files. A stored image has a
+ * Checks and stores the reference images of a booking on the private disk. The disk and types live in
+ * config/booking.php; the sizes and how many are read through ShopSettings; the checking itself is UploadCheck, shared with printing files. A stored image has a
  * generated name (hashName); the customer's own file name is kept only as text for display.
  */
 class BookingImageService
 {
+    public function __construct(private readonly ShopSettings $settings) {}
+
     public function maxBytes(): int
     {
-        return (int) config('booking.max_image_size_mb') * 1024 * 1024;
+        return $this->settings->bookingMaxImageMb() * 1024 * 1024;
     }
 
     /** @return list<string> */
@@ -41,7 +44,7 @@ class BookingImageService
 
     public function tooLargeMessage(): string
     {
-        return 'The image is too large. The most is '.config('booking.max_image_size_mb').' MB per image.';
+        return 'The image is too large. The most is '.$this->settings->bookingMaxImageMb().' MB per image.';
     }
 
     public function wrongTypeMessage(): string
@@ -51,7 +54,7 @@ class BookingImageService
 
     public function tooManyMessage(): string
     {
-        return 'A booking can have up to '.(int) config('booking.max_images_per_booking').' reference images.';
+        return 'A booking can have up to '.$this->settings->bookingMaxImages().' reference images.';
     }
 
     /**
@@ -63,13 +66,13 @@ class BookingImageService
      */
     public function validateSet(array $files, int $alreadyStored = 0, int $alreadyStoredBytes = 0): void
     {
-        $max = (int) config('booking.max_images_per_booking');
+        $max = $this->settings->bookingMaxImages();
 
         if ($alreadyStored + count($files) > $max) {
             throw ValidationException::withMessages(['images' => $this->tooManyMessage()]);
         }
 
-        UploadCheck::total($files, (int) config('booking.max_total_size_mb'), 'one booking', $alreadyStoredBytes, 'images');
+        UploadCheck::total($files, $this->settings->bookingMaxTotalMb(), 'one booking', $alreadyStoredBytes, 'images');
     }
 
     /**

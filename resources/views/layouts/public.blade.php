@@ -95,9 +95,28 @@
                         @foreach ($links as $link)
                             <li><a href="{{ route($link['route']) }}" class="inline-flex min-h-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">{{ $link['label'] }}</a></li>
                         @endforeach
+                        @if ($hasFaq ?? false)
+                            <li><a href="{{ route('faq') }}" class="inline-flex min-h-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">FAQ</a></li>
+                        @endif
                     </ul>
                 </nav>
             </div>
+            {{-- Only the details the owner filled in on the Settings page; nothing at all when none is set --}}
+            @php($shop ??= [])
+            @if (filled($shop['address'] ?? null) || filled($shop['phone'] ?? null) || filled($shop['email'] ?? null))
+                <address class="min-w-0 space-y-1 text-sm not-italic text-app-text-2 md:max-w-xs">
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-app-text">Visit or contact{{ filled($shop['shop_name'] ?? null) ? ' '.$shop['shop_name'] : '' }}</p>
+                    @if (filled($shop['address'] ?? null))
+                        <p class="flex items-start gap-1.5 whitespace-pre-line break-words"><x-ui.icon name="location_on" :size="16" class="mt-0.5 shrink-0 text-brand" /><span class="min-w-0">{{ $shop['address'] }}</span></p>
+                    @endif
+                    @if (filled($shop['phone'] ?? null))
+                        <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $shop['phone']) }}" class="inline-flex min-h-11 items-center gap-1.5 rounded hover:text-brand focus-ring"><x-ui.icon name="call" :size="16" class="shrink-0 text-brand" />{{ $shop['phone'] }}</a></p>
+                    @endif
+                    @if (filled($shop['email'] ?? null))
+                        <p class="min-w-0"><a href="mailto:{{ $shop['email'] }}" class="inline-flex min-h-11 min-w-0 max-w-full items-center gap-1.5 break-all rounded hover:text-brand focus-ring"><x-ui.icon name="mail" :size="16" class="shrink-0 text-brand" /><span class="min-w-0">{{ $shop['email'] }}</span></a></p>
+                    @endif
+                </address>
+            @endif
             <div class="space-y-1 text-sm text-app-text-2 md:text-right">
                 <p>Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
                 <p>&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing</p>

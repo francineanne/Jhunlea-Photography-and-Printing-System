@@ -77,7 +77,7 @@ class ServiceController extends Controller
         return view('owner.services.create', $this->formData(new PrintingService([
             'pricing_type' => PricingType::PerPage,
             'allowed_file_types' => [PrintFileType::Pdf->value],
-            'max_file_size_mb' => 2,
+            'max_file_size_mb' => min(2, ServiceRequest::maxFileSizeMb()),
             'sort_order' => 0,
             'is_published' => false,
         ])));

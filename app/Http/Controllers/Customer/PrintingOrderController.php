@@ -11,6 +11,7 @@ use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Services\OrderFileService;
 use App\Services\PrintingOrderService;
+use App\Support\ShopSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -28,7 +29,7 @@ class PrintingOrderController extends Controller
     /** Which wizard step holds each field, so a failed submit opens the step with the first problem. */
     private const STEP_OF_FIELD = ['booking' => 1, 'service' => 1, 'options' => 2, 'quantity' => 2, 'pages' => 2, 'files' => 3, 'notes' => 3];
 
-    public function create(Request $request, OrderFileService $files): View
+    public function create(Request $request, OrderFileService $files, ShopSettings $settings): View
     {
         Gate::authorize('create', PrintingOrder::class);
 
@@ -53,8 +54,8 @@ class PrintingOrderController extends Controller
             'services' => $services,
             'rules' => $rules,
             'groups' => OptionGroup::cases(),
-            'maxFiles' => config('printing.max_files_per_order'),
-            'maxTotalMb' => config('printing.max_total_size_mb'),
+            'maxFiles' => $settings->printingMaxFiles(),
+            'maxTotalMb' => $settings->printingMaxTotalMb(),
             'maxQuantity' => config('printing.max_quantity'),
             'maxPages' => config('printing.max_pages'),
             'startStep' => $this->firstStepWithError(session('errors')),

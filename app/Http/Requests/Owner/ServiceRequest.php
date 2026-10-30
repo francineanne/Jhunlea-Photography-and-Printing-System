@@ -5,6 +5,7 @@ namespace App\Http\Requests\Owner;
 use App\Enums\PricingType;
 use App\Enums\PrintFileType;
 use App\Models\PrintingService;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -12,10 +13,10 @@ use Illuminate\Validation\Rule;
 /** Used for both create and update; on update the route's service is excluded from the slug check. */
 class ServiceRequest extends FormRequest
 {
-    /** The largest file a service may accept: never more than the printing wizard itself takes (config/printing.php). */
+    /** The largest file a service may accept: never more than the printing wizard itself takes (ShopSettings). */
     public static function maxFileSizeMb(): int
     {
-        return (int) config('printing.max_file_size_mb');
+        return app(ShopSettings::class)->printingMaxFileMb();
     }
 
     public function authorize(): bool

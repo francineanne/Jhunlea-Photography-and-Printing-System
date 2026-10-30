@@ -11,6 +11,7 @@ use App\Models\Theme;
 use App\Models\User;
 use App\Services\BookingImageService;
 use App\Services\BookingService;
+use App\Support\ShopSettings;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -352,7 +353,7 @@ class BookingServiceTest extends TestCase
 
     public function test_a_failure_after_an_image_is_written_leaves_nothing_behind(): void
     {
-        $this->app->instance(BookingImageService::class, new class extends BookingImageService
+        $this->app->instance(BookingImageService::class, new class(app(ShopSettings::class)) extends BookingImageService
         {
             public int $calls = 0;
 

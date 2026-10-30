@@ -11,6 +11,7 @@ use App\Services\AvailabilityService;
 use App\Services\BookingImageService;
 use App\Services\BookingService;
 use App\Support\LocalTime;
+use App\Support\ShopSettings;
 use App\Support\Slot;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
@@ -42,7 +43,7 @@ class PhotographyBookingController extends Controller
     /** Without scripts there is no calendar: the next days with free times are listed as plain choices instead. */
     public const FALLBACK_DAYS = 7;
 
-    public function create(Request $request, BookingService $bookings, AvailabilityService $availability, BookingImageService $images): View
+    public function create(Request $request, BookingService $bookings, AvailabilityService $availability, BookingImageService $images, ShopSettings $settings): View
     {
         Gate::authorize('create', PhotographyBooking::class);
 
@@ -79,9 +80,9 @@ class PhotographyBookingController extends Controller
             'oldSlot' => $this->oldSlot($chosen),
             'bookable' => array_map(fn ($moment) => LocalTime::format($moment, 'Y-m-d'), $availability->window()),
             'imageRules' => [
-                'max' => (int) config('booking.max_images_per_booking'),
-                'maxMb' => (int) config('booking.max_image_size_mb'),
-                'totalMb' => (int) config('booking.max_total_size_mb'),
+                'max' => $settings->bookingMaxImages(),
+                'maxMb' => $settings->bookingMaxImageMb(),
+                'totalMb' => $settings->bookingMaxTotalMb(),
                 'extensions' => $images->allowedExtensions(),
                 'types' => strtoupper(implode(', ', array_keys(config('booking.types')))),
                 'tooLarge' => $images->tooLargeMessage(),

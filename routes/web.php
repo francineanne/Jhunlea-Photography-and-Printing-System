@@ -17,6 +17,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
+use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
 use App\Http\Controllers\Owner\PaymentActionController;
@@ -29,7 +30,9 @@ use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\ScheduleController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
+use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\ThemeController;
+use App\Http\Controllers\Public\FaqController as PublicFaqController;
 use App\Http\Controllers\Public\HomeController as PublicHomeController;
 use App\Http\Controllers\Public\PackageCompareController as PublicPackageCompareController;
 use App\Http\Controllers\Public\PackageController as PublicPackageController;
@@ -45,6 +48,7 @@ Route::get('/packages', [PublicPackageController::class, 'index'])->middleware('
 Route::get('/packages/compare', PublicPackageCompareController::class)->middleware('throttle:60,1,public-packages-compare')->name('packages.compare');
 Route::get('/packages/finder', PublicPackageFinderController::class)->middleware('throttle:60,1,public-packages-finder')->name('packages.finder');
 Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->middleware('throttle:60,1,public-package-show')->name('packages.show');
+Route::get('/faq', PublicFaqController::class)->middleware('throttle:60,1,public-faq')->name('faq');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -164,6 +168,29 @@ Route::get('/owner/payments', [PaymentController::class, 'index'])
 Route::middleware(['auth', 'role:owner'])->prefix('owner/customers')->name('owner.customers.')->controller(CustomerController::class)->group(function () {
     Route::get('/', 'index')->middleware('throttle:120,1,owner-customers')->name('index');
     Route::get('/{customer}', 'show')->whereNumber('customer')->middleware('throttle:120,1,owner-customer-show')->name('show');
+});
+
+// The owner's Settings (Phase 6B): business info and upload limits are saved here; hours and booking rules are only shown
+Route::middleware(['auth', 'role:owner'])->prefix('owner/settings')->name('owner.settings.')->controller(SettingsController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:60,1,owner-settings')->name('index');
+    Route::post('/business', 'business')->middleware('throttle:20,1,owner-settings-business')->name('business');
+    Route::post('/uploads', 'uploads')->middleware('throttle:20,1,owner-settings-uploads')->name('uploads');
+    Route::post('/uploads/reset', 'resetUploads')->middleware('throttle:10,1,owner-settings-uploads-reset')->name('uploads.reset');
+});
+
+// The owner's FAQ editor (Phase 6B). Every change goes through FaqService; moves, show/hide and delete are plain POST forms
+Route::middleware(['auth', 'role:owner'])->prefix('owner/faqs')->name('owner.faqs.')->controller(OwnerFaqController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:60,1,owner-faqs')->name('index');
+    Route::get('/create', 'create')->middleware('throttle:60,1,owner-faq-create')->name('create');
+    Route::post('/', 'store')->middleware('throttle:20,1,owner-faq-store')->name('store');
+    Route::whereNumber('faq')->group(function () {
+        Route::get('/{faq}/edit', 'edit')->middleware('throttle:60,1,owner-faq-edit')->name('edit');
+        Route::put('/{faq}', 'update')->middleware('throttle:20,1,owner-faq-update')->name('update');
+        Route::post('/{faq}/publish', 'publish')->middleware('throttle:30,1,owner-faq-publish')->name('publish');
+        Route::post('/{faq}/move', 'move')->middleware('throttle:60,1,owner-faq-move')->name('move');
+        Route::get('/{faq}/delete', 'confirmDelete')->middleware('throttle:60,1,owner-faq-confirm-delete')->name('confirm-delete');
+        Route::delete('/{faq}', 'destroy')->middleware('throttle:20,1,owner-faq-destroy')->name('destroy');
+    });
 });
 
 // The owner's reports (Phase 6A): requests created and payments received in a period

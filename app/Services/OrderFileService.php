@@ -7,6 +7,7 @@ use App\Models\OrderFile;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use App\Support\ShopSettings;
 use App\Support\UploadCheck;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
@@ -15,12 +16,14 @@ use Illuminate\Validation\ValidationException;
 use Throwable;
 
 /**
- * Checks and stores the files of a printing order on the private disk. The rules (disk, types, sizes, limits) all
- * live in config/printing.php. A stored file has a generated name (hashName); the customer's own file name is kept
+ * Checks and stores the files of a printing order on the private disk. The disk and types live in config/printing.php;
+ * the size and count limits are read through ShopSettings (the owner's Settings, else the config defaults). A stored file has a generated name (hashName); the customer's own file name is kept
  * only as text for display. Files are handed out only by OrderFileDownloadController, after OrderFilePolicy allows it.
  */
 class OrderFileService
 {
+    public function __construct(private readonly ShopSettings $settings) {}
+
     /** @return list<string> extensions the service accepts, for example ['pdf', 'jpg', 'jpeg'] */
     public function allowedExtensions(PrintingService $service): array
     {
@@ -36,13 +39,13 @@ class OrderFileService
     /** The service's own limit, but never above the limit for the whole system. */
     public function maxKilobytes(PrintingService $service): int
     {
-        return min($service->max_file_size_mb, config('printing.max_file_size_mb')) * 1024;
+        return min($service->max_file_size_mb, $this->settings->printingMaxFileMb()) * 1024;
     }
 
     /** All files of one order together, in bytes. */
     public function maxTotalBytes(): int
     {
-        return config('printing.max_total_size_mb') * 1024 * 1024;
+        return $this->settings->printingMaxTotalMb() * 1024 * 1024;
     }
 
     /**
@@ -55,7 +58,7 @@ class OrderFileService
      */
     public function validateTotal(array $files, int $alreadyStoredBytes = 0): void
     {
-        UploadCheck::total($files, (int) config('printing.max_total_size_mb'), 'one order', $alreadyStoredBytes);
+        UploadCheck::total($files, $this->settings->printingMaxTotalMb(), 'one order', $alreadyStoredBytes);
     }
 
     /**
@@ -99,8 +102,8 @@ class OrderFileService
     /** @throws ValidationException */
     public function validate(UploadedFile $file, PrintingService $service, ?PrintingOrder $order = null): void
     {
-        if ($order !== null && $order->files()->count() >= config('printing.max_files_per_order')) {
-            throw ValidationException::withMessages(['file' => 'This order already has the most files it can hold ('.config('printing.max_files_per_order').').']);
+        if ($order !== null && $order->files()->count() >= $this->settings->printingMaxFiles()) {
+            throw ValidationException::withMessages(['file' => 'This order already has the most files it can hold ('.$this->settings->printingMaxFiles().').']);
         }
 
         $maxKb = $this->maxKilobytes($service);

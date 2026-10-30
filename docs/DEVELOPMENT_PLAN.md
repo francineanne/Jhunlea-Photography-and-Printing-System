@@ -103,9 +103,13 @@ Design refs: `design/admin/customers_client_directory_profiles`, `reports_analyt
 - [x] Customers directory at detail (6A: `CustomerDirectoryService`; customers lang, pinakabago muna, 20 kada page, search sa name, email at phone, filter na "may awaiting payment", tiles; detail na read only na may orders at bookings (kasama ang mga na-remove, walang link) at payments)
 - [x] Reports (6A: `ReportService`; period sa Manila days, default ngayong buwan; bawat status kasama ang zero; top 5 services at packages mula sa snapshot name; "Recorded payments" sa period at hiwalay na "Awaiting payment right now" na hindi limitado sa period)
 - **Patakaran sa salita ng pera (6A):** "Recorded payments" (ang talagang natanggap ng shop) at "Awaiting payment" (confirmed price na wala pang bayad) lang. Hindi kailanman "revenue", "sales", "profit" o "income", walang average order value, growth o comparison, at hindi kailanman binibilang ang estimates. Hindi pinagsasama ang dalawa sa iisang total.
-- [ ] Settings: business info, upload rules at FAQ editor (ang partial payments on/off ay kanselado na sa 5A: walang partial payment ang shop). Ang hours at booking rules ay nananatili sa Schedule editor (`/owner/schedule/edit`); link lang ito sa 6B.
+- [x] Settings (6B, `/owner/settings`): business info (shop name, address, phone, email; makikita sa public footer kapag may laman lang), upload rules (anim na limit, hindi lalampas sa kaya ng server), at fixed na payment rules (read only, walang switch). Ang partial payments on/off ay kanselado na sa 5A.
+- **Ang hours at booking rules ay nananatili sa Schedule editor (`/owner/schedule/edit`).** Ipinapakita lang ng Settings page ang mga value nila (read only) at may link papunta sa editor; walang form field para sa kanila sa Settings.
+- [x] Mga bagong table (6B): `shop_settings` (isang row, id 1, NULL = gamitin ang default sa config) at `faqs` (question, answer, position 1..N, is_published).
+- [x] Isang class lang ang nagbabasa ng upload limits: `App\Support\ShopSettings` (ang naka-save na value, kung wala ang default sa config, at hindi lalampas sa `ServerUploadLimits` na galing sa php.ini). May test na babagsak kapag may ibang code na nagbasa ng `config('printing.max_*')` o `config('booking.max_image*')`.
+- [x] FAQ editor (6B, `/owner/faqs`): add, edit, delete na may confirm, show/hide, move up/down (POST, gumagana kahit walang JavaScript), hanggang 50, bawal ang dobleng tanong. Public `/faq` page na published lang, at FAQ link sa footer kapag may published.
 - [ ] Customer profile at settings: info, password, appearance. **Kanselado** ang notification preferences: in-app lang ang notifications at walang email o SMS channel na puwedeng i-on o i-off.
-- [ ] Tests: owner lang ang makakakita ng reports at settings
+- [x] Tests: owner lang ang makakakita ng reports at settings (6A at 6B)
 
 ## Phase 7 — AI assistant (BF)
 Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/command_palette_ctrl_k`
@@ -139,6 +143,10 @@ Design refs: `design/customer/ai_assistant_studio_concierge`, `design/admin/comm
 - [ ] Galing sa Phase 6A:
   - [ ] Totoong MySQL check ng customer directory at report queries na maraming rows (subselects, grouped counts, at ang LIKE search na may % at _ na literal)
   - [ ] Tingnan ang customer directory, customer detail at reports sa totoong phone
+- [ ] Galing sa Phase 6B:
+  - [ ] Sa totoong server, itaas nang sabay ang php.ini `upload_max_filesize` at `post_max_size` kapag itataas ang upload limits sa Settings (ipinapakita ng Settings page ang cap ng server)
+  - [ ] Tingnan ang Settings, FAQ editor at public FAQ page sa totoong phone
+  - [ ] Totoong file picker ng phone at ng desktop sa upload na nasa limit at lampas sa limit
 - [ ] Galing sa Phase 5B:
   - [ ] Retention policy para sa lumang notifications (gaano katagal itatago, at paano lilinisin)
   - [ ] Live na pag-refresh ng bell nang hindi nagre-reload ng page

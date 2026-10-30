@@ -14,6 +14,7 @@ use App\Models\PrintingOrder;
 use App\Services\OrderFileService;
 use App\Services\PrintingOrderService;
 use App\Services\StatusTransitionService;
+use App\Support\ShopSettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
@@ -50,7 +51,7 @@ class MyOrderController extends Controller
         ]);
     }
 
-    public function show(PrintingOrder $order, OrderFileService $files): View
+    public function show(PrintingOrder $order, OrderFileService $files, ShopSettings $settings): View
     {
         Gate::authorize('view', $order);
 
@@ -68,10 +69,10 @@ class MyOrderController extends Controller
             'canAddFiles' => Gate::allows('addFiles', $order),
             // Never the last file, so an order always keeps one
             'removable' => $order->files->count() > 1 ? $order->files->filter(fn ($file) => Gate::allows('removeFile', $file))->pluck('id')->all() : [],
-            'room' => max(0, config('printing.max_files_per_order') - $order->files->count()),
-            'maxFiles' => config('printing.max_files_per_order'),
+            'room' => max(0, $settings->printingMaxFiles() - $order->files->count()),
+            'maxFiles' => $settings->printingMaxFiles(),
             'maxFileMb' => intdiv($files->maxKilobytes($order->service), 1024),
-            'maxTotalMb' => config('printing.max_total_size_mb'),
+            'maxTotalMb' => $settings->printingMaxTotalMb(),
             'accept' => collect($files->allowedExtensions($order->service))->map(fn (string $extension) => '.'.$extension)->join(','),
         ]);
     }
