@@ -47,6 +47,11 @@
         <env name="PULSE_ENABLED" value="false" force="true"/>
         <env name="TELESCOPE_ENABLED" value="false" force="true"/>
         <env name="NIGHTWATCH_ENABLED" value="false" force="true"/>
+        <!-- The assistant never sees the developer's real key in tests; each test sets the provider it needs -->
+        <env name="AI_PROVIDER" value="" force="true"/>
+        <env name="AI_API_KEY" value="" force="true"/>
+        <env name="AI_MODEL" value="" force="true"/>
+        <env name="AI_ENABLED" value="" force="true"/>
 
         <server name="APP_ENV" value="testing"/>
         <server name="APP_MAINTENANCE_DRIVER" value="file"/>
@@ -69,5 +74,9 @@
         <server name="PULSE_ENABLED" value="false"/>
         <server name="TELESCOPE_ENABLED" value="false"/>
         <server name="NIGHTWATCH_ENABLED" value="false"/>
+        <server name="AI_PROVIDER" value=""/>
+        <server name="AI_API_KEY" value=""/>
+        <server name="AI_MODEL" value=""/>
+        <server name="AI_ENABLED" value=""/>
     </php>
 </phpunit>
