@@ -1,13 +1,14 @@
 // The customer chat (Phase 7C): one component for the floating panel ("compact") and the full page ("full"), with the
 // tabs Ask Lumi and Studio. Everything shown comes from the server; messages are only ever rendered with x-text.
 
+import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX } from './chat-common';
+
 const LUMI_RETRIES = 5;
 const LUMI_RETRY_MS = 2000;
 const UNREAD_MS = 30000;
 const OPEN_FOR_MS = 2 * 60 * 1000;
 const IDLE_FOR_MS = 10 * 60 * 1000;
 const RECOVER_WITHIN_MS = 10 * 60 * 1000;
-const NEAR_BOTTOM_PX = 120;
 const COUNTER_FROM = 800;
 const SHEET_BELOW_PX = 640;
 const BANNER_KEY = 'chat-policy-dismissed';
@@ -24,14 +25,6 @@ const newThread = () => ({
     earlier: false,
     recovered: false,
 });
-
-const clientId = () => {
-    if (window.crypto?.randomUUID) {
-        return window.crypto.randomUUID();
-    }
-
-    return `c-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
-};
 
 const readSession = (key) => {
     try {
@@ -120,30 +113,12 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
         return this.tab === 'ask' && this.thread.loaded && !this.thread.messages.some((message) => message.sender_type === 'customer');
     },
 
-    // The list as it is drawn: a date line whenever the day changes, then each message
     get rows() {
-        const rows = [];
-        let day = null;
-
-        this.thread.messages.forEach((message) => {
-            const local = message.created_at?.local ?? null;
-            const date = local?.match(/^[A-Za-z]+ \d+, \d+/)?.[0] ?? null;
-
-            if (date && date !== day) {
-                day = date;
-                rows.push({ key: `date-${date}`, type: 'date', text: date });
-            }
-
-            rows.push({
-                key: message.key ?? `m-${message.id}`,
-                type: message.sender_type === 'system' ? 'notice' : 'bubble',
-                time: local && date ? local.slice(date.length).trim() : null,
-                message,
-            });
-        });
-
-        return rows;
+        return buildRows(this.thread.messages);
     },
+
+    // <x-chat.rows> shows a "Customer" tag only to the owner
+    viewer: guest ? 'guest' : 'customer',
 
     // ---- Opening and closing the panel ----
 
@@ -231,28 +206,8 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
 
     // ---- Talking to the server ----
 
-    async request(url, method = 'GET', body = null) {
-        const response = await fetch(url, {
-            method,
-            credentials: 'same-origin',
-            headers: {
-                Accept: 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-                ...(body === null ? {} : { 'Content-Type': 'application/json' }),
-                ...(method === 'GET' ? {} : { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '' }),
-            },
-            body: body === null ? undefined : JSON.stringify(body),
-        });
-
-        let data = null;
-
-        try {
-            data = await response.json();
-        } catch (error) {
-            // Not JSON (for example a redirect to a page): handled as a failure below
-        }
-
-        return { ok: response.ok && data !== null, status: response.status, data };
+    request(url, method = 'GET', body = null) {
+        return apiRequest(url, method, body);
     },
 
     threadUrl(key, id) {
@@ -267,6 +222,8 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
             this.banner = { kind: 'session', text: status === 401 ? texts.signedOut : (data?.message ?? texts.expired) };
         } else if (data?.code === 'conversation_full') {
             this.banner = { kind: 'full', text: data.message };
+        } else if (status === 429 && !data?.code) {
+            this.banner = { kind: 'error', text: texts.rateLimited, retry };
         } else {
             this.banner = { kind: 'error', text: data?.message ?? texts.generic, retry };
         }
@@ -515,6 +472,15 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
         this.deliver(this.tab, local);
     },
 
+    // Removes a failed bubble from this page only: it was never stored, and nothing is sent
+    discardMessage(local) {
+        this.thread.messages = this.thread.messages.filter((message) => message !== local);
+
+        if (this.banner?.kind === 'offline' || this.banner?.kind === 'error') {
+            this.banner = null;
+        }
+    },
+
     replaceLocal(thread, local, stored) {
         // A poll may have brought the stored message first
         thread.messages = thread.messages.some((message) => message.id === stored.id)
@@ -601,6 +567,8 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
                 sender_label: `${this.name} (AI)`,
                 body: response.data.reply,
                 cards: response.data.cards,
+                intent: response.data.intent,
+                system_kind: response.data.outcome.startsWith('fallback') ? 'ai_unavailable' : null,
                 created_at: null,
             });
         } catch (error) {
@@ -742,8 +710,10 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
 
         try {
             let more = true;
+            let pages = 0;
 
-            while (more) {
+            while (more && pages < MAX_REFRESH_PAGES) {
+                pages += 1;
                 const last = [...thread.messages].reverse().find((message) => message.id);
                 const response = await this.request(`${this.threadUrl('thread', thread.conversation.id)}?after=${last?.id ?? 0}`);
 

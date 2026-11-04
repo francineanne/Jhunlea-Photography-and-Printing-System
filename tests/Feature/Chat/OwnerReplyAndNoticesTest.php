@@ -33,7 +33,7 @@ class OwnerReplyAndNoticesTest extends TestCase
         $this->actingAs($owner)->postJson(route('owner.messages.store', $studio), ['body' => 'Hi! How can I help?', 'client_id' => 'o-1'])
             ->assertCreated()
             ->assertJsonPath('message.sender_type', 'owner')
-            ->assertJsonPath('message.sender_label', 'Jhun')
+            ->assertJsonPath('message.sender_label', 'You')
             ->assertJsonPath('message.mine', true)
             ->assertJsonPath('state.studio.needs_owner', false);
 

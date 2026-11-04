@@ -27,6 +27,7 @@ class ChatPresenter
         private readonly CardBuilder $cards,
         private readonly OwnerPresence $presence,
         private readonly MessageService $messages,
+        private readonly LumiReplyService $lumi,
     ) {}
 
     /**
@@ -48,8 +49,9 @@ class ChatPresenter
         return array_filter([
             'id' => $conversation->id,
             'kind' => $conversation->kind->value,
-            'customer' => $viewer->role === UserRole::Owner ? ['name' => $conversation->customer->name] : null,
+            'customer' => $viewer->role === UserRole::Owner ? ['name' => $conversation->customer->name, 'url' => route('owner.customers.show', $conversation->customer_id)] : null,
             'needs_owner' => $conversation->needs_owner,
+            'resolved' => $conversation->isResolved(),
             'last_message_at' => $this->time($conversation->last_message_at),
             'last_message_preview' => $conversation->last_message_preview,
             'last_sender_type' => $conversation->last_sender_type?->value,
@@ -67,12 +69,12 @@ class ChatPresenter
         $conversation->loadMissing('customer:id,name');
 
         $cards = $this->cards->buildMany($messages->mapWithKeys(fn (ChatMessage $message) => [$message->id => $this->references($message)])->all());
-        $about = $this->aboutReferences($messages);
+        $about = $this->aboutReferences($messages, $viewer);
 
         return $messages->map(fn (ChatMessage $message) => [
             'id' => $message->id,
             'sender_type' => $message->sender_type->value,
-            'sender_label' => $this->label($conversation, $message),
+            'sender_label' => $this->label($conversation, $message, $viewer),
             'body' => $message->body,
             'created_at' => $this->time($message->created_at),
             'mine' => $message->sender_id !== null && $message->sender_id === $viewer->id,
@@ -96,7 +98,10 @@ class ChatPresenter
 
             $studio = [
                 'owner_away' => $away,
-                'away_notice' => $away ? $this->presence->awayNotice() : null,
+                // One away indication at a time: once Lumi or one of its notices spoke in this stretch, the thread
+                // already says it, so the status line stays quiet
+                'away_notice' => $away && ! $this->lumi->awayAlreadyShown($conversation) ? $this->presence->awayNotice() : null,
+                'lumi_active' => $this->lumi->isActive($conversation),
                 'waiting_for_studio' => $conversation->last_sender_type === MessageSender::Customer && ($away || $conversation->needs_owner),
                 'needs_owner' => $conversation->needs_owner,
             ];
@@ -117,8 +122,13 @@ class ChatPresenter
         return $value === null ? null : ['iso' => LocalTime::iso($value), 'local' => LocalTime::format($value)];
     }
 
-    private function label(Conversation $conversation, ChatMessage $message): string
+    private function label(Conversation $conversation, ChatMessage $message, User $viewer): string
     {
+        // The viewer's own messages are always "You", never their stored name
+        if ($message->sender_id !== null && $message->sender_id === $viewer->id) {
+            return 'You';
+        }
+
         return match ($message->sender_type) {
             MessageSender::Customer => $conversation->customer?->name ?? 'Customer',
             MessageSender::Owner => $message->sender?->name ?? 'Studio',
@@ -151,9 +161,9 @@ class ChatPresenter
      * The order or booking each message is about, with its reference number; one query per type for the whole page.
      *
      * @param  Collection<int, ChatMessage>  $messages
-     * @return array<int, array{type: string, id: int, reference: string}>
+     * @return array<int, array{type: string, id: int, reference: string, url: string}>
      */
-    private function aboutReferences(Collection $messages): array
+    private function aboutReferences(Collection $messages, User $viewer): array
     {
         $about = $messages->filter(fn (ChatMessage $message) => is_array($message->meta['about'] ?? null))
             ->mapWithKeys(fn (ChatMessage $message) => [$message->id => $message->meta['about']]);
@@ -165,8 +175,14 @@ class ChatPresenter
             $numbers[$type] = $ids === [] ? [] : $model::query()->whereKey($ids)->pluck('reference_number', 'id')->all();
         }
 
+        $owner = $viewer->role === UserRole::Owner;
+        $route = fn (string $type) => match ($type) {
+            'printing_order' => $owner ? 'owner.orders.show' : 'customer.printing.show',
+            default => $owner ? 'owner.bookings.show' : 'customer.bookings.show',
+        };
+
         return $about->map(fn (array $item) => isset($numbers[$item['type']][$item['id']])
-            ? ['type' => $item['type'], 'id' => (int) $item['id'], 'reference' => (string) $numbers[$item['type']][$item['id']]]
+            ? ['type' => $item['type'], 'id' => (int) $item['id'], 'reference' => (string) $numbers[$item['type']][$item['id']], 'url' => route($route($item['type']), (int) $item['id'])]
             : null)->filter()->all();
     }
 }

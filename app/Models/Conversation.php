@@ -27,6 +27,7 @@ class Conversation extends Model
             'kind' => ConversationKind::class,
             'needs_owner' => 'boolean',
             'needs_owner_at' => 'datetime',
+            'resolved_at' => 'datetime',
             'last_message_at' => 'datetime',
             'last_sender_type' => MessageSender::class,
             'customer_last_read_message_id' => 'integer',
@@ -44,6 +45,11 @@ class Conversation extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(ChatMessage::class);
+    }
+
+    public function isResolved(): bool
+    {
+        return $this->resolved_at !== null;
     }
 
     public function isStudio(): bool

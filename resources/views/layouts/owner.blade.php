@@ -11,6 +11,7 @@
         ['label' => 'Payments', 'icon' => 'point_of_sale', 'route' => 'owner.payments.index', 'match' => 'owner.payments.*'],
         ['label' => 'Customers', 'icon' => 'group', 'route' => 'owner.customers.index', 'match' => 'owner.customers.*'],
         ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.index', 'match' => 'owner.reports.*'],
+        ['label' => 'Messages', 'icon' => 'forum', 'route' => 'owner.messages.index', 'match' => 'owner.messages.*', 'badge' => $unanswered ?? 0],
         ['label' => 'Notifications', 'icon' => 'notifications', 'route' => 'owner.notifications.index', 'match' => 'owner.notifications.*', 'badge' => $bell['unread'] ?? 0],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],
@@ -22,6 +23,8 @@
 @section('content')
     <x-layout.skip-link />
     <x-ui.toast />
+    {{-- Keeps "Auto" presence honest: a ping only while this tab is visible and the owner really uses it (7D) --}}
+    <div x-data="ownerHeartbeat(@js(route('owner.messages.presence.heartbeat')))" hidden></div>
 
     {{-- The sidebar is always dark (charcoal #2F3131), like the design --}}
     <aside class="dark fixed inset-y-0 left-0 z-30 hidden w-72 flex-col justify-between bg-[#2F3131] p-4 text-app-text shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:flex">

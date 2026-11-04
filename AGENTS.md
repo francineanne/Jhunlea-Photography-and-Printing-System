@@ -22,8 +22,8 @@
 | 4 | Photography bookings and schedule | Dev (Her) | Done (4A to 4D merged into main): booking wizard, owner booking pages, schedule calendar and editor, prints after the shoot. |
 | 5 | Payments, notifications, dashboards | BF | Done (approved and merged into main): 5A payments and 5B notifications committed; 5C customer dashboard, owner overview, combined request history (/my/requests), shop-cancel notifications. The partial-payment setting stays cancelled. |
 | 6 | Customers, reports, settings, profile | BF | Approved (Her merges phase-6-admin into main): 6A customers directory, customer detail and reports, and 6B settings, upload limits, FAQ editor and public /faq committed; 6C account page (/my/account and /owner/account: profile, password, appearance) built. |
-| 7 | Chat and AI assistant "Lumi" | BF | In progress: 7A, 7A.1, 7B and 7C approved; 7D (owner side), 7E (Lumi quality pass) and 7F (Ctrl+K, polish) remain. |
-| 8 | Walk-in logging, counter, logbook and income reports | Her and BF (to be decided) | Planned (core requirement told to the professor): see `docs/DEVELOPMENT_PLAN.md`. |
+| 7 | Chat and AI assistant "Lumi" | BF | In progress: 7A, 7A.1, 7B and 7C approved; 7D (owner side) built, waiting for review; then 7E-1 (Claude provider, account-aware Lumi), 7E-2 (quality, efficiency, eval), 7E-3 (owner Ask Lumi) and 7F (Ctrl+K, polish). |
+| 8 | Walk-in logging, counter, logbook and income reports | BF | Planned after 7F (core requirement told to the professor): see `docs/DEVELOPMENT_PLAN.md`. |
 | 9 | Testing, mobile pass, animation polish, deployment | BF (Her reviews) | Not started |
 
 Update this table when a phase is approved and merged into `main`.

@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class StudioInbox
 {
-    public const FILTERS = ['needs_reply', 'needs_owner', 'unread'];
+    /** all, unanswered, open and resolved are the inbox tabs (7D); the others stay for the JSON callers of 7B. */
+    public const FILTERS = ['all', 'unanswered', 'open', 'resolved', 'needs_reply', 'needs_owner', 'unread'];
 
     /** @return LengthAwarePaginator<int, Conversation> */
     public function page(?string $filter, ?string $search): LengthAwarePaginator
@@ -27,6 +28,9 @@ class StudioInbox
         return Conversation::query()->studio()->whereNotNull('last_message_at')
             ->with('customer:id,name')
             ->withCount(['messages as unread_count' => $unread])
+            ->when($filter === 'unanswered', fn ($query) => $this->unanswered($query))
+            ->when($filter === 'open', fn ($query) => $query->whereNull('resolved_at'))
+            ->when($filter === 'resolved', fn ($query) => $query->whereNotNull('resolved_at'))
             ->when($filter === 'needs_reply', fn ($query) => $query->where('last_sender_type', MessageSender::Customer))
             ->when($filter === 'needs_owner', fn ($query) => $query->where('needs_owner', true))
             ->when($filter === 'unread', fn ($query) => $query->whereHas('messages', $unread))
@@ -34,6 +38,18 @@ class StudioInbox
             ->orderByDesc('last_message_at')->orderByDesc('id')
             ->paginate((int) config('chat.list_page_size'))
             ->withQueryString();
+    }
+
+    /** Open threads whose last message is the customer's: the sidebar badge (one query). */
+    public function unansweredCount(): int
+    {
+        return $this->unanswered(Conversation::query()->studio())->count();
+    }
+
+    /** @param Builder<Conversation> $query */
+    private function unanswered(Builder $query): Builder
+    {
+        return $query->whereNull('resolved_at')->where('last_sender_type', MessageSender::Customer);
     }
 
     /** By customer name, or by an order or booking reference (PR-000001, PB-000001): that customer's thread. */

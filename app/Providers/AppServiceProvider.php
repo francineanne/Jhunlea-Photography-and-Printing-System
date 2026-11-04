@@ -6,6 +6,7 @@ use App\Models\Faq;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Services\Chat\StudioInbox;
 use App\Services\NotificationFeed;
 use App\Support\PasswordRules;
 use App\Support\ShopSettings;
@@ -49,6 +50,12 @@ class AppServiceProvider extends ServiceProvider
 
         // Error pages stay as simple as possible: the public layout leaves the floating chat out of them (Phase 7C)
         View::composer(['errors.*', 'errors::*'], fn ($view) => $view->with('isErrorPage', true));
+
+        // The chat's fallback offers the FAQ only when a question is published, like the public footer (Phase 7D)
+        View::composer('components.chat.rows', fn ($view) => $view->with('faqUrl', rescue(fn () => Faq::query()->published()->exists() ? route('faq') : null, null, false)));
+
+        // The owner's sidebar: how many studio threads wait for a reply (Phase 7D), one query per page
+        View::composer('layouts.owner', fn ($view) => $view->with('unanswered', rescue(fn () => app(StudioInbox::class)->unansweredCount(), 0, false)));
 
         // The bell of the customer and owner shells: the unread count and the latest few, once per page (Phase 5B)
         View::composer(['layouts.customer', 'layouts.owner'], function ($view) {

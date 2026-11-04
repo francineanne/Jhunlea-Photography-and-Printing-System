@@ -18,6 +18,7 @@ class OwnerPresenceController extends Controller
         return response()->json([
             'mode' => $this->presence->mode()->value,
             'away' => $this->presence->isAway(),
+            'reason' => $this->presence->reason(),
             'last_active_at' => $presenter->time($this->presence->lastActiveAt()),
         ]);
     }

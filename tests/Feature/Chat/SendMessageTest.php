@@ -22,7 +22,7 @@ class SendMessageTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('message.body', 'Hello po!')
             ->assertJsonPath('message.sender_type', 'customer')
-            ->assertJsonPath('message.sender_label', 'Ana Santos')
+            ->assertJsonPath('message.sender_label', 'You')
             ->assertJsonPath('message.mine', true)
             ->assertJsonStructure(['message' => ['id', 'created_at' => ['iso', 'local']], 'state' => ['studio' => ['owner_away', 'away_notice', 'waiting_for_studio', 'needs_owner'], 'unread_count', 'poll', 'has_more_before']]);
 
@@ -94,7 +94,7 @@ class SendMessageTest extends TestCase
         $foreign = PrintingOrder::factory()->forCustomer($other)->create();
 
         $this->actingAs($customer)->postJson(route('customer.messages.store', $studio), ['body' => 'About my order', 'about' => ['type' => 'printing_order', 'id' => $order->id]])
-            ->assertCreated()->assertJsonPath('message.about', ['type' => 'printing_order', 'id' => $order->id, 'reference' => 'PR-000777']);
+            ->assertCreated()->assertJsonPath('message.about', ['type' => 'printing_order', 'id' => $order->id, 'reference' => 'PR-000777', 'url' => route('customer.printing.show', $order)]);
         $this->actingAs($customer)->postJson(route('customer.messages.store', $studio), ['body' => 'About my shoot', 'about' => ['type' => 'photography_booking', 'id' => $booking->id]])->assertCreated();
 
         foreach ([['type' => 'printing_order', 'id' => $foreign->id], ['type' => 'printing_order', 'id' => 999999], ['type' => 'user', 'id' => $customer->id]] as $about) {

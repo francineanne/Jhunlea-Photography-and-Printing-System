@@ -23,6 +23,7 @@ use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
 use App\Http\Controllers\Owner\MessageController as OwnerMessageController;
+use App\Http\Controllers\Owner\OwnerAssistController;
 use App\Http\Controllers\Owner\OwnerPresenceController;
 use App\Http\Controllers\Owner\PackageController;
 use App\Http\Controllers\Owner\PackageImageController;
@@ -334,12 +335,19 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/messages')->name('owner
     Route::post('/presence', [OwnerPresenceController::class, 'update'])->middleware('throttle:20,1,owner-chat-presence-set')->name('presence.update');
     Route::post('/presence/heartbeat', [OwnerPresenceController::class, 'heartbeat'])->middleware('throttle:6,1,owner-chat-heartbeat')->name('presence.heartbeat');
 
+    // Owner assist (7D): a draft reply and a summary, shown only, never sent or stored
+    Route::whereNumber('conversation')->controller(OwnerAssistController::class)->group(function () {
+        Route::post('/{conversation}/assist/suggest', 'suggest')->middleware('throttle:6,1,owner-chat-suggest')->name('assist.suggest');
+        Route::post('/{conversation}/assist/summarize', 'summarize')->middleware('throttle:6,1,owner-chat-summarize')->name('assist.summarize');
+    });
+
     Route::controller(OwnerMessageController::class)->group(function () {
         Route::get('/', 'index')->middleware('throttle:60,1,owner-chat-inbox')->name('index');
         Route::whereNumber('conversation')->group(function () {
             Route::get('/{conversation}', 'show')->middleware('throttle:60,1,owner-chat-poll')->name('show');
             Route::post('/{conversation}', 'store')->middleware('throttle:30,1,owner-chat-send')->name('store');
             Route::post('/{conversation}/resolve', 'resolve')->middleware('throttle:30,1,owner-chat-resolve')->name('resolve');
+            Route::post('/{conversation}/reopen', 'reopen')->middleware('throttle:30,1,owner-chat-reopen')->name('reopen');
             Route::post('/{conversation}/read', 'read')->middleware('throttle:60,1,owner-chat-read')->name('read');
         });
     });

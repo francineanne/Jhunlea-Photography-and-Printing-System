@@ -12,5 +12,7 @@ final class ProviderMessage
     public function __construct(
         public readonly string $role,
         public readonly string $text,
+        // A message the shop owner wrote (sent in the model role): its peso amounts are the shop's own (PriceGuard)
+        public readonly bool $fromOwner = false,
     ) {}
 }

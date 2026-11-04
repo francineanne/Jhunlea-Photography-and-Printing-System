@@ -2,6 +2,7 @@
 
 namespace App\Services\Chat;
 
+use App\Enums\AssistantOutcome;
 use App\Enums\ConversationKind;
 use App\Enums\MessageSender;
 use App\Enums\SystemMessageKind;
@@ -16,6 +17,7 @@ use App\Services\NotificationDispatcher;
 use App\Support\LocalTime;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -55,6 +57,11 @@ class MessageService
         return $this->store($conversation, $clientId, function (Conversation $locked) use ($customer, $body, $meta, $clientId) {
             $this->checkCustomerLimits($locked, $customer);
 
+            // Anything new from the customer needs the studio again
+            if ($locked->resolved_at !== null) {
+                $locked->forceFill(['resolved_at' => null])->save();
+            }
+
             return $this->insert($locked, MessageSender::Customer, $customer->id, $body, $meta ?: null, $clientId);
         }, fn (ChatMessage $message) => $conversation->isStudio() ? $this->notifications->messageReceived($conversation, $customer) : null);
     }
@@ -84,10 +91,16 @@ class MessageService
         }, fn (ChatMessage $message) => $this->notifications->messageReplied($conversation, $owner));
     }
 
-    /** Clears "needs the owner" without sending anything. */
+    /** Marks the thread resolved and clears "needs the owner", without sending anything. */
     public function resolve(Conversation $conversation): void
     {
-        $conversation->forceFill(['needs_owner' => false, 'needs_owner_at' => null])->save();
+        $conversation->forceFill(['needs_owner' => false, 'needs_owner_at' => null, 'resolved_at' => $conversation->resolved_at ?? now()])->save();
+    }
+
+    /** Opens a resolved thread again. */
+    public function reopen(Conversation $conversation): void
+    {
+        $conversation->forceFill(['resolved_at' => null])->save();
     }
 
     /**
@@ -126,10 +139,36 @@ class MessageService
      */
     public function handoffDraft(Conversation $assistantConversation): string
     {
-        $asked = $assistantConversation->messages()->where('sender_type', MessageSender::Customer)->latest('id')->limit(3)->pluck('body')->reverse();
+        $asked = $this->questionsLumiAnswered($assistantConversation);
         $lines = $asked->map(fn (string $body) => '- '.preg_replace('/\s+/u', ' ', trim($body)))->implode("\n");
 
         return mb_substr(trim("Hi, I was asking Lumi about:\n".$lines), 0, (int) config('chat.message_max_chars'));
+    }
+
+    /**
+     * The customer's last 3 questions of an Ask Lumi conversation, oldest first, leaving out any that Lumi refused as
+     * off-topic: those do not belong in a message to the studio.
+     *
+     * @return Collection<int, string>
+     */
+    private function questionsLumiAnswered(Conversation $conversation): Collection
+    {
+        $messages = $conversation->messages()->whereIn('sender_type', [MessageSender::Customer, MessageSender::Assistant])->latest('id')->limit(60)->get()->reverse()->values();
+        $kept = collect();
+
+        foreach ($messages as $index => $message) {
+            if ($message->sender_type !== MessageSender::Customer) {
+                continue;
+            }
+
+            $reply = $messages->slice($index + 1)->first(fn (ChatMessage $next) => $next->sender_type === MessageSender::Assistant);
+
+            if (($reply?->meta['outcome'] ?? null) !== AssistantOutcome::Refused->value) {
+                $kept->push($message->body);
+            }
+        }
+
+        return $kept->slice(-3)->values();
     }
 
     /** Trimmed plain text with unified newlines and no control characters; empty or too long is refused. */

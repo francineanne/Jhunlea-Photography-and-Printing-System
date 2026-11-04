@@ -55,7 +55,7 @@ class AssistantFallbackTest extends TestCase
         $result = $this->ask('Hello');
 
         $this->assertSame(AssistantOutcome::FallbackDisabled, $result->outcome);
-        $this->assertSame('Pahinga muna si Lumi ngayon. You can browse the FAQ or message the studio.', $result->reply);
+        $this->assertSame('Lumi is taking a short break right now. You can browse the FAQ or message the studio.', $result->reply);
         $this->assertSame([], $this->fake->requests);
     }
 

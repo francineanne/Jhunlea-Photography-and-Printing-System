@@ -131,7 +131,8 @@ class PromptPrivacyTest extends TestCase
 
     public function test_the_knowledge_stays_under_the_context_limit_and_ranks_the_matching_item_first(): void
     {
-        config(['assistant.context_max_chars' => 2500]);
+        // Tight, but above the fixed rules and the "where to find things" lines (7D)
+        config(['assistant.context_max_chars' => 3200]);
 
         PrintingService::factory()->published()->count(30)->create(['description' => str_repeat('Plain document printing. ', 10)]);
         $match = PhotographyPackage::factory()->published()->create(['name' => 'Maternity Glow', 'short_description' => 'Soft maternity portraits.']);
@@ -143,6 +144,6 @@ class PromptPrivacyTest extends TestCase
         $this->assertStringContainsString('PAYMENT RULES', $system);
         $this->assertStringContainsString('No partial payment and no downpayment', $system);
         $this->assertStringContainsString('Sunday: closed', $system);
-        $this->assertLessThan(2500 + 6000, mb_strlen($system), 'The rules plus at most context_max_chars of knowledge');
+        $this->assertLessThan(3200 + 6000, mb_strlen($system), 'The rules plus at most context_max_chars of knowledge');
     }
 }

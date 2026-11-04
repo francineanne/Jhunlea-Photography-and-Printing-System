@@ -29,7 +29,7 @@ class PriceGuard
 
         $allowed = $this->amounts($request->systemInstruction."\n".implode("\n", array_map(
             fn (ProviderMessage $message) => $message->text,
-            array_filter($request->messages, fn (ProviderMessage $message) => $message->role === ProviderMessage::USER),
+            array_filter($request->messages, fn (ProviderMessage $message) => $message->role === ProviderMessage::USER || $message->fromOwner),
         )));
 
         $removed = 0;

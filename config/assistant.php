@@ -29,6 +29,9 @@ return [
     // How many earlier messages of a conversation are sent with the new one
     'history_messages' => 8,
 
+    // How many messages of a studio thread the owner's Suggest reply and Summarize read
+    'owner_assist_messages' => 20,
+
     // The most characters of shop knowledge put in one prompt (about 3K tokens)
     'context_max_chars' => 12000,
 
@@ -66,7 +69,7 @@ return [
     // The fixed texts. Customers always get one of these instead of an error page
     'messages' => [
         'off_topic' => "I'm here to help with Jhunlea's photography and printing services. I can help you explore packages, printing options, booking requirements, and request updates. What service are you interested in?",
-        'unavailable' => 'Pahinga muna si Lumi ngayon. You can browse the FAQ or message the studio.',
+        'unavailable' => 'Lumi is taking a short break right now. You can browse the FAQ or message the studio.',
         'limit_user' => 'You have reached today\'s limit for Lumi. It resets at midnight. You can still message the studio.',
         'studio_away' => 'The studio received your message and will reply when we open.',
         'owner_assist' => 'The suggestion is not available right now. You can still reply manually.',

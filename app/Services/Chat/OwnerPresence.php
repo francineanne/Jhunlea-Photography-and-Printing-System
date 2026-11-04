@@ -117,6 +117,23 @@ class OwnerPresence
         return null;
     }
 
+    /** The effective status in words, for the owner's presence control: "Auto: active 2 minutes ago" and the like. */
+    public function reason(): string
+    {
+        $last = $this->lastActiveAt();
+        $when = $last?->diffForHumans();
+
+        return match ($this->mode()) {
+            OwnerPresenceMode::Available => 'Available: set by you, Lumi stays quiet in the studio chat',
+            OwnerPresenceMode::Away => 'Away: set by you, Lumi answers in the studio chat',
+            OwnerPresenceMode::Auto => match (true) {
+                $last === null => 'Auto: away, no activity yet',
+                $this->isAway() => "Auto: away, last active {$when}",
+                default => "Auto: active {$when}",
+            },
+        };
+    }
+
     /** True when the shop is inside today's opening hours in Manila, and today is not a blocked date. */
     public function shopOpenNow(): bool
     {

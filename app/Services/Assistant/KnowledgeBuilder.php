@@ -109,6 +109,15 @@ class KnowledgeBuilder
         $lines[] = '- No partial payment and no downpayment: the full confirmed price is paid in one payment (for a photoshoot, on the day of the shoot).';
         $lines[] = '- Orders and photos are released only when fully paid. The system only records payments.';
 
+        // Page names exactly as the menus show them, never an address
+        $lines[] = "\nWHERE TO FIND THINGS ON THE WEBSITE (page names)";
+        $lines[] = '- Printing services, Photography packages and Package finder: the catalog, open to everyone.';
+        $lines[] = '- Request printing: send a printing order with your files (after signing in).';
+        $lines[] = '- Book a photoshoot: choose a package and request a time (after signing in).';
+        $lines[] = '- My orders: your printing orders and their status. My bookings: your photoshoot bookings. My requests: both together.';
+        $lines[] = '- The notification bell at the top of the page: updates from the shop about your orders, bookings and messages.';
+        $lines[] = '- Messages: chat with Lumi, or write to the studio in the Studio tab.';
+
         return implode("\n", $lines);
     }
 

@@ -24,16 +24,22 @@ class PromptBuilder
             $this->rules(),
             $this->mode($input->feature),
             'SHOP KNOWLEDGE (from the shop\'s own system; the only facts you may use)'."\n".$this->knowledge->build($input->message),
+            self::LATEST_ONLY,
         ]);
 
-        $history = array_slice($input->history, -max(0, (int) config('assistant.history_messages')));
+        $history = array_slice($input->history, -max(0, (int) config($input->feature->isOwnerAssist() ? 'assistant.owner_assist_messages' : 'assistant.history_messages')));
 
         $messages = $input->feature->isOwnerAssist()
-            ? [new ProviderMessage(ProviderMessage::USER, $this->transcript([...$history, new ThreadMessage(AssistantAuthor::Customer, $input->message)]))]
+            ? [new ProviderMessage(ProviderMessage::USER, $this->transcript($this->ownerThread($history, $input->message)))]
             : $this->conversation($history, $input->message);
 
         return new ProviderRequest($system, $messages, $input->feature);
     }
+
+    /**
+     * The last line of every system instruction, right before the conversation: older turns are context, not questions.
+     */
+    public const LATEST_ONLY = 'ANSWER ONLY THE LATEST MESSAGE: reply to the last customer turn only. Earlier messages are context, not questions to answer again. Do not bring back an earlier topic or an earlier recommendation unless the latest message asks for it.';
 
     private function rules(): string
     {
@@ -44,7 +50,8 @@ class PromptBuilder
         - Answer only about Jhunlea's printing services, photography packages, themes, bookings, the shop's hours and its policies, using only the SHOP KNOWLEDGE below. If it is not there, say you are not sure and suggest messaging the studio. Never invent prices, inclusions, schedules or policies.
         - Reply in the customer's language: Filipino, Taglish or English. Be brief and friendly (a few short sentences). Plain text only: no HTML, no markdown, no links.
         - You cannot confirm bookings, promise availability or a schedule, state a final price, record payments or change any status. Prices in the knowledge are estimates or starting prices; the owner confirms the final price.
-        - Recommend only items listed in the CATALOG INDEX, by their type and id, at most 3. Never write prices or links for them; the system shows those.
+        - Recommend only items listed in the CATALOG INDEX, by their type and id, at most 3, and only when they answer the latest message. Never write prices or links for them; the system shows those.
+        - To tell the customer where something is, name the page from WHERE TO FIND THINGS. Never write a web address.
         - Use intent "handoff" when you cannot help, when the customer asks for a person, has a complaint or wants a custom quote.
         - Use intent "off_topic" for anything not about the shop's services.
         - Use intent "clarify" to ask one short question when the request is unclear, "recommend" when you recommend items, otherwise "answer".
@@ -84,15 +91,31 @@ class PromptBuilder
             }
 
             $last = array_key_last($turns);
+            $owner = $item->author === AssistantAuthor::Owner;
 
-            if ($last !== null && $turns[$last]->role === $role) {
-                $turns[$last] = new ProviderMessage($role, $turns[$last]->text."\n\n".$text);
+            // The owner's words stay a turn of their own, so their amounts can be trusted without trusting Lumi's
+            if ($last !== null && $turns[$last]->role === $role && $turns[$last]->fromOwner === $owner) {
+                $turns[$last] = new ProviderMessage($role, $turns[$last]->text."\n\n".$text, $owner);
             } else {
-                $turns[] = new ProviderMessage($role, $text);
+                $turns[] = new ProviderMessage($role, $text, $owner);
             }
         }
 
         return $turns;
+    }
+
+    /**
+     * The thread the owner works on: the history as it is when it already holds the latest customer message (the owner
+     * may have written after it), otherwise with that message added at the end.
+     *
+     * @param  list<ThreadMessage>  $history
+     * @return list<ThreadMessage>
+     */
+    private function ownerThread(array $history, string $message): array
+    {
+        $present = collect($history)->contains(fn (ThreadMessage $item) => $item->author === AssistantAuthor::Customer && $item->text === $message);
+
+        return $present ? $history : [...$history, new ThreadMessage(AssistantAuthor::Customer, $message)];
     }
 
     /** @param list<ThreadMessage> $thread */

@@ -37,6 +37,7 @@
             'offline' => 'You seem to be offline. Check your connection and try again.',
             'expired' => config('chat.messages.session_expired'),
             'signedOut' => 'You have been signed out. Please sign in again to continue.',
+            'rateLimited' => config('chat.messages.rate_limited'),
         ],
     ];
 
@@ -127,8 +128,9 @@
         </div>
 
         {{-- The studio's status, only what the server says --}}
-        <div x-show="tab === 'studio' && !signInNeeded && (studioState?.owner_away || studioState?.waiting_for_studio)" x-cloak class="space-y-1.5 border-b border-app-border px-3 py-2 text-xs sm:px-4" data-chat-status>
-            <p x-show="studioState?.owner_away" class="flex items-start gap-2 text-app-text-2">
+        {{-- away_notice is null once the thread itself shows it: one away indication at a time (7D) --}}
+        <div x-show="tab === 'studio' && !signInNeeded && (studioState?.away_notice || studioState?.waiting_for_studio)" x-cloak class="space-y-1.5 border-b border-app-border px-3 py-2 text-xs sm:px-4" data-chat-status>
+            <p x-show="studioState?.away_notice" class="flex items-start gap-2 text-app-text-2">
                 <x-ui.icon name="schedule" :size="16" class="mt-px text-brand dark:text-[#ffb4ac]" /><span class="min-w-0" x-text="studioState?.away_notice"></span>
             </p>
             <p x-show="studioState?.waiting_for_studio" class="inline-flex items-center gap-1.5 rounded-full bg-status-amber-bg px-2.5 py-1 font-semibold text-[#92400E]">
@@ -155,63 +157,7 @@
 
             <p x-show="thread.loading" x-cloak class="m-auto flex items-center gap-2 text-sm text-app-text-2"><x-ui.aperture-spinner :size="20" />Loading the conversation</p>
 
-            <template x-for="row in rows" x-bind:key="row.key">
-                <div class="flex flex-col">
-                    <template x-if="row.type === 'date'">
-                        <p class="mx-auto rounded-full bg-neutral-100 px-3 py-1 font-mono text-[11px] text-app-text-2 dark:bg-white/10" x-text="row.text"></p>
-                    </template>
-
-                    <template x-if="row.type === 'notice'">
-                        <p class="mx-auto max-w-[90%] whitespace-pre-wrap rounded-control bg-neutral-100 px-3 py-2 text-center text-xs text-app-text-2 [overflow-wrap:anywhere] dark:bg-white/5" data-chat-notice x-text="row.message.body"></p>
-                    </template>
-
-                    <template x-if="row.type === 'bubble'">
-                        <div class="flex max-w-[92%] items-start gap-2" x-bind:class="row.message.mine ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-chat-sender="row.message.sender_type">
-                            <span class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full text-[16px] text-white shadow-sm" aria-hidden="true"
-                                x-bind:class="row.message.sender_type === 'assistant' ? 'bg-brand' : (row.message.sender_type === 'owner' ? 'bg-neutral-700' : 'bg-ink dark:bg-neutral-600')"
-                                x-text="row.message.sender_type === 'assistant' ? 'auto_awesome' : (row.message.sender_type === 'owner' ? 'storefront' : 'person')"></span>
-
-                            <div class="flex min-w-0 flex-col gap-1" x-bind:class="row.message.mine ? 'items-end' : 'items-start'">
-                                <p class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.message.mine ? 'justify-end' : ''">
-                                    <span class="font-semibold" x-text="row.message.sender_label"></span>
-                                    <span x-show="row.message.sender_type === 'assistant'" class="rounded bg-brand/10 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI</span>
-                                    <span class="font-mono text-[11px] text-app-text-2" x-show="row.time" x-text="row.time"></span>
-                                </p>
-
-                                <p x-show="row.message.about" class="inline-flex items-center gap-1 rounded-full border border-app-border px-2 py-0.5 font-mono text-[11px] text-app-text-2">
-                                    <x-ui.icon name="receipt_long" :size="14" /><span x-text="'About ' + row.message.about?.reference"></span>
-                                </p>
-
-                                <div class="whitespace-pre-wrap rounded-card px-3 py-2 text-sm [overflow-wrap:anywhere]"
-                                    x-bind:class="row.message.mine ? 'rounded-tr-none bg-brand-deep text-white' : 'rounded-tl-none bg-neutral-100 text-app-text dark:bg-white/10'"
-                                    x-text="row.message.body"></div>
-
-                                <p x-show="row.message.via_lumi" class="text-[11px] text-app-text-2">Sent from your Ask Lumi chat</p>
-                                <p x-show="row.message.status === 'sending'" class="text-[11px] text-app-text-2">Sending</p>
-                                <button type="button" x-show="row.message.status === 'failed'" x-on:click="retryMessage(row.message)"
-                                    class="inline-flex min-h-11 items-center gap-1 rounded text-xs font-semibold text-status-red hover:underline focus-ring dark:text-[#ffb4ac]">
-                                    <x-ui.icon name="error" :size="16" />Failed. Tap to retry
-                                </button>
-
-                                {{-- Recommendation cards: only what the server built from the catalog --}}
-                                <template x-for="card in row.message.cards ?? []" x-bind:key="card.type + card.id">
-                                    <article class="mt-1 w-full rounded-card border border-app-border bg-app-card p-3 shadow-sm dark:shadow-none" data-chat-card>
-                                        <h3 class="font-semibold [overflow-wrap:anywhere]" x-text="card.name"></h3>
-                                        <p x-show="card.price" class="mt-0.5 text-sm font-bold tabular-nums text-brand dark:text-[#ffb4ac]" x-text="card.price"></p>
-                                        <p x-show="card.summary" class="mt-1 text-xs text-app-text-2 [overflow-wrap:anywhere]" x-text="card.summary"></p>
-                                        <ul x-show="card.inclusions?.length" class="mt-2 space-y-0.5 text-xs text-app-text-2">
-                                            <template x-for="item in card.inclusions ?? []" x-bind:key="item">
-                                                <li class="flex items-start gap-1.5"><x-ui.icon name="check" :size="14" class="mt-px text-brand dark:text-[#ffb4ac]" /><span class="min-w-0 [overflow-wrap:anywhere]" x-text="item"></span></li>
-                                            </template>
-                                        </ul>
-                                        <a x-bind:href="card.url" class="mt-2 inline-flex min-h-11 items-center gap-1 rounded-control text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]">View details<x-ui.icon name="arrow_forward" :size="16" /></a>
-                                    </article>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </template>
+            <x-chat.rows />
 
             {{-- Suggestions for a conversation nobody has written in yet --}}
             <div x-show="showPrompts" x-cloak class="flex flex-col gap-1.5">

@@ -32,6 +32,9 @@ class LumiReplyService
 {
     private const HISTORY = 8;
 
+    /** The outcomes where the model really answered: stored as Lumi's words. Everything else is a fixed notice. */
+    private const MODEL_OUTCOMES = [AssistantOutcome::Answered, AssistantOutcome::Handoff, AssistantOutcome::Refused];
+
     public const LOCK_PREFIX = 'chat-lumi:';
 
     private const LOCK_SECONDS = 30;
@@ -106,7 +109,8 @@ class LumiReplyService
 
             $stored = [];
 
-            if ($locked->isStudio() && $this->startsAwayStretch($locked)) {
+            // Only a real model reply opens a stretch with the away notice; a fallback notice already says enough
+            if ($locked->isStudio() && in_array($result->outcome, self::MODEL_OUTCOMES, true) && $this->startsAwayStretch($locked)) {
                 $stored[] = $this->messages->insert($locked, MessageSender::System, null, $this->presence->awayNotice(), ['system_kind' => SystemMessageKind::AwayNotice->value]);
             }
 
@@ -119,7 +123,7 @@ class LumiReplyService
 
     private function store(Conversation $conversation, AssistantResult $result): ChatMessage
     {
-        if (in_array($result->outcome, [AssistantOutcome::Answered, AssistantOutcome::Handoff, AssistantOutcome::Refused], true)) {
+        if (in_array($result->outcome, self::MODEL_OUTCOMES, true)) {
             $message = $this->messages->insert($conversation, MessageSender::Assistant, null, $result->reply, [
                 'intent' => $result->intent?->value,
                 'outcome' => $result->outcome->value,
@@ -135,7 +139,17 @@ class LumiReplyService
 
         $kind = $result->outcome === AssistantOutcome::AwayCapReached ? SystemMessageKind::AwayCap : SystemMessageKind::AiUnavailable;
 
-        return $this->messages->insert($conversation, MessageSender::System, null, $result->reply, ['system_kind' => $kind->value]);
+        return $this->messages->insert($conversation, MessageSender::System, null, $this->fallbackText($conversation, $result), ['system_kind' => $kind->value]);
+    }
+
+    /** In the studio thread a fallback never promises "when we open" while the shop is open. */
+    private function fallbackText(Conversation $conversation, AssistantResult $result): string
+    {
+        if (! $conversation->isStudio() || $result->outcome === AssistantOutcome::AwayCapReached) {
+            return $result->reply;
+        }
+
+        return config($this->presence->shopOpenNow() ? 'chat.messages.studio_fallback_open' : 'chat.messages.studio_fallback_closed');
     }
 
     private function mayAnswer(Conversation $conversation): bool
@@ -184,6 +198,24 @@ class LumiReplyService
     private function lastNonCustomer(Conversation $conversation): ?ChatMessage
     {
         return $conversation->messages()->where('sender_type', '!=', MessageSender::Customer)->latest('id')->first();
+    }
+
+    /**
+     * Whether Lumi would answer in the studio thread right now: the owner is away, the thread does not wait for the
+     * owner, the assistant is switched on, and the stretch has not reached the cap. Shown to both sides.
+     */
+    public function isActive(Conversation $conversation): bool
+    {
+        return $conversation->isStudio()
+            && config('assistant.enabled')
+            && $this->mayAnswer($conversation)
+            && $this->aiRepliesSinceOwner($conversation) < (int) config('assistant.limits.studio_away_max_consecutive');
+    }
+
+    /** True when the thread already shows that the owner is away: Lumi or one of its notices spoke since the owner. */
+    public function awayAlreadyShown(Conversation $conversation): bool
+    {
+        return ! $this->startsAwayStretch($conversation);
     }
 
     /** True when Lumi has not been answering since the owner's last reply: the away notice comes first, once. */
