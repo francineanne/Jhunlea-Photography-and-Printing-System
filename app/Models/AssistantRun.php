@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * text. A row with latency_ms set is a call the provider answered with an HTTP response (any status): only those count
  * toward the limits. A call that never got an answer (connection or certificate error, no key) has no latency.
  */
-#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms'])]
+#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'fallback_from', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms'])]
 class AssistantRun extends Model
 {
     public const UPDATED_AT = null;

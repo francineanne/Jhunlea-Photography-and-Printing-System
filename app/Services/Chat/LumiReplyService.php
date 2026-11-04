@@ -124,11 +124,14 @@ class LumiReplyService
     private function store(Conversation $conversation, AssistantResult $result): ChatMessage
     {
         if (in_array($result->outcome, self::MODEL_OUTCOMES, true)) {
-            $message = $this->messages->insert($conversation, MessageSender::Assistant, null, $result->reply, [
+            // A handoff in the studio thread names the customer's own record it is about (checked by the engine), so the
+            // owner's thread header links it
+            $message = $this->messages->insert($conversation, MessageSender::Assistant, null, $result->reply, array_filter([
                 'intent' => $result->intent?->value,
                 'outcome' => $result->outcome->value,
                 'recommend' => array_map(fn (array $card) => ['type' => $card['type'], 'id' => $card['id']], $result->cards),
-            ]);
+                'about' => $conversation->isStudio() ? $result->about : null,
+            ], fn ($value) => $value !== null));
 
             if ($result->needsOwner && $conversation->isStudio()) {
                 $conversation->forceFill(['needs_owner' => true, 'needs_owner_at' => now()])->save();

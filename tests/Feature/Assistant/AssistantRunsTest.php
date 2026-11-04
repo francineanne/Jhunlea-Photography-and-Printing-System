@@ -29,7 +29,7 @@ class AssistantRunsTest extends TestCase
     public function test_the_table_has_no_column_that_could_hold_message_text(): void
     {
         $this->assertSame(
-            ['id', 'user_id', 'guest_key', 'feature', 'provider', 'model', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms', 'created_at'],
+            ['id', 'user_id', 'guest_key', 'feature', 'provider', 'model', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms', 'created_at', 'fallback_from'],
             Schema::getColumnListing('assistant_runs'),
         );
     }

@@ -1,17 +1,29 @@
 <?php
 
 /*
-| The AI customer assistant ("Lumi", Phase 7). The key lives only in .env (AI_API_KEY) and is read here, never with
-| env() anywhere else, so config:cache works. An empty key or an unknown provider never breaks a page: the engine
-| answers with the "unavailable" fallback instead.
+| The AI customer assistant ("Lumi", Phase 7). The keys live only in .env (ANTHROPIC_API_KEY, AI_API_KEY) and are
+| read here, never with env() anywhere else, so config:cache works. An empty key or an unknown provider never breaks a
+| page: the engine tries the backup provider, then answers with the "unavailable" fallback.
 */
 
 return [
 
-    // gemini (the real one) or fake (scripted replies for tests and local development)
-    // ?: so an empty line in .env (AI_MODEL=) still uses the default
-    'provider' => env('AI_PROVIDER') ?: 'gemini',
+    // The provider that answers first (Phase 7E-1): anthropic (Claude), gemini, or fake (scripted replies for tests
+    // and local development). ?: so an empty line in .env (AI_PROVIDER=) still uses the default
+    'provider' => env('AI_PROVIDER') ?: 'anthropic',
 
+    // The backup, asked only when the first provider is rate limiting, down, has no usable key or sent a broken body.
+    // Not set at all: gemini. Set to an empty value or "none": no backup
+    'fallback_provider' => env('AI_FALLBACK_PROVIDER') === null ? 'gemini' : (in_array(strtolower(trim((string) env('AI_FALLBACK_PROVIDER'))), ['', 'none'], true) ? null : trim((string) env('AI_FALLBACK_PROVIDER'))),
+
+    // Claude through the Messages API. No temperature is sent: Claude Haiku 5.5 refuses any non-default value
+    'anthropic' => [
+        'api_key' => env('ANTHROPIC_API_KEY') ?: null,
+        'model' => env('ANTHROPIC_MODEL') ?: 'claude-haiku-5-5',
+        'version' => '2023-06-01',
+    ],
+
+    // Gemini (the backup): its key and model keep their Phase 7A names
     'api_key' => env('AI_API_KEY') ?: null,
 
     'model' => env('AI_MODEL') ?: 'gemini-3.5-flash-lite',
@@ -21,6 +33,7 @@ return [
     // Off switch for the whole assistant: every call answers with the fallback and the provider is never called
     'enabled' => env('AI_ENABLED') === null || env('AI_ENABLED') === '' ? true : (bool) env('AI_ENABLED'),
 
+    // Per provider call. With a backup, the worst case is two timeouts in a row (about 24 seconds)
     'timeout_seconds' => 12,
 
     // The longest customer message accepted, checked before anything else
@@ -43,7 +56,12 @@ return [
 
     'max_output_tokens' => 500,
 
+    // Gemini only (Claude gets none, see above)
     'temperature' => 0.2,
+
+    // The most characters of the customer's own records put in one prompt (about 600 tokens); the oldest finished
+    // record is dropped first
+    'customer_context_max_chars' => 2400,
 
     'limits' => [
         'per_minute_per_user' => 6,
@@ -73,6 +91,9 @@ return [
         'limit_user' => 'You have reached today\'s limit for Lumi. It resets at midnight. You can still message the studio.',
         'studio_away' => 'The studio received your message and will reply when we open.',
         'owner_assist' => 'The suggestion is not available right now. You can still reply manually.',
+        // Used when ClaimGuard removed every sentence of a reply because each claimed an action or a status the
+        // customer's records do not show
+        'claim_unverified' => 'I can\'t confirm that from here. Please check My orders or My bookings for the latest status, or message the studio.',
         // Used when PriceGuard removed every sentence of a reply because each named a price the shop never gave
         'price_unverified' => 'Pasensya na po, hindi ako sigurado sa eksaktong presyo. Please message the studio for the exact price.',
         'away_cap' => 'Lumi has replied several times in a row. The studio will reply to you directly when we open.',

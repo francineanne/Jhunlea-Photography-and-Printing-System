@@ -158,16 +158,14 @@ class GeminiProviderTest extends TestCase
     public function test_the_resolver_builds_gemini_only_with_a_key(): void
     {
         config(['assistant.provider' => 'gemini', 'assistant.api_key' => null]);
-        $this->assertNull(app(ProviderResolver::class)->resolve());
+        $this->assertNull(app(ProviderResolver::class)->make('gemini'));
 
         config(['assistant.api_key' => '   ']);
-        $this->assertNull(app(ProviderResolver::class)->resolve());
+        $this->assertNull(app(ProviderResolver::class)->make('gemini'));
 
         config(['assistant.api_key' => self::KEY]);
-        $this->assertInstanceOf(GeminiProvider::class, app(ProviderResolver::class)->resolve());
-
-        config(['assistant.provider' => 'openai-something']);
-        $this->assertNull(app(ProviderResolver::class)->resolve());
+        $this->assertInstanceOf(GeminiProvider::class, app(ProviderResolver::class)->make('gemini'));
+        $this->assertNull(app(ProviderResolver::class)->make('openai-something'));
     }
 
     public function test_the_log_says_why_a_call_failed_with_safe_numbers_only(): void
@@ -195,9 +193,10 @@ class GeminiProviderTest extends TestCase
 
         $failures = array_values(array_filter($logged, fn ($context) => isset($context['kind'])));
 
-        $this->assertSame(['feature' => 'ask_lumi', 'outcome' => 'fallback_unavailable', 'exception' => ProviderUnavailable::class, 'kind' => 'connection', 'curl_error' => 60], $failures[0]);
-        $this->assertSame(['feature' => 'ask_lumi', 'outcome' => 'fallback_unavailable', 'exception' => ProviderUnavailable::class, 'kind' => 'http', 'http_status' => 400], $failures[1]);
-        $this->assertSame(['feature' => 'ask_lumi', 'outcome' => 'fallback_unavailable', 'exception' => ProviderRateLimited::class, 'kind' => 'rate_limited', 'http_status' => 429, 'retry_after' => 9], $failures[2]);
+        $safe = ['feature' => 'ask_lumi', 'provider' => 'gemini', 'outcome' => 'fallback_unavailable'];
+        $this->assertSame($safe + ['exception' => ProviderUnavailable::class, 'failover' => false, 'kind' => 'connection', 'curl_error' => 60], $failures[0]);
+        $this->assertSame($safe + ['exception' => ProviderUnavailable::class, 'failover' => false, 'kind' => 'http', 'http_status' => 400], $failures[1]);
+        $this->assertSame($safe + ['exception' => ProviderRateLimited::class, 'failover' => false, 'kind' => 'rate_limited', 'http_status' => 429, 'retry_after' => 9], $failures[2]);
 
         foreach ($failures as $context) {
             $this->assertStringNotContainsString('googleapis', json_encode($context));

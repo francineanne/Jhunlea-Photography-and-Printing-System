@@ -8,12 +8,13 @@ use App\Services\Assistant\AssistantEngine;
 use App\Services\Assistant\AssistantInput;
 use App\Services\Assistant\AssistantResult;
 use App\Services\Assistant\Providers\FakeProvider;
+use App\Services\Assistant\Providers\ProviderResolver;
 use App\Services\Assistant\ThreadMessage;
 use Illuminate\Support\Facades\Http;
 
 /**
- * Points the assistant at a FakeProvider and blocks every real HTTP request, so no test can ever reach Gemini.
- * Call fakeAssistant() at the start of a test (or in setUp).
+ * Points the assistant at a FakeProvider and blocks every real HTTP request, so no test can ever reach a provider.
+ * Call fakeAssistant() at the start of a test (or in setUp); fakeChain() scripts Claude and its Gemini backup apart.
  */
 trait FakesAssistant
 {
@@ -22,12 +23,30 @@ trait FakesAssistant
     protected function fakeAssistant(): FakeProvider
     {
         Http::preventStrayRequests();
-        config(['assistant.provider' => 'fake', 'assistant.api_key' => null, 'assistant.enabled' => true]);
+        config(['assistant.provider' => 'fake', 'assistant.fallback_provider' => null, 'assistant.api_key' => null, 'assistant.anthropic.api_key' => null, 'assistant.enabled' => true]);
 
         $this->fake = new FakeProvider;
         $this->app->instance(FakeProvider::class, $this->fake);
 
         return $this->fake;
+    }
+
+    /**
+     * Claude first and Gemini as its backup, each a FakeProvider of its own (no key, no network).
+     *
+     * @return array{0: FakeProvider, 1: FakeProvider} [anthropic, gemini]
+     */
+    protected function fakeChain(): array
+    {
+        $this->fakeAssistant();
+        config(['assistant.provider' => 'anthropic', 'assistant.fallback_provider' => 'gemini']);
+
+        $claude = new FakeProvider('anthropic');
+        $gemini = new FakeProvider('gemini');
+        $this->app->instance(ProviderResolver::BINDING.'anthropic', $claude);
+        $this->app->instance(ProviderResolver::BINDING.'gemini', $gemini);
+
+        return [$claude, $gemini];
     }
 
     /** @param list<ThreadMessage> $history */

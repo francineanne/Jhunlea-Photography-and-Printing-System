@@ -76,11 +76,24 @@ class PromptPrivacyTest extends TestCase
             $this->assertStringContainsString($public, $prompt);
         }
 
+        // Phase 7E-1: the signed-in customer's OWN references are in the prompt on purpose (CustomerContextBuilder);
+        // nothing else about them or their records is
+        $this->assertStringContainsString('PR-424242', $prompt);
+        $this->assertStringContainsString('PB-535353', $prompt);
+
         foreach (['Secret Draft Service', 'Unreleased Package', 'Hidden Theme', 'Internal unpublished question', 'Rosario', 'Dimaculangan',
-            'rosario.private@example.test', '09998887777', 'PR-424242', 'Barangay Secret Street', 'Blurry scan', 'rosario-passport.pdf',
-            'hidden-path-xyz', 'PB-535353', '09175550000', 'Surprise proposal', 'VIP owner note', 'liza-face.jpg', 'ref-secret.jpg',
+            'rosario.private@example.test', '09998887777', 'Barangay Secret Street', 'Blurry scan', 'rosario-passport.pdf',
+            'hidden-path-xyz', '09175550000', 'Surprise proposal', 'VIP owner note', 'liza-face.jpg', 'ref-secret.jpg',
             'PAY-777111', 'GCASHSECRET99', 'PR-NOTIFY-1'] as $private) {
             $this->assertStringNotContainsString($private, $prompt, "{$private} reached the prompt");
+        }
+
+        // A guest's prompt holds no record at all
+        $this->ask('Magkano ang wedding?');
+        $guest = $this->fake->lastRequest()->promptText();
+
+        foreach (['PR-424242', 'PB-535353', "THIS CUSTOMER'S OWN RECORDS"] as $private) {
+            $this->assertStringNotContainsString($private, $guest);
         }
     }
 

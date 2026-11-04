@@ -294,6 +294,22 @@ class OwnerInboxTest extends TestCase
         $this->assertStringContainsString('3 to 5 short lines', $prompt->systemInstruction);
     }
 
+    public function test_a_handoff_is_no_draft_but_a_summary_still_comes_back(): void
+    {
+        $owner = $this->owner();
+        $customer = $this->customer();
+        $studio = $this->studio($customer);
+        $this->say($studio, $customer, 'I want a refund for my last order');
+
+        $this->fake->push(self::reply('handoff', 'Please talk to the owner about this.'));
+        $this->actingAs($owner)->postJson(route('owner.messages.assist.suggest', $studio))->assertOk()
+            ->assertExactJson(['available' => false, 'text' => config('assistant.messages.owner_assist'), 'lines' => [], 'outcome' => 'handoff']);
+
+        $this->fake->push(self::reply('handoff', "- Asks for a refund\n- Order not named yet"));
+        $this->actingAs($owner)->postJson(route('owner.messages.assist.summarize', $studio))->assertOk()
+            ->assertJson(['available' => true, 'lines' => ['Asks for a refund', 'Order not named yet'], 'outcome' => 'handoff']);
+    }
+
     public function test_assist_reads_the_whole_thread_with_the_owners_amounts_and_price_guard(): void
     {
         $owner = $this->owner();

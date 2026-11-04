@@ -7,6 +7,8 @@ use Throwable;
 /**
  * Scripted replies for tests and local development: no network, no key. Queue raw JSON strings or exceptions with
  * push(); when the queue is empty it answers with a plain "answer". Every request is kept so tests can read the prompt.
+ * Built with another $name (Phase 7E-1) it stands in for that provider in a chain, so a test can make "anthropic" fail
+ * and see "gemini" answer (see ProviderResolver::BINDING and FakesAssistant::fakeChain()).
  */
 class FakeProvider implements AssistantProvider
 {
@@ -15,6 +17,14 @@ class FakeProvider implements AssistantProvider
 
     /** @var list<ProviderRequest> */
     public array $requests = [];
+
+    // Not promoted, so a test subclass with a constructor of its own still has a name
+    private string $name = 'fake';
+
+    public function __construct(string $name = 'fake')
+    {
+        $this->name = $name;
+    }
 
     public function push(string|Throwable ...$replies): static
     {
@@ -36,7 +46,7 @@ class FakeProvider implements AssistantProvider
 
     public function name(): string
     {
-        return 'fake';
+        return $this->name;
     }
 
     public function model(): string

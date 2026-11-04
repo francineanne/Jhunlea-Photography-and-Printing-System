@@ -14,13 +14,17 @@ final class AssistantResult
 {
     public readonly bool $isAi;
 
-    /** @param list<array{type: string, id: int, name: string, price: ?string, summary: ?string, inclusions: list<string>, url: string}> $cards */
+    /**
+     * @param  list<array{type: string, id: int, name: string, price: ?string, summary: ?string, inclusions: list<string>, url: string}>  $cards
+     * @param  array{type: string, id: int}|null  $about  the customer's own order or booking a handoff is about (morph alias + id)
+     */
     public function __construct(
         public readonly string $reply,
         public readonly AssistantOutcome $outcome,
         public readonly ?AssistantIntent $intent = null,
         public readonly array $cards = [],
         public readonly bool $needsOwner = false,
+        public readonly ?array $about = null,
     ) {
         $this->isAi = true;
     }

@@ -35,8 +35,10 @@ class OwnerAssistService
 
         $result = $this->engine->handle(new AssistantInput($feature, AssistantActor::user($owner->id), $latest->text, $thread));
 
-        // Only the model's own text is a draft or a summary; a refusal, a limit or a failure is a calm notice instead
-        if (! in_array($result->outcome, [AssistantOutcome::Answered, AssistantOutcome::Handoff], true)) {
+        // Only the model's own text is a draft or a summary; a refusal, a limit or a failure is a calm notice instead.
+        // A handoff is no draft: the model says it cannot help, which is nothing the owner could send
+        if (! in_array($result->outcome, [AssistantOutcome::Answered, AssistantOutcome::Handoff], true)
+            || ($feature === AssistantFeature::OwnerAssistSuggest && $result->outcome === AssistantOutcome::Handoff)) {
             return $this->unavailable($result->outcome, $feature->fallbackMessage());
         }
 

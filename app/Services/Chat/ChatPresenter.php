@@ -68,7 +68,12 @@ class ChatPresenter
         $messages = (new EloquentCollection($messages->all()))->loadMissing('sender:id,name');
         $conversation->loadMissing('customer:id,name');
 
-        $cards = $this->cards->buildMany($messages->mapWithKeys(fn (ChatMessage $message) => [$message->id => $this->references($message)])->all());
+        // Record cards only ever show the conversation's own customer's orders and bookings
+        $cards = $this->cards->buildMany(
+            $messages->mapWithKeys(fn (ChatMessage $message) => [$message->id => $this->references($message)])->all(),
+            $conversation->customer_id,
+            $viewer->role === UserRole::Owner,
+        );
         $about = $this->aboutReferences($messages, $viewer);
 
         return $messages->map(fn (ChatMessage $message) => [
