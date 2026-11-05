@@ -101,6 +101,8 @@ class EvalSandbox
             'assistant.limits.per_day_per_user' => 1_000_000,
             'assistant.limits.per_day_per_guest_ip' => 1_000_000,
             'assistant.limits.global_daily_budget' => 1_000_000,
+             'assistant.limits.features.owner_ask.per_minute' => 1_000_000,
+            'assistant.limits.features.owner_ask.per_day' => 1_000_000,
         ]);
         app('cache')->setDefaultDriver('array');
         app()->forgetInstance(RateLimiter::class);
