@@ -38,6 +38,9 @@ class CaseBank
         'no_foreign_reference' => 'bool',
         'no_unknown_price' => 'bool',
         'no_glued_words' => 'bool',
+        'ignore_hedged_clauses' => 'bool',
+        'refusal' => 'bool',
+        'price_named' => 'price_spec',
         'max_chars' => 'int',
         'handoff' => 'bool',
         'handoff_about' => 'string',
@@ -213,6 +216,7 @@ class CaseBank
             'string' => is_string($value) && $value !== '',
             'list' => $strings($value),
             'string_or_list' => (is_string($value) && $value !== '') || $strings($value),
+            'price_spec' => is_array($value) && array_keys($value) === ['item', 'any'] && is_string($value['item']) && $value['item'] !== '' && $strings($value['any']),
             'card_list' => is_array($value) && array_is_list($value) && $value !== [] && array_filter($value, fn ($card) => ! is_array($card)
                 || array_diff(array_keys($card), ['type', 'name']) !== [] || $card === []
                 || (isset($card['type']) && ! in_array($card['type'], ['service', 'package', 'theme', 'order', 'booking'], true))

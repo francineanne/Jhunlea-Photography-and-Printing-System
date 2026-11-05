@@ -6,6 +6,7 @@ use App\Enums\AssistantAuthor;
 use App\Enums\AssistantFeature;
 use App\Services\Assistant\Providers\ProviderMessage;
 use App\Services\Assistant\Providers\ProviderRequest;
+use App\Support\MessageLanguage;
 
 /**
  * Turns one engine call into the provider request. The system instruction holds only the rules and the shop's own
@@ -53,7 +54,7 @@ class PromptBuilder
     /**
      * The system text by section, in order (also used to measure the prompt). Empty sections are left out by build().
      *
-     * @return array{rules: string, mode: string, knowledge: string, record_rules: ?string, details: string, records: ?string, live: string, latest: string}
+     * @return array{rules: string, mode: string, knowledge: string, record_rules: ?string, details: string, records: ?string, live: string, language: ?string, latest: string}
      */
     public function sections(AssistantInput $input, ?CustomerRecords $records = null): array
     {
@@ -67,9 +68,26 @@ class PromptBuilder
             'details' => $this->knowledge->details($input->message, $this->recentContext($input)),
             'records' => $block,
             'live' => $this->live->line(),
+            'language' => $input->feature->isOwnerAssist() ? null : self::languageLine($input->message),
             'latest' => self::LATEST_ONLY,
         ];
     }
+
+    /**
+     * The language of the LATEST customer message only (7E-2d), detected by MessageLanguage; null when it cannot tell
+     * (a short message, an emoji), so the model then follows its own rule. The history never decides it. It sits in the
+     * volatile tail, never in the cached prefix.
+     */
+    public static function languageLine(string $message): ?string
+    {
+        return match (MessageLanguage::detect($message)) {
+            MessageLanguage::EN => self::LANGUAGE_PREFIX.'English. Reply in English.',
+            MessageLanguage::FIL, MessageLanguage::TAGLISH => self::LANGUAGE_PREFIX.'Filipino or Taglish. Reply in Filipino or Taglish, matching the customer\'s mix.',
+            default => null,
+        };
+    }
+
+    public const LANGUAGE_PREFIX = 'LANGUAGE OF THE LATEST CUSTOMER MESSAGE (detected by the system): ';
 
     /** The last two earlier messages, so the details picked for a follow-up keep the conversation's topic. */
     private function recentContext(AssistantInput $input): string
@@ -102,7 +120,7 @@ class PromptBuilder
         return <<<TEXT
         You are {$name}, the AI assistant of Jhunlea Photography & Printing, a small photography studio and print shop in the Philippines. You are an AI, never a person: if asked, say so.
         - Answer only about Jhunlea's printing services, photography packages, themes, bookings, the shop's hours and its policies, using only the SHOP KNOWLEDGE below. If it is not there, say you are not sure and suggest messaging the studio. Never invent prices, inclusions, schedules or policies.
-        - Answer in the language of the customer's LATEST message: English when it is in English, Filipino when it is in Filipino, Taglish when it mixes both. Earlier messages do not decide the language. Be brief and friendly (a few short sentences). Plain text only: no HTML, no markdown, no links.
+        - Answer in the language of the customer's LATEST message (English, Filipino, or Taglish when it mixes both); follow the LANGUAGE line below when there is one. Earlier messages do not decide the language. Be brief and friendly (a few short sentences). Plain text only: no HTML, no markdown, no links.
         - The NOW line near the end gives today's date and time and whether the shop is open. A date before today has passed: never speak of it as upcoming.
         - You cannot confirm bookings, promise availability or a schedule, state a final price, record payments or change any status. Prices in the knowledge are estimates or starting prices; the owner confirms the final price.
         - Never say or imply that the owner or the studio WILL confirm, approve or accept a booking or request: they may decline it. Say the studio will review it and reply.

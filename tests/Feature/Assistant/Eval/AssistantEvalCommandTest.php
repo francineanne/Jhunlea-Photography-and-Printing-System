@@ -120,13 +120,13 @@ class AssistantEvalCommandTest extends TestCase
     public function test_limit_caps_the_model_calls_and_a_run_cut_short_is_inconclusive(): void
     {
         $this->artisan('assistant:eval', ['--category' => ['price'], '--limit' => 2, '--report' => $this->evalReportName()])
-            ->expectsOutputToContain('ended provider_failed (0) or skipped (10)')
+            ->expectsOutputToContain('ended provider_failed (0) or skipped (12)')
             ->assertExitCode(2);
 
         $json = $this->report();
         $this->assertSame(2, $json['provider_calls']);
         $this->assertCount(2, $this->fake->requests);
-        $this->assertSame(10, $json['skipped']);
+        $this->assertSame(12, $json['skipped']);
     }
 
     public function test_runs_repeat_model_cases_and_report_flaky_ones(): void

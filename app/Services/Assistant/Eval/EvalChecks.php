@@ -59,7 +59,9 @@ class EvalChecks
                     break;
 
                 case 'reply_not_contains':
-                    $found = array_values(array_filter($want, fn (string $pattern) => preg_match($this->regex($pattern), $reply) === 1));
+                    // 7E-2d: with ignore_hedged_clauses, "I can't say whether the owner will approve it" is no promise
+                    $text = ($expect['ignore_hedged_clauses'] ?? false) === true ? self::withoutHedgedClauses($reply) : $reply;
+                    $found = array_values(array_filter($want, fn (string $pattern) => preg_match($this->regex($pattern), $text) === 1));
                     $found === [] ?: $fail($check, 'matched: '.implode(' | ', $found));
                     break;
 
@@ -122,12 +124,46 @@ class EvalChecks
                     $found === [] ?: $fail($check, count($found).' forbidden text(s) reached the model');
                     break;
 
+                case 'price_named':
+                    // 7E-2d: the reply names one of these amounts, or a card of that item shows a price with it
+                    $inReply = $this->containsAny($lower, $want['any']);
+                    $onCard = array_filter($seen->cards, fn (array $card) => str_contains(mb_strtolower((string) $card['name']), mb_strtolower($want['item']))
+                        && is_string($card['price'] ?? null) && $this->containsAny(mb_strtolower($card['price']), $want['any'])) !== [];
+                    ($inReply || $onCard) ?: $fail($check, "no price of {$want['item']} in the reply or on its card");
+                    break;
+
+                case 'refusal':
+                    if ($want === true && $seen->outcome !== 'refused' && ! preg_match(self::REFUSAL, $reply)) {
+                        $fail($check, 'no refusal (outcome '.$seen->outcome.', and no refusal words in any language)');
+                    }
+                    break;
+
                 case 'review':
+                case 'ignore_hedged_clauses':
                     break;
             }
         }
 
         return $failed;
+    }
+
+    /**
+     * 7E-2d: the words that start a hedged clause: the speaker says they do NOT know ("I can't say whether the owner
+     * will approve it", "hindi ko alam kung nabasa na nila").
+     */
+    private const HEDGES = "(?:whether|if|can['’]?t\\s+say|cannot\\s+say|can['’]?t\\s+tell|cannot\\s+tell|can['’]?t\\s+promise|not\\s+sure|don['’]?t\\s+know|hindi\\s+ko\\s+(?:alam|masasabi|matiyak)|di\\s+ko\\s+(?:alam|masabi))";
+
+    /** 7E-2d: a refusal in English, Spanish or Filipino. */
+    private const REFUSAL = "/\\b(?:can['’]?t|cannot|can\\s+not|unable|not\\s+able|won['’]?t|no\\s+puedo|no\\s+es\\s+posible|lo\\s+siento|hindi\\s+ko|hindi\\s+ako|di\\s+ko|pasensya|paumanhin)\\b/iu";
+
+    /**
+     * The reply without its hedged clauses (7E-2d): from a hedge word to the end of that clause, which ends at
+     * punctuation (. ! ? ; : ,) or a new clause ("but", "pero", "however"). A promise in a separate clause stays: in
+     * "I'm not sure, but the owner will approve it" only "not sure" goes, and the promise is still caught.
+     */
+    public static function withoutHedgedClauses(string $reply): string
+    {
+        return (string) preg_replace('/\b'.self::HEDGES.'\\b[^.!?;:,\\n]*?(?=[.!?;:,\\n]|\\b(?:but|pero|however|kaya)\\b|$)/iu', '', $reply);
     }
 
     /**

@@ -65,12 +65,24 @@ class ClaimGuard
      * final price after review"), and, like every claim, a question, a condition or a negation.
      */
     private const PROMISES = [
-        '/\b(?:the\s+)?(?:owner|studio|shop|team|staff|we|they)\s*(?:will|\'ll|’ll|is going to|are going to|shall)\s+(?:(?:definitely|surely|certainly|also|then|just|soon|probably|likely|quickly|gladly)\s+)?(?:confirm|approve|accept)\b(?!(?:\s+\S+){0,2}?\s+(?:price|prices|amount|total|cost|quote|quotation|presyo|halaga|cash|gcash|payments?|cards?|files?)\b)/iu',
+        // 7E-2d: the object may be a price after up to four small words ("the exact final price"), not only two words
+        '/\b(?:the\s+)?(?:owner|studio|shop|team|staff|we|they)\s*(?:will|\'ll|’ll|is going to|are going to|shall)\s+(?:(?:definitely|surely|certainly|also|then|just|soon|probably|likely|quickly|gladly)\s+)?(?:confirm|approve|accept)\b(?!(?:\s+\S+){0,2}?\s+'.self::PRICE_OBJECT.'|(?:\s+'.self::PRICE_FILLERS.'){0,4}\s+'.self::PRICE_OBJECT.')/iu',
         '/\b(?:will|\'ll|’ll|is going to|are going to)\s+be\s+(?:\w+ly\s+)?(?:confirmed|approved|accepted)\b/iu',
-        '/\b(?:kukumpirmahin|kokumpirmahin|ikukumpirma|i-?co-?confirm|aaprubahan|aaprobahan|i-?a-?approve|tatanggapin|i-?a-?accept)\b(?!(?:\s+\S+){0,3}?\s+(?:presyo|halaga|price|amount|cash|gcash|bayad)\b)/iu',
+        // 7E-2d: in Filipino the doer comes between the verb and the object ("kukumpirmahin ng owner ang final na presyo")
+        '/\b(?:kukumpirmahin|kokumpirmahin|ikukumpirma|i-?co-?confirm|aaprubahan|aaprobahan|i-?a-?approve|tatanggapin|i-?a-?accept)\b(?!(?:\s+\S+){0,3}?\s+'.self::PRICE_OBJECT.'|(?:\s+'.self::PRICE_FILLERS.'){0,6}\s+'.self::PRICE_OBJECT.')/iu',
     ];
 
-    /** The passive promise ("will be confirmed") is about the price when a price word comes before it. */
+    /** What a confirmation may be about that is no promise about a booking: a price or a way to pay. */
+    private const PRICE_OBJECT = '(?:price|prices|amount|total|cost|quote|quotation|presyo|halaga|bayad|cash|gcash|payments?|cards?|files?)\b';
+
+    /**
+     * The small words that may sit between the verb and the price (7E-2d): articles, the doer, "final", "exact" and the
+     * Filipino markers. A noun such as "booking" is not one of them, so "kukumpirmahin ng owner ang booking at presyo"
+     * stays a promise.
+     */
+    private const PRICE_FILLERS = '(?:the|your|a|an|its|their|final|exact|total|correct|full|actual|official|last|pa|po|na|ng|ni|nila|niya|nina|ang|yung|ung|mga|owner|studio|shop|may-ari|huling|eksaktong|tamang|buong|kabuuang|totoong|opisyal)';
+
+    /** A promise sentence is about the price when a price word comes before it in the same clause (7E-2d for Filipino). */
     private const PRICE_WORDS = '/\b(?:price|prices|amount|total|cost|quote|quotation|presyo|halaga)\b/iu';
 
     /** Words that make a sentence about the future or a condition, not a claim. */
@@ -140,8 +152,15 @@ class ClaimGuard
             }
 
             $before = substr($sentence, 0, $match[0][1]);
+            // The clause the promise sits in: after the last comma, semicolon or "and"/"at"/"but"/"pero"
+            $clause = (string) preg_replace('/^.*(?:[,;:]|\b(?:and|at|but|pero)\b)/isu', '', $before);
+            $aboutPrice = match ($index) {
+                1 => preg_match(self::PRICE_WORDS, $before) === 1,
+                2 => preg_match(self::PRICE_WORDS, $clause) === 1,
+                default => false,
+            };
 
-            if (! preg_match(self::CONDITIONAL, $before) && ! preg_match(self::NEGATION, $before) && ! ($index === 1 && preg_match(self::PRICE_WORDS, $before))) {
+            if (! preg_match(self::CONDITIONAL, $before) && ! preg_match(self::NEGATION, $before) && ! $aboutPrice) {
                 return true;
             }
         }

@@ -29,7 +29,9 @@ class PromptRulesTest extends TestCase
             $system = $this->fake->lastRequest()->systemInstruction;
 
             $this->assertStringContainsString("Answer in the language of the customer's LATEST message", $system);
-            $this->assertStringContainsString('English when it is in English, Filipino when it is in Filipino, Taglish when it mixes both', $system);
+            // 7E-2d: shorter rule, plus the detected language of the latest message in the volatile tail
+            $this->assertStringContainsString('(English, Filipino, or Taglish when it mixes both); follow the LANGUAGE line below when there is one', $system);
+            $this->assertStringContainsString('LANGUAGE OF THE LATEST CUSTOMER MESSAGE (detected by the system): English. Reply in English.', $system);
             $this->assertStringContainsString('Earlier messages do not decide the language', $system);
         }
     }

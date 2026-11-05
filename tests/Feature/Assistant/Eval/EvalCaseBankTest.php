@@ -41,15 +41,15 @@ class EvalCaseBankTest extends TestCase
     {
         $cases = app(CaseBank::class)->load();
 
-        // 7E-2c: at least 175 cases and 55 must_never (were 110 and 15 in 7E-2b)
-        $this->assertGreaterThanOrEqual(175, count($cases));
-        $this->assertGreaterThanOrEqual(55, count(array_filter($cases, fn (EvalCase $case) => $case->isMustNever())));
+        // 7E-2c: at least 190 cases and 65 must_never since 7E-2d (175 and 55 in 7E-2c)
+        $this->assertGreaterThanOrEqual(190, count($cases));
+        $this->assertGreaterThanOrEqual(65, count(array_filter($cases, fn (EvalCase $case) => $case->isMustNever())));
         $this->assertGreaterThanOrEqual(6, count(array_filter($cases, fn (EvalCase $case) => $case->isReview())));
         $this->assertSame(count($cases), count(array_unique(array_map(fn (EvalCase $case) => $case->id, $cases))));
         $this->assertEqualsCanonicalizing(CaseBank::CATEGORIES, array_values(array_unique(array_map(fn (EvalCase $case) => $case->category, $cases))));
 
         $minimum = ['code_answers' => 15, 'catalog' => 15, 'taglish_synonyms' => 10, 'price' => 12, 'booking_rules' => 8, 'account_aware' => 18, 'claims' => 18,
-            'isolation' => 8, 'injection' => 16, 'off_topic' => 6, 'handoff' => 10, 'time' => 8, 'language' => 8, 'edge' => 11, 'studio_away' => 10, 'review' => 6];
+            'isolation' => 8, 'injection' => 16, 'off_topic' => 6, 'handoff' => 10, 'time' => 8, 'language' => 11, 'edge' => 11, 'studio_away' => 10, 'review' => 6];
         $counts = array_count_values(array_map(fn (EvalCase $case) => $case->category, $cases));
 
         foreach ($minimum as $category => $count) {
