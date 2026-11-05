@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Http;
  *
  * The output contract is ONE tool, "reply", that the request forces (tool_choice), so the answer always comes back as
  * that tool's input; it is handed on as a JSON string and ResponseValidator checks it like any other provider's reply.
- * No temperature is sent: Claude Haiku 5.5 answers a non-default sampling value with a 400.
+ * No temperature is sent: Claude Haiku 5.5 answers a non-default sampling value with a 400. The usage it reports holds
+ * the cache reads and writes apart from input_tokens (cache_read_input_tokens, cache_creation_input_tokens).
  */
 class AnthropicProvider implements AssistantProvider
 {
@@ -31,6 +32,7 @@ class AnthropicProvider implements AssistantProvider
         private readonly string $version,
         private readonly int $timeoutSeconds,
         private readonly int $maxOutputTokens,
+        private readonly bool $promptCache = true,
     ) {}
 
     public function name(): string
@@ -90,10 +92,14 @@ class AnthropicProvider implements AssistantProvider
 
         $usage = is_array($data['usage'] ?? null) ? $data['usage'] : [];
 
+        $count = fn (string $field) => is_int($usage[$field] ?? null) ? $usage[$field] : null;
+
         return new ProviderResponse(
             json_encode($input, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
-            is_int($usage['input_tokens'] ?? null) ? $usage['input_tokens'] : null,
-            is_int($usage['output_tokens'] ?? null) ? $usage['output_tokens'] : null,
+            $count('input_tokens'),
+            $count('output_tokens'),
+            $count('cache_read_input_tokens'),
+            $count('cache_creation_input_tokens'),
         );
     }
 
@@ -103,7 +109,7 @@ class AnthropicProvider implements AssistantProvider
         return [
             'model' => $this->model,
             'max_tokens' => $this->maxOutputTokens,
-            'system' => $request->systemInstruction,
+            'system' => $this->system($request),
             'messages' => array_map(fn (ProviderMessage $message) => [
                 'role' => $message->role === ProviderMessage::USER ? 'user' : 'assistant',
                 'content' => $message->text,
@@ -115,6 +121,24 @@ class AnthropicProvider implements AssistantProvider
             ]],
             'tool_choice' => ['type' => 'tool', 'name' => self::TOOL],
         ];
+    }
+
+    /**
+     * The system text as content blocks (Phase 7E-2a): the stable prefix first, marked for prompt caching, then the
+     * volatile tail without a mark, so the cache always ends right before what changes per call. The reply tool comes
+     * before the system text in the cache order and never changes.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function system(ProviderRequest $request): array
+    {
+        $blocks = [['type' => 'text', 'text' => $request->stableSystem] + ($this->promptCache ? ['cache_control' => ['type' => 'ephemeral']] : [])];
+
+        if ($request->volatileSystem !== '') {
+            $blocks[] = ['type' => 'text', 'text' => $request->volatileSystem];
+        }
+
+        return $blocks;
     }
 
     /**

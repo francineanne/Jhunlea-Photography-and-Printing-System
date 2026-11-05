@@ -1,7 +1,7 @@
 <?php
 
 /*
-| The AI customer assistant ("Lumi", Phase 7). The keys live only in .env (ANTHROPIC_API_KEY, AI_API_KEY) and are
+| The AI customer assistant ("Lumi", Phase 7). The keys live only in .env (AI_ANTHROPIC_API_KEY, AI_API_KEY) and are
 | read here, never with env() anywhere else, so config:cache works. An empty key or an unknown provider never breaks a
 | page: the engine tries the backup provider, then answers with the "unavailable" fallback.
 */
@@ -18,9 +18,15 @@ return [
 
     // Claude through the Messages API. No temperature is sent: Claude Haiku 5.5 refuses any non-default value
     'anthropic' => [
-        'api_key' => env('ANTHROPIC_API_KEY') ?: null,
-        'model' => env('ANTHROPIC_MODEL') ?: 'claude-haiku-5-5',
+        // AI_ANTHROPIC_* only (Phase 7E-2a): the plain ANTHROPIC_API_KEY is also read by other tools and may sit in the
+        // process environment, where it would shadow .env (Laravel never overrides an existing variable). It is ignored
+        'api_key' => env('AI_ANTHROPIC_API_KEY') ?: null,
+        'model' => env('AI_ANTHROPIC_MODEL') ?: 'claude-haiku-5-5',
         'version' => '2023-06-01',
+        // Phase 7E-2a: the stable part of the system text (rules, fixed knowledge, catalog index) is marked for prompt
+        // caching. Claude Haiku 5.5 caches a prefix of 512 tokens or more (the prompt caching docs, checked Nov 2026);
+        // a shorter one is simply not cached, without an error
+        'prompt_cache' => true,
     ],
 
     // Gemini (the backup): its key and model keep their Phase 7A names
@@ -39,14 +45,60 @@ return [
     // The longest customer message accepted, checked before anything else
     'max_message_chars' => 1000,
 
-    // How many earlier messages of a conversation are sent with the new one
-    'history_messages' => 8,
+    // How many earlier messages of a conversation are sent with the new one (8 until Phase 7E-2a)
+    'history_messages' => 6,
 
     // How many messages of a studio thread the owner's Suggest reply and Summarize read
     'owner_assist_messages' => 20,
 
-    // The most characters of shop knowledge put in one prompt (about 3K tokens)
+    // The most characters of the STABLE shop knowledge (business info, hours, rules, where things are, catalog index)
     'context_max_chars' => 12000,
+
+    // Phase 7E-2a: only the item and FAQ details that match the message are sent, at most this many and this many
+    // characters together (before: every item, up to context_max_chars)
+    'detail_items' => 4,
+    'details_max_chars' => 2400,
+
+    // Phase 7E-2a: Taglish and everyday words mapped to the catalog's own words, for picking the details to send.
+    // Only the ranking uses them; the model still reads the customer's own words
+    'synonyms' => [
+        'kasal' => 'wedding',
+        'ikakasal' => 'wedding',
+        'binyag' => 'christening baptism',
+        'bunyag' => 'christening baptism',
+        'grad pics' => 'graduation',
+        'grad pic' => 'graduation',
+        'grad' => 'graduation',
+        'toga' => 'graduation',
+        'id pic' => 'id photo',
+        'id picture' => 'id photo',
+        '2x2' => 'id photo passport',
+        '1x1' => 'id photo',
+        'passport' => 'passport photo',
+        'kuha' => 'photo',
+        'litrato' => 'photo',
+        'larawan' => 'photo',
+        'picture' => 'photo',
+        'pic' => 'photo',
+        'pa-print' => 'printing',
+        'pa print' => 'printing',
+        'paprint' => 'printing',
+        'magpa-print' => 'printing',
+        'imprenta' => 'printing',
+        'family pic' => 'family portrait',
+        'pamilya' => 'family',
+        'mag-asawa' => 'couple',
+        'magjowa' => 'couple',
+        'jowa' => 'couple',
+        'bata' => 'kids',
+        'anak' => 'kids',
+        'kaarawan' => 'birthday',
+        'bday' => 'birthday',
+        'debut' => 'birthday debut',
+        'tarp' => 'tarpaulin',
+        'laminate' => 'lamination',
+        'nakalaminate' => 'lamination',
+    ],
 
     // The longest reply kept from the model, after it is turned into plain text
     'max_reply_chars' => 1200,
@@ -65,8 +117,9 @@ return [
 
     'limits' => [
         'per_minute_per_user' => 6,
-        'per_day_per_user' => 40,
-        'per_day_per_guest_ip' => 10,
+        // Raised in Phase 7E-2a (were 40 and 10). Answers by code (CodeAnswers) never count toward any of these
+        'per_day_per_user' => 80,
+        'per_day_per_guest_ip' => 20,
 
         // Every provider call of the shop together in one Manila day, split between the features so one cannot use
         // up what the others need
@@ -82,6 +135,34 @@ return [
 
         // A 429 from the provider pauses every call for its retry-after, never longer than this
         'provider_cooldown_max_seconds' => 300,
+    ],
+
+    // Phase 7E-2a: short, clear messages (a greeting, thanks, the hours, "are you open now", contact details) answered by
+    // code from the database without calling a provider. Anything else, or a needed fact that is not set, goes to the
+    // model. :name is the assistant's name
+    'code_answers' => [
+        'enabled' => true,
+        'max_chars' => 60,
+        'replies' => [
+            'greeting' => [
+                'en' => "Hi! I'm :name, the AI assistant of Jhunlea Photography & Printing. I can help with our photography packages, printing services, booking rules and your own requests. What would you like to know?",
+                'fil' => 'Hello po! Ako si :name, ang AI assistant ng Jhunlea Photography & Printing. Matutulungan kita sa photography packages, printing services, booking at sa mga request mo. Ano ang maitutulong ko?',
+            ],
+            'thanks' => [
+                'en' => "You're welcome! Message me anytime if you have more questions.",
+                'fil' => 'Walang anuman po! Mag-message lang kayo ulit kung may tanong pa.',
+            ],
+        ],
+    ],
+
+    // Phase 7E-2a: for `php artisan assistant:usage` only, an ESTIMATE. USD per 1M tokens per model. Check the providers'
+    // pricing pages before relying on it. Claude Haiku 5.5 from Anthropic's model docs (Nov 2026, prompts up to 100K
+    // tokens; cache read 0.1x, 5-minute cache write 1.25x of input). A model without a row shows no cost
+    'pricing' => [
+        'usd_to_php' => 58.0,
+        'models' => [
+            'claude-haiku-5-5' => ['input' => 0.10, 'output' => 0.50, 'cache_read' => 0.01, 'cache_write' => 0.125],
+        ],
     ],
 
     // The fixed texts. Customers always get one of these instead of an error page

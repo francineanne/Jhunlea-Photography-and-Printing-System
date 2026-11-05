@@ -32,9 +32,6 @@ class LumiReplyService
 {
     private const HISTORY = 8;
 
-    /** The outcomes where the model really answered: stored as Lumi's words. Everything else is a fixed notice. */
-    private const MODEL_OUTCOMES = [AssistantOutcome::Answered, AssistantOutcome::Handoff, AssistantOutcome::Refused];
-
     public const LOCK_PREFIX = 'chat-lumi:';
 
     private const LOCK_SECONDS = 30;
@@ -110,7 +107,7 @@ class LumiReplyService
             $stored = [];
 
             // Only a real model reply opens a stretch with the away notice; a fallback notice already says enough
-            if ($locked->isStudio() && in_array($result->outcome, self::MODEL_OUTCOMES, true) && $this->startsAwayStretch($locked)) {
+            if ($locked->isStudio() && $result->fromAssistant() && $this->startsAwayStretch($locked)) {
                 $stored[] = $this->messages->insert($locked, MessageSender::System, null, $this->presence->awayNotice(), ['system_kind' => SystemMessageKind::AwayNotice->value]);
             }
 
@@ -123,14 +120,17 @@ class LumiReplyService
 
     private function store(Conversation $conversation, AssistantResult $result): ChatMessage
     {
-        if (in_array($result->outcome, self::MODEL_OUTCOMES, true)) {
+        if ($result->fromAssistant()) {
             // A handoff in the studio thread names the customer's own record it is about (checked by the engine), so the
-            // owner's thread header links it
+            // owner's thread header links it. provider and via_backup (7E-2a) say who wrote it: the "Lumi Lite" badge.
+            // Never a key, a prompt or an error text
             $message = $this->messages->insert($conversation, MessageSender::Assistant, null, $result->reply, array_filter([
                 'intent' => $result->intent?->value,
                 'outcome' => $result->outcome->value,
                 'recommend' => array_map(fn (array $card) => ['type' => $card['type'], 'id' => $card['id']], $result->cards),
                 'about' => $conversation->isStudio() ? $result->about : null,
+                'provider' => $result->provider,
+                'via_backup' => $result->provider === null ? null : $result->viaBackup,
             ], fn ($value) => $value !== null));
 
             if ($result->needsOwner && $conversation->isStudio()) {
@@ -189,13 +189,18 @@ class LumiReplyService
             ->values()->all();
     }
 
-    /** Lumi's replies after the owner's last message, from the last 24 hours: a customer who comes back days later is not silenced. */
+    /**
+     * Lumi's replies after the owner's last message, from the last 24 hours: a customer who comes back days later is not
+     * silenced. An answer by code (a greeting, the hours; Phase 7E-2a) is no AI reply and never counts toward the cap.
+     */
     private function aiRepliesSinceOwner(Conversation $conversation): int
     {
         $lastOwner = (int) $conversation->messages()->where('sender_type', MessageSender::Owner)->max('id');
 
         return $conversation->messages()->where('sender_type', MessageSender::Assistant)->where('id', '>', $lastOwner)
-            ->where('created_at', '>=', now()->subDay())->count();
+            ->where('created_at', '>=', now()->subDay())
+            ->where(fn ($query) => $query->whereNull('meta->provider')->orWhere('meta->provider', '!=', AssistantEngine::CODE))
+            ->count();
     }
 
     private function lastNonCustomer(Conversation $conversation): ?ChatMessage

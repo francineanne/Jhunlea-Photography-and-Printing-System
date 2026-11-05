@@ -221,4 +221,23 @@ class ProviderFailoverTest extends TestCase
         $this->assertSame('Still answered.', $this->ask('Hello')->reply);
         $this->assertSame(['anthropic', 'gemini'], AssistantRun::query()->orderBy('id')->pluck('provider')->all());
     }
+
+    public function test_the_row_is_still_written_when_the_cache_columns_are_missing(): void
+    {
+        // A database where the 7E-2a migration has not run yet
+        Schema::table('assistant_runs', fn ($table) => $table->dropColumn(['cache_read_tokens', 'cache_write_tokens']));
+        $this->claude->push(self::reply('answer', 'Answered without the cache columns.'));
+
+        $this->assertSame('Answered without the cache columns.', $this->ask('Hello')->reply);
+        $run = AssistantRun::query()->sole();
+        $this->assertSame('anthropic', $run->provider);
+        $this->assertSame(100, $run->input_tokens);
+
+        // And with neither the cache columns nor fallback_from, the backup's row is still written
+        Schema::table('assistant_runs', fn ($table) => $table->dropColumn('fallback_from'));
+        $this->claude->push(new ProviderUnavailable(ProviderUnavailable::HTTP, 529));
+        $this->gemini->push(self::reply('answer', 'Still answered.'));
+        $this->assertSame('Still answered.', $this->ask('Hello')->reply);
+        $this->assertSame(['anthropic', 'anthropic', 'gemini'], AssistantRun::query()->orderBy('id')->pluck('provider')->all());
+    }
 }

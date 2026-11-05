@@ -32,6 +32,8 @@ class GuestAssistantController extends Controller
             'cards' => $result->cards,
             'intent' => $result->intent?->value,
             'outcome' => $result->outcome->value,
+            // The backup answered (the "Lumi Lite" badge, 7E-2a); never which provider
+            'via_backup' => $result->viaBackup,
         ]);
     }
 }

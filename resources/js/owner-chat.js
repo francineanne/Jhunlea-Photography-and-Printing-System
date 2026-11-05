@@ -20,7 +20,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     thread: { conversation: null, messages: [], state: null, loaded: false, loading: false, sending: false, earlier: false },
     draft: '',
     banner: null,
-    assist: { busy: null, notice: null, summary: [] },
+    assist: { busy: null, notice: null, summary: [], viaBackup: false },
     presence: { mode: null, away: false, reason: '', saving: false },
     lastActivity: Date.now(),
     localKey: 0,
@@ -453,6 +453,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
 
         this.assist.busy = kind;
         this.assist.notice = null;
+        this.assist.viaBackup = false;
 
         if (kind === 'summarize') this.assist.summary = [];
 
@@ -470,6 +471,9 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
 
                 return;
             }
+
+            // The backup provider wrote it (7E-2a): a small line says so, never which provider
+            this.assist.viaBackup = response.data.via_backup === true;
 
             if (kind === 'summarize') {
                 this.assist.summary = response.data.lines;

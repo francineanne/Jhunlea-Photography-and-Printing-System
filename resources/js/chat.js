@@ -559,7 +559,7 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
 
             local.status = 'sent';
 
-            const fromModel = ['answered', 'handoff', 'refused'].includes(response.data.outcome);
+            const fromModel = ['answered', 'answered_by_code', 'handoff', 'refused'].includes(response.data.outcome);
 
             thread.messages.push({
                 key: `local-${++this.localKey}`,
@@ -568,6 +568,7 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
                 body: response.data.reply,
                 cards: response.data.cards,
                 intent: response.data.intent,
+                via_backup: response.data.via_backup === true,
                 system_kind: response.data.outcome.startsWith('fallback') ? 'ai_unavailable' : null,
                 created_at: null,
             });

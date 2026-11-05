@@ -5,12 +5,15 @@ namespace Tests\Feature\Assistant;
 use App\Enums\AssistantFeature;
 use App\Enums\AssistantOutcome;
 use App\Models\AssistantRun;
+use App\Models\PrintingOrder;
+use App\Models\User;
 use App\Services\Assistant\AssistantActor;
 use App\Services\Assistant\AssistantEngine;
 use App\Services\Assistant\AssistantInput;
 use App\Services\Assistant\Exceptions\ProviderBadResponse;
 use App\Services\Assistant\Exceptions\ProviderRateLimited;
 use App\Services\Assistant\Exceptions\ProviderUnavailable;
+use App\Services\Assistant\PromptBuilder;
 use App\Services\Assistant\Providers\AnthropicProvider;
 use App\Services\Assistant\Providers\GeminiProvider;
 use App\Services\Assistant\Providers\ProviderMessage;
@@ -36,6 +39,8 @@ class AnthropicProviderTest extends TestCase
     {
         parent::setUp();
         Http::preventStrayRequests();
+        // "Hello there" must reach the provider here, not CodeAnswers (7E-2a)
+        config(['assistant.code_answers.enabled' => false]);
     }
 
     private function provider(): AnthropicProvider
@@ -49,7 +54,7 @@ class AnthropicProviderTest extends TestCase
             new ProviderMessage(ProviderMessage::USER, 'Magkano ang print?'),
             new ProviderMessage(ProviderMessage::MODEL, 'Depende po sa size.'),
             new ProviderMessage(ProviderMessage::USER, 'A4 po'),
-        ], AssistantFeature::AskLumi);
+        ], AssistantFeature::AskLumi, 'Volatile part');
     }
 
     /** @param array<string, mixed> $input */
@@ -59,7 +64,7 @@ class AnthropicProviderTest extends TestCase
             'id' => 'msg_test', 'type' => 'message', 'role' => 'assistant', 'model' => 'claude-test-model',
             'content' => [['type' => 'tool_use', 'id' => 'toolu_1', 'name' => 'reply', 'input' => $input]],
             'stop_reason' => $stop,
-            'usage' => ['input_tokens' => 812, 'output_tokens' => 37],
+            'usage' => ['input_tokens' => 812, 'output_tokens' => 37, 'cache_read_input_tokens' => 1500, 'cache_creation_input_tokens' => 0],
         ];
     }
 
@@ -91,7 +96,11 @@ class AnthropicProviderTest extends TestCase
                 && ! str_contains($request->body(), self::KEY)
                 && $body['model'] === 'claude-test-model'
                 && $body['max_tokens'] === 500
-                && $body['system'] === 'System rules'
+                // 7E-2a: the stable prefix is cached, the volatile tail comes after the cache mark
+                && $body['system'] === [
+                    ['type' => 'text', 'text' => 'System rules', 'cache_control' => ['type' => 'ephemeral']],
+                    ['type' => 'text', 'text' => 'Volatile part'],
+                ]
                 && $body['messages'] === [
                     ['role' => 'user', 'content' => 'Magkano ang print?'],
                     ['role' => 'assistant', 'content' => 'Depende po sa size.'],
@@ -239,6 +248,77 @@ class AnthropicProviderTest extends TestCase
         $this->assertSame(37, $run->output_tokens);
         $this->assertNull($run->fallback_from);
         $this->assertNotNull($run->latency_ms);
+    }
+
+    public function test_the_cache_fields_are_read_and_stored_on_the_run_row(): void
+    {
+        $this->useClaude();
+        Http::fake(['api.anthropic.com/*' => Http::response(self::body())]);
+
+        $response = $this->provider()->generate($this->request());
+        $this->assertSame(1500, $response->cacheReadTokens);
+        $this->assertSame(0, $response->cacheWriteTokens);
+
+        app(AssistantEngine::class)->handle(new AssistantInput(AssistantFeature::AskLumi, AssistantActor::guest('198.51.100.22'), 'Magkano ang A4 print?'));
+
+        $run = AssistantRun::query()->sole();
+        $this->assertSame(812, $run->input_tokens);
+        $this->assertSame(1500, $run->cache_read_tokens);
+        $this->assertSame(0, $run->cache_write_tokens);
+    }
+
+    public function test_the_real_prompt_marks_only_its_stable_prefix_for_the_cache(): void
+    {
+        $this->useClaude();
+        Http::fake(['api.anthropic.com/*' => Http::response(self::body())]);
+        $customer = User::factory()->create();
+        PrintingOrder::factory()->forCustomer($customer)->create(['reference_number' => 'PR-000555']);
+
+        app(AssistantEngine::class)->handle(new AssistantInput(AssistantFeature::AskLumi, AssistantActor::user($customer->id), 'Nasaan na ang order ko?'));
+
+        Http::assertSent(function (Request $request) {
+            $system = $request->data()['system'];
+
+            // Two blocks: the cached stable prefix, then the volatile tail with no mark (at most one breakpoint)
+            return count($system) === 2
+                && $system[0]['cache_control'] === ['type' => 'ephemeral']
+                && ! array_key_exists('cache_control', $system[1])
+                && str_contains($system[0]['text'], 'CATALOG INDEX (')
+                && str_contains($system[0]['text'], 'RULES FOR THESE RECORDS')
+                && ! str_contains($system[0]['text'], 'PR-000555')
+                && ! str_contains($system[0]['text'], 'NOW (Philippine time')
+                && str_contains($system[1]['text'], 'PR-000555')
+                && str_contains($system[1]['text'], 'NOW (Philippine time')
+                && str_ends_with($system[1]['text'], PromptBuilder::LATEST_ONLY)
+                // The tool comes first in the cache order and never changes
+                && $request->data()['tools'][0]['input_schema'] === AnthropicProvider::inputSchema();
+        });
+    }
+
+    public function test_two_calls_send_the_same_stable_prefix_whatever_the_message_and_the_clock(): void
+    {
+        $this->useClaude();
+        Http::fake(['api.anthropic.com/*' => Http::response(self::body())]);
+
+        app(AssistantEngine::class)->handle(new AssistantInput(AssistantFeature::AskLumi, AssistantActor::guest('198.51.100.23'), 'Magkano ang family package?'));
+        $this->travel(7)->minutes();
+        app(AssistantEngine::class)->handle(new AssistantInput(AssistantFeature::AskLumi, AssistantActor::guest('198.51.100.24'), 'Do you print tarpaulins?'));
+
+        $sent = Http::recorded()->map(fn ($pair) => $pair[0]->data()['system']);
+        $this->assertCount(2, $sent);
+        $this->assertSame($sent[0][0], $sent[1][0], 'A byte-identical stable block, so the second call can read the cache');
+        $this->assertNotSame($sent[0][1], $sent[1][1]);
+    }
+
+    public function test_the_cache_mark_can_be_switched_off(): void
+    {
+        $this->useClaude();
+        config(['assistant.anthropic.prompt_cache' => false]);
+        Http::fake(['api.anthropic.com/*' => Http::response(self::body())]);
+
+        app(AssistantEngine::class)->handle(new AssistantInput(AssistantFeature::AskLumi, AssistantActor::guest('198.51.100.25'), 'Magkano ang print?'));
+
+        Http::assertSent(fn (Request $request) => ! str_contains($request->body(), 'cache_control'));
     }
 
     public function test_claude_down_and_the_real_gemini_backup_answers(): void

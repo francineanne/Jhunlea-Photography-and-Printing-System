@@ -235,7 +235,7 @@ class LumiReplyTest extends TestCase
         $reply = $this->lumi($conversation, $customer);
         $stored = ChatMessage::query()->find($reply->messages[0]->id);
 
-        $this->assertSame(['intent' => 'recommend', 'outcome' => 'answered', 'recommend' => [['type' => 'package', 'id' => $package->id]]], $stored->meta);
+        $this->assertSame(['intent' => 'recommend', 'outcome' => 'answered', 'recommend' => [['type' => 'package', 'id' => $package->id]], 'provider' => 'fake', 'via_backup' => false], $stored->meta);
         $this->assertStringNotContainsString('Wedding Classic', json_encode($stored->meta));
         $this->assertStringNotContainsString('25', json_encode($stored->meta));
 
@@ -250,7 +250,7 @@ class LumiReplyTest extends TestCase
         $this->assertSame([], $this->actingAs($customer)->getJson(route('customer.messages.show', $conversation))->json('messages.2.cards'));
     }
 
-    public function test_the_prompt_holds_at_most_eight_earlier_messages_of_this_conversation_only(): void
+    public function test_the_prompt_holds_at_most_the_configured_earlier_messages_of_this_conversation_only(): void
     {
         $customer = $this->customer();
         $owner = $this->owner();
@@ -270,13 +270,16 @@ class LumiReplyTest extends TestCase
         $request = $this->fake->lastRequest();
         $prompt = $request->promptText();
 
-        foreach (range(5, 12) as $i) {
+        // config assistant.history_messages: 6 since Phase 7E-2a (was 8)
+        $this->assertSame(6, config('assistant.history_messages'));
+
+        foreach (range(7, 12) as $i) {
             $this->assertStringContainsString(sprintf('history-%02d', $i), $prompt);
         }
-        foreach (range(1, 4) as $i) {
+        foreach (range(1, 6) as $i) {
             $this->assertStringNotContainsString(sprintf('history-%02d', $i), $prompt);
         }
-        $this->assertStringContainsString('(Studio owner) history-06', $prompt);
+        $this->assertStringContainsString('(Studio owner) history-09', $prompt);
         $this->assertStringNotContainsString('system-notice-text', $prompt);
         $this->assertStringNotContainsString('Secret of another customer', $prompt);
         $this->assertStringNotContainsString('Zelda', $prompt);

@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Support\LocalTime;
 use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -112,6 +113,8 @@ class CustomerContextBuilder
             needsInfo: $order && ! $record->status->isFinal() && $record->needsInfo(),
             lastUpdate: LocalTime::format($record->status_histories_max_created_at ?? $record->updated_at),
             states: $this->states($record, $payment),
+            when: $order ? null : self::relative($this->moment($record)),
+            timeNote: $order ? null : $this->timeNote($record),
         );
     }
 
@@ -137,6 +140,48 @@ class CustomerContextBuilder
             BookingStatus::Confirmed => 'Confirmed session: '.$at($booking->starts_at),
             BookingStatus::Completed => 'Session held: '.$at($booking->starts_at),
             default => 'Session time asked for: '.$at($booking->starts_at),
+        };
+    }
+
+    /** The time the schedule line is about: the studio's proposal while one is open, else the session time. */
+    private function moment(PhotographyBooking $booking): Carbon
+    {
+        return $booking->status === BookingStatus::Proposed && $booking->proposed_starts_at !== null ? $booking->proposed_starts_at : $booking->starts_at;
+    }
+
+    /**
+     * How far a moment is from now in words, by calendar days in Manila (never by UTC dates): "today, in 3 hours",
+     * "earlier today", "tomorrow", "in 3 days", "yesterday", "2 days ago". The model is never asked to work this out.
+     */
+    public static function relative(Carbon $at, ?Carbon $now = null): string
+    {
+        $zone = config('app.display_timezone');
+        $now = ($now ?? Carbon::now())->copy()->setTimezone($zone);
+        $local = $at->copy()->setTimezone($zone);
+        $days = (int) $now->copy()->startOfDay()->diffInDays($local->copy()->startOfDay(), false);
+
+        return match (true) {
+            $days === 0 && $local->lessThanOrEqualTo($now) => 'earlier today (already passed)',
+            $days === 0 => 'later today',
+            $days === 1 => 'tomorrow',
+            $days === -1 => 'yesterday (already passed)',
+            $days > 1 => "in {$days} days",
+            default => abs($days).' days ago (already passed)',
+        };
+    }
+
+    /** The fixed note for a session time that has passed while the booking still waits for something. */
+    private function timeNote(PhotographyBooking $booking): ?string
+    {
+        if ($this->moment($booking)->greaterThan(Carbon::now())) {
+            return null;
+        }
+
+        return match ($booking->status) {
+            BookingStatus::Requested => 'The requested time has already passed and the studio has not confirmed it; the customer should message the studio to arrange a new time',
+            BookingStatus::Proposed => 'The proposed time has already passed and the booking is not confirmed; the customer should message the studio to arrange a new time',
+            BookingStatus::Confirmed => 'The session time has passed and the booking is not marked completed yet',
+            default => null,
         };
     }
 

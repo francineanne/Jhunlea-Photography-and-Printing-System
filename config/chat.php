@@ -44,11 +44,18 @@ return [
     // Characters of the last message kept for the inbox and conversation lists
     'preview_chars' => 120,
 
-    // The fixed suggestions of an empty Ask Lumi conversation; tapping one sends it
+    // The fixed suggestions of an empty Ask Lumi conversation; tapping one sends it as the customer's message. Hidden
+    // once the customer has written (Phase 7E-2a: these four; a guest, who has no orders, gets the printing question)
     'suggested_prompts' => [
         'What photography packages do you offer?',
-        'What printing options are available?',
-        'What do I need to book a photoshoot?',
+        'Where is my order?',
+        'How do I book a photoshoot?',
+        'What are your opening hours?',
+    ],
+    'suggested_prompts_guest' => [
+        'What photography packages do you offer?',
+        'What printing services do you offer?',
+        'How do I book a photoshoot?',
         'What are your opening hours?',
     ],
 

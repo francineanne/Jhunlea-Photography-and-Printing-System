@@ -181,8 +181,9 @@
                                         <template x-for="(line, index) in assist.summary" x-bind:key="index"><li class="[overflow-wrap:anywhere]" x-text="line"></li></template>
                                     </ul>
                                     <p x-show="assist.notice" class="text-app-text-2" x-text="assist.notice"></p>
+                                    <p x-show="assist.viaBackup" x-cloak class="mt-1 flex items-center gap-1 text-xs text-app-text-2" data-assist-backup><x-ui.icon name="bolt" :size="14" />Written by the backup assistant because {{ $name }} is busy. It may be shorter; check it before you use it.</p>
                                 </div>
-                                <button type="button" x-on:click="assist.summary = []; assist.notice = null" aria-label="Close" class="-my-2 grid size-11 shrink-0 place-items-center rounded-control focus-ring"><x-ui.icon name="close" :size="18" /></button>
+                                <button type="button" x-on:click="assist.summary = []; assist.notice = null; assist.viaBackup = false" aria-label="Close" class="-my-2 grid size-11 shrink-0 place-items-center rounded-control focus-ring"><x-ui.icon name="close" :size="18" /></button>
                             </div>
                         </div>
 

@@ -23,7 +23,10 @@ trait FakesAssistant
     protected function fakeAssistant(): FakeProvider
     {
         Http::preventStrayRequests();
-        config(['assistant.provider' => 'fake', 'assistant.fallback_provider' => null, 'assistant.api_key' => null, 'assistant.anthropic.api_key' => null, 'assistant.enabled' => true]);
+        // CodeAnswers (7E-2a) is off here, so a scripted "Hello" still reaches the fake provider; CodeAnswersTest and the
+        // tests that need it switch it on with useCodeAnswers()
+        config(['assistant.provider' => 'fake', 'assistant.fallback_provider' => null, 'assistant.api_key' => null, 'assistant.anthropic.api_key' => null, 'assistant.enabled' => true,
+            'assistant.code_answers.enabled' => false]);
 
         $this->fake = new FakeProvider;
         $this->app->instance(FakeProvider::class, $this->fake);
@@ -47,6 +50,11 @@ trait FakesAssistant
         $this->app->instance(ProviderResolver::BINDING.'gemini', $gemini);
 
         return [$claude, $gemini];
+    }
+
+    protected function useCodeAnswers(): void
+    {
+        config(['assistant.code_answers.enabled' => true]);
     }
 
     /** @param list<ThreadMessage> $history */

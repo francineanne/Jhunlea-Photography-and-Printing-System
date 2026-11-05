@@ -23,7 +23,7 @@ class OwnerAssistService
 {
     public function __construct(private readonly AssistantEngine $engine) {}
 
-    /** @return array{available: bool, text: string, lines: list<string>, outcome: string} */
+    /** @return array{available: bool, text: string, lines: list<string>, outcome: string, via_backup: bool} */
     public function run(Conversation $conversation, User $owner, AssistantFeature $feature): array
     {
         $thread = $this->thread($conversation);
@@ -47,6 +47,8 @@ class OwnerAssistService
             'text' => $result->reply,
             'lines' => $feature === AssistantFeature::OwnerAssistSummarize ? $this->bullets($result->reply) : [],
             'outcome' => $result->outcome->value,
+            // The backup provider wrote it (7E-2a): the owner is told in a small line, without the provider's name
+            'via_backup' => $result->viaBackup,
         ];
     }
 
@@ -81,9 +83,9 @@ class OwnerAssistService
         return array_slice($lines, 0, 5);
     }
 
-    /** @return array{available: bool, text: string, lines: list<string>, outcome: string} */
+    /** @return array{available: bool, text: string, lines: list<string>, outcome: string, via_backup: bool} */
     private function unavailable(AssistantOutcome $outcome, string $text): array
     {
-        return ['available' => false, 'text' => $text, 'lines' => [], 'outcome' => $outcome->value];
+        return ['available' => false, 'text' => $text, 'lines' => [], 'outcome' => $outcome->value, 'via_backup' => false];
     }
 }

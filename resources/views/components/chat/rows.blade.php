@@ -1,3 +1,7 @@
+@php
+    $liteName = config('assistant.name').' Lite';
+    $liteText = 'Our backup assistant answered this because '.config('assistant.name').' is busy. Answers may be shorter.';
+@endphp
 {{--
     The rows of a conversation (Phase 7D), shared by the customer chat and the owner's thread. The parent Alpine component
     provides: rows (buildRows), tab, viewer ('guest', 'customer' or 'owner'), retryMessage(), discardMessage(),
@@ -33,6 +37,9 @@
                         <span class="font-semibold" x-text="row.message.sender_label"></span>
                     <span x-show="viewer === 'owner' && row.message.sender_type === 'customer'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10">Customer</span>
                         <span x-show="row.message.sender_type === 'assistant'" class="rounded bg-brand/10 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI</span>
+                        {{-- The backup provider wrote this reply (7E-2a); which provider is never shown --}}
+                        <span x-show="row.message.sender_type === 'assistant' && row.message.via_backup === true" x-cloak title="{{ $liteText }}" tabindex="0" data-chat-lite
+                            class="inline-flex items-center gap-0.5 whitespace-nowrap rounded-full bg-neutral-100 px-1.5 py-px text-[10px] font-semibold text-app-text-2 focus-ring dark:bg-white/10"><span class="material-symbols-outlined select-none text-[12px] leading-none" aria-hidden="true">bolt</span>{{ $liteName }}<span class="sr-only">: {{ $liteText }}</span></span>
                         <span class="font-mono text-[11px] text-app-text-2" x-show="row.time" x-text="row.time"></span>
                     </p>
 

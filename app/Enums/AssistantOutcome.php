@@ -6,6 +6,8 @@ namespace App\Enums;
 enum AssistantOutcome: string
 {
     case Answered = 'answered';
+    // Phase 7E-2a: a short greeting, thanks, the hours or the contact details, answered by CodeAnswers without a provider
+    case AnsweredByCode = 'answered_by_code';
     case Refused = 'refused';
     case Handoff = 'handoff';
     case RejectedInput = 'rejected_input';

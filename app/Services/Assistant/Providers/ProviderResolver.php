@@ -46,6 +46,7 @@ class ProviderResolver
             (string) config('assistant.anthropic.version'),
             (int) config('assistant.timeout_seconds'),
             (int) config('assistant.max_output_tokens'),
+            (bool) config('assistant.anthropic.prompt_cache', true),
         );
     }
 

@@ -29,11 +29,18 @@ use Throwable;
  * counts toward the limits (countCall), whichever provider it was: the budget is shared.
  *
  * Every reply then passes ClaimGuard (no action or status the customer's records do not show) and PriceGuard (no price
- * the shop never gave). A signed-in customer's own records (CustomerContextBuilder) are the only private data any
+ * the shop never gave).
+ *
+ * Phase 7E-2a: before the cap and the limits, CodeAnswers may answer a short greeting, thanks, the hours or the contact
+ * details from the database (outcome answered_by_code, provider "code"): no provider call, nothing counted. A result
+ * written by a model says which provider wrote it and whether the backup did (the "Lumi Lite" badge). A signed-in customer's own records (CustomerContextBuilder) are the only private data any
  * prompt holds, and record cards are built from the database for that customer only.
  */
 class AssistantEngine
 {
+    /** The assistant_runs provider of an answer by code. */
+    public const CODE = 'code';
+
     private ?AssistantProvider $provider = null;
 
     private ?ProviderResponse $response = null;
@@ -56,6 +63,7 @@ class AssistantEngine
         private readonly PriceGuard $prices,
         private readonly CustomerContextBuilder $context,
         private readonly ClaimGuard $claims,
+        private readonly CodeAnswers $codeAnswers,
     ) {}
 
     public function handle(AssistantInput $input): AssistantResult
@@ -68,6 +76,11 @@ class AssistantEngine
 
         try {
             $result = $this->run($input);
+
+            // Only a model's reply names its provider; a fixed text (a limit, a fallback) names none
+            if ($this->response !== null && $this->provider !== null && $result->provider === null && $result->fromAssistant()) {
+                $result = $result->by($this->provider->name(), $this->fallbackFrom !== null);
+            }
         } catch (Throwable $exception) {
             // Never the message, the prompt or the exception text: only what kind of failure it was
             Log::warning('assistant.failed', ['feature' => $input->feature->value, 'exception' => $exception::class]);
@@ -94,6 +107,12 @@ class AssistantEngine
 
         if (! config('assistant.enabled')) {
             return $this->fallback($input->feature, AssistantOutcome::FallbackDisabled);
+        }
+
+        // A greeting, thanks, the hours or the contact details: answered from the database, no provider, nothing counted,
+        // and never stopped by the studio cap (it is not an AI reply)
+        if ($input->feature->showsCards() && ($answer = $this->codeAnswers->answer($message)) !== null) {
+            return new AssistantResult($answer, AssistantOutcome::AnsweredByCode, AssistantIntent::Answer, provider: self::CODE);
         }
 
         if ($input->feature === AssistantFeature::StudioAway && $input->consecutiveAiReplies >= (int) config('assistant.limits.studio_away_max_consecutive')) {
@@ -276,6 +295,13 @@ class AssistantEngine
             ]);
         }
 
+        if ($result->outcome === AssistantOutcome::AnsweredByCode) {
+            // No provider, no tokens, no latency: the row never counts toward a limit
+            $this->write($base + ['provider' => self::CODE, 'outcome' => $result->outcome, 'intent' => $result->intent]);
+
+            return;
+        }
+
         $this->write($base + [
             'provider' => mb_substr($this->provider?->name() ?? (string) config('assistant.provider'), 0, 20),
             'model' => $this->provider?->model(),
@@ -283,22 +309,39 @@ class AssistantEngine
             'intent' => $result->intent,
             'input_tokens' => $this->response?->inputTokens,
             'output_tokens' => $this->response?->outputTokens,
+            'cache_read_tokens' => $this->response?->cacheReadTokens,
+            'cache_write_tokens' => $this->response?->cacheWriteTokens,
             'latency_ms' => $this->latencyMs,
         ] + ($this->fallbackFrom === null ? [] : ['fallback_from' => mb_substr($this->fallbackFrom, 0, 20)]));
     }
 
     /**
      * A row that cannot be written (for example the table is not migrated yet) never breaks the answer. A database
-     * without the newer fallback_from column still gets the row, without that one value.
+     * without the newer columns still gets the row, without those values: first without the cache columns (7E-2a),
+     * then also without fallback_from (7E-1).
      *
      * @param  array<string, mixed>  $row
      */
     private function write(array $row): void
     {
-        rescue(
-            fn () => AssistantRun::query()->create($row),
-            fn () => array_key_exists('fallback_from', $row) ? rescue(fn () => AssistantRun::query()->create(array_diff_key($row, ['fallback_from' => true])), null, false) : null,
-            false,
-        );
+        $attempts = [
+            $row,
+            array_diff_key($row, array_flip(['cache_read_tokens', 'cache_write_tokens'])),
+            array_diff_key($row, array_flip(['cache_read_tokens', 'cache_write_tokens', 'fallback_from'])),
+        ];
+
+        $tried = [];
+
+        foreach ($attempts as $attempt) {
+            if (in_array($attempt, $tried, true)) {
+                continue;
+            }
+
+            $tried[] = $attempt;
+
+            if (rescue(fn () => AssistantRun::query()->create($attempt), null, false) !== null) {
+                return;
+            }
+        }
     }
 }

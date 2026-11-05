@@ -29,6 +29,10 @@ final class CustomerRecord
         public readonly string $lastUpdate,
         // What the record shows, for ClaimGuard: confirmed, ready, completed, paid
         public readonly array $states,
+        // Phase 7E-2a: how far the session time is from now in words, computed by code ("in 3 days", "2 days ago")
+        public readonly ?string $when = null,
+        // Phase 7E-2a: what to tell the customer when that time has passed without the booking moving on
+        public readonly ?string $timeNote = null,
     ) {}
 
     public function kindLabel(): string
@@ -44,6 +48,8 @@ final class CustomerRecord
             "Status: {$this->statusLabel}.",
             $this->needsInfo ? 'The shop asked the customer for more information (shown on the order page).' : null,
             $this->schedule === null ? null : $this->schedule.'.',
+            $this->when === null ? null : "When: {$this->when}.",
+            $this->timeNote === null ? null : "Note: {$this->timeNote}.",
             "Price: {$this->price}.",
             "Payment: {$this->payment}.",
             $this->finished ? null : ($this->cancellable ? 'The customer can cancel it online now.' : 'The customer cannot cancel it online now.'),

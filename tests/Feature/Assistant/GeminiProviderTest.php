@@ -33,6 +33,8 @@ class GeminiProviderTest extends TestCase
     {
         parent::setUp();
         Http::preventStrayRequests();
+        // "Hello there" must reach the provider here, not CodeAnswers (7E-2a)
+        config(['assistant.code_answers.enabled' => false]);
     }
 
     private function provider(): GeminiProvider

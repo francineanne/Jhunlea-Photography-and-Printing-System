@@ -85,6 +85,8 @@ class ChatPresenter
             'mine' => $message->sender_id !== null && $message->sender_id === $viewer->id,
             'system_kind' => $message->systemKind()?->value,
             'intent' => $message->sender_type === MessageSender::Assistant ? ($message->meta['intent'] ?? null) : null,
+            // The backup provider wrote it (the "Lumi Lite" badge, 7E-2a); which provider is never exposed
+            'via_backup' => $message->sender_type === MessageSender::Assistant && ($message->meta['via_backup'] ?? false) === true,
             'cards' => $cards[$message->id] ?? [],
             'about' => $about[$message->id] ?? null,
             'via_lumi' => isset($message->meta['from_assistant_conversation']),

@@ -19,9 +19,10 @@ use Illuminate\Support\Str;
  * info, the opening hours and the booking rules. It never reads users, orders, bookings, payments, notifications,
  * files or any other conversation.
  *
- * The fixed policies and a compact index of every published item (type, id, name) are always included. The details
- * of each item and the FAQs are ranked by how many words they share with the customer's latest message, and added
- * best first until config assistant.context_max_chars is reached.
+ * The fixed policies and a compact index of every published item (type, id, name) are always included: stable(), the
+ * cacheable part of the prompt. The details of each item and the FAQs are ranked by how many words they share with the
+ * customer's latest message (and, weighted less, the recent conversation), and only the matching ones are added, best
+ * first, up to config assistant.detail_items and assistant.details_max_chars: details(), the volatile part.
  */
 class KnowledgeBuilder
 {
@@ -32,12 +33,76 @@ class KnowledgeBuilder
     // Words too common to tell two catalog items apart (English and Filipino)
     private const STOP_WORDS = ['the', 'and', 'for', 'you', 'your', 'are', 'can', 'what', 'how', 'with', 'have', 'there', 'this',
         'that', 'please', 'want', 'need', 'ang', 'mga', 'yung', 'ung', 'ako', 'kayo', 'niyo', 'nyo', 'ninyo', 'po', 'ba', 'may',
-        'meron', 'pwede', 'puwede', 'gusto', 'magkano', 'paano', 'saan', 'kailan', 'lang', 'naman', 'din', 'rin', 'sana'];
+        'meron', 'pwede', 'puwede', 'gusto', 'magkano', 'paano', 'saan', 'kailan', 'lang', 'naman', 'din', 'rin', 'sana',
+        // Phase 7E-2a: words about the customer's own requests, not about one catalog item
+        'shoot', 'photoshoot', 'order', 'booking', 'book', 'ready', 'status', 'yung', 'kailan'];
 
     public function __construct(private readonly ShopSettings $shop) {}
 
-    public function build(string $query): string
+    /** @var array{services: Collection<int, PrintingService>, packages: Collection<int, PhotographyPackage>, themes: Collection<int, Theme>, blocks: list<string>}|null the published catalog, loaded once per request */
+    private ?array $catalog = null;
+
+    /** The stable part and the details for one message, as one text (kept for callers that want both together). */
+    public function build(string $query, string $context = ''): string
     {
+        return $this->stable()."\n\n".$this->details($query, $context);
+    }
+
+    /**
+     * The part that is the same for every message (Phase 7E-2a: the cacheable prefix): the business info, hours, booking
+     * and payment rules, where things are, and the compact index of every published item.
+     */
+    public function stable(): string
+    {
+        ['services' => $services, 'packages' => $packages, 'themes' => $themes] = $this->catalog();
+
+        $text = $this->fixed()."\n\nCATALOG INDEX (the only items you may recommend, by type and id)\n".$this->index($services, $packages, $themes);
+
+        return Str::limit($text, (int) config('assistant.context_max_chars'), '');
+    }
+
+    /**
+     * The details of the items and FAQs that share words with the message (Phase 7E-2a: only relevant ones, at most
+     * config assistant.detail_items, within config assistant.details_max_chars). $context is the recent conversation:
+     * its words count less than the latest message's, so a follow-up ("how about 8 people?") keeps its topic. Taglish
+     * words are mapped to the catalog's English words first (config assistant.synonyms).
+     */
+    public function details(string $query, string $context = ''): string
+    {
+        ['blocks' => $blocks] = $this->catalog();
+
+        $max = max(0, (int) config('assistant.details_max_chars'));
+        $limit = max(0, (int) config('assistant.detail_items'));
+        $picked = [];
+        $length = 0;
+
+        foreach ($this->rank($blocks, $this->words($query), $this->words($context)) as $block) {
+            if (count($picked) >= $limit) {
+                break;
+            }
+
+            $block = Str::limit($block, self::DETAIL_MAX_CHARS);
+
+            if ($length + mb_strlen($block) + 2 > $max) {
+                continue;
+            }
+
+            $picked[] = $block;
+            $length += mb_strlen($block) + 2;
+        }
+
+        return $picked === []
+            ? 'DETAILS: no item or FAQ matched this message. Use the index and the rules above; if the customer needs the price or inclusions of an item, ask which item they mean.'
+            : "DETAILS (only the items and FAQs that match this message; the index lists everything else)\n\n".implode("\n\n", $picked);
+    }
+
+    /** @return array{services: Collection<int, PrintingService>, packages: Collection<int, PhotographyPackage>, themes: Collection<int, Theme>, blocks: list<string>} */
+    private function catalog(): array
+    {
+        if ($this->catalog !== null) {
+            return $this->catalog;
+        }
+
         $services = PrintingService::query()->published()
             ->with(['options' => fn ($options) => $options->active()->orderBy('group')->orderBy('label')])
             ->orderBy('sort_order')->orderBy('name')->get();
@@ -47,32 +112,17 @@ class KnowledgeBuilder
         $themes = Theme::query()->published()->orderBy('name')->get();
         $faqs = Faq::query()->published()->ordered()->get();
 
-        $max = (int) config('assistant.context_max_chars');
-        $words = $this->words($query);
-
-        $text = $this->fixed()."\n\nCATALOG INDEX (the only items you may recommend, by type and id)\n".$this->index($services, $packages, $themes);
-        $text = Str::limit($text, $max, '');
-
-        $blocks = [
-            ...$services->map(fn (PrintingService $service) => $this->serviceBlock($service))->all(),
-            ...$packages->map(fn (PhotographyPackage $package) => $this->packageBlock($package))->all(),
-            ...$themes->map(fn (Theme $theme) => $this->themeBlock($theme))->all(),
-            ...$faqs->map(fn (Faq $faq) => "[faq] Q: {$faq->question}\nA: {$faq->answer}")->all(),
+        return $this->catalog = [
+            'services' => $services,
+            'packages' => $packages,
+            'themes' => $themes,
+            'blocks' => [
+                ...$services->map(fn (PrintingService $service) => $this->serviceBlock($service))->all(),
+                ...$packages->map(fn (PhotographyPackage $package) => $this->packageBlock($package))->all(),
+                ...$themes->map(fn (Theme $theme) => $this->themeBlock($theme))->all(),
+                ...$faqs->map(fn (Faq $faq) => "[faq] Q: {$faq->question}\nA: {$faq->answer}")->all(),
+            ],
         ];
-
-        $text .= "\n\nDETAILS";
-
-        foreach ($this->rank($blocks, $words) as $block) {
-            $block = Str::limit($block, self::DETAIL_MAX_CHARS);
-
-            if (mb_strlen($text) + mb_strlen($block) + 2 > $max) {
-                continue;
-            }
-
-            $text .= "\n\n".$block;
-        }
-
-        return $text;
     }
 
     /** The business info, hours, booking rules and payment rules, always included. */
@@ -205,37 +255,58 @@ class KnowledgeBuilder
     }
 
     /**
-     * The blocks with the most words in common with the message first; ties keep the catalog order.
+     * The blocks that share words with the message, most first; a word of the latest message counts three times as much
+     * as one of the recent conversation, a word in the title three times as much as one in the body. Blocks that share
+     * no word are left out. Ties keep the catalog order.
      *
      * @param  list<string>  $blocks
      * @param  list<string>  $words
+     * @param  list<string>  $contextWords
      * @return list<string>
      */
-    private function rank(array $blocks, array $words): array
+    private function rank(array $blocks, array $words, array $contextWords = []): array
     {
-        $scored = array_map(function (string $block, int $position) use ($words) {
+        $contextWords = array_values(array_diff($contextWords, $words));
+
+        $scored = array_map(function (string $block, int $position) use ($words, $contextWords) {
             $lower = mb_strtolower($block);
             $title = mb_strtolower(strtok($block, "\n"));
             $score = 0;
 
-            foreach ($words as $word) {
-                $score += (str_contains($title, $word) ? 3 : 0) + (str_contains($lower, $word) ? 1 : 0);
+            foreach ([3 => $words, 1 => $contextWords] as $weight => $list) {
+                foreach ($list as $word) {
+                    $score += $weight * ((str_contains($title, $word) ? 3 : 0) + (str_contains($lower, $word) ? 1 : 0));
+                }
             }
 
             return ['block' => $block, 'score' => $score, 'position' => $position];
         }, $blocks, array_keys($blocks));
 
+        $scored = array_filter($scored, fn (array $item) => $item['score'] > 0);
         usort($scored, fn ($a, $b) => [$b['score'], $a['position']] <=> [$a['score'], $b['position']]);
 
         return array_column($scored, 'block');
     }
 
-    /** @return list<string> */
+    /**
+     * The words of a text that can tell catalog items apart: at least 3 letters, no stop word, a plural "s" dropped
+     * ("packages" finds "package"), and each Taglish word of config assistant.synonyms replaced by its catalog words.
+     *
+     * @return list<string>
+     */
     private function words(string $text): array
     {
-        preg_match_all('/[\p{L}\p{N}]{3,}/u', mb_strtolower($text), $matches);
+        $text = mb_strtolower($text);
 
-        return array_values(array_unique(array_diff($matches[0], self::STOP_WORDS)));
+        foreach ((array) config('assistant.synonyms', []) as $from => $to) {
+            $text = preg_replace('/(?<![\p{L}\p{N}])'.preg_quote(mb_strtolower((string) $from), '/').'(?![\p{L}\p{N}])/u', ' '.mb_strtolower((string) $to).' ', $text) ?? $text;
+        }
+
+        preg_match_all('/[\p{L}\p{N}]{3,}/u', $text, $matches);
+
+        $words = array_map(fn (string $word) => mb_strlen($word) > 4 && str_ends_with($word, 's') && ! str_ends_with($word, 'ss') ? mb_substr($word, 0, -1) : $word, $matches[0]);
+
+        return array_values(array_unique(array_diff($words, self::STOP_WORDS)));
     }
 
     private function time(string $value): string

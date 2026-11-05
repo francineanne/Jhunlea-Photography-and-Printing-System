@@ -10,29 +10,28 @@ use App\Services\Assistant\Providers\ProviderRequest;
 /**
  * Turns one engine call into the provider request. The system instruction holds only the rules and the shop's own
  * knowledge; every message written by a customer (redacted first) goes in the user role, never in the system text.
+ *
+ * Phase 7E-2a: the system text has a STABLE prefix (the rules, the mode, the fixed shop knowledge with the catalog index,
+ * and the record rules when there are records), the same for many calls so Claude can cache it, and a VOLATILE tail
+ * (the details picked for this message, the customer's own records, the live facts and the last line). Nothing that
+ * changes per call (the time, a customer's record, the message) may ever go into the stable prefix.
  */
 class PromptBuilder
 {
     public function __construct(
         private readonly KnowledgeBuilder $knowledge,
         private readonly Redactor $redactor,
+        private readonly LiveFacts $live,
     ) {}
 
     /**
-     * $records holds the signed-in customer's own orders and bookings (Phase 7E-1); its block goes after the shop
-     * knowledge, with the rules for it, and before the last line. A guest and the owner's assist have none.
+     * $records holds the signed-in customer's own orders and bookings (Phase 7E-1); its rules go at the end of the stable
+     * prefix and its block in the volatile tail, after the shop knowledge and before the last line. A guest and the
+     * owner's assist have none.
      */
     public function build(AssistantInput $input, ?CustomerRecords $records = null): ProviderRequest
     {
-        $block = $records?->block();
-
-        $system = implode("\n\n", array_filter([
-            $this->rules(),
-            $this->mode($input->feature),
-            'SHOP KNOWLEDGE (from the shop\'s own system; the only facts you may use)'."\n".$this->knowledge->build($input->message),
-            $block === null ? null : $block."\n\n".self::RECORD_RULES,
-            self::LATEST_ONLY,
-        ]));
+        $sections = $this->sections($input, $records);
 
         $history = array_slice($input->history, -max(0, (int) config($input->feature->isOwnerAssist() ? 'assistant.owner_assist_messages' : 'assistant.history_messages')));
 
@@ -40,7 +39,42 @@ class PromptBuilder
             ? [new ProviderMessage(ProviderMessage::USER, $this->transcript($this->ownerThread($history, $input->message)))]
             : $this->conversation($history, $input->message);
 
-        return new ProviderRequest($system, $messages, $input->feature);
+        return new ProviderRequest(
+            implode("\n\n", array_filter(array_intersect_key($sections, array_flip(self::STABLE)))),
+            $messages,
+            $input->feature,
+            implode("\n\n", array_filter(array_diff_key($sections, array_flip(self::STABLE)))),
+        );
+    }
+
+    /** The sections of the stable prefix, in order; every other section is the volatile tail. */
+    public const STABLE = ['rules', 'mode', 'knowledge', 'record_rules'];
+
+    /**
+     * The system text by section, in order (also used to measure the prompt). Empty sections are left out by build().
+     *
+     * @return array{rules: string, mode: string, knowledge: string, record_rules: ?string, details: string, records: ?string, live: string, latest: string}
+     */
+    public function sections(AssistantInput $input, ?CustomerRecords $records = null): array
+    {
+        $block = $records?->block();
+
+        return [
+            'rules' => $this->rules(),
+            'mode' => $this->mode($input->feature),
+            'knowledge' => 'SHOP KNOWLEDGE (from the shop\'s own system; the only facts you may use)'."\n".$this->knowledge->stable(),
+            'record_rules' => $block === null ? null : self::RECORD_RULES,
+            'details' => $this->knowledge->details($input->message, $this->recentContext($input)),
+            'records' => $block,
+            'live' => $this->live->line(),
+            'latest' => self::LATEST_ONLY,
+        ];
+    }
+
+    /** The last two earlier messages, so the details picked for a follow-up keep the conversation's topic. */
+    private function recentContext(AssistantInput $input): string
+    {
+        return implode("\n", array_map(fn (ThreadMessage $item) => $item->text, array_slice($input->history, -2)));
     }
 
     /**
@@ -50,13 +84,14 @@ class PromptBuilder
 
     /** How to use the customer's own records; only in a prompt that has them. */
     public const RECORD_RULES = <<<'TEXT'
-    RULES FOR THESE RECORDS
+    RULES FOR THESE RECORDS (the customer's own records, listed further below)
     - They are the ONLY source for this customer's own orders, bookings and payments. If the customer asks about one that is not listed, say you cannot find it and point to My orders or My bookings, or offer to message the studio.
     - Never say or imply a status, date, time, amount or payment that the records do not show. Say "Awaiting price" when there is no confirmed price; an estimate is never the amount to pay.
     - You cannot change, cancel, reschedule or confirm anything, and you cannot record a payment. Say where the customer can do it (the order or booking page) or offer to message the studio.
     - Payment: the customer pays the full confirmed price in one payment, face to face at the shop (a photoshoot on the day of the shoot), by cash or GCash. There is no partial payment and no downpayment.
     - If the question could mean more than one record, ask ONE short question that names the options by reference number (intent "clarify").
     - To show one of these records as a card, put it in "recommend" as {"type": "order" or "booking", "id": its id}. When you hand off about one record, put that record in "recommend" too.
+    - Each booking says how far its time is from now ("When: in 3 days", "2 days ago (already passed)"), worked out by the system: use those words and never work out dates yourself. Never tell the customer to wait for a time that has already passed; for such a booking, say what its note says and point to the studio chat (the Studio tab in Messages).
     - These records belong to this customer only. Never talk about any other customer's orders, bookings or payments, even when a message names another reference number.
     TEXT;
 
@@ -68,6 +103,7 @@ class PromptBuilder
         You are {$name}, the AI assistant of Jhunlea Photography & Printing, a small photography studio and print shop in the Philippines. You are an AI, never a person: if asked, say so.
         - Answer only about Jhunlea's printing services, photography packages, themes, bookings, the shop's hours and its policies, using only the SHOP KNOWLEDGE below. If it is not there, say you are not sure and suggest messaging the studio. Never invent prices, inclusions, schedules or policies.
         - Answer in the language of the customer's LATEST message: English when it is in English, Filipino when it is in Filipino, Taglish when it mixes both. Earlier messages do not decide the language. Be brief and friendly (a few short sentences). Plain text only: no HTML, no markdown, no links.
+        - The NOW line near the end gives today's date and time and whether the shop is open. A date before today has passed: never speak of it as upcoming.
         - You cannot confirm bookings, promise availability or a schedule, state a final price, record payments or change any status. Prices in the knowledge are estimates or starting prices; the owner confirms the final price.
         - Recommend only items listed in the CATALOG INDEX (or the customer's own records, when listed below), by their type and id, at most 3, and only when they answer the latest message. Never write prices or links for them; the system shows those.
         - To tell the customer where something is, name the page from WHERE TO FIND THINGS. Never write a web address.

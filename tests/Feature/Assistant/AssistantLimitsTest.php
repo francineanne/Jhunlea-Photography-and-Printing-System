@@ -54,29 +54,34 @@ class AssistantLimitsTest extends TestCase
     public function test_the_per_user_daily_limit(): void
     {
         $user = User::factory()->create();
-        $this->pastRuns(39, ['user_id' => $user->id]);
+        // 80 a day since Phase 7E-2a (was 40)
+        $this->pastRuns(79, ['user_id' => $user->id]);
         // Fallback rows (no provider call) never count
         $this->pastRuns(5, ['user_id' => $user->id, 'latency_ms' => null, 'outcome' => 'fallback_unavailable']);
 
-        $this->assertSame(AssistantOutcome::Answered, $this->ask('fortieth', actor: AssistantActor::user($user->id))->outcome);
-        $this->assertSame(AssistantOutcome::FallbackLimitUser, $this->ask('forty-first', actor: AssistantActor::user($user->id))->outcome);
+        $this->assertSame(80, config('assistant.limits.per_day_per_user'));
+        $this->assertSame(AssistantOutcome::Answered, $this->ask('eightieth', actor: AssistantActor::user($user->id))->outcome);
+        $this->assertSame(AssistantOutcome::FallbackLimitUser, $this->ask('eighty-first', actor: AssistantActor::user($user->id))->outcome);
     }
 
     public function test_the_guest_daily_limit_is_kept_by_a_hash_of_the_ip_only(): void
     {
         $guest = AssistantActor::guest('203.0.113.50');
 
-        for ($i = 0; $i < 10; $i++) {
+        // 20 a day since Phase 7E-2a (was 10)
+        $this->assertSame(20, config('assistant.limits.per_day_per_guest_ip'));
+
+        for ($i = 0; $i < 20; $i++) {
             $this->travel(61)->seconds();
             $this->assertSame(AssistantOutcome::Answered, $this->ask("q{$i}", actor: $guest)->outcome);
         }
 
         $this->travel(61)->seconds();
-        $this->assertSame(AssistantOutcome::FallbackLimitUser, $this->ask('eleventh', actor: $guest)->outcome);
+        $this->assertSame(AssistantOutcome::FallbackLimitUser, $this->ask('twenty-first', actor: $guest)->outcome);
         $this->assertSame(AssistantOutcome::Answered, $this->ask('other guest', actor: AssistantActor::guest('203.0.113.51'))->outcome);
 
         $this->assertSame(64, strlen($guest->guestKey));
-        $this->assertSame(11, AssistantRun::query()->where('guest_key', $guest->guestKey)->count());
+        $this->assertSame(21, AssistantRun::query()->where('guest_key', $guest->guestKey)->count());
         $this->assertSame(0, AssistantRun::query()->where('guest_key', 'like', '%203.0.113%')->count());
         $this->assertNull(AssistantRun::query()->where('guest_key', $guest->guestKey)->first()->user_id);
     }
@@ -114,7 +119,7 @@ class AssistantLimitsTest extends TestCase
 
         // 23:59 Manila on Nov 10 is 15:59 UTC
         $this->travelTo(Carbon::parse('2026-11-10 15:59:00', 'UTC'));
-        $this->pastRuns(40, ['user_id' => $user->id], Carbon::parse('2026-11-09 16:00:00', 'UTC'));
+        $this->pastRuns(80, ['user_id' => $user->id], Carbon::parse('2026-11-09 16:00:00', 'UTC'));
         $this->assertSame(AssistantOutcome::FallbackLimitUser, $this->ask('late', actor: $actor)->outcome);
 
         // 00:00 Manila on Nov 11

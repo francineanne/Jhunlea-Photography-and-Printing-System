@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * One message, plain text only, never edited or deleted (v1). Written only by MessageService, ConversationService and
- * LumiReplyService. meta holds references only:
+ * LumiReplyService. meta holds references only (and, since 7E-2a, the assistant's provider and via_backup):
  * - assistant: {intent, outcome, recommend: [{type, id}]} (never a price, name or link; cards are rebuilt when shown)
  * - system: {system_kind}
  * - customer: optionally {about: {type, id}} and {from_assistant_conversation: id}

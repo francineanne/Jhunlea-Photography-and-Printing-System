@@ -28,7 +28,7 @@ class GuestAssistantTest extends TestCase
         $this->fake->push(self::reply('answer', 'Bukas kami Lunes hanggang Sabado.'));
 
         $this->postJson(route('assistant.guest'), ['message' => 'Kailan kayo bukas?'])->assertOk()
-            ->assertExactJson(['reply' => 'Bukas kami Lunes hanggang Sabado.', 'cards' => [], 'intent' => 'answer', 'outcome' => 'answered']);
+            ->assertExactJson(['reply' => 'Bukas kami Lunes hanggang Sabado.', 'cards' => [], 'intent' => 'answer', 'outcome' => 'answered', 'via_backup' => false]);
 
         $this->assertSame(0, Conversation::query()->count());
         $this->assertSame(0, ChatMessage::query()->count());

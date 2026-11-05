@@ -85,6 +85,29 @@ class OwnerPresence
      */
     public function nextOpeningText(): ?string
     {
+        $next = $this->nextOpening();
+
+        if ($next === null) {
+            return null;
+        }
+
+        $when = match ($next['offset']) {
+            0 => 'today',
+            1 => 'tomorrow',
+            default => $next['at']->format('l'),
+        };
+
+        return $when.' at '.$next['at']->format('g:i A');
+    }
+
+    /**
+     * The next opening moment in Manila time and how many calendar days from today it is (Phase 7E-2a: also worded in
+     * Filipino by CodeAnswers); null when nothing opens in the next 7 days.
+     *
+     * @return array{at: Carbon, offset: int}|null
+     */
+    public function nextOpening(): ?array
+    {
         $zone = config('app.display_timezone');
         $now = Carbon::now($zone);
         $week = AvailabilityRule::week();
@@ -105,13 +128,7 @@ class OwnerPresence
                 continue;
             }
 
-            $when = match ($offset) {
-                0 => 'today',
-                1 => 'tomorrow',
-                default => $opens->format('l'),
-            };
-
-            return $when.' at '.$opens->format('g:i A');
+            return ['at' => $opens, 'offset' => $offset];
         }
 
         return null;

@@ -51,13 +51,33 @@ final class CustomerRecords
     /** The first of these records whose reference number (PR-000001, PB-000001) the text names. */
     public function mentionedIn(string $text): ?CustomerRecord
     {
-        preg_match_all('/\b(P[RB]-\d{6})\b/i', $text, $matches);
+        foreach (self::references($text) as $reference) {
+            if (($record = $this->byReference($reference['reference'])) !== null) {
+                return $record;
+            }
+        }
 
-        foreach ($matches[1] as $reference) {
-            foreach ($this->records as $record) {
-                if (strcasecmp($record->reference, $reference) === 0) {
-                    return $record;
-                }
+        return null;
+    }
+
+    /**
+     * Every reference number in a text with its byte offset, normalised to "PR-000001": any case, with or without the
+     * hyphen ("pr000001", "PB 000001").
+     *
+     * @return list<array{reference: string, offset: int}>
+     */
+    public static function references(string $text): array
+    {
+        preg_match_all('/(?<![\p{L}\p{N}])P([RB])[\s-]?(\d{6})(?!\d)/iu', $text, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
+
+        return array_map(fn (array $match) => ['reference' => 'P'.strtoupper($match[1][0]).'-'.$match[2][0], 'offset' => $match[0][1]], $matches);
+    }
+
+    public function byReference(string $reference): ?CustomerRecord
+    {
+        foreach ($this->records as $record) {
+            if (strcasecmp($record->reference, $reference) === 0) {
+                return $record;
             }
         }
 

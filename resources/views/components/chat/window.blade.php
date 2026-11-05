@@ -160,11 +160,11 @@
             <x-chat.rows />
 
             {{-- Suggestions for a conversation nobody has written in yet --}}
-            <div x-show="showPrompts" x-cloak class="flex flex-col gap-1.5">
+            <div x-show="showPrompts" x-cloak class="flex flex-col gap-1.5" data-chat-prompts>
                 <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Try asking</p>
                 <div class="flex flex-wrap gap-1.5">
-                    @foreach (config('chat.suggested_prompts') as $prompt)
-                        <button type="button" x-on:click="drafts.ask = @js($prompt); submit()" class="min-h-11 rounded-full bg-neutral-100 px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">{{ $prompt }}</button>
+                    @foreach (config($guest ? 'chat.suggested_prompts_guest' : 'chat.suggested_prompts') as $prompt)
+                        <button type="button" data-chat-prompt x-on:click="drafts.ask = @js($prompt); submit()" class="min-h-11 rounded-full bg-neutral-100 px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">{{ $prompt }}</button>
                     @endforeach
                 </div>
             </div>

@@ -263,7 +263,7 @@ class OwnerInboxTest extends TestCase
         $this->fake->push(self::reply('answer', 'Hi! Yes, we can print on canvas. Please send your file.'));
 
         $this->actingAs($owner)->postJson(route('owner.messages.assist.suggest', $studio))->assertOk()
-            ->assertExactJson(['available' => true, 'text' => 'Hi! Yes, we can print on canvas. Please send your file.', 'lines' => [], 'outcome' => 'answered']);
+            ->assertExactJson(['available' => true, 'text' => 'Hi! Yes, we can print on canvas. Please send your file.', 'lines' => [], 'outcome' => 'answered', 'via_backup' => false]);
 
         $this->assertSame($messages, ChatMessage::query()->count());
         $this->assertSame($notices, DatabaseNotification::query()->count());
@@ -303,7 +303,7 @@ class OwnerInboxTest extends TestCase
 
         $this->fake->push(self::reply('handoff', 'Please talk to the owner about this.'));
         $this->actingAs($owner)->postJson(route('owner.messages.assist.suggest', $studio))->assertOk()
-            ->assertExactJson(['available' => false, 'text' => config('assistant.messages.owner_assist'), 'lines' => [], 'outcome' => 'handoff']);
+            ->assertExactJson(['available' => false, 'text' => config('assistant.messages.owner_assist'), 'lines' => [], 'outcome' => 'handoff', 'via_backup' => false]);
 
         $this->fake->push(self::reply('handoff', "- Asks for a refund\n- Order not named yet"));
         $this->actingAs($owner)->postJson(route('owner.messages.assist.summarize', $studio))->assertOk()

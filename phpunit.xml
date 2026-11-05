@@ -55,6 +55,8 @@
         <env name="AI_FALLBACK_PROVIDER" value="" force="true"/>
         <env name="ANTHROPIC_API_KEY" value="" force="true"/>
         <env name="ANTHROPIC_MODEL" value="" force="true"/>
+        <env name="AI_ANTHROPIC_API_KEY" value="" force="true"/>
+        <env name="AI_ANTHROPIC_MODEL" value="" force="true"/>
 
         <server name="APP_ENV" value="testing"/>
         <server name="APP_MAINTENANCE_DRIVER" value="file"/>
@@ -84,5 +86,7 @@
         <server name="AI_FALLBACK_PROVIDER" value=""/>
         <server name="ANTHROPIC_API_KEY" value=""/>
         <server name="ANTHROPIC_MODEL" value=""/>
+        <server name="AI_ANTHROPIC_API_KEY" value=""/>
+        <server name="AI_ANTHROPIC_MODEL" value=""/>
     </php>
 </phpunit>

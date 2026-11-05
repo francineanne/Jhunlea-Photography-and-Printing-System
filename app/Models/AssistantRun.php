@@ -13,9 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * The metadata of one assistant call. Written only by AssistantEngine, never from a request, and never holds message
  * text. A row with latency_ms set is a call the provider answered with an HTTP response (any status): only those count
- * toward the limits. A call that never got an answer (connection or certificate error, no key) has no latency.
+ * toward the limits. A call that never got an answer (connection or certificate error, no key) has no latency, and
+ * neither has an answer by code (provider "code", Phase 7E-2a), which never counts.
  */
-#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'fallback_from', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms'])]
+#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'fallback_from', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'cache_read_tokens', 'cache_write_tokens', 'latency_ms'])]
 class AssistantRun extends Model
 {
     public const UPDATED_AT = null;
@@ -29,6 +30,8 @@ class AssistantRun extends Model
             'intent' => AssistantIntent::class,
             'input_tokens' => 'integer',
             'output_tokens' => 'integer',
+            'cache_read_tokens' => 'integer',
+            'cache_write_tokens' => 'integer',
             'latency_ms' => 'integer',
         ];
     }
