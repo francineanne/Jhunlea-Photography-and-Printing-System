@@ -13,6 +13,7 @@ use App\Services\Assistant\CustomerContextBuilder;
 use App\Services\Assistant\CustomerRecords;
 use App\Services\Assistant\PriceGuard;
 use App\Services\Assistant\PromptBuilder;
+use App\Services\Assistant\ProviderCooldown;
 use App\Services\Assistant\ThreadMessage;
 use Throwable;
 
@@ -25,13 +26,31 @@ use Throwable;
  */
 class EvalRunner
 {
+    /** Phase 7E-2c: the longest wait before retrying a case after a 429, and the wait when the provider named none. */
+    public const RETRY_MAX_SECONDS = 60;
+
+    public const RETRY_DEFAULT_SECONDS = 15;
+
     /** @var (callable(EvalAttempt): void)|null */
     private $progress = null;
+
+    /** @var callable(float): void sleeps this many seconds; tests replace it so nothing really waits */
+    private $waiter;
 
     public function __construct(
         private readonly EvalChecks $checks,
         private readonly PriceGuard $prices,
-    ) {}
+    ) {
+        $this->waiter = fn (float $seconds) => usleep((int) round($seconds * 1_000_000));
+    }
+
+    /** @param callable(float): void $waiter */
+    public function useWaiter(callable $waiter): static
+    {
+        $this->waiter = $waiter;
+
+        return $this;
+    }
 
     /** @param callable(EvalAttempt): void $progress called after each attempt */
     public function onProgress(callable $progress): static
@@ -56,6 +75,8 @@ class EvalRunner
 
             $recorder = app(RecordingPromptBuilder::class);
             app()->instance(PromptBuilder::class, $recorder);
+            $cooldown = new EvalCooldown;
+            app()->instance(ProviderCooldown::class, $cooldown);
 
             for ($run = 1; $run <= max(1, $runs); $run++) {
                 foreach ($cases as $case) {
@@ -69,11 +90,7 @@ class EvalRunner
                     if ($limit !== null && $case->isModelCase() && $calls >= $limit) {
                         $attempt = new EvalAttempt($case, $run, EvalAttempt::SKIPPED);
                     } else {
-                        $attempt = $this->attempt($case, $run, $sandbox, $fixtures, $recorder);
-
-                        if ($delay > 0 && $attempt->providerCalled) {
-                            usleep((int) round($delay * 1_000_000));
-                        }
+                        $attempt = $this->tryCase($case, $run, $sandbox, $fixtures, $recorder, $cooldown, $delay);
                     }
 
                     $attempts[] = $attempt;
@@ -85,10 +102,49 @@ class EvalRunner
             }
         } finally {
             app()->forgetInstance(PromptBuilder::class);
+            app()->forgetInstance(ProviderCooldown::class);
             $sandbox->close();
         }
 
         return $attempts;
+    }
+
+    /**
+     * One case, retried ONCE after a 429 (Phase 7E-2c): wait the provider's retry-after (at most RETRY_MAX_SECONDS,
+     * RETRY_DEFAULT_SECONDS when it named none), clear that provider's cooldown in the sandbox so the retry really asks
+     * it, and try again; a second failure stays provider_failed. The cooldown is cleared after the case too, so one 429
+     * never fails every case after it. --delay applies after every provider call, the retry included.
+     */
+    private function tryCase(EvalCase $case, int $run, EvalSandbox $sandbox, EvalFixtures $fixtures, RecordingPromptBuilder $recorder, EvalCooldown $cooldown, float $delay): EvalAttempt
+    {
+        $cooldown->lastRateLimit = null;
+        $attempt = $this->attempt($case, $run, $sandbox, $fixtures, $recorder);
+        $this->pause($delay, $attempt);
+        $retries = 0;
+
+        if ($attempt->status === EvalAttempt::PROVIDER_FAILED && $cooldown->lastRateLimit !== null) {
+            $limited = $cooldown->lastRateLimit;
+            ($this->waiter)((float) min(self::RETRY_MAX_SECONDS, $limited['seconds'] ?? self::RETRY_DEFAULT_SECONDS));
+            $cooldown->clear($limited['provider']);
+            $cooldown->lastRateLimit = null;
+            $retries = 1;
+
+            $attempt = $this->attempt($case, $run, $sandbox, $fixtures, $recorder);
+            $this->pause($delay, $attempt);
+        }
+
+        if ($cooldown->lastRateLimit !== null) {
+            $cooldown->clear($cooldown->lastRateLimit['provider']);
+        }
+
+        return $attempt->withRetries($retries);
+    }
+
+    private function pause(float $delay, EvalAttempt $attempt): void
+    {
+        if ($delay > 0 && ($attempt->providerCalled || $attempt->status === EvalAttempt::PROVIDER_FAILED)) {
+            ($this->waiter)($delay);
+        }
     }
 
     private function attempt(EvalCase $raw, int $run, EvalSandbox $sandbox, EvalFixtures $fixtures, RecordingPromptBuilder $recorder): EvalAttempt

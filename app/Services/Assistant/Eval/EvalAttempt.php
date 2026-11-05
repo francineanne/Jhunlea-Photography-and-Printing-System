@@ -39,7 +39,15 @@ final class EvalAttempt
         public readonly array $usage = [],
         public readonly array $providers = [],
         public readonly int $failovers = 0,
+        // Phase 7E-2c: how many times this case was tried again after a 429
+        public readonly int $retries = 0,
     ) {}
+
+    public function withRetries(int $retries): self
+    {
+        return new self($this->case, $this->run, $this->status, $this->failed, $this->reply, $this->outcome, $this->providerCalled,
+            $this->latencies, $this->usage, $this->providers, $this->failovers, $retries);
+    }
 
     public function scored(): bool
     {

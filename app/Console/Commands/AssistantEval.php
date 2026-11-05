@@ -41,6 +41,9 @@ use RuntimeException;
 #[Description('Evaluate the AI assistant Lumi on the written cases (fake provider unless --live --yes)')]
 class AssistantEval extends Command
 {
+    /** Phase 7E-2c: too many provider failures or skipped cases to judge (0 passed, 1 failed). */
+    public const EXIT_INCONCLUSIVE = 2;
+
     public function handle(CaseBank $bank, ProviderResolver $resolver): int
     {
         if ($this->laravel->environment('production')) {
@@ -109,13 +112,20 @@ class AssistantEval extends Command
         }
 
         $reports = [];
-        $exit = self::SUCCESS;
+        $statuses = [];
 
         foreach ($providers as $provider) {
             $report = $this->runOne($cases, $provider, $provider === 'fake' ? null : $fallback, $runs, $limit, $provider === 'fake' ? 0.0 : (float) $delay, $live && $provider !== 'fake');
             $reports[$provider] = $report;
-            $exit = $report->gate()['passed'] ? $exit : self::FAILURE;
+            $statuses[] = $report->gate()['status'];
         }
+
+        // 1 when any run failed the gate (a must_never failure always fails it), else 2 when any run was inconclusive
+        $exit = match (true) {
+            in_array(EvalReport::FAILED, $statuses, true) => self::FAILURE,
+            in_array(EvalReport::INCONCLUSIVE, $statuses, true) => self::EXIT_INCONCLUSIVE,
+            default => self::SUCCESS,
+        };
 
         if (count($reports) > 1) {
             $comparison = EvalReport::compare($reports);
@@ -179,8 +189,12 @@ class AssistantEval extends Command
         foreach ($providers as $provider) {
             $model = $provider === 'anthropic' ? (string) config('assistant.anthropic.model') : ($provider === 'gemini' ? (string) config('assistant.model') : $provider);
             $price = ((array) config('assistant.pricing.models', []))[$model] ?? null;
-            $usd = is_array($price) ? $calls * ((int) ($per['input'] ?? 0) * (float) $price['input'] + (int) ($per['output'] ?? 0) * (float) $price['output']
-                + (int) ($per['cache_read'] ?? 0) * (float) ($price['cache_read'] ?? 0) + (int) ($per['cache_write'] ?? 0) * (float) ($price['cache_write'] ?? 0)) / 1_000_000 : null;
+
+            // Only Claude reads the stable prefix from its prompt cache; every other provider gets it all as input
+            $tokens = $provider === 'anthropic' ? $per
+                : ['input' => (int) ($per['input'] ?? 0) + (int) ($per['cache_read'] ?? 0), 'output' => (int) ($per['output'] ?? 0), 'cache_read' => 0, 'cache_write' => 0];
+            $usd = is_array($price) ? $calls * ((int) ($tokens['input'] ?? 0) * (float) $price['input'] + (int) ($tokens['output'] ?? 0) * (float) $price['output']
+                + (int) ($tokens['cache_read'] ?? 0) * (float) ($price['cache_read'] ?? 0) + (int) ($tokens['cache_write'] ?? 0) * (float) ($price['cache_write'] ?? 0)) / 1_000_000 : null;
 
             $this->line("{$provider} ({$model}): about {$calls} model call(s); estimated cost: ".($usd === null
                 ? 'unknown (no price for this model in config assistant.pricing)'
@@ -223,7 +237,11 @@ class AssistantEval extends Command
         $path = $this->save($this->baseName($provider), $markdown, $report->toArray());
         $this->info("Report saved: {$path} (.md and .json)");
         $gate = $report->gate();
-        $gate['passed'] ? $this->info('Quality gate PASSED.') : $this->error('Quality gate FAILED: '.implode('; ', $gate['reasons']));
+        match ($gate['status']) {
+            EvalReport::PASSED => $this->info('Quality gate PASSED.'),
+            EvalReport::INCONCLUSIVE => $this->warn('Quality gate INCONCLUSIVE (exit code 2): '.implode('; ', $gate['reasons'])),
+            default => $this->error('Quality gate FAILED: '.implode('; ', $gate['reasons'])),
+        };
 
         return $report;
     }

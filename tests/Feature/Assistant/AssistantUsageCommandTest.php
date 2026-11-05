@@ -69,6 +69,30 @@ class AssistantUsageCommandTest extends TestCase
             ->assertSuccessful();
     }
 
+    public function test_a_gemini_model_with_a_verified_price_and_one_without(): void
+    {
+        // The real price table of config/assistant.php (7E-2c: Gemini rows verified on Google's pricing page)
+        $pricing = (require config_path('assistant.php'))['pricing'];
+        $this->assertSame(['input' => 0.25, 'output' => 1.50, 'cache_read' => 0.025], $pricing['models']['gemini-3.1-flash-lite']);
+        $this->assertSame(['input' => 0.30, 'output' => 2.50, 'cache_read' => 0.03], $pricing['models']['gemini-3.5-flash-lite']);
+        config(['assistant.pricing' => ['usd_to_php' => 50.0, 'models' => $pricing['models']]]);
+
+        // 1M input x 0.25 + 0.1M output x 1.50 = $0.40 = ₱20.00
+        $this->runRow(['provider' => 'gemini', 'model' => 'gemini-3.1-flash-lite', 'outcome' => 'answered', 'input_tokens' => 1000000, 'output_tokens' => 100000, 'latency_ms' => 500]);
+        $this->runRow(['provider' => 'gemini', 'model' => 'gemini-2.0-flash', 'outcome' => 'answered', 'input_tokens' => 5000, 'output_tokens' => 100, 'latency_ms' => 500]);
+
+        $this->artisan('assistant:usage', ['--days' => 1])
+            ->expectsTable(
+                ['Provider', 'Feature', 'Model', 'Calls', 'Outcomes', 'Failovers', 'Input', 'Output', 'Cache read', 'Cache write', 'Cost (estimate)'],
+                [
+                    ['gemini', 'ask_lumi', 'gemini-2.0-flash', 1, 'answered 1', 0, '5,000', '100', '0', '0', 'no price'],
+                    ['gemini', 'ask_lumi', 'gemini-3.1-flash-lite', 1, 'answered 1', 0, '1,000,000', '100,000', '0', '0', '$0.4000 / ₱20.00'],
+                ],
+            )
+            ->expectsOutputToContain('Models marked "no price" are not counted.')
+            ->assertSuccessful();
+    }
+
     public function test_an_empty_period_and_a_bad_days_value(): void
     {
         $this->artisan('assistant:usage')->expectsOutputToContain('No assistant runs in this period.')->assertSuccessful();

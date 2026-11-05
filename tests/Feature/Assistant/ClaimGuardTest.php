@@ -124,7 +124,8 @@ class ClaimGuardTest extends TestCase
             'The final price is confirmed by the owner after review.',
             'The full price is paid at the shop, in cash or GCash.',
             'You can cancel it on the booking page.',
-            'The studio will confirm your booking.',
+            // "The studio will confirm your booking." was here until 7E-2c: it is now a promise (see below)
+            'The studio will review your booking.',
             'Your order is not ready yet.',
             'I can help you check your order status.',
         ] as $sentence) {
@@ -238,6 +239,108 @@ class ClaimGuardTest extends TestCase
         $result = $this->ask('Ready na ba lahat?', actor: AssistantActor::user($customer->id));
 
         $this->assertSame('PR-000021 is ready for pickup. Message the studio for the schedule.', $result->reply);
+    }
+
+    public function test_up_to_two_adverbs_before_the_state_word_are_still_a_claim_for_every_state(): void
+    {
+        // Phase 7E-2c: the real eval found "is totally confirmed" slipping through
+        $none = app(CustomerContextBuilder::class)->build(User::factory()->create());
+
+        foreach ([
+            'confirmed' => ['Your booking is totally confirmed.', 'Your booking is now really confirmed!', 'It has been officially confirmed.', 'Confirmed po na ang booking ninyo.', 'Confirmed na talaga ang booking mo.'],
+            'ready' => ['Your order is definitely ready.', 'Your prints are now fully ready.', 'Ready talaga na po ang prints ninyo.'],
+            'completed' => ['Your order is already officially completed.', 'Your session has been totally done.', 'Tapos po na ang order ninyo.'],
+            'paid' => ['Your order is completely paid.', 'You have already fully paid.', 'Your booking is surely fully paid.', 'Bayad talaga na po kayo.'],
+        ] as $state => $sentences) {
+            foreach ($sentences as $sentence) {
+                $this->assertTrue($this->guard()->claims($sentence, $none), "{$state}: {$sentence}");
+            }
+        }
+
+        // With a record in that state the same sentences stay
+        $customer = User::factory()->create();
+        PhotographyBooking::factory()->forCustomer($customer)->status(BookingStatus::Confirmed)->create(['confirmed_price' => '900.00']);
+        $this->assertFalse($this->guard()->claims('Your booking is totally confirmed.', app(CustomerContextBuilder::class)->build($customer)));
+    }
+
+    public function test_adverbs_keep_the_question_condition_and_negation_exemptions(): void
+    {
+        $none = CustomerRecords::none();
+
+        foreach ([
+            'Is your booking totally confirmed?',
+            'Once it is officially confirmed, you will get a notification.',
+            'Your order is not totally ready yet.',
+            'Your booking has not been officially confirmed.',
+            'A booking is usually confirmed within a day.',
+            'It is only ready after the shop reviews it.',
+            'The full price is usually paid at the shop.',
+        ] as $sentence) {
+            $this->assertFalse($this->guard()->claims($sentence, $none), $sentence);
+        }
+    }
+
+    public function test_a_promise_that_the_owner_or_studio_will_confirm_approve_or_accept_is_removed(): void
+    {
+        $none = CustomerRecords::none();
+
+        foreach ([
+            'The owner will confirm it there.',
+            'The studio will confirm your booking.',
+            'The studio will approve your booking.',
+            'They will accept your request.',
+            "We'll confirm it for Saturday.",
+            'The owner is going to confirm your booking.',
+            'The owner will definitely approve it.',
+            'Your booking will be confirmed by the owner.',
+            'Your request will be approved soon.',
+            'Kukumpirmahin ng owner ang booking ninyo.',
+            'I-a-approve nila ang booking mo.',
+            'Tatanggapin nila ang request mo.',
+        ] as $sentence) {
+            $this->assertTrue($this->guard()->claims($sentence, $none), $sentence);
+        }
+    }
+
+    public function test_what_is_not_a_promise_stays(): void
+    {
+        $none = CustomerRecords::none();
+
+        foreach ([
+            'The owner confirms the final price after review.',
+            'The studio will confirm the price after reviewing your files.',
+            'The studio will confirm the final price.',
+            'The final price will be confirmed by the owner.',
+            'Kukumpirmahin ng owner ang presyo.',
+            'The shop will accept cash or GCash.',
+            'The studio will reply to you soon.',
+            'The owner will message you here.',
+            'The studio will review your request and reply.',
+            'Will the owner approve it?',
+            'If the owner will confirm it, you will get a notification.',
+            'The owner has not confirmed it yet.',
+            'Hindi pa ito kukumpirmahin hangga\'t walang reply.',
+        ] as $sentence) {
+            $this->assertFalse($this->guard()->claims($sentence, $none), $sentence);
+        }
+    }
+
+    public function test_the_real_studio_reply_from_the_eval_loses_only_its_promise(): void
+    {
+        $this->fake->push(self::reply('answer', 'I can\'t confirm bookings myself. Please wait for the studio to review your request in this thread. The owner will confirm it there.'));
+
+        $result = $this->ask('Can the owner confirm my booking for Saturday 3pm?', AssistantFeature::StudioAway, AssistantActor::user(User::factory()->create()->id));
+
+        $this->assertSame("I can't confirm bookings myself. Please wait for the studio to review your request in this thread.", $result->reply);
+    }
+
+    public function test_the_prompt_tells_lumi_not_to_promise_what_the_owner_will_do(): void
+    {
+        $this->ask('Will the owner approve it?');
+        $this->assertStringContainsString('Never say or imply that the owner or the studio WILL confirm, approve or accept a booking or request', $this->fake->lastRequest()->stableSystem);
+
+        $this->ask('Will the owner approve it?', AssistantFeature::StudioAway, AssistantActor::user(User::factory()->create()->id));
+        $this->assertStringContainsString('never promise what the owner will do with them', $this->fake->lastRequest()->stableSystem);
     }
 
     public function test_the_owner_assist_draft_is_not_guarded(): void

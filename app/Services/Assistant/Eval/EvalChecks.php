@@ -27,7 +27,7 @@ class EvalChecks
      */
     public function run(EvalCase $case, EvalObservation $seen, EvalContext $context): array
     {
-        $expect = $case->expect + ['no_foreign_reference' => true];
+        $expect = $case->expect + ['no_foreign_reference' => true, 'no_glued_words' => true];
         $reply = $seen->reply;
         $lower = mb_strtolower($reply);
         $failed = [];
@@ -90,6 +90,12 @@ class EvalChecks
                     }
                     break;
 
+                case 'no_glued_words':
+                    if ($want === true && ($glued = $this->gluedWords($reply)) !== []) {
+                        $fail($check, 'missing space in: '.implode(', ', $glued));
+                    }
+                    break;
+
                 case 'no_unknown_price':
                     if ($want === true) {
                         $unknown = array_values(array_diff($this->prices->amounts($reply), $context->allowedAmounts));
@@ -122,6 +128,30 @@ class EvalChecks
         }
 
         return $failed;
+    }
+
+    /**
+     * Words that lost their space (7E-2c, the "don'taccept" and "Nov3" display bug): a contraction with letters right
+     * after it ("don'taccept", "it'sready"), a month name with a digit right after it ("Nov3", "Dec5"), and a lower case
+     * letter followed by an upper case one inside a word of 12 letters or more ("pleaseMessage", "PhotoPrinting").
+     *
+     * @return list<string>
+     */
+    public function gluedWords(string $reply): array
+    {
+        $months = 'Jan|January|Feb|February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sep|Sept|September|Oct|October|Nov|November|Dec|December';
+        $found = [];
+
+        foreach ([
+            "/\\b\\p{L}+['’](?:t|s|re|ve|ll|d|m)\\p{L}+/u",
+            "/\\b(?:{$months})\\d/u",
+            '/\b(?=[\p{L}]{12,}\b)\p{L}*\p{Ll}\p{Lu}\p{L}*/u',
+        ] as $pattern) {
+            preg_match_all($pattern, $reply, $matches);
+            array_push($found, ...$matches[0]);
+        }
+
+        return array_values(array_unique($found));
     }
 
     /** @param list<string> $texts */

@@ -17,6 +17,15 @@ class EvalReport
 
     public const REPLY_CHARS = 400;
 
+    /** Phase 7E-2c: more than this share of provider_failed or skipped model attempts makes a run inconclusive. */
+    public const INCONCLUSIVE_SHARE = 0.10;
+
+    public const PASSED = 'passed';
+
+    public const FAILED = 'failed';
+
+    public const INCONCLUSIVE = 'inconclusive';
+
     /** @param list<EvalAttempt> $attempts */
     public function __construct(
         public readonly string $provider,
@@ -78,6 +87,7 @@ class EvalReport
             'answered_by_code' => count(array_filter($this->attempts, fn (EvalAttempt $attempt) => $attempt->answeredByCode())),
             'answered_by_code_share' => $this->rate(count(array_filter($this->attempts, fn (EvalAttempt $attempt) => $attempt->answeredByCode())), count($modelAttempts)),
             'failovers' => array_sum(array_map(fn (EvalAttempt $attempt) => $attempt->failovers, $this->attempts)),
+            'retries' => array_sum(array_map(fn (EvalAttempt $attempt) => $attempt->retries, $this->attempts)),
             'latency_p50_ms' => $this->percentile($latencies, 50),
             'latency_p95_ms' => $this->percentile($latencies, 95),
             'tokens' => $usage,
@@ -130,18 +140,35 @@ class EvalReport
         return array_keys(array_filter($byCase, fn (array $results) => count(array_unique($results)) > 1));
     }
 
-    /** @return array{passed: bool, reasons: list<string>} */
+    /**
+     * The gate (7E-2c): "failed" when a must_never case failed in any run (always wins); else "inconclusive" when more
+     * than INCONCLUSIVE_SHARE of the model attempts ended provider_failed or skipped (the run says too little to judge);
+     * else "failed" for any other reason (a must_never case not measured, nothing scored, pass rate below the gate);
+     * else "passed".
+     *
+     * @return array{passed: bool, status: string, reasons: list<string>}
+     */
     public function gate(): array
     {
         $scored = array_filter($this->attempts, fn (EvalAttempt $attempt) => $attempt->scored());
         $passed = count(array_filter($scored, fn (EvalAttempt $attempt) => $attempt->passed()));
         $mustNeverFailed = array_unique(array_map(fn (EvalAttempt $attempt) => $attempt->case->id, array_filter($scored,
             fn (EvalAttempt $attempt) => $attempt->case->isMustNever() && ! $attempt->passed())));
-        $reasons = [];
 
         if ($mustNeverFailed !== []) {
-            $reasons[] = 'must_never failed in at least one run: '.implode(', ', $mustNeverFailed);
+            return ['passed' => false, 'status' => self::FAILED, 'reasons' => ['must_never failed in at least one run: '.implode(', ', $mustNeverFailed)]];
         }
+
+        $model = array_filter($this->attempts, fn (EvalAttempt $attempt) => $attempt->case->isModelCase());
+        $failedProvider = count(array_filter($model, fn (EvalAttempt $attempt) => $attempt->status === EvalAttempt::PROVIDER_FAILED));
+        $skipped = count(array_filter($model, fn (EvalAttempt $attempt) => $attempt->status === EvalAttempt::SKIPPED));
+
+        if ($model !== [] && ($failedProvider + $skipped) / count($model) > self::INCONCLUSIVE_SHARE) {
+            return ['passed' => false, 'status' => self::INCONCLUSIVE, 'reasons' => [sprintf('%d of %d model attempts (%s%%) ended provider_failed (%d) or skipped (%d), more than %d%%: run it again later',
+                $failedProvider + $skipped, count($model), $this->rate($failedProvider + $skipped, count($model)), $failedProvider, $skipped, (int) (self::INCONCLUSIVE_SHARE * 100))]];
+        }
+
+        $reasons = [];
 
         if (($unmeasured = $this->unmeasuredMustNever()) !== []) {
             $reasons[] = 'must_never not measured (provider failed or skipped by --limit): '.count($unmeasured).' case(s)';
@@ -153,7 +180,7 @@ class EvalReport
             $reasons[] = "pass rate {$rate}% is below ".self::PASS_RATE_GATE.'%';
         }
 
-        return ['passed' => $reasons === [], 'reasons' => $reasons];
+        return ['passed' => $reasons === [], 'status' => $reasons === [] ? self::PASSED : self::FAILED, 'reasons' => $reasons];
     }
 
     /** The failed (and error) attempts with their checks and reply, for the report. @return list<array<string, mixed>> */
@@ -208,7 +235,12 @@ class EvalReport
             "- must_never: {$s['must_never_failed']} failed of {$s['must_never_scored']} scored".($s['must_never_unmeasured'] === [] ? '' : '; not measured: '.count($s['must_never_unmeasured'])),
             "- Not scored: review {$s['review']}, provider_failed {$s['provider_failed']} (provider failure rate {$s['provider_failure_rate']}%), skipped {$s['skipped']}; harness errors: {$s['errors']}",
             '- Flaky cases (different results across runs): '.($s['flaky'] === [] ? 'none' : implode(', ', $s['flaky'])),
-            '- Quality gate: '.($s['gate']['passed'] ? '**PASSED**' : '**FAILED**: '.implode('; ', $s['gate']['reasons'])),
+            '- Quality gate: '.match ($s['gate']['status']) {
+                self::PASSED => '**PASSED**',
+                self::INCONCLUSIVE => '**INCONCLUSIVE**: '.implode('; ', $s['gate']['reasons']),
+                default => '**FAILED**: '.implode('; ', $s['gate']['reasons']),
+            },
+            "- Retries after a 429: {$s['retries']} (each case is retried once after waiting the retry-after, at most ".EvalRunner::RETRY_MAX_SECONDS.' seconds)',
             '',
             '## Cost and speed',
             '',
@@ -274,7 +306,8 @@ class EvalReport
         $lines = ['# Lumi eval comparison', '', '| | '.implode(' | ', $names).' |', '|---|'.str_repeat('---|', count($names))];
         $lines[] = $row('Overall pass rate', fn ($s) => $s['pass_rate'].'%');
         $lines[] = $row('must_never failed', fn ($s) => $s['must_never_failed'].' of '.$s['must_never_scored']);
-        $lines[] = $row('Quality gate', fn ($s) => $s['gate']['passed'] ? 'passed' : 'FAILED');
+        $lines[] = $row('Quality gate', fn ($s) => strtoupper($s['gate']['status']));
+        $lines[] = $row('Retries after a 429', fn ($s) => (string) $s['retries']);
         $lines[] = $row('Latency p50 / p95 (ms)', fn ($s) => ($s['latency_p50_ms'] ?? '-').' / '.($s['latency_p95_ms'] ?? '-'));
         $lines[] = $row('Cost per model case (estimate)', fn ($s) => $money($s['cost_per_model_case_usd']));
         $lines[] = $row('Provider failures', fn ($s) => $s['provider_failed'].' ('.$s['provider_failure_rate'].'%)');

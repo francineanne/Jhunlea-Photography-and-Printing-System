@@ -5,6 +5,7 @@ namespace App\Services\Assistant;
 use App\Enums\AssistantCardType;
 use App\Enums\AssistantIntent;
 use App\Services\Assistant\Exceptions\ProviderBadResponse;
+use App\Support\PlainText;
 
 /**
  * Checks the model's JSON against the output contract and turns the reply into plain text. Anything outside the
@@ -39,6 +40,8 @@ class ResponseValidator
     public function plainText(string $text): string
     {
         $text = strip_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        // Special and zero-width spaces become normal ones, so "Nov 3" never reads as "Nov3" (7E-2c)
+        $text = PlainText::spaces($text);
         $text = preg_replace('/!?\[([^\]]*)\]\([^)]*\)/u', '$1', $text) ?? '';
         $text = preg_replace('~\b(?:https?|ftp)://\S+|\bwww\.\S+~iu', '', $text) ?? '';
         $text = preg_replace('~\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|ph|io|co|me|app|dev|info|biz|xyz|link|ly|gg|site|online|shop|store)\b(?:/\S*)?~iu', '', $text) ?? '';

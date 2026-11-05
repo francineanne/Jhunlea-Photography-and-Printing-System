@@ -162,6 +162,11 @@ return [
         'usd_to_php' => 58.0,
         'models' => [
             'claude-haiku-5-5' => ['input' => 0.10, 'output' => 0.50, 'cache_read' => 0.01, 'cache_write' => 0.125],
+            // Gemini (7E-2c): Google's official pricing page (ai.google.dev/gemini-api/docs/pricing, which now redirects to
+            // aistudio.google.com/docs/pricing), read 2026-11-05: Standard, paid tier, text input; output includes thinking
+            // tokens; cache_read is the context caching price (its per-hour storage price is not counted here)
+            'gemini-3.1-flash-lite' => ['input' => 0.25, 'output' => 1.50, 'cache_read' => 0.025],
+            'gemini-3.5-flash-lite' => ['input' => 0.30, 'output' => 2.50, 'cache_read' => 0.03],
         ],
     ],
 

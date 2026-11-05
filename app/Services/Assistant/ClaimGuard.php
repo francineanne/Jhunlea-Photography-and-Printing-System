@@ -10,8 +10,9 @@ use Illuminate\Support\Facades\Log;
  *
  * - that it did something itself ("I booked / confirmed / cancelled / rescheduled", "I received your payment",
  *   "na-cancel ko na", "natanggap ko na ang bayad"): Lumi has no tools, so such a sentence is always false;
- * - a status or payment fact ("ready for pickup", "is confirmed", "is completed", "fully paid", "bayad na") that the
- *   record the sentence is about does not show.
+ * - a status or payment fact ("ready for pickup", "is confirmed", "is totally confirmed", "is completed", "fully paid",
+ *   "bayad na") that the record the sentence is about does not show;
+ * - a promise that the owner or studio will confirm, approve or accept a booking or request (7E-2c, PROMISES).
  *
  * Which record a sentence is about (Phase 7E-2a; before, any record of the customer was enough): a reference number in
  * the sentence (PR-/PB-, any case, with or without the hyphen; the nearest one before the claim) means that record
@@ -34,15 +35,43 @@ class ClaimGuard
         '/\b(?:kinansela|kinancel|kinumpirma|binook|nirecord|inireschedule|tinanggap|natanggap)\s+(?:ko|namin)\b/iu',
     ];
 
+    /**
+     * Up to two adverbs between the verb and the state word (7E-2c): "is totally confirmed", "is now really ready",
+     * "has been officially completed". Words that only say how things usually go ("is usually confirmed", "is only
+     * ready after") are not counted as adverbs here.
+     */
+    private const ADVERBS = '(?:(?!(?:only|usually|normally|typically|generally|rarely|early|family|daily|weekly|monthly|reply|apply|supply)\b)(?:\w+ly|really|definitely|surely|now|already|just|also|kindly|officially|totally)\s+){0,2}';
+
+    /** Filipino words that may sit between the state word and "na" ("confirmed po na", "ready talaga na"). */
+    private const FILIPINO_FILLERS = '(?:(?:po|talaga)\s+){0,2}';
+
     /** A status or payment fact, with the record state that makes it true. */
     private const STATES = [
         // "is confirmed by the owner", "is paid at the shop": how things work, not a record's state
-        'confirmed' => '/\b(?:is|are|was|were|has been|have been|now|already|been)\s+(?:now\s+|already\s+)?confirmed\b(?!\s+(?:by|after|once|when)\b)|\b(?:confirmed|kumpirmado|na-?confirm)\s+na\b/iu',
+        'confirmed' => '/\b(?:is|are|was|were|has been|have been|now|already|been)\s+'.self::ADVERBS.'confirmed\b(?!\s+(?:by|after|once|when)\b)|\b(?:confirmed|kumpirmado|na-?confirm)\s+'.self::FILIPINO_FILLERS.'na\b/iu',
         // "is ready" alone too (7E-2a), but not "ready to help you" or "ready for your questions"
-        'ready' => '/\bready\s+(?:na\s+)?(?:for|to)\s+(?:be\s+)?pick(?:ed)?[\s-]?up\b|\bready\s+na\b|\bpu?we?de\s+(?:mo\s+|nyo\s+|niyo\s+)?na(?:ng)?\s+(?:kunin|i-?pick\s?up)\b|\b(?:is|are|now|already)\s+(?:now\s+|already\s+)?ready\b(?!\s+(?:to|for)\s+(?:help|assist|answer|book|you|your|any|questions?)\b)/iu',
-        'completed' => '/\b(?:is|are|was|were|has been|have been|now|already)\s+(?:now\s+|already\s+)?(?:completed|complete|done|finished)\b|\b(?:completed|tapos)\s+na\b/iu',
-        'paid' => '/\b(?:is|are|was|has been|have been|already)\s+(?:already\s+)?fully\s+paid\b|\b(?:is|are|was|has been|have been|already)\s+(?:already\s+)?paid\b(?!\s+(?:by|at|in|on|face|through|via|with|upon|for)\b)|\byou(?:\'ve| have)?\s+(?:already\s+)?paid\b|\b(?:bayad|paid)\s+na\b|\bnabayaran\s+na\b/iu',
+        'ready' => '/\bready\s+(?:na\s+)?(?:for|to)\s+(?:be\s+)?pick(?:ed)?[\s-]?up\b|\bready\s+'.self::FILIPINO_FILLERS.'na\b|\bpu?we?de\s+(?:mo\s+|nyo\s+|niyo\s+)?na(?:ng)?\s+(?:kunin|i-?pick\s?up)\b|\b(?:is|are|now|already)\s+'.self::ADVERBS.'ready\b(?!\s+(?:to|for)\s+(?:help|assist|answer|book|you|your|any|questions?)\b)/iu',
+        'completed' => '/\b(?:is|are|was|were|has been|have been|now|already)\s+'.self::ADVERBS.'(?:completed|complete|done|finished)\b|\b(?:completed|tapos)\s+'.self::FILIPINO_FILLERS.'na\b/iu',
+        'paid' => '/\b(?:is|are|was|has been|have been|already)\s+'.self::ADVERBS.'fully\s+paid\b|\b(?:is|are|was|has been|have been|already)\s+'.self::ADVERBS.'paid\b(?!\s+(?:by|at|in|on|face|through|via|with|upon|for)\b)|\byou(?:\'ve| have)?\s+'.self::ADVERBS.'paid\b|\b(?:bayad|paid)\s+'.self::FILIPINO_FILLERS.'na\b|\bnabayaran\s+'.self::FILIPINO_FILLERS.'na\b/iu',
     ];
+
+    /**
+     * A promise that the owner or studio WILL confirm, approve or accept the customer's booking or request (7E-2c):
+     * "The owner will confirm it there.", "we'll approve your booking", "your booking will be confirmed by the owner",
+     * "kukumpirmahin ng owner", "i-a-approve nila", "tatanggapin nila ang request". The owner may reject it, so Lumi
+     * never promises it. Not a promise: the price ("the studio will confirm the price"), a payment method ("the shop will
+     * accept cash or GCash"), replying or reviewing ("the
+     * studio will reply", "will review your request"), how things work in the present tense ("the owner confirms the
+     * final price after review"), and, like every claim, a question, a condition or a negation.
+     */
+    private const PROMISES = [
+        '/\b(?:the\s+)?(?:owner|studio|shop|team|staff|we|they)\s*(?:will|\'ll|’ll|is going to|are going to|shall)\s+(?:(?:definitely|surely|certainly|also|then|just|soon|probably|likely|quickly|gladly)\s+)?(?:confirm|approve|accept)\b(?!(?:\s+\S+){0,2}?\s+(?:price|prices|amount|total|cost|quote|quotation|presyo|halaga|cash|gcash|payments?|cards?|files?)\b)/iu',
+        '/\b(?:will|\'ll|’ll|is going to|are going to)\s+be\s+(?:\w+ly\s+)?(?:confirmed|approved|accepted)\b/iu',
+        '/\b(?:kukumpirmahin|kokumpirmahin|ikukumpirma|i-?co-?confirm|aaprubahan|aaprobahan|i-?a-?approve|tatanggapin|i-?a-?accept)\b(?!(?:\s+\S+){0,3}?\s+(?:presyo|halaga|price|amount|cash|gcash|bayad)\b)/iu',
+    ];
+
+    /** The passive promise ("will be confirmed") is about the price when a price word comes before it. */
+    private const PRICE_WORDS = '/\b(?:price|prices|amount|total|cost|quote|quotation|presyo|halaga)\b/iu';
 
     /** Words that make a sentence about the future or a condition, not a claim. */
     private const CONDITIONAL = '/\b(?:when|once|after|until|if|before|as soon as|kapag|pag|kung|bago|hanggang|pagka)\b/iu';
@@ -101,6 +130,18 @@ class ClaimGuard
 
         foreach (self::ACTIONS as $pattern) {
             if (preg_match($pattern, $sentence)) {
+                return true;
+            }
+        }
+
+        foreach (self::PROMISES as $index => $pattern) {
+            if (! preg_match($pattern, $sentence, $match, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+
+            $before = substr($sentence, 0, $match[0][1]);
+
+            if (! preg_match(self::CONDITIONAL, $before) && ! preg_match(self::NEGATION, $before) && ! ($index === 1 && preg_match(self::PRICE_WORDS, $before))) {
                 return true;
             }
         }

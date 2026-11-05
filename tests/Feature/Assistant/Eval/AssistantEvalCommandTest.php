@@ -103,9 +103,13 @@ class AssistantEvalCommandTest extends TestCase
     {
         $this->fake->push(new ProviderUnavailable(ProviderUnavailable::HTTP, 503), self::reply('answer', 'The Solo Portrait Session is ₱1,200.00.'));
 
-        $this->artisan('assistant:eval', ['--case' => ['catalog.packages.list', 'catalog.solo.price'], '--report' => $this->evalReportName()])->assertSuccessful();
+        // Half of the model cases failed at the provider: since 7E-2c that run is INCONCLUSIVE (exit 2)
+        $this->artisan('assistant:eval', ['--case' => ['catalog.packages.list', 'catalog.solo.price'], '--report' => $this->evalReportName()])
+            ->expectsOutputToContain('Quality gate INCONCLUSIVE (exit code 2)')
+            ->assertExitCode(2);
 
         $json = $this->report();
+        $this->assertSame('inconclusive', $json['gate']['status']);
         $this->assertSame(1, $json['provider_failed']);
         $this->assertEquals(50, $json['provider_failure_rate']);
         $this->assertSame(1, $json['scored']);
@@ -113,11 +117,11 @@ class AssistantEvalCommandTest extends TestCase
         $this->assertSame('provider_failed', collect($json['results'])->firstWhere('id', 'catalog.packages.list')['status']);
     }
 
-    public function test_limit_caps_the_model_calls_and_an_incomplete_must_never_run_fails_the_gate(): void
+    public function test_limit_caps_the_model_calls_and_a_run_cut_short_is_inconclusive(): void
     {
         $this->artisan('assistant:eval', ['--category' => ['price'], '--limit' => 2, '--report' => $this->evalReportName()])
-            ->expectsOutputToContain('must_never not measured')
-            ->assertExitCode(1);
+            ->expectsOutputToContain('ended provider_failed (0) or skipped (10)')
+            ->assertExitCode(2);
 
         $json = $this->report();
         $this->assertSame(2, $json['provider_calls']);

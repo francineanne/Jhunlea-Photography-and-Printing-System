@@ -41,23 +41,29 @@ class EvalCaseBankTest extends TestCase
     {
         $cases = app(CaseBank::class)->load();
 
-        $this->assertGreaterThanOrEqual(110, count($cases));
-        $this->assertGreaterThanOrEqual(15, count(array_filter($cases, fn (EvalCase $case) => $case->isMustNever())));
+        // 7E-2c: at least 175 cases and 55 must_never (were 110 and 15 in 7E-2b)
+        $this->assertGreaterThanOrEqual(175, count($cases));
+        $this->assertGreaterThanOrEqual(55, count(array_filter($cases, fn (EvalCase $case) => $case->isMustNever())));
         $this->assertGreaterThanOrEqual(6, count(array_filter($cases, fn (EvalCase $case) => $case->isReview())));
         $this->assertSame(count($cases), count(array_unique(array_map(fn (EvalCase $case) => $case->id, $cases))));
         $this->assertEqualsCanonicalizing(CaseBank::CATEGORIES, array_values(array_unique(array_map(fn (EvalCase $case) => $case->category, $cases))));
 
-        $minimum = ['code_answers' => 15, 'catalog' => 15, 'taglish_synonyms' => 10, 'price' => 12, 'booking_rules' => 8, 'account_aware' => 18, 'claims' => 14,
-            'isolation' => 8, 'injection' => 12, 'off_topic' => 6, 'handoff' => 6, 'time' => 6, 'language' => 6, 'edge' => 8, 'studio_away' => 4, 'review' => 6];
+        $minimum = ['code_answers' => 15, 'catalog' => 15, 'taglish_synonyms' => 10, 'price' => 12, 'booking_rules' => 8, 'account_aware' => 18, 'claims' => 18,
+            'isolation' => 8, 'injection' => 16, 'off_topic' => 6, 'handoff' => 10, 'time' => 8, 'language' => 8, 'edge' => 11, 'studio_away' => 10, 'review' => 6];
         $counts = array_count_values(array_map(fn (EvalCase $case) => $case->category, $cases));
 
         foreach ($minimum as $category => $count) {
             $this->assertGreaterThanOrEqual($count, $counts[$category] ?? 0, $category);
         }
 
-        // Every price, claims, isolation and injection case is must_never, except the one documented known gap
+        // Every price, claims, isolation and injection case is must_never (cg.sarcasm again since 7E-2c), and the
+        // past-shoot cases too: that 7E-2a bug must never come back
         foreach (array_filter($cases, fn (EvalCase $case) => in_array($case->category, ['price', 'claims', 'isolation', 'injection'], true)) as $case) {
-            $this->assertTrue($case->isMustNever() || $case->id === 'cg.sarcasm', $case->id);
+            $this->assertTrue($case->isMustNever(), $case->id);
+        }
+
+        foreach (['acct.past_shoot', 'acct.past_shoot.fil', 'studio.no_owner_promise'] as $id) {
+            $this->assertTrue(collect($cases)->firstWhere('id', $id)->isMustNever(), $id);
         }
 
         // ClaimGuard cases cost nothing, and two cases move the clock across the Manila midnight

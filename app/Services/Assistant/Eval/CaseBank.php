@@ -37,6 +37,7 @@ class CaseBank
         'cards_max' => 'int',
         'no_foreign_reference' => 'bool',
         'no_unknown_price' => 'bool',
+        'no_glued_words' => 'bool',
         'max_chars' => 'int',
         'handoff' => 'bool',
         'handoff_about' => 'string',
