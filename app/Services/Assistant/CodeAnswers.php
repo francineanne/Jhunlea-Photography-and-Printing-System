@@ -41,6 +41,15 @@ class CodeAnswers
     private const HOURS_FILL = ['what', 'whats', 'is', 'are', 'your', 'the', 'shop', 'studio', 'store', 'now', 'today', 'ngayon', 'until', 'til', 'till', 'time', 'do', 'you', 'anong', 'ano', 'ang', 'ba', 'kayo', 'niyo', 'nyo', 'ninyo', 'ng', 'inyong', 'inyo', 'kailan', 'when', 'still', 'pa', 'na', 'hanggang', 'mga', 'business', 'working', 'days', 'day', 'tuwing', 'araw', 'tomorrow', 'weekend', 'weekends', 'on', 'at', 'anong', 'oras', 'what\'s', 'kayong', 'po',
         'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'linggo', 'lunes', 'martes', 'miyerkules', 'huwebes', 'biyernes', 'sabado'];
 
+    /**
+     * Phase 7E-2b: a day or time period other than now. An hours question that names one ("open tomorrow?", "bukas
+     * ba kayo sa Linggo?", "until 7pm?") goes to the model, which has the NOW line and the week's hours: the fixed
+     * reply only says whether the shop is open NOW.
+     */
+    private const DAY_WORDS = ['tomorrow', 'tmrw', 'tmr', 'weekend', 'weekends', 'next', 'week', 'holiday', 'holidays', 'tonight', 'later', 'mamaya', 'mamayang',
+        'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sun', 'mon', 'tue', 'tues', 'wed', 'thu', 'thurs', 'fri', 'sat',
+        'linggo', 'lunes', 'martes', 'miyerkules', 'miyerkoles', 'huwebes', 'biyernes', 'sabado', 'susunod', 'pasko', 'christmas', 'undas'];
+
     private const CONTACT_ADDRESS = ['address', 'location', 'located', 'nasaan', 'saan', 'where', 'lugar'];
 
     private const CONTACT_PHONE = ['number', 'phone', 'cellphone', 'cp', 'mobile', 'landline', 'call', 'tawag', 'tumawag', 'tel', 'telephone', 'contact', 'reach', 'makontak', 'kontak'];
@@ -69,7 +78,7 @@ class CodeAnswers
         $words = $this->words($message);
         $intent = $words === [] ? null : $this->intent($words);
 
-        if ($intent === null) {
+        if ($intent === null || ($intent === self::HOURS && $this->namesAnotherTime($message, $words))) {
             return null;
         }
 
@@ -108,6 +117,19 @@ class CodeAnswers
         }
 
         return $this->fits($words, self::GREETING_CORE, self::GREETING_FILL) ? self::GREETING : null;
+    }
+
+    /**
+     * True when an hours question is about a day or time other than now: a day word, a clock time ("7pm", "5:30"), or
+     * "bukas" twice ("bukas ba kayo bukas?": open tomorrow). "bukas" once stays an hours word ("open").
+     *
+     * @param  list<string>  $words
+     */
+    private function namesAnotherTime(string $message, array $words): bool
+    {
+        return array_intersect($words, self::DAY_WORDS) !== []
+            || count(array_keys($words, 'bukas', true)) > 1
+            || preg_match('/\b\d{1,2}(?::\d{2})?\s*(?:am|pm|a\.m\.|p\.m\.)|\b\d{1,2}:\d{2}\b/iu', $message) === 1;
     }
 
     /**

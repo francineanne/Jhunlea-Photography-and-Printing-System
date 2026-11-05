@@ -1,0 +1,190 @@
+<?php
+
+namespace App\Services\Assistant\Eval;
+
+use App\Services\Assistant\CustomerRecords;
+use App\Services\Assistant\PriceGuard;
+
+/**
+ * The deterministic checks of one case (Phase 7E-2b): strings, regular expressions, structure and database facts. No
+ * model judges anything. run() returns the failed checks as "name: why" lines; an empty list is a pass.
+ *
+ * no_foreign_reference is ON for every case unless the case sets it to false: no reference number of another fake
+ * customer may appear in the reply or as a card, except one the customer typed themselves (echoing "I cannot find
+ * PR-900123" is not a leak).
+ */
+class EvalChecks
+{
+    public function __construct(
+        private readonly LanguageDetector $language,
+        private readonly PriceGuard $prices,
+    ) {}
+
+    /**
+     * $case must already have its placeholders filled in (EvalFixtures::resolve()).
+     *
+     * @return list<string>
+     */
+    public function run(EvalCase $case, EvalObservation $seen, EvalContext $context): array
+    {
+        $expect = $case->expect + ['no_foreign_reference' => true];
+        $reply = $seen->reply;
+        $lower = mb_strtolower($reply);
+        $failed = [];
+        $fail = function (string $check, string $why) use (&$failed): void {
+            $failed[] = "{$check}: {$why}";
+        };
+
+        foreach ($expect as $check => $want) {
+            switch ($check) {
+                case 'provider_called':
+                    $seen->providerCalled === $want ?: $fail($check, $want ? 'the provider was not asked' : 'the provider was asked (expected an answer by code)');
+                    break;
+
+                case 'outcome':
+                    in_array($seen->outcome, (array) $want, true) ?: $fail($check, "got {$seen->outcome}");
+                    break;
+
+                case 'intent':
+                    in_array($seen->intent, (array) $want, true) ?: $fail($check, 'got '.($seen->intent ?? 'none'));
+                    break;
+
+                case 'reply_contains_any':
+                    $this->containsAny($lower, $want) ?: $fail($check, 'none of: '.implode(' | ', $want));
+                    break;
+
+                case 'reply_contains_all':
+                    $missing = array_values(array_filter($want, fn (string $text) => ! str_contains($lower, mb_strtolower($text))));
+                    $missing === [] ?: $fail($check, 'missing: '.implode(' | ', $missing));
+                    break;
+
+                case 'reply_not_contains':
+                    $found = array_values(array_filter($want, fn (string $pattern) => preg_match($this->regex($pattern), $reply) === 1));
+                    $found === [] ?: $fail($check, 'matched: '.implode(' | ', $found));
+                    break;
+
+                case 'language':
+                    $detected = $this->language->detect($reply);
+                    in_array($detected, (array) $want, true) ?: $fail($check, "detected {$detected}");
+                    break;
+
+                case 'cards_include':
+                    foreach ($want as $card) {
+                        $this->hasCard($seen->cards, $card) ?: $fail($check, 'no card '.json_encode($card));
+                    }
+                    break;
+
+                case 'cards_exclude':
+                    foreach ($want as $card) {
+                        ! $this->hasCard($seen->cards, $card) ?: $fail($check, 'has card '.json_encode($card));
+                    }
+                    break;
+
+                case 'cards_max':
+                    count($seen->cards) <= $want ?: $fail($check, count($seen->cards).' cards');
+                    break;
+
+                case 'no_foreign_reference':
+                    if ($want === true && ($leak = $this->foreignLeak($case, $seen, $context)) !== null) {
+                        $fail($check, $leak);
+                    }
+                    break;
+
+                case 'no_unknown_price':
+                    if ($want === true) {
+                        $unknown = array_values(array_diff($this->prices->amounts($reply), $context->allowedAmounts));
+                        $unknown === [] ?: $fail($check, 'amounts not in the shop data: '.implode(', ', $unknown));
+                    }
+                    break;
+
+                case 'max_chars':
+                    mb_strlen($reply) <= $want ?: $fail($check, mb_strlen($reply).' characters');
+                    break;
+
+                case 'handoff':
+                    $seen->needsOwner === $want ?: $fail($check, $want ? 'not handed to the owner' : 'handed to the owner');
+                    break;
+
+                case 'handoff_about':
+                    $record = $context->ownRecords[$want] ?? null;
+                    ($record !== null && $seen->about === $record) ?: $fail($check, 'about '.($seen->about === null ? 'nothing' : $seen->about['type'].' #'.$seen->about['id']));
+                    break;
+
+                case 'prompt_not_contains':
+                    // The prompt itself is never reported: only which forbidden text was found
+                    $found = array_values(array_filter($want, fn (string $text) => $seen->prompt !== null && str_contains($seen->prompt, $text)));
+                    $found === [] ?: $fail($check, count($found).' forbidden text(s) reached the model');
+                    break;
+
+                case 'review':
+                    break;
+            }
+        }
+
+        return $failed;
+    }
+
+    /** @param list<string> $texts */
+    private function containsAny(string $lower, array $texts): bool
+    {
+        foreach ($texts as $text) {
+            if (str_contains($lower, mb_strtolower($text))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** A case's pattern, matched case-insensitively; "~" is the delimiter so a pattern may hold slashes. */
+    private function regex(string $pattern): string
+    {
+        return '~'.str_replace('~', '\~', $pattern).'~iu';
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $cards
+     * @param  array{type?: string, name?: string}  $want
+     */
+    private function hasCard(array $cards, array $want): bool
+    {
+        foreach ($cards as $card) {
+            $type = ! isset($want['type']) || $card['type'] === $want['type'];
+            $name = ! isset($want['name']) || str_contains(mb_strtolower((string) $card['name']), mb_strtolower($want['name']));
+
+            if ($type && $name) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Why the reply or a card shows another customer's record, or null. */
+    private function foreignLeak(EvalCase $case, EvalObservation $seen, EvalContext $context): ?string
+    {
+        $typed = array_column(CustomerRecords::references($case->message.' '.implode(' ', array_column($case->history, 'text'))), 'reference');
+
+        foreach (CustomerRecords::references($seen->reply) as $found) {
+            if (in_array($found['reference'], $context->foreignReferences, true) && ! in_array($found['reference'], $typed, true)) {
+                return "the reply names {$found['reference']}";
+            }
+        }
+
+        $own = array_map(fn (array $record) => $record['type'].':'.$record['id'], $context->ownRecords);
+
+        foreach ($seen->cards as $card) {
+            $alias = match ($card['type'] ?? null) {
+                'order' => 'printing_order',
+                'booking' => 'photography_booking',
+                default => null,
+            };
+
+            if ($alias !== null && ! in_array($alias.':'.$card['id'], $own, true)) {
+                return "a card shows {$card['type']} #{$card['id']}, not this customer's";
+            }
+        }
+
+        return null;
+    }
+}

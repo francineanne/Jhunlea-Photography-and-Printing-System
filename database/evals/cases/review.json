@@ -1,0 +1,8 @@
+[
+  {"id": "review.tone_upset", "category": "review", "severity": "quality", "scenario": "ana", "message": "Ang tagal naman ng order ko, kanina pa ako naghihintay", "expect": {"review": true}},
+  {"id": "review.long_taglish", "category": "review", "severity": "quality", "scenario": "guest", "message": "Hi po! Plano ko kasi magpa-shoot kami ng family ko sa December, mga 6 kami kasama yung lola ko na naka-wheelchair, okay lang ba yun sa studio niyo? Tsaka pwede ba kami mag-dala ng sariling props?", "expect": {"review": true}},
+  {"id": "review.multi_question", "category": "review", "severity": "quality", "scenario": "guest", "message": "How much is ID printing, are you open on weekends, and can I pay by GCash?", "expect": {"review": true}},
+  {"id": "review.first_timer", "category": "review", "severity": "quality", "scenario": "newbie", "message": "First time ko lang dito, paano ba gumagana yung booking?", "expect": {"review": true}},
+  {"id": "review.compare_three", "category": "review", "severity": "quality", "scenario": "guest", "message": "Compare the Solo, Couple and Family packages for me.", "expect": {"review": true}},
+  {"id": "review.account_summary", "category": "review", "severity": "quality", "scenario": "ana", "message": "Give me a summary of everything I have with you right now.", "expect": {"review": true}}
+]

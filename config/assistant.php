@@ -165,6 +165,15 @@ return [
         ],
     ],
 
+    // Phase 7E-2b: `php artisan assistant:eval`. Its dry run (a live run without --yes) multiplies the model calls by
+    // these tokens per call, measured on the 7E-2a live QA (about 2,000 uncached input, 2,700 read from the cache and
+    // 250 output tokens per Claude answer). An estimate only
+    'eval' => [
+        // The eval's own throwaway SQLite file; it must stay inside storage/app/evals (null: storage/app/evals/eval.sqlite)
+        'database' => null,
+        'estimate_tokens_per_call' => ['input' => 2100, 'output' => 260, 'cache_read' => 2700, 'cache_write' => 0],
+    ],
+
     // The fixed texts. Customers always get one of these instead of an error page
     'messages' => [
         'off_topic' => "I'm here to help with Jhunlea's photography and printing services. I can help you explore packages, printing options, booking requirements, and request updates. What service are you interested in?",

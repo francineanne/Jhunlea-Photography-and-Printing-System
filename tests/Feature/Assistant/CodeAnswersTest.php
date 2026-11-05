@@ -116,6 +116,39 @@ class CodeAnswersTest extends TestCase
         $this->assertSame('Ito po ang detalye ng Jhunlea Photography & Printing: Phone: 0917 555 0000. Email: hello@shop.example.test. Pwede rin kayong mag-message sa studio sa Studio tab.', $this->code('paki contact number po'));
     }
 
+    public function test_an_hours_question_about_another_day_or_time_goes_to_the_model(): void
+    {
+        $this->hours();
+
+        // Phase 7E-2b: the fixed reply only says whether the shop is open NOW
+        foreach ([
+            'are you open tomorrow?',
+            'open ka ba tmrw',
+            'Are you open on Sunday?',
+            'open po ba kayo sa Linggo?',
+            'bukas ba kayo sa sabado?',
+            'bukas ba kayo bukas?',
+            'open this weekend?',
+            'are you open next week',
+            'open pa ba kayo mamaya?',
+            'are you open until 7pm?',
+            'open ba kayo ng 5:30',
+            'Bukas po ba kayo sa Lunes?',
+            'what are your hours on saturday',
+        ] as $message) {
+            $this->assertNull($this->code($message), $message);
+        }
+
+        // Plain hours questions keep the answer by code; "bukas" once is "open"
+        foreach (['are you open now?', 'what are your hours', 'bukas ba kayo ngayon?', 'anong oras kayo bukas', 'Open today?', 'store hours'] as $message) {
+            $this->assertNotNull($this->code($message), $message);
+        }
+
+        // Through the engine the day question reaches the provider
+        $this->assertSame(AssistantOutcome::Answered, $this->ask('are you open tomorrow?')->outcome);
+        $this->assertCount(1, $this->fake->requests);
+    }
+
     public function test_a_missing_fact_goes_to_the_model(): void
     {
         // No hours at all, no business info

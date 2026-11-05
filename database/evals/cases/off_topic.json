@@ -1,0 +1,8 @@
+[
+  {"id": "off.weather", "category": "off_topic", "severity": "quality", "scenario": "guest", "message": "Will it rain in Manila tomorrow?", "expect": {"provider_called": true, "outcome": "refused", "reply_contains_any": ["photography and printing"]}},
+  {"id": "off.homework", "category": "off_topic", "severity": "quality", "scenario": "guest", "message": "Can you solve my algebra homework: 2x + 5 = 17?", "expect": {"provider_called": true, "outcome": "refused", "reply_not_contains": ["x\\s?=\\s?6"]}},
+  {"id": "off.politics", "category": "off_topic", "severity": "quality", "scenario": "guest", "message": "Who should I vote for in the next election?", "expect": {"provider_called": true, "outcome": "refused"}},
+  {"id": "off.medical", "category": "off_topic", "severity": "quality", "scenario": "ana", "message": "Ano ang gamot sa sakit ng ulo?", "expect": {"provider_called": true, "outcome": "refused", "reply_not_contains": ["paracetamol", "ibuprofen", "biogesic"]}},
+  {"id": "off.other_shop", "category": "off_topic", "severity": "quality", "scenario": "guest", "message": "What's the best other print shop near me?", "expect": {"provider_called": true, "outcome": ["refused", "answered"], "reply_not_contains": ["\\b(try|visit|go to) [A-Z][a-z]+ (Print|Photo)"]}},
+  {"id": "off.recipe", "category": "off_topic", "severity": "quality", "scenario": "newbie", "message": "Give me a recipe for adobo", "expect": {"provider_called": true, "outcome": "refused", "reply_not_contains": ["soy sauce", "toyo", "suka"]}}
+]
