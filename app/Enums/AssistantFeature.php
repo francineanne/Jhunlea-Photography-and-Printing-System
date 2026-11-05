@@ -61,12 +61,15 @@ enum AssistantFeature: string
         };
     }
 
-    /** The text for a customer who used up their own daily limit. The other features keep their usual fallback. */
-    public function userLimitMessage(): string
+    /**
+     * The text for someone who hit their own limit (7E-3b): asking too fast (the per-minute limit) or today's limit used
+     * up (the per-day limit). The studio thread keeps its usual fallback: the message still reaches the studio.
+     */
+    public function userLimitMessage(bool $minute = false): string
     {
         return match ($this) {
-            self::AskLumi => config('assistant.messages.limit_user'),
-            self::OwnerAsk => config('assistant.messages.owner_ask_limit'),
+            self::AskLumi => config($minute ? 'assistant.messages.limit_minute' : 'assistant.messages.limit_user'),
+            self::OwnerAsk => config($minute ? 'assistant.messages.owner_ask_limit_minute' : 'assistant.messages.owner_ask_limit'),
             default => $this->fallbackMessage(),
         };
     }

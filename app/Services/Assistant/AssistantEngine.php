@@ -193,7 +193,7 @@ class AssistantEngine
 
     private function fallback(AssistantFeature $feature, AssistantOutcome $outcome): AssistantResult
     {
-        $reply = $outcome === AssistantOutcome::FallbackLimitUser ? $feature->userLimitMessage() : $feature->fallbackMessage();
+        $reply = $outcome === AssistantOutcome::FallbackLimitUser ? $feature->userLimitMessage($this->limits->reason === LimitService::MINUTE) : $feature->fallbackMessage();
 
         return new AssistantResult($reply, $outcome);
     }

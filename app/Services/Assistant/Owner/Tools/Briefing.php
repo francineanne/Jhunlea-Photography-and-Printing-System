@@ -58,6 +58,26 @@ class Briefing extends OwnerTool
         return $result;
     }
 
+    /**
+     * The briefing's lines, each with the relative owner page it is about (7E-3b). Written by code only.
+     *
+     * @return list<array{text: string, url: ?string}>
+     */
+    public static function items(ToolResult $result): array
+    {
+        $d = $result->data;
+        $plural = fn (int $count, string $word) => $count.' '.$word.($count === 1 ? '' : 's');
+
+        return array_map(fn (array $item) => ['text' => $item[0], 'url' => ToolResult::ownerPath(route($item[1], $item[2] ?? []))], [
+            ["Recorded payments today: {$d['recorded_payments_today']} (".$plural($d['payments_today'], 'payment').')', 'owner.payments.index'],
+            ["Awaiting payment: {$d['awaiting_payment']} (".$d['awaiting_payment_count'].($d['awaiting_payment_count'] === 1 ? ' order or booking' : ' orders or bookings').')', 'owner.payments.index'],
+            ['Sessions today: '.$d['sessions_today'], 'owner.schedule.index', ['view' => 'day']],
+            ['Printing orders to review: '.$d['orders_to_review'], 'owner.orders.index'],
+            ['Booking requests to answer: '.$d['booking_requests'], 'owner.bookings.index'],
+            ['Unanswered messages: '.$d['unanswered_messages'], 'owner.messages.index', ['filter' => 'unanswered']],
+        ]);
+    }
+
     /** The briefing as plain sentences, written by code only. */
     public static function text(ToolResult $result): string
     {

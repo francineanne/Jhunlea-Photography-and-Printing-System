@@ -14,6 +14,7 @@ use App\Services\Assistant\CustomerRecords;
 use App\Services\Assistant\GuardStats;
 use App\Services\Assistant\Owner\OwnerAskService;
 use App\Services\Assistant\Owner\OwnerPromptBuilder;
+use App\Services\Assistant\Owner\OwnerTools;
 use App\Services\Assistant\PriceGuard;
 use App\Services\Assistant\PromptBuilder;
 use App\Services\Assistant\ProviderCooldown;
@@ -214,6 +215,7 @@ class EvalRunner
                 'characters' => $seen->providerCalled && $case->feature !== 'claimguard'
                     ? EvalCharacters::describe($this->validator?->raw, $seen->reply, $this->checks->gluedWords($seen->reply)) : null,
                 'guards' => $stats->snapshot(),
+                'tools' => $seen->tools,
             ];
 
             if ($seen->outcome === AssistantOutcome::FallbackUnavailable->value) {
@@ -265,7 +267,15 @@ class EvalRunner
         $this->ownerPrompts->results = [];
         $this->ownerPrompts->last = null;
         $history = array_map(fn (array $turn) => new ThreadMessage($turn['role'] === 'lumi' ? AssistantAuthor::Lumi : AssistantAuthor::Customer, $turn['text']), $case->history);
-        $result = app(OwnerAskService::class)->ask($fixtures->owner(), $case->message, $history);
+        // The case's earlier Lumi turns stand for answers that already passed the guards (7E-3b, follow-up numbers)
+        $verified = array_values(array_map(fn (array $turn) => $turn['text'], array_filter($case->history, fn (array $turn) => $turn['role'] === 'lumi')));
+        $result = app(OwnerAskService::class)->ask($fixtures->owner(), $case->message, $history, $verified);
+
+        // 7E-3b: an answer written by CODE (the briefing, no phrasing call) is checked against the briefing tool's own
+        // facts, read the same way; a model-written answer keeps only the facts the phrasing call received
+        $facts = $this->ownerPrompts->results === [] && in_array('briefing', $result->tools, true)
+            ? app(OwnerTools::class)->get('briefing')->execute([], $fixtures->owner())->facts()
+            : $this->ownerPrompts->facts();
 
         return new EvalObservation(
             $result->reply,
@@ -277,7 +287,7 @@ class EvalRunner
             ! in_array($result->outcome, [AssistantOutcome::RejectedInput, AssistantOutcome::FallbackDisabled, AssistantOutcome::AnsweredByCode], true),
             $this->ownerPrompts->last?->promptText(),
             $result->tools,
-            $this->ownerPrompts->facts(),
+            $facts,
         );
     }
 

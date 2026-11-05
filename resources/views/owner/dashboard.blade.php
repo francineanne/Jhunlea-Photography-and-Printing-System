@@ -143,6 +143,36 @@
         </section>
 
         <div class="min-w-0 space-y-6 xl:col-span-5">
+            {{-- Today at a glance (7E-3b): written by code from the briefing endpoint, so it works when the AI is down.
+                 A failure shows a short note; the page never breaks --}}
+            <section x-data="ownerBriefing(@js(route('owner.assistant.briefing')))" class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="glance-title" data-owner-glance>
+                <div class="flex flex-wrap items-baseline justify-between gap-2">
+                    <h2 id="glance-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="auto_awesome" :size="22" class="text-brand" />Today at a glance</h2>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">From your records</span>
+                </div>
+                <noscript><p class="mt-3 text-sm text-app-text-2">Turn on JavaScript to see today at a glance.</p></noscript>
+                <ul x-show="state === 'loading'" x-cloak class="mt-4 space-y-2" aria-hidden="true">
+                    @for ($i = 0; $i < 4; $i++)
+                        <li class="h-9 animate-pulse rounded-control bg-neutral-100 motion-reduce:animate-none dark:bg-white/5"></li>
+                    @endfor
+                </ul>
+                <p x-show="state === 'failed'" x-cloak class="mt-4 rounded-control bg-neutral-100 p-3 text-sm text-app-text-2 dark:bg-white/5">Today at a glance is not available right now. The tiles above have the same numbers.</p>
+                <ul x-show="state === 'ready'" x-cloak class="mt-4 space-y-1.5">
+                    <template x-for="item in items" x-bind:key="item.text">
+                        <li>
+                            <a x-bind:href="item.url ?? '#'" x-show="item.url" class="flex min-h-11 items-center justify-between gap-2 rounded-control bg-neutral-100/70 px-3 py-2 text-sm transition-colors hover:bg-neutral-100 focus-ring dark:bg-white/5 dark:hover:bg-white/10">
+                                <span class="min-w-0 [overflow-wrap:anywhere]" x-text="item.text"></span><x-ui.icon name="arrow_forward" :size="16" class="shrink-0 text-app-text-2" />
+                            </a>
+                            <p x-show="!item.url" class="rounded-control bg-neutral-100/70 px-3 py-2 text-sm dark:bg-white/5" x-text="item.text"></p>
+                        </li>
+                    </template>
+                </ul>
+                <button type="button" x-show="state === 'ready'" x-cloak x-on:click="askAbout(@js(config('assistant.owner.glance_prompt')))" data-owner-glance-ask
+                    class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border px-3 text-sm font-semibold hover:border-brand hover:text-brand focus-ring">
+                    <x-ui.icon name="auto_awesome" :size="18" />Ask {{ config('assistant.name') }} about this
+                </button>
+            </section>
+
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="today-title">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 id="today-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="photo_camera" :size="22" class="text-brand" />Today’s photoshoots</h2>

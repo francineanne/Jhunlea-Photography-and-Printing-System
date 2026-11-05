@@ -218,7 +218,7 @@ class LumiReplyTest extends TestCase
             $this->assertSame(LumiReply::REPLIED, $reply->status, $name);
             $this->assertSame(MessageSender::System, $reply->messages[0]->sender_type, $name);
             $this->assertSame('ai_unavailable', $reply->messages[0]->systemKind()?->value, $name);
-            $this->assertContains($reply->messages[0]->body, [config('assistant.messages.unavailable'), config('assistant.messages.limit_user')], $name);
+            $this->assertContains($reply->messages[0]->body, [config('assistant.messages.unavailable'), config('assistant.messages.limit_user'), config('assistant.messages.limit_minute')], $name);
         }
 
         $this->assertSame(1, $conversation->messages()->where('sender_type', MessageSender::Assistant)->count(), 'Only the introduction');

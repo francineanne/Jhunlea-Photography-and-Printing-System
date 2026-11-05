@@ -28,6 +28,9 @@ class EvalSandbox
     /** Thursday, Nov 5, 2026, 10:00 AM in Manila: the shop is open (Monday to Saturday 9 to 5 in the seeded hours). */
     public const FROZEN_NOW = '2026-11-05 10:00';
 
+    /** Every limit is raised to this in the eval process only. */
+    public const HIGH = 1_000_000;
+
     /** The fake business info the contact cases expect. */
     public const BUSINESS = [
         'shop_name' => 'Jhunlea Photography & Printing',
@@ -95,15 +98,7 @@ class EvalSandbox
 
         // Limits never distort a run: they are raised in this process only, and the cache is in memory
         $this->previousCache = (string) config('cache.default');
-        config([
-            'cache.default' => 'array',
-            'assistant.limits.per_minute_per_user' => 1_000_000,
-            'assistant.limits.per_day_per_user' => 1_000_000,
-            'assistant.limits.per_day_per_guest_ip' => 1_000_000,
-            'assistant.limits.global_daily_budget' => 1_000_000,
-             'assistant.limits.features.owner_ask.per_minute' => 1_000_000,
-            'assistant.limits.features.owner_ask.per_day' => 1_000_000,
-        ]);
+        config(['cache.default' => 'array'] + self::raisedLimits());
         app('cache')->setDefaultDriver('array');
         app()->forgetInstance(RateLimiter::class);
 
@@ -113,6 +108,37 @@ class EvalSandbox
         app(SamplePackagesSeeder::class)->run();
         app(BookingScheduleSeeder::class)->run();
         app(ShopSettingsService::class)->saveBusiness(self::BUSINESS);
+    }
+
+    /**
+     * Every assistant limit, raised so none can bite a run (7E-3b): the per-user limits, the daily budget, every
+     * feature's share (1.0 each), and EVERY numeric cap of every feature in assistant.limits.features (per_minute,
+     * per_day and any added later), read from the config so a new feature with limits of its own is covered too.
+     *
+     * @return array<string, int|float>
+     */
+    public static function raisedLimits(): array
+    {
+        $raised = [
+            'assistant.limits.per_minute_per_user' => self::HIGH,
+            'assistant.limits.per_day_per_user' => self::HIGH,
+            'assistant.limits.per_day_per_guest_ip' => self::HIGH,
+            'assistant.limits.global_daily_budget' => self::HIGH,
+        ];
+
+        foreach (array_keys((array) config('assistant.limits.global_shares', [])) as $group) {
+            $raised["assistant.limits.global_shares.{$group}"] = 1.0;
+        }
+
+        foreach ((array) config('assistant.limits.features', []) as $feature => $caps) {
+            foreach ((array) $caps as $cap => $value) {
+                if (is_int($value) || is_float($value)) {
+                    $raised["assistant.limits.features.{$feature}.{$cap}"] = self::HIGH;
+                }
+            }
+        }
+
+        return $raised;
     }
 
     /**

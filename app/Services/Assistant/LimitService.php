@@ -18,15 +18,25 @@ class LimitService
 {
     public const MINUTE_LIMITER = 'assistant-minute';
 
+    /** Why the last check() refused with FallbackLimitUser (7E-3b): so the reply can say "wait a minute" or "today". */
+    public const MINUTE = 'minute';
+
+    public const DAY = 'day';
+
+    public ?string $reason = null;
+
     /** Null when the call may go ahead, otherwise the fallback outcome to answer with. */
     public function check(AssistantFeature $feature, AssistantActor $actor): ?AssistantOutcome
     {
         $limits = config('assistant.limits');
+        $this->reason = null;
 
         // Phase 7E-3a: a feature with limits of its own (owner_ask) counts only its own calls, with its own minute counter
         $ownLimits = $limits['features'][$feature->value] ?? null;
 
         if (RateLimiter::tooManyAttempts($this->minuteKey($actor, $feature), (int) ($ownLimits['per_minute'] ?? $limits['per_minute_per_user']))) {
+            $this->reason = self::MINUTE;
+
             return AssistantOutcome::FallbackLimitUser;
         }
 
@@ -39,6 +49,8 @@ class LimitService
             : (clone $today)->where('user_id', $actor->userId)->whereNotIn('feature', array_keys($limits['features'] ?? []))->count() >= (int) $limits['per_day_per_user']);
 
         if ($own) {
+            $this->reason = self::DAY;
+
             return AssistantOutcome::FallbackLimitUser;
         }
 

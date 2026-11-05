@@ -52,9 +52,10 @@ class OwnerAskEndpointTest extends TestCase
             ->assertExactJson([
                 'reply' => 'Here is what is still unpaid.',
                 'cards' => $this->fakeCards(),
-                'links' => [['label' => 'Payments ledger', 'url' => route('owner.payments.index')]],
+                'links' => [['label' => 'Payments ledger', 'url' => '/owner/payments']],
                 'tools_used' => ['unpaid_balances'],
                 'via_backup' => false,
+                'notice' => null,
             ]);
 
         $history = $this->actingAs($this->owner)->getJson(route('owner.assistant.history'))->assertOk()->json('messages');
@@ -88,7 +89,7 @@ class OwnerAskEndpointTest extends TestCase
     {
         RateLimiter::clear('owner-ask-question');
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 20; $i++) {
             $this->fake->push(OwnerAskServiceTest::plan([], 'clarify', 'Which?'));
             $this->actingAs($this->owner)->postJson(route('owner.assistant.ask'), ['message' => "q{$i}"])->assertOk();
         }

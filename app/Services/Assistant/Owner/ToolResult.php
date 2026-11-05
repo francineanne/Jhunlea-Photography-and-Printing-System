@@ -114,14 +114,32 @@ final class ToolResult
 
     public function link(string $label, string $url): void
     {
-        $this->links[] = ['label' => $label, 'url' => $url];
+        if (($path = self::ownerPath($url)) !== null) {
+            $this->links[] = ['label' => $label, 'url' => $path];
+        }
     }
 
     public function card(string $label, string $url): void
     {
-        if (count($this->cards) < OwnerTool::MAX_ROWS) {
-            $this->cards[] = ['label' => $label, 'url' => $url];
+        if (count($this->cards) < OwnerTool::MAX_ROWS && ($path = self::ownerPath($url)) !== null) {
+            $this->cards[] = ['label' => $label, 'url' => $path];
         }
+    }
+
+    /**
+     * A link of an answer is always a RELATIVE owner page (7E-3b): "/owner/..." with its query, from a route() the
+     * tool built. Anything else (another host, another area, a scheme) is dropped.
+     */
+    public static function ownerPath(string $url): ?string
+    {
+        $parts = parse_url($url);
+        $path = $parts['path'] ?? '';
+
+        if ($parts === false || ! preg_match('~^/owner(?:/[A-Za-z0-9/_.-]*)?$~', $path) || str_contains($path, '..')) {
+            return null;
+        }
+
+        return $path.(isset($parts['query']) ? '?'.$parts['query'] : '');
     }
 
     /** @return array<string, mixed> the block the phrasing call reads */

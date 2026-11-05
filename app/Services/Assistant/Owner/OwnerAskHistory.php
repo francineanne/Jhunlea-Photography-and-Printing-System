@@ -26,10 +26,35 @@ class OwnerAskHistory
             ->values()->all();
     }
 
-    /** @return Collection<int, OwnerAssistantMessage> the latest PAGE turns, oldest first */
-    public function page(User $owner): Collection
+    /**
+     * The texts of Lumi's own answers among the last history_messages turns that passed the guards (meta verified,
+     * 7E-3b), for NumberGuard: a follow-up may repeat their numbers. Never the owner's text.
+     *
+     * @return list<string>
+     */
+    public function verified(User $owner): array
     {
-        return OwnerAssistantMessage::query()->where('owner_id', $owner->id)->orderByDesc('id')->limit(self::PAGE)->get()->reverse()->values();
+        return OwnerAssistantMessage::query()->where('owner_id', $owner->id)->orderByDesc('id')
+            ->limit((int) config('assistant.owner.history_messages'))->get()
+            ->filter(fn (OwnerAssistantMessage $row) => $row->role === OwnerAssistantMessage::LUMI && ($row->meta['verified'] ?? false) === true)
+            ->reverse()->pluck('text')->values()->all();
+    }
+
+    /**
+     * A page of turns, newest page first, oldest first within the page (7E-3b: cursor paging). $before is the id of
+     * the oldest turn already shown; null for the latest page.
+     *
+     * @return array{messages: Collection<int, OwnerAssistantMessage>, older: ?int}
+     */
+    public function page(User $owner, ?int $before = null, int $size = self::PAGE): array
+    {
+        $rows = OwnerAssistantMessage::query()->where('owner_id', $owner->id)
+            ->when($before !== null, fn ($query) => $query->where('id', '<', $before))
+            ->orderByDesc('id')->limit($size + 1)->get();
+        $more = $rows->count() > $size;
+        $messages = $rows->take($size)->reverse()->values();
+
+        return ['messages' => $messages, 'older' => $more ? $messages->first()?->id : null];
     }
 
     public function append(User $owner, string $question, OwnerAskResult $result): void

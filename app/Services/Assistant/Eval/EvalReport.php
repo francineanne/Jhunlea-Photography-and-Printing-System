@@ -284,6 +284,9 @@ class EvalReport
             'run' => $attempt->run,
             'status' => $attempt->status,
             'failed_checks' => $attempt->failed,
+            // 7E-3b: the question and the tools used, so a failure reads without opening the case files
+            'message' => $this->truncate($attempt->case->message),
+            'tools' => $attempt->tools,
             'reply' => $this->truncate($attempt->reply),
         ], array_filter($this->attempts, fn (EvalAttempt $attempt) => in_array($attempt->status, [EvalAttempt::FAIL, EvalAttempt::ERROR], true))));
     }
@@ -291,7 +294,7 @@ class EvalReport
     /** @return list<array{id: string, run: int, reply: string}> */
     public function reviews(): array
     {
-        return array_values(array_map(fn (EvalAttempt $attempt) => ['id' => $attempt->case->id, 'run' => $attempt->run, 'message' => $this->truncate($attempt->case->message), 'reply' => $this->truncate($attempt->reply)],
+        return array_values(array_map(fn (EvalAttempt $attempt) => ['id' => $attempt->case->id, 'run' => $attempt->run, 'message' => $this->truncate($attempt->case->message), 'tools' => $attempt->tools, 'reply' => $this->truncate($attempt->reply)],
             array_filter($this->attempts, fn (EvalAttempt $attempt) => $attempt->status === EvalAttempt::REVIEW)));
     }
 
@@ -375,6 +378,10 @@ class EvalReport
 
         foreach ($this->failures() ?: [] as $failure) {
             $lines[] = "- **{$failure['id']}** ({$failure['category']}, {$failure['severity']}, run {$failure['run']}): ".implode('; ', $failure['failed_checks']);
+            $lines[] = '  - Question: '.($failure['message'] === '' ? '(empty)' : str_replace("\n", ' ', $failure['message']));
+            if ($failure['tools'] !== []) {
+                $lines[] = '  - Tools: '.implode(', ', $failure['tools']);
+            }
             $lines[] = '  - Reply: '.($failure['reply'] === '' ? '(none)' : str_replace("\n", ' ', $failure['reply']));
         }
 
@@ -388,6 +395,7 @@ class EvalReport
 
         foreach ($this->reviews() as $review) {
             $lines[] = "- **{$review['id']}** (run {$review['run']}): ".str_replace("\n", ' ', $review['reply'] === '' ? '(no reply)' : $review['reply']);
+            $lines[] = '  - Question: '.str_replace("\n", ' ', $review['message']).($review['tools'] === [] ? '' : '; tools: '.implode(', ', $review['tools']));
         }
 
         if ($this->reviews() === []) {

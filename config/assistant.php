@@ -135,7 +135,8 @@ return [
         // Phase 7E-3a: a feature with limits of its own counts only its own calls against them (and its own minute
         // counter); every other feature keeps the per-user limits above
         'features' => [
-            'owner_ask' => ['per_minute' => 10, 'per_day' => 200],
+            // 7E-3b: 20 a minute (was 10)
+            'owner_ask' => ['per_minute' => 20, 'per_day' => 200],
         ],
 
         // studio_away stops after this many AI replies in a row with no owner reply in between
@@ -194,6 +195,9 @@ return [
     // provider calls (plan, then phrase); the owner's own conversation keeps the last history_messages
     'owner' => [
         'max_tools' => 3,
+        // 7E-3b: the chips of the owner's panel and page
+        'glance_prompt' => 'What should I do first today?',
+        'suggested_prompts' => ['How much did we make today?', 'Who still has to pay?', 'What shoots do we have tomorrow?', 'What should I do today?', 'Do I have messages waiting?'],
         'history_messages' => 6,
         // The most characters of tool data sent to the phrasing call
         'data_max_chars' => 6000,
@@ -245,13 +249,27 @@ return [
         'off_topic' => "I'm here to help with Jhunlea's photography and printing services. I can help you explore packages, printing options, booking requirements, and request updates. What service are you interested in?",
         'unavailable' => 'Lumi is taking a short break right now. You can browse the FAQ or message the studio.',
         'limit_user' => 'You have reached today\'s limit for Lumi. It resets at midnight. You can still message the studio.',
+        // 7E-3b: the per-minute limit says so, instead of the daily text
+        'limit_minute' => 'You are asking quickly. Please wait a minute and try again.',
         'studio_away' => 'The studio received your message and will reply when we open.',
         'owner_assist' => 'The suggestion is not available right now. You can still reply manually.',
         // Phase 7E-3a: the owner's Ask Lumi
         'owner_ask' => 'Lumi cannot answer right now. The Overview, Payments and Reports pages have the same numbers.',
+        'owner_ask_limit_minute' => 'You are asking quickly. Please wait a minute and try again.',
         'owner_ask_limit' => 'You have reached today\'s limit for Ask Lumi. It resets at midnight. The Reports page has the same numbers.',
         'owner_ask_unverified' => 'I could not check those numbers against your records, so I left them out. Please see the Reports page for the exact figures.',
         'owner_ask_clarify' => 'Could you say a bit more? For example which period (today, this week, last month) or which customer, order or booking you mean.',
+        // 7E-3b: a polite refusal when an answer was blocked for naming the prompt's own sections
+        'owner_ask_cannot_show' => 'I can\'t show that here. You can see it on the page linked below.',
+        // 7E-3b: the owner's fixed texts for a Filipino or Taglish question (OwnerAskService::text())
+        'owner_ask_fil' => 'Hindi makasagot si Lumi ngayon. Nasa Overview, Payments at Reports pages ang parehong numero.',
+        'owner_ask_limit_minute_fil' => 'Mabilis po ang mga tanong. Maghintay ng isang minuto at subukan ulit.',
+        'owner_ask_limit_fil' => 'Naabot na ang limit ng Ask Lumi para ngayong araw. Magre-reset ito sa hatinggabi. Nasa Reports page ang parehong numero.',
+        'owner_ask_unverified_fil' => 'Hindi ko ma-check ang mga numerong iyon sa records ninyo kaya hindi ko isinama. Tingnan po ang Reports page para sa eksaktong numero.',
+        'owner_ask_clarify_fil' => 'Pakidagdagan po ng kaunti. Halimbawa, anong panahon (ngayon, ngayong linggo, noong isang buwan) o aling customer, order o booking.',
+        'owner_ask_out_of_scope_fil' => 'Mga tanong tungkol sa shop ninyo lang ang kaya kong sagutin: bayad, hindi pa bayad, orders, bookings, schedule, customers, messages at paggamit ng Lumi. Ano po ang gusto ninyong malaman?',
+        'owner_ask_write_fil' => 'Nakakabasa lang ako ng records ninyo; hindi ako makakapagbago ng kahit ano. Magagawa ninyo ito sa page na naka-link sa ibaba.',
+        'owner_ask_cannot_show_fil' => 'Hindi ko maipapakita iyon dito. Makikita ninyo ito sa page na naka-link sa ibaba.',
         'owner_ask_out_of_scope' => 'I can answer questions about your shop: payments, unpaid balances, orders, bookings, the schedule, customers, messages and Lumi usage. What would you like to know?',
         'owner_ask_write' => 'I can only read your records; I cannot change anything. You can do it on the page linked below.',
         // Used when ClaimGuard removed every sentence of a reply because each claimed an action or a status the

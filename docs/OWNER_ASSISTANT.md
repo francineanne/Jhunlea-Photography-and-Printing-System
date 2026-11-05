@@ -2,7 +2,8 @@
 
 The shop owner asks Lumi about their own shop ("How much did we make today?", "Sino pa ang hindi nagbabayad?") and
 gets an answer built ONLY from the shop's records. Lumi can read; it can never change anything. This part is the
-backend; the page comes in 7E-3b.
+backend; since 7E-3b the owner reaches it from a floating panel on every owner page, the full page `/owner/assistant`
+(sidebar "Ask Lumi") and the "Today at a glance" card on the overview.
 
 ## How a question is answered
 
@@ -31,7 +32,7 @@ backend; the page comes in 7E-3b.
 
 ## Limits and records
 
-`assistant.limits.features.owner_ask`: 10 a minute and 200 a day, counted on owner_ask calls only, and 15% of the
+`assistant.limits.features.owner_ask`: 20 a minute (since 7E-3b) and 200 a day, counted on owner_ask calls only, and 15% of the
 shop's daily budget. The usual counting rule (only a call the provider answered counts), failover to Gemini and the
 cooldown are the same code as for customers (`ProviderChain`). Each call writes an `assistant_runs` row with the TOOL
 NAMES used (`tools`), never parameters, results or text. The conversation is kept in `owner_assistant_messages`.
@@ -41,8 +42,21 @@ NAMES used (`tools`), never parameters, results or text. The conversation is kep
 | | |
 |---|---|
 | `POST /owner/assistant/ask` | `message` (as long as a customer's), optional `fresh` (ask without the earlier turns). Returns `reply`, `cards`, `links`, `tools_used`, `via_backup` |
-| `GET /owner/assistant/history` | The owner's own last 50 turns |
-| `GET /owner/assistant/briefing` | Today at a glance, written by code: no AI call, nothing counted |
+| `GET /owner/assistant` | The full page (7E-3b) |
+| `GET /owner/assistant/history` | The owner's own turns, 50 a page, newest page first; `?before=id` for older, `older` is the next cursor |
+| `GET /owner/assistant/briefing` | Today at a glance, written by code: no AI call, nothing counted; `items` = each line with its owner page |
+
+The ask answer also has `notice`: `limit_minute` ("You are asking quickly. Please wait a minute and try again."),
+`limit_day` (today's limit) or `unavailable`; the page shows it as a calm notice. Links and cards are relative
+`/owner/...` paths only. The fixed texts (refusals, limits, clarification) follow the language of the question.
+
+## The UI (7E-3b)
+
+`<x-owner.ask-lumi mode="compact|full">` and `resources/js/owner-ask.js`: greeting and chips
+(`assistant.owner.suggested_prompts`), the owner's bubble right away, a typing line, Retry and Discard on a failed
+question, "New question" (asks without the earlier turns), Load older, the Lumi Lite pill, Esc closes the panel and
+focus goes back to the button, a phone sheet that keeps Tab inside, reduced motion respected, light and dark. Errors
+in plain words: offline, 419 (reload), signed out, the minute limit, anything else ("Something went wrong").
 
 ## The tools
 

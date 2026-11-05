@@ -45,12 +45,14 @@ final class EvalAttempt
         public readonly ?array $characters = null,
         // Phase 7E-2e: GuardStats::snapshot() of this attempt: sentences removed per guard, no text
         public readonly array $guards = [],
+        // Phase 7E-3b, owner cases: the tool names the run rows hold
+        public readonly array $tools = [],
     ) {}
 
     public function withRetries(int $retries): self
     {
         return new self($this->case, $this->run, $this->status, $this->failed, $this->reply, $this->outcome, $this->providerCalled,
-            $this->latencies, $this->usage, $this->providers, $this->failovers, $retries, $this->characters, $this->guards);
+            $this->latencies, $this->usage, $this->providers, $this->failovers, $retries, $this->characters, $this->guards, $this->tools);
     }
 
     public function scored(): bool

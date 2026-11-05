@@ -330,9 +330,11 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/assistant/conversations
     Route::get('/{conversation}/handoff-draft', 'handoffDraft')->whereNumber('conversation')->middleware('throttle:20,1,chat-handoff-draft')->name('handoff-draft');
 });
 
-// The owner's own Ask Lumi (Phase 7E-3a): read-only answers about the shop, JSON only (the page is 7E-3b)
+// The owner's own Ask Lumi (Phase 7E-3a endpoints, 7E-3b page): read-only answers about the shop
 Route::middleware(['auth', 'role:owner'])->prefix('owner/assistant')->name('owner.assistant.')->controller(OwnerAskController::class)->group(function () {
-    Route::post('/ask', 'ask')->middleware('throttle:10,1,owner-ask-question')->name('ask');
+    // 7E-3b: the full page
+    Route::get('/', 'index')->middleware('throttle:60,1,owner-ask-page')->name('index');
+    Route::post('/ask', 'ask')->middleware('throttle:20,1,owner-ask-question')->name('ask');
     Route::get('/history', 'history')->middleware('throttle:60,1,owner-ask-history')->name('history');
     Route::get('/briefing', 'briefing')->middleware('throttle:30,1,owner-ask-briefing')->name('briefing');
 });

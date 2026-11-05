@@ -172,6 +172,16 @@ promise. A case that must read hedged clauses too sets it to `false`; the report
 cover "can't confirm whether", "cannot confirm if", "I am an AI and cannot", "unable to say if", "not able to confirm
 whether", "hindi ko masasabi kung" and "hindi ko alam kung"; a clause ends at punctuation or at but, pero or however.
 
+## Since 7E-3b
+
+- The sandbox raises every limit read from the config (`EvalSandbox::raisedLimits()`): the per-user limits, the daily
+  budget, every share and every numeric cap of every feature in `assistant.limits.features`, so a new feature with a
+  limit of its own can never stop a run.
+- Failed and review cases show the question and the tools used in the markdown and the JSON.
+- `numbers_from_data` reads the briefing tool's own facts for an answer written by code (the briefing); a model-written
+  answer is still checked against the facts the phrasing call received only.
+- An owner case's earlier `lumi` turns stand for answers that passed the guards, so a follow-up may repeat their numbers.
+
 ## Reply hygiene in the report (7E-2e, never a gate)
 
 - **Unusual characters:** for every model reply the eval keeps (in memory only) the RAW text the model sent, before

@@ -43,7 +43,8 @@ class AssistantLimitsTest extends TestCase
 
         $result = $this->ask('one more', actor: $actor);
         $this->assertSame(AssistantOutcome::FallbackLimitUser, $result->outcome);
-        $this->assertSame(config('assistant.messages.limit_user'), $result->reply);
+        // 7E-3b: the minute limit says "wait a minute", not the daily text
+        $this->assertSame(config('assistant.messages.limit_minute'), $result->reply);
 
         // Someone else is not affected, and the next minute is open again
         $this->assertSame(AssistantOutcome::Answered, $this->ask('hi', actor: AssistantActor::user(User::factory()->create()->id))->outcome);

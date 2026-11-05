@@ -19,6 +19,7 @@ use App\Services\Assistant\Redactor;
 use App\Services\Assistant\ReplyCleanup;
 use App\Services\Assistant\ResponseValidator;
 use App\Services\Assistant\ThreadMessage;
+use App\Support\MessageLanguage;
 use App\Support\PlainText;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -56,18 +57,41 @@ class OwnerAskService
     /** Whether any call of this question was answered by the backup provider (the "Lumi Lite" badge). */
     private bool $usedBackup = false;
 
-    /** @param list<ThreadMessage> $history the owner's own conversation, oldest first */
-    public function ask(User $owner, string $message, array $history = []): OwnerAskResult
+    /** The language of the owner's question (7E-3b): the fixed texts follow it. */
+    private string $language = MessageLanguage::UNKNOWN;
+
+    /** Earlier answers of this conversation that already passed the guards (7E-3b): their numbers may be repeated. */
+    private array $verified = [];
+
+    /**
+     * @param  list<ThreadMessage>  $history  the owner's own conversation, oldest first
+     * @param  list<string>  $verified  the texts of Lumi's own earlier answers that went through these guards (at most
+     *                                  the last history_messages; never the owner's or a customer's text)
+     */
+    public function ask(User $owner, string $message, array $history = [], array $verified = []): OwnerAskResult
     {
         $this->usedBackup = false;
+        $this->language = MessageLanguage::detect($message);
+        $this->verified = array_slice(array_values($verified), -(int) config('assistant.owner.history_messages'));
 
         try {
             return $this->run($owner, trim($message), $history);
         } catch (Throwable $exception) {
             Log::warning('assistant.owner_ask_failed', ['exception' => $exception::class]);
 
-            return new OwnerAskResult(self::FEATURE->fallbackMessage(), AssistantOutcome::FallbackError);
+            return new OwnerAskResult($this->text('owner_ask'), AssistantOutcome::FallbackError);
         }
+    }
+
+    /**
+     * A fixed owner text in the language of the question (7E-3b): the "_fil" variant for a Filipino or Taglish
+     * question when config has one, else the English text.
+     */
+    public function text(string $key): string
+    {
+        $filipino = in_array($this->language, [MessageLanguage::FIL, MessageLanguage::TAGLISH], true) ? config("assistant.messages.{$key}_fil") : null;
+
+        return is_string($filipino) ? $filipino : (string) config("assistant.messages.{$key}");
     }
 
     /** The briefing written by code only: no provider call, nothing counted. */
@@ -76,6 +100,20 @@ class OwnerAskService
         $result = $this->tools->get('briefing')->execute([], $owner);
 
         return new OwnerAskResult(Briefing::text($result), AssistantOutcome::AnsweredByCode, $result->cards, $result->links, ['briefing'], AssistantEngine::CODE);
+    }
+
+    /**
+     * The briefing endpoint's JSON (7E-3b): the answer as for ask(), plus its lines each with the owner page it is about,
+     * for the overview's "Today at a glance" card. One run of the briefing tool, code only, no provider call.
+     *
+     * @return array<string, mixed>
+     */
+    public function briefingJson(User $owner): array
+    {
+        $result = $this->tools->get('briefing')->execute([], $owner);
+        $answer = new OwnerAskResult(Briefing::text($result), AssistantOutcome::AnsweredByCode, $result->cards, $result->links, ['briefing'], AssistantEngine::CODE);
+
+        return $answer->toArray() + ['items' => Briefing::items($result)];
     }
 
     /** @param list<ThreadMessage> $history */
@@ -88,7 +126,7 @@ class OwnerAskService
         $early = match (true) {
             $message === '' => new OwnerAskResult(config('assistant.messages.empty'), AssistantOutcome::RejectedInput),
             mb_strlen($message) > $max => new OwnerAskResult(str_replace(':max', (string) $max, config('assistant.messages.too_long')), AssistantOutcome::RejectedInput),
-            ! config('assistant.enabled') => new OwnerAskResult(self::FEATURE->fallbackMessage(), AssistantOutcome::FallbackDisabled),
+            ! config('assistant.enabled') => new OwnerAskResult($this->text('owner_ask'), AssistantOutcome::FallbackDisabled),
             ($limited = $this->limits->check(self::FEATURE, $actor)) !== null => $this->limited($limited),
             default => null,
         };
@@ -112,18 +150,18 @@ class OwnerAskService
             // Never executed; the reason is a parameter or tool name, never data
             Log::info('assistant.owner_plan_rejected', ['reason' => mb_substr($invalid->getMessage(), 0, 120)]);
 
-            return $this->answer($actor, $call, new OwnerAskResult(config('assistant.messages.owner_ask_clarify'), AssistantOutcome::Answered), AssistantIntent::Clarify);
+            return $this->answer($actor, $call, new OwnerAskResult($this->text('owner_ask_clarify'), AssistantOutcome::Answered), AssistantIntent::Clarify);
         }
 
         if ($plan->action === OwnerPlan::CLARIFY) {
             // A clarifying question may name periods ("today or this week?"), never a number the owner did not say
-            $text = $this->clean($plan->question ?? '', $message, NumberGuard::RELATIVE, config('assistant.messages.owner_ask_clarify'));
+            $text = $this->clean($plan->question ?? '', $message, NumberGuard::RELATIVE, $this->text('owner_ask_clarify'));
 
             return $this->answer($actor, $call, new OwnerAskResult($text, AssistantOutcome::Answered), AssistantIntent::Clarify);
         }
 
         if ($plan->action === OwnerPlan::OUT_OF_SCOPE) {
-            return $this->answer($actor, $call, new OwnerAskResult(config('assistant.messages.owner_ask_out_of_scope'), AssistantOutcome::Refused), AssistantIntent::OffTopic);
+            return $this->answer($actor, $call, new OwnerAskResult($this->text('owner_ask_out_of_scope'), AssistantOutcome::Refused), AssistantIntent::OffTopic);
         }
 
         $results = array_map(fn (array $item) => $item['tool']->execute($item['params'], $owner), $plan->calls);
@@ -132,7 +170,7 @@ class OwnerAskService
         $links = array_values(array_unique(array_merge([], ...array_map(fn (ToolResult $result) => $result->links, $results)), SORT_REGULAR));
 
         if ($plan->action === OwnerPlan::WRITE_REQUEST) {
-            return $this->answer($actor, $call, new OwnerAskResult(config('assistant.messages.owner_ask_write'), AssistantOutcome::Refused, [], $links, $names), AssistantIntent::Answer);
+            return $this->answer($actor, $call, new OwnerAskResult($this->text('owner_ask_write'), AssistantOutcome::Refused, [], $links, $names), AssistantIntent::Answer);
         }
 
         // A tool that needs the owner to say more (two customers named Maria, an unknown reference, a vague period)
@@ -162,23 +200,27 @@ class OwnerAskService
         if (! $phrase->answered()) {
             $this->runs->record(self::FEATURE, $actor, $phrase, $phrase->failure === null ? AssistantOutcome::FallbackUnavailable : ProviderChain::failureOutcome($phrase->failure), null, ['tools' => implode(',', $names)]);
 
-            return new OwnerAskResult(self::FEATURE->fallbackMessage(), AssistantOutcome::FallbackUnavailable, $cards, $links, $names);
+            return new OwnerAskResult($this->text('owner_ask'), AssistantOutcome::FallbackUnavailable, $cards, $links, $names);
         }
 
         try {
             $reply = $this->validator->parse($phrase->response->json);
         } catch (ProviderBadResponse) {
-            return $this->answer($actor, $phrase, new OwnerAskResult(self::FEATURE->fallbackMessage(), AssistantOutcome::FallbackError, $cards, $links, $names), null, $names);
+            return $this->answer($actor, $phrase, new OwnerAskResult($this->text('owner_ask'), AssistantOutcome::FallbackError, $cards, $links, $names), null, $names);
         }
 
+        // A reply that names the prompt's own sections is never shown (the guard is unchanged). Since 7E-3b the owner
+        // gets a polite "I can't show that here" with the page links instead of the error text: the question itself
+        // was fine (the first real owner eval: "what did the customers write?" made the model say "OWNER DATA")
         if ($this->leaks($reply->reply)) {
             Log::warning('assistant.prompt_leak_blocked', ['feature' => self::FEATURE->value]);
 
-            return $this->answer($actor, $phrase, new OwnerAskResult(self::FEATURE->fallbackMessage(), AssistantOutcome::FallbackError, $cards, $links, $names), null, $names);
+            return $this->answer($actor, $phrase, new OwnerAskResult($this->text('owner_ask_cannot_show'), AssistantOutcome::Refused, $cards, $links, $names), $reply->intent, $names);
         }
 
-        $facts = array_merge([], ...array_map(fn (ToolResult $result) => $result->facts(), $results));
-        $text = $this->clean($reply->reply, $message, $facts, config('assistant.messages.owner_ask_unverified'));
+        // Earlier answers that already passed these guards may be repeated ("how much was that again?"), 7E-3b
+        $facts = [...array_merge([], ...array_map(fn (ToolResult $result) => $result->facts(), $results)), ...$this->verified];
+        $text = $this->clean($reply->reply, $message, $facts, $this->text('owner_ask_unverified'));
 
         return $this->answer($actor, $phrase, new OwnerAskResult($text, AssistantOutcome::Answered, $cards, $links, $names), $reply->intent, $names);
     }
@@ -195,7 +237,7 @@ class OwnerAskService
         // An answer that claims to have DONE something ("Done! I recorded it.") is not trusted at all: the whole answer
         // becomes the fixed "I can only read" text, so a leftover "Done!" never suggests the write happened
         if ($this->claims->guardActions($text, '') !== $text) {
-            $text = config('assistant.messages.owner_ask_write');
+            $text = $this->text('owner_ask_write');
         }
         // A phone number is a number no tool fact holds, so NumberGuard removes its sentence; the redactor after it
         // still hides any phone number or email address left (no tool ever returns one)
@@ -234,7 +276,7 @@ class OwnerAskService
         $outcome = $call->failure === null ? AssistantOutcome::FallbackUnavailable : ProviderChain::failureOutcome($call->failure);
         $this->runs->record(self::FEATURE, $actor, $call, $outcome, null);
 
-        return new OwnerAskResult(self::FEATURE->fallbackMessage(), $outcome);
+        return new OwnerAskResult($this->text('owner_ask'), $outcome);
     }
 
     /**
@@ -244,8 +286,12 @@ class OwnerAskService
      */
     private function limited(AssistantOutcome $outcome, array $cards = [], array $links = [], array $tools = []): OwnerAskResult
     {
-        $reply = $outcome === AssistantOutcome::FallbackLimitUser ? self::FEATURE->userLimitMessage() : self::FEATURE->fallbackMessage();
+        $reply = match (true) {
+            $outcome === AssistantOutcome::FallbackLimitUser && $this->limits->reason === LimitService::MINUTE => $this->text('owner_ask_limit_minute'),
+            $outcome === AssistantOutcome::FallbackLimitUser => $this->text('owner_ask_limit'),
+            default => $this->text('owner_ask'),
+        };
 
-        return new OwnerAskResult($reply, $outcome, $cards, $links, $tools);
+        return new OwnerAskResult($reply, $outcome, $cards, $links, $tools, limit: $outcome === AssistantOutcome::FallbackLimitUser ? $this->limits->reason : null);
     }
 }
