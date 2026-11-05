@@ -41,12 +41,16 @@ final class EvalAttempt
         public readonly int $failovers = 0,
         // Phase 7E-2c: how many times this case was tried again after a 429
         public readonly int $retries = 0,
+        // Phase 7E-2e: the code points of the raw and final reply (EvalCharacters::describe), model cases only
+        public readonly ?array $characters = null,
+        // Phase 7E-2e: GuardStats::snapshot() of this attempt: sentences removed per guard, no text
+        public readonly array $guards = [],
     ) {}
 
     public function withRetries(int $retries): self
     {
         return new self($this->case, $this->run, $this->status, $this->failed, $this->reply, $this->outcome, $this->providerCalled,
-            $this->latencies, $this->usage, $this->providers, $this->failovers, $retries);
+            $this->latencies, $this->usage, $this->providers, $this->failovers, $retries, $this->characters, $this->guards);
     }
 
     public function scored(): bool

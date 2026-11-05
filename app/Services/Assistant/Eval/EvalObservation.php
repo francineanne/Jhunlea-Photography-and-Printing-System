@@ -24,5 +24,8 @@ final class EvalObservation
         public readonly ?array $about,
         public readonly bool $providerCalled,
         public readonly ?string $prompt = null,
+        // Phase 7E-3a, owner cases: the tool names the run rows hold, and every fact the tool results gave
+        public readonly array $tools = [],
+        public readonly array $facts = [],
     ) {}
 }

@@ -6,6 +6,7 @@ use App\Models\Faq;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Services\Assistant\GuardStats;
 use App\Services\Chat\StudioInbox;
 use App\Services\NotificationFeed;
 use App\Support\PasswordRules;
@@ -24,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // The business info and upload limits are read once per request (Phase 6B)
         $this->app->scoped(ShopSettings::class);
+        // Phase 7E-2e: the reply guards' removal counts of this request (counts only, no text)
+        $this->app->scoped(GuardStats::class);
     }
 
     /**

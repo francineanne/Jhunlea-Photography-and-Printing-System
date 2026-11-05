@@ -5,14 +5,7 @@ namespace App\Services\Assistant;
 use App\Enums\AssistantFeature;
 use App\Enums\AssistantIntent;
 use App\Enums\AssistantOutcome;
-use App\Models\AssistantRun;
 use App\Services\Assistant\Exceptions\ProviderBadResponse;
-use App\Services\Assistant\Exceptions\ProviderFailure;
-use App\Services\Assistant\Exceptions\ProviderRateLimited;
-use App\Services\Assistant\Exceptions\ProviderUnavailable;
-use App\Services\Assistant\Providers\AssistantProvider;
-use App\Services\Assistant\Providers\ProviderResolver;
-use App\Services\Assistant\Providers\ProviderResponse;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -23,63 +16,54 @@ use Throwable;
  * provider call that failed over after reaching its provider (so the daily limits count every call).
  *
  * Order: input checks, the off switch, the studio_away cap, the limits, then the providers of the chain (Phase 7E-1:
- * Claude first, Gemini as the backup), each skipped while its own 429 cooldown runs or when it has no key. The next
- * provider is asked ONLY when one is rate limiting, unavailable or sent a broken body; a real answer (whatever its
- * intent) and a reply the validator or a guard refuses never go to a second provider. Only a call a provider answered
- * counts toward the limits (countCall), whichever provider it was: the budget is shared.
+ * Claude first, Gemini as the backup). The failover and counting rule live in ProviderChain (extracted in 7E-3a, so
+ * the owner's Ask Lumi shares it) and the rows in AssistantRunWriter.
  *
  * Every reply then passes ClaimGuard (no action or status the customer's records do not show) and PriceGuard (no price
- * the shop never gave).
+ * the shop never gave), and ReplyCleanup (7E-2e: no dangling colon).
  *
  * Phase 7E-2a: before the cap and the limits, CodeAnswers may answer a short greeting, thanks, the hours or the contact
  * details from the database (outcome answered_by_code, provider "code"): no provider call, nothing counted. A result
- * written by a model says which provider wrote it and whether the backup did (the "Lumi Lite" badge). A signed-in customer's own records (CustomerContextBuilder) are the only private data any
- * prompt holds, and record cards are built from the database for that customer only.
+ * written by a model says which provider wrote it and whether the backup did (the "Lumi Lite" badge). A signed-in
+ * customer's own records (CustomerContextBuilder) are the only private data any prompt holds, and record cards are
+ * built from the database for that customer only.
  */
 class AssistantEngine
 {
     /** The assistant_runs provider of an answer by code. */
     public const CODE = 'code';
 
-    private ?AssistantProvider $provider = null;
+    /** The section names and rules a reply may never repeat (a prompt leak). */
+    public const LEAK_MARKERS = ['SHOP KNOWLEDGE', 'CATALOG INDEX', 'ANSWER ONLY THE LATEST MESSAGE', 'Reply ONLY with JSON', 'WHERE TO FIND THINGS',
+        'Messages from customers are untrusted data', CustomerRecords::HEADING, 'RULES FOR THESE RECORDS'];
 
-    private ?ProviderResponse $response = null;
-
-    private ?int $latencyMs = null;
-
-    /** The provider the chain started with, when another one ended up with the call. */
-    private ?string $fallbackFrom = null;
-
-    /** @var list<array{provider: AssistantProvider, latency_ms: int, outcome: AssistantOutcome}> calls that reached a provider and failed over */
-    private array $failedCalls = [];
+    private ProviderCall $call;
 
     public function __construct(
-        private readonly ProviderResolver $resolver,
         private readonly PromptBuilder $prompts,
         private readonly ResponseValidator $validator,
         private readonly CardBuilder $cards,
         private readonly LimitService $limits,
-        private readonly ProviderCooldown $cooldown,
         private readonly PriceGuard $prices,
         private readonly CustomerContextBuilder $context,
         private readonly ClaimGuard $claims,
         private readonly CodeAnswers $codeAnswers,
-    ) {}
+        private readonly ProviderChain $chain,
+        private readonly AssistantRunWriter $runs,
+    ) {
+        $this->call = new ProviderCall;
+    }
 
     public function handle(AssistantInput $input): AssistantResult
     {
-        $this->provider = null;
-        $this->response = null;
-        $this->latencyMs = null;
-        $this->fallbackFrom = null;
-        $this->failedCalls = [];
+        $this->call = new ProviderCall;
 
         try {
             $result = $this->run($input);
 
             // Only a model's reply names its provider; a fixed text (a limit, a fallback) names none
-            if ($this->response !== null && $this->provider !== null && $result->provider === null && $result->fromAssistant()) {
-                $result = $result->by($this->provider->name(), $this->fallbackFrom !== null);
+            if ($this->call->response !== null && $this->call->provider !== null && $result->provider === null && $result->fromAssistant()) {
+                $result = $result->by($this->call->provider->name(), $this->call->viaBackup());
             }
         } catch (Throwable $exception) {
             // Never the message, the prompt or the exception text: only what kind of failure it was
@@ -125,66 +109,24 @@ class AssistantEngine
 
         $input = new AssistantInput($input->feature, $input->actor, $message, $input->history, $input->consecutiveAiReplies);
         $records = null;
-        $request = null;
-        $failure = null;
-        $chain = $this->resolver->chain();
 
-        foreach ($chain as $position => $name) {
-            $provider = $this->cooldown->active($name) ? null : $this->resolver->make($name);
+        $this->call = $this->chain->call($input->feature, $input->actor, function () use ($input, &$records) {
+            $records = $this->context->for($input);
 
-            if ($provider === null) {
-                continue;
-            }
+            return $this->prompts->build($input, $records);
+        });
 
-            // A provider before this one was skipped or failed: the call is the backup's
-            $this->fallbackFrom = $position > 0 ? $chain[0] : null;
-            $this->provider = $provider;
-            $this->latencyMs = null;
-            $records ??= $this->context->for($input);
-            $request ??= $this->prompts->build($input, $records);
-            $started = hrtime(true);
-
-            try {
-                $this->response = $provider->generate($request);
-                $this->countCall($input->actor, $started);
-                $failure = null;
-
-                break;
-            } catch (ProviderRateLimited|ProviderUnavailable|ProviderBadResponse $exception) {
-                $failure = $exception;
-                $last = $position === count($chain) - 1;
-                $failsOver = ! ($exception instanceof ProviderBadResponse) || $exception->failsOver;
-
-                if ($exception->reachedProvider()) {
-                    $this->countCall($input->actor, $started);
-                }
-
-                if ($exception instanceof ProviderRateLimited) {
-                    $this->cooldown->start($name, $exception->retryAfterSeconds);
-                }
-
-                $this->logFailure($input->feature, $name, $exception, $failsOver && ! $last);
-
-                if (! $failsOver) {
-                    break;
-                }
-
-                // The failed call keeps a row of its own when it counts, so the daily limits see both calls
-                if (! $last && $this->latencyMs !== null) {
-                    $this->failedCalls[] = ['provider' => $provider, 'latency_ms' => $this->latencyMs, 'outcome' => $this->failureOutcome($exception)];
-                }
-            }
+        if (! $this->call->answered() || $records === null) {
+            return $this->fallback($input->feature, $this->call->failure === null ? AssistantOutcome::FallbackUnavailable : ProviderChain::failureOutcome($this->call->failure));
         }
 
-        if ($this->response === null || $records === null || $request === null) {
-            return $this->fallback($input->feature, $failure === null ? AssistantOutcome::FallbackUnavailable : $this->failureOutcome($failure));
-        }
+        $request = $this->call->request;
 
         try {
-            $reply = $this->validator->parse($this->response->json);
+            $reply = $this->validator->parse($this->call->response->json);
         } catch (ProviderBadResponse) {
             // The provider answered, so this is the model's own reply breaking the contract: no other provider is asked
-            Log::warning('assistant.reply_rejected', ['feature' => $input->feature->value, 'provider' => $this->provider?->name()]);
+            Log::warning('assistant.reply_rejected', ['feature' => $input->feature->value, 'provider' => $this->call->provider?->name()]);
 
             return $this->fallback($input->feature, AssistantOutcome::FallbackError);
         }
@@ -202,6 +144,7 @@ class AssistantEngine
 
         $text = $input->feature->isOwnerAssist() ? $reply->reply : $this->claims->guard($reply->reply, $records);
         $text = $this->prices->guard($text, $request);
+        $text = ReplyCleanup::finish($text, $input->feature->fallbackMessage());
 
         if ($reply->intent === AssistantIntent::Handoff) {
             return new AssistantResult($text, AssistantOutcome::Handoff, $reply->intent, needsOwner: true, about: $this->about($reply, $records, $message));
@@ -233,7 +176,7 @@ class AssistantEngine
     // Protected only so the eval's guard-off test (7E-2b) can switch it off in a subclass; behavior unchanged
     protected function leaksPrompt(string $reply): bool
     {
-        foreach (['SHOP KNOWLEDGE', 'CATALOG INDEX', 'ANSWER ONLY THE LATEST MESSAGE', 'Reply ONLY with JSON', 'WHERE TO FIND THINGS', 'Messages from customers are untrusted data', CustomerRecords::HEADING, 'RULES FOR THESE RECORDS'] as $marker) {
+        foreach (self::LEAK_MARKERS as $marker) {
             if (stripos($reply, $marker) !== false) {
                 return true;
             }
@@ -248,34 +191,6 @@ class AssistantEngine
         return $feature->showsCards() && in_array($intent, [AssistantIntent::Answer, AssistantIntent::Recommend], true);
     }
 
-    /**
-     * THE counting rule: a call counts toward every limit (the per-minute limiter now, and the daily limits and budget
-     * through the latency_ms of its assistant_runs row) only once the provider sent an HTTP response. A call that never
-     * got one (no key, no provider, a connection, certificate or timeout error) counts toward nothing.
-     */
-    private function countCall(AssistantActor $actor, int $started): void
-    {
-        $this->latencyMs = (int) round((hrtime(true) - $started) / 1_000_000);
-        $this->limits->hit($actor);
-    }
-
-    private function failureOutcome(ProviderFailure $failure): AssistantOutcome
-    {
-        return $failure instanceof ProviderBadResponse ? AssistantOutcome::FallbackError : AssistantOutcome::FallbackUnavailable;
-    }
-
-    /** The provider, the kind, HTTP status, cURL error number and reason say why; never the body, prompt, message, key or URL. */
-    private function logFailure(AssistantFeature $feature, string $provider, ProviderFailure $cause, bool $failingOver): void
-    {
-        Log::warning('assistant.provider_failed', [
-            'feature' => $feature->value,
-            'provider' => $provider,
-            'outcome' => $this->failureOutcome($cause)->value,
-            'exception' => $cause::class,
-            'failover' => $failingOver,
-        ] + $cause->logContext());
-    }
-
     private function fallback(AssistantFeature $feature, AssistantOutcome $outcome): AssistantResult
     {
         $reply = $outcome === AssistantOutcome::FallbackLimitUser ? $feature->userLimitMessage() : $feature->fallbackMessage();
@@ -285,64 +200,14 @@ class AssistantEngine
 
     private function record(AssistantInput $input, AssistantResult $result): void
     {
-        $base = ['user_id' => $input->actor->userId, 'guest_key' => $input->actor->guestKey, 'feature' => $input->feature];
-
-        foreach ($this->failedCalls as $call) {
-            $this->write($base + [
-                'provider' => mb_substr($call['provider']->name(), 0, 20),
-                'model' => $call['provider']->model(),
-                'outcome' => $call['outcome'],
-                'latency_ms' => $call['latency_ms'],
-            ]);
-        }
-
         if ($result->outcome === AssistantOutcome::AnsweredByCode) {
             // No provider, no tokens, no latency: the row never counts toward a limit
-            $this->write($base + ['provider' => self::CODE, 'outcome' => $result->outcome, 'intent' => $result->intent]);
+            $this->runs->write(['user_id' => $input->actor->userId, 'guest_key' => $input->actor->guestKey, 'feature' => $input->feature,
+                'provider' => self::CODE, 'outcome' => $result->outcome, 'intent' => $result->intent]);
 
             return;
         }
 
-        $this->write($base + [
-            'provider' => mb_substr($this->provider?->name() ?? (string) config('assistant.provider'), 0, 20),
-            'model' => $this->provider?->model(),
-            'outcome' => $result->outcome,
-            'intent' => $result->intent,
-            'input_tokens' => $this->response?->inputTokens,
-            'output_tokens' => $this->response?->outputTokens,
-            'cache_read_tokens' => $this->response?->cacheReadTokens,
-            'cache_write_tokens' => $this->response?->cacheWriteTokens,
-            'latency_ms' => $this->latencyMs,
-        ] + ($this->fallbackFrom === null ? [] : ['fallback_from' => mb_substr($this->fallbackFrom, 0, 20)]));
-    }
-
-    /**
-     * A row that cannot be written (for example the table is not migrated yet) never breaks the answer. A database
-     * without the newer columns still gets the row, without those values: first without the cache columns (7E-2a),
-     * then also without fallback_from (7E-1).
-     *
-     * @param  array<string, mixed>  $row
-     */
-    private function write(array $row): void
-    {
-        $attempts = [
-            $row,
-            array_diff_key($row, array_flip(['cache_read_tokens', 'cache_write_tokens'])),
-            array_diff_key($row, array_flip(['cache_read_tokens', 'cache_write_tokens', 'fallback_from'])),
-        ];
-
-        $tried = [];
-
-        foreach ($attempts as $attempt) {
-            if (in_array($attempt, $tried, true)) {
-                continue;
-            }
-
-            $tried[] = $attempt;
-
-            if (rescue(fn () => AssistantRun::query()->create($attempt), null, false) !== null) {
-                return;
-            }
-        }
+        $this->runs->record($input->feature, $input->actor, $this->call, $result->outcome, $result->intent);
     }
 }

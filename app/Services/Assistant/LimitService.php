@@ -23,15 +23,20 @@ class LimitService
     {
         $limits = config('assistant.limits');
 
-        if (RateLimiter::tooManyAttempts($this->minuteKey($actor), (int) $limits['per_minute_per_user'])) {
+        // Phase 7E-3a: a feature with limits of its own (owner_ask) counts only its own calls, with its own minute counter
+        $ownLimits = $limits['features'][$feature->value] ?? null;
+
+        if (RateLimiter::tooManyAttempts($this->minuteKey($actor, $feature), (int) ($ownLimits['per_minute'] ?? $limits['per_minute_per_user']))) {
             return AssistantOutcome::FallbackLimitUser;
         }
 
         $today = AssistantRun::query()->calledProvider()->where('created_at', '>=', $this->dayStartUtc());
 
-        $own = $actor->isGuest()
+        $own = $ownLimits !== null
+            ? (clone $today)->where('feature', $feature->value)->where('user_id', $actor->userId)->count() >= (int) $ownLimits['per_day']
+            : ($actor->isGuest()
             ? (clone $today)->where('guest_key', $actor->guestKey)->count() >= (int) $limits['per_day_per_guest_ip']
-            : (clone $today)->where('user_id', $actor->userId)->count() >= (int) $limits['per_day_per_user'];
+            : (clone $today)->where('user_id', $actor->userId)->whereNotIn('feature', array_keys($limits['features'] ?? []))->count() >= (int) $limits['per_day_per_user']);
 
         if ($own) {
             return AssistantOutcome::FallbackLimitUser;
@@ -49,9 +54,9 @@ class LimitService
     }
 
     /** Counts one call against the per-minute limit, once the provider has answered it. */
-    public function hit(AssistantActor $actor): void
+    public function hit(AssistantActor $actor, ?AssistantFeature $feature = null): void
     {
-        RateLimiter::hit($this->minuteKey($actor), 60);
+        RateLimiter::hit($this->minuteKey($actor, $feature), 60);
     }
 
     /** The start of today in Manila, in UTC like the stored rows. */
@@ -60,8 +65,10 @@ class LimitService
         return LocalTime::dayStartUtc(Carbon::now(config('app.display_timezone'))->toDateString());
     }
 
-    private function minuteKey(AssistantActor $actor): string
+    private function minuteKey(AssistantActor $actor, ?AssistantFeature $feature = null): string
     {
-        return self::MINUTE_LIMITER.':'.$actor->key();
+        $own = $feature !== null && isset(config('assistant.limits.features')[$feature->value]);
+
+        return self::MINUTE_LIMITER.':'.($own ? $feature->value.':' : '').$actor->key();
     }
 }

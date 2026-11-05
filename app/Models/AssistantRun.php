@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * toward the limits. A call that never got an answer (connection or certificate error, no key) has no latency, and
  * neither has an answer by code (provider "code", Phase 7E-2a), which never counts.
  */
-#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'fallback_from', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'cache_read_tokens', 'cache_write_tokens', 'latency_ms'])]
+#[Fillable(['user_id', 'guest_key', 'feature', 'provider', 'model', 'fallback_from', 'outcome', 'intent', 'tools', 'input_tokens', 'output_tokens', 'cache_read_tokens', 'cache_write_tokens', 'latency_ms'])]
 class AssistantRun extends Model
 {
     public const UPDATED_AT = null;

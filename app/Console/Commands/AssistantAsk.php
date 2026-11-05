@@ -28,8 +28,8 @@ class AssistantAsk extends Command
 
         $feature = AssistantFeature::tryFrom((string) $this->option('feature'));
 
-        if ($feature === null) {
-            $this->error('Unknown feature. Use one of: '.implode(', ', array_column(AssistantFeature::cases(), 'value')).'.');
+        if ($feature === null || $feature->isOwnerAsk()) {
+            $this->error('Unknown feature. Use one of: '.implode(', ', array_column(array_filter(AssistantFeature::cases(), fn (AssistantFeature $item) => ! $item->isOwnerAsk()), 'value')).'.');
 
             return self::FAILURE;
         }

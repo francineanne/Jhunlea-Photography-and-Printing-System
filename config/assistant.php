@@ -125,9 +125,17 @@ return [
         // up what the others need
         'global_daily_budget' => 500,
         'global_shares' => [
-            'ask_lumi' => 0.50,
-            'studio_away' => 0.35,
-            'owner_assist' => 0.15,
+            // Phase 7E-3a: owner_ask added; the shares still add up to 1.0 (were 0.50, 0.35, 0.15)
+            'ask_lumi' => 0.45,
+            'studio_away' => 0.30,
+            'owner_assist' => 0.10,
+            'owner_ask' => 0.15,
+        ],
+
+        // Phase 7E-3a: a feature with limits of its own counts only its own calls against them (and its own minute
+        // counter); every other feature keeps the per-user limits above
+        'features' => [
+            'owner_ask' => ['per_minute' => 10, 'per_day' => 200],
         ],
 
         // studio_away stops after this many AI replies in a row with no owner reply in between
@@ -177,6 +185,59 @@ return [
         // The eval's own throwaway SQLite file; it must stay inside storage/app/evals (null: storage/app/evals/eval.sqlite)
         'database' => null,
         'estimate_tokens_per_call' => ['input' => 2100, 'output' => 260, 'cache_read' => 2700, 'cache_write' => 0],
+        // Words with a lower-upper case change that no_glued_words accepts (7E-2e); compared ignoring case
+        'camel_case_allowed' => ['GCash', 'PayMaya', 'iPhone', 'iPad', 'iMac', 'McDonald', "McDonald's", 'PriceGuard', 'ClaimGuard',
+            'YouTube', 'TikTok', 'WhatsApp', 'LinkedIn', 'PayPal', 'JPEGs', 'PDFs', 'PNGs', 'IDs', 'URLs', 'FAQs', 'SMSes', 'eBook', 'eVoucher'],
+    ],
+
+    // Phase 7E-3a: the owner's Ask Lumi (OwnerAskService). Read-only tools, at most max_tools per question and two
+    // provider calls (plan, then phrase); the owner's own conversation keeps the last history_messages
+    'owner' => [
+        'max_tools' => 3,
+        'history_messages' => 6,
+        // The most characters of tool data sent to the phrasing call
+        'data_max_chars' => 6000,
+        'how_to' => [
+            'record_payment' => ['page' => 'Printing orders or Bookings', 'route' => 'owner.orders.index', 'steps' => [
+                'Open the order or booking (it must be Accepted or Confirmed and have a confirmed price).',
+                'In the Payment card, choose Cash or GCash; for GCash type the GCash reference.',
+                'Press Record payment. The full confirmed price is recorded; there are no partial payments.']],
+            'void_payment' => ['page' => 'Payments', 'route' => 'owner.payments.index', 'steps' => [
+                'Open the order or booking that holds the payment.',
+                'In the Payment card press Void payment and write the reason.',
+                'A voided payment stays in the ledger but never counts. It cannot be voided after Completed.']],
+            'confirm_booking' => ['page' => 'Bookings', 'route' => 'owner.bookings.index', 'steps' => [
+                'Open the booking request.',
+                'Check the requested time on the schedule, then set the confirmed price.',
+                'Press Confirm, or Propose another time if it does not fit.']],
+            'accept_order' => ['page' => 'Printing orders', 'route' => 'owner.orders.index', 'steps' => [
+                'Open the order and check the files.',
+                'Set the confirmed price and press Accept, or Ask for information, or Reject with a reason.']],
+            'change_hours' => ['page' => 'Schedule editor', 'route' => 'owner.schedule.edit', 'steps' => [
+                'Open Schedule, then Edit hours and rules.',
+                'Change the opening hours of a weekday, or add a blocked date.',
+                'Save. Confirmed bookings are never moved; any left outside the new hours are listed for you.']],
+            'block_date' => ['page' => 'Schedule editor', 'route' => 'owner.schedule.edit', 'steps' => [
+                'Open Schedule, then Edit hours and rules.',
+                'Under Blocked dates pick the day, write a reason and add it.']],
+            'edit_package' => ['page' => 'Packages', 'route' => 'owner.packages.index', 'steps' => [
+                'Open Packages and press Edit on the package.',
+                'Change the price, inclusions or photos and save. Published packages show on the website.']],
+            'edit_service' => ['page' => 'Services', 'route' => 'owner.services.index', 'steps' => [
+                'Open Services and press Edit on the printing service.',
+                'Change the price, options or accepted files and save.']],
+            'edit_faq' => ['page' => 'FAQ', 'route' => 'owner.faqs.index', 'steps' => [
+                'Open FAQ and add or edit a question.',
+                'Published questions show on the public FAQ page and Lumi reads them.']],
+            'reports' => ['page' => 'Reports', 'route' => 'owner.reports.index', 'steps' => [
+                'Open Reports and pick a period.',
+                'It shows requests per status, the most requested items and recorded payments.']],
+            'reply_messages' => ['page' => 'Messages', 'route' => 'owner.messages.index', 'steps' => [
+                'Open Messages and choose Unanswered.',
+                'Open a thread and reply; Suggest reply writes a draft you can edit.']],
+            'settings' => ['page' => 'Settings', 'route' => 'owner.settings.index', 'steps' => [
+                'Open Settings to change the business info and the upload limits.']],
+        ],
     ],
 
     // The fixed texts. Customers always get one of these instead of an error page
@@ -186,6 +247,13 @@ return [
         'limit_user' => 'You have reached today\'s limit for Lumi. It resets at midnight. You can still message the studio.',
         'studio_away' => 'The studio received your message and will reply when we open.',
         'owner_assist' => 'The suggestion is not available right now. You can still reply manually.',
+        // Phase 7E-3a: the owner's Ask Lumi
+        'owner_ask' => 'Lumi cannot answer right now. The Overview, Payments and Reports pages have the same numbers.',
+        'owner_ask_limit' => 'You have reached today\'s limit for Ask Lumi. It resets at midnight. The Reports page has the same numbers.',
+        'owner_ask_unverified' => 'I could not check those numbers against your records, so I left them out. Please see the Reports page for the exact figures.',
+        'owner_ask_clarify' => 'Could you say a bit more? For example which period (today, this week, last month) or which customer, order or booking you mean.',
+        'owner_ask_out_of_scope' => 'I can answer questions about your shop: payments, unpaid balances, orders, bookings, the schedule, customers, messages and Lumi usage. What would you like to know?',
+        'owner_ask_write' => 'I can only read your records; I cannot change anything. You can do it on the page linked below.',
         // Used when ClaimGuard removed every sentence of a reply because each claimed an action or a status the
         // customer's records do not show
         'claim_unverified' => 'I can\'t confirm that from here. Please check My orders or My bookings for the latest status, or message the studio.',

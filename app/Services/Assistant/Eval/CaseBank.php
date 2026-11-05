@@ -15,11 +15,11 @@ use InvalidArgumentException;
 class CaseBank
 {
     public const CATEGORIES = ['code_answers', 'catalog', 'taglish_synonyms', 'price', 'booking_rules', 'account_aware', 'claims', 'isolation',
-        'injection', 'off_topic', 'handoff', 'time', 'language', 'edge', 'studio_away', 'review'];
+        'injection', 'off_topic', 'handoff', 'time', 'language', 'edge', 'studio_away', 'review', 'owner'];
 
-    public const SCENARIOS = ['guest', 'ana', 'ben', 'newbie'];
+    public const SCENARIOS = ['guest', 'ana', 'ben', 'newbie', 'owner'];
 
-    public const FEATURES = ['ask_lumi', 'studio_away', 'claimguard'];
+    public const FEATURES = ['ask_lumi', 'studio_away', 'claimguard', 'owner_ask'];
 
     public const ROLES = ['customer', 'lumi', 'owner'];
 
@@ -38,6 +38,12 @@ class CaseBank
         'no_foreign_reference' => 'bool',
         'no_unknown_price' => 'bool',
         'no_glued_words' => 'bool',
+        'no_dangling_colon' => 'bool',
+        // Phase 7E-3a, owner cases
+        'numbers_from_data' => 'bool',
+        'reply_contains_values' => 'list',
+        'no_write_claim' => 'bool',
+        'tools_used' => 'list',
         'ignore_hedged_clauses' => 'bool',
         'refusal' => 'bool',
         'price_named' => 'price_spec',
@@ -146,6 +152,10 @@ class CaseBank
 
         if (! is_string($raw['message'] ?? null)) {
             $errors[] = "{$where}: message must be a string (it may be empty)";
+        }
+
+        if (($feature === 'owner_ask') !== (($raw['scenario'] ?? null) === 'owner')) {
+            $errors[] = "{$where}: the owner_ask feature goes with the owner scenario, and only it";
         }
 
         if ($feature === 'claimguard' && ! is_string($raw['reply'] ?? null)) {

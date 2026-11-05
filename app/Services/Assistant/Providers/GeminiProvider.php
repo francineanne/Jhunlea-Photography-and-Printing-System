@@ -94,8 +94,26 @@ class GeminiProvider implements AssistantProvider
                 'temperature' => $this->temperature,
                 'maxOutputTokens' => $this->maxOutputTokens,
                 'responseMimeType' => 'application/json',
-                'responseSchema' => self::responseSchema(),
+                'responseSchema' => $request->schema === ProviderRequest::PLAN ? self::planSchema() : self::responseSchema(),
             ],
+        ];
+    }
+
+    /** The owner's plan (Phase 7E-3a) as a Gemini response schema; see AnthropicProvider::planSchema(). @return array<string, mixed> */
+    public static function planSchema(): array
+    {
+        return [
+            'type' => 'OBJECT',
+            'properties' => [
+                'action' => ['type' => 'STRING', 'enum' => ['tools', 'clarify', 'out_of_scope', 'write_request']],
+                'tools' => ['type' => 'ARRAY', 'maxItems' => 3, 'items' => ['type' => 'OBJECT', 'properties' => [
+                    'name' => ['type' => 'STRING'],
+                    'params_json' => ['type' => 'STRING'],
+                ], 'required' => ['name', 'params_json']]],
+                'question' => ['type' => 'STRING'],
+                'reason' => ['type' => 'STRING'],
+            ],
+            'required' => ['action', 'tools'],
         ];
     }
 

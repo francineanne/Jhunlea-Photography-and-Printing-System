@@ -65,6 +65,8 @@ class PriceGuard
 
         $text = trim(preg_replace('/\n{3,}/u', "\n\n", implode("\n", $lines)) ?? '');
 
+        app(GuardStats::class)->removed(GuardStats::PRICE, $removed, $text === '');
+
         return $text === '' ? config('assistant.messages.price_unverified') : $text;
     }
 

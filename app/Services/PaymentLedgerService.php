@@ -121,6 +121,18 @@ class PaymentLedgerService
             ->whereDoesntHave('recordedPayment');
     }
 
+    /**
+     * The RECORDED payments received in a period of shop calendar days (null ends: all time), the same rule as totals().
+     * Read-only, for the owner's Ask Lumi tools (7E-3a), which group them by kind or by day.
+     *
+     * @return Builder<Payment>
+     */
+    public function recorded(?string $from, ?string $to): Builder
+    {
+        return $this->filtered(['method' => null, 'status' => null, 'search' => '', 'from' => $from, 'to' => $to])
+            ->where('status', PaymentRecordStatus::Recorded);
+    }
+
     /** Whole centavos of the confirmed prices a query finds (one query). */
     public function sumConfirmedCents(Builder $query): int
     {

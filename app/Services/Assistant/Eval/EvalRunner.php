@@ -11,9 +11,13 @@ use App\Services\Assistant\AssistantInput;
 use App\Services\Assistant\ClaimGuard;
 use App\Services\Assistant\CustomerContextBuilder;
 use App\Services\Assistant\CustomerRecords;
+use App\Services\Assistant\GuardStats;
+use App\Services\Assistant\Owner\OwnerAskService;
+use App\Services\Assistant\Owner\OwnerPromptBuilder;
 use App\Services\Assistant\PriceGuard;
 use App\Services\Assistant\PromptBuilder;
 use App\Services\Assistant\ProviderCooldown;
+use App\Services\Assistant\ResponseValidator;
 use App\Services\Assistant\ThreadMessage;
 use Throwable;
 
@@ -30,6 +34,10 @@ class EvalRunner
     public const RETRY_MAX_SECONDS = 60;
 
     public const RETRY_DEFAULT_SECONDS = 15;
+
+    private ?RecordingResponseValidator $validator = null;
+
+    private ?RecordingOwnerPromptBuilder $ownerPrompts = null;
 
     /** @var (callable(EvalAttempt): void)|null */
     private $progress = null;
@@ -72,11 +80,19 @@ class EvalRunner
             $sandbox->open();
             $fixtures = new EvalFixtures;
             $fixtures->build($sandbox);
+            // The fixtures hold a few Lumi runs of their own (7E-3a): --limit counts only the calls of this run
+            $baseline = AssistantRun::query()->whereNotNull('latency_ms')->count();
 
             $recorder = app(RecordingPromptBuilder::class);
             app()->instance(PromptBuilder::class, $recorder);
             $cooldown = new EvalCooldown;
             app()->instance(ProviderCooldown::class, $cooldown);
+            // 7E-2e: keeps the raw reply in memory for the character diagnostic
+            $this->validator = app(RecordingResponseValidator::class);
+            app()->instance(ResponseValidator::class, $this->validator);
+            // 7E-3a: keeps the owner's tool facts and prompt in memory for the owner checks
+            $this->ownerPrompts = app(RecordingOwnerPromptBuilder::class);
+            app()->instance(OwnerPromptBuilder::class, $this->ownerPrompts);
 
             for ($run = 1; $run <= max(1, $runs); $run++) {
                 foreach ($cases as $case) {
@@ -85,7 +101,7 @@ class EvalRunner
                         continue;
                     }
 
-                    $calls = AssistantRun::query()->whereNotNull('latency_ms')->count();
+                    $calls = AssistantRun::query()->whereNotNull('latency_ms')->count() - $baseline;
 
                     if ($limit !== null && $case->isModelCase() && $calls >= $limit) {
                         $attempt = new EvalAttempt($case, $run, EvalAttempt::SKIPPED);
@@ -103,6 +119,8 @@ class EvalRunner
         } finally {
             app()->forgetInstance(PromptBuilder::class);
             app()->forgetInstance(ProviderCooldown::class);
+            app()->forgetInstance(ResponseValidator::class);
+            app()->forgetInstance(OwnerPromptBuilder::class);
             $sandbox->close();
         }
 
@@ -155,10 +173,24 @@ class EvalRunner
             $case = $fixtures->resolve($raw);
             $before = (int) AssistantRun::query()->max('id');
             $recorder->last = null;
+            if ($this->validator !== null) {
+                $this->validator->raw = null;
+            }
+            $stats = app(GuardStats::class);
+            $stats->reset();
 
-            $seen = $case->feature === 'claimguard' ? $this->guardOnly($case, $fixtures) : $this->engine($case, $fixtures, $recorder);
+            $seen = match ($case->feature) {
+                'claimguard' => $this->guardOnly($case, $fixtures),
+                'owner_ask' => $this->owner($case, $fixtures),
+                default => $this->engine($case, $fixtures, $recorder),
+            };
 
             $rows = AssistantRun::query()->where('id', '>', $before)->orderBy('id')->get();
+
+            if ($case->feature === 'owner_ask') {
+                $tools = $rows->pluck('tools')->filter()->flatMap(fn (string $names) => explode(',', $names))->unique()->values()->all();
+                $seen = new EvalObservation($seen->reply, $seen->outcome, $seen->intent, $seen->cards, false, null, $seen->providerCalled, $seen->prompt, $tools, $seen->facts);
+            }
             $called = $rows->whereNotNull('latency_ms');
             $usage = [];
 
@@ -179,6 +211,9 @@ class EvalRunner
                 'usage' => $usage,
                 'providers' => $called->pluck('provider')->unique()->values()->all(),
                 'failovers' => $rows->whereNotNull('fallback_from')->count(),
+                'characters' => $seen->providerCalled && $case->feature !== 'claimguard'
+                    ? EvalCharacters::describe($this->validator?->raw, $seen->reply, $this->checks->gluedWords($seen->reply)) : null,
+                'guards' => $stats->snapshot(),
             ];
 
             if ($seen->outcome === AssistantOutcome::FallbackUnavailable->value) {
@@ -221,6 +256,28 @@ class EvalRunner
             $result->about,
             ! in_array($result->outcome, [AssistantOutcome::AnsweredByCode, AssistantOutcome::RejectedInput, AssistantOutcome::FallbackDisabled], true),
             $recorder->last?->promptText(),
+        );
+    }
+
+    /** An owner case through the real OwnerAskService, with the owner as the actor (7E-3a). */
+    private function owner(EvalCase $case, EvalFixtures $fixtures): EvalObservation
+    {
+        $this->ownerPrompts->results = [];
+        $this->ownerPrompts->last = null;
+        $history = array_map(fn (array $turn) => new ThreadMessage($turn['role'] === 'lumi' ? AssistantAuthor::Lumi : AssistantAuthor::Customer, $turn['text']), $case->history);
+        $result = app(OwnerAskService::class)->ask($fixtures->owner(), $case->message, $history);
+
+        return new EvalObservation(
+            $result->reply,
+            $result->outcome->value,
+            null,
+            array_map(fn (array $card) => ['type' => 'owner', 'id' => 0, 'name' => $card['label'], 'url' => $card['url']], $result->cards),
+            false,
+            null,
+            ! in_array($result->outcome, [AssistantOutcome::RejectedInput, AssistantOutcome::FallbackDisabled, AssistantOutcome::AnsweredByCode], true),
+            $this->ownerPrompts->last?->promptText(),
+            $result->tools,
+            $this->ownerPrompts->facts(),
         );
     }
 

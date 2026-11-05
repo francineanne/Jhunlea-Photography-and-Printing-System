@@ -32,6 +32,9 @@ final class MessageLanguage
         'there', 'here', 'i', 'my', 'me', 'us', 'they', 'from', 'by', 'or', 'any', 'all', 'yet', 'still', 'was', 'were', 'been', 'about', 'also',
         'one', 'much', 'many', 'did', 'am', 'its', 'should', 'want', 'need', 'thanks', 'thank'];
 
+    /** Words after which "may" is the English modal verb (7E-2e, the lang.en_formal finding). */
+    private const ENGLISH_AFTER_MAY = ['i', 'we', 'you', 'he', 'she', 'they', 'it', 'be', 'not', 'have', 'also', 'still', 'only', 'need', 'ask'];
+
     public static function detect(string $text): string
     {
         preg_match_all('/[\p{L}]+/u', mb_strtolower($text), $matches);
@@ -39,7 +42,16 @@ final class MessageLanguage
         $filipino = 0;
         $english = 0;
 
-        foreach ($matches[0] as $word) {
+        $words = $matches[0];
+
+        foreach ($words as $index => $word) {
+            // 7E-2e: "May I ask ...", "may be", "may not" is English, not the Filipino "may" (there is)
+            if ($word === 'may' && in_array($words[$index + 1] ?? '', self::ENGLISH_AFTER_MAY, true)) {
+                $english++;
+
+                continue;
+            }
+
             $filipino += in_array($word, self::FILIPINO, true) ? 1 : 0;
             $english += in_array($word, self::ENGLISH, true) ? 1 : 0;
         }

@@ -97,7 +97,47 @@ class ClaimGuard
         'booking' => '/\b(?:bookings?|shoots?|photoshoots?|sessions?|appointments?|pictorial)\b/iu',
     ];
 
+    /**
+     * More things an assistant may claim to have DONE in the owner's admin (Phase 7E-3a): changed, deleted, voided,
+     * sent, blocked, saved... Only guardActions() uses these: Lumi can only read the owner's records.
+     */
+    private const OWNER_ACTIONS = [
+        '/\b(?:I|we)(?:\'ve|\'d| have| had)?\s+(?:already\s+|just\s+|now\s+|also\s+|(?:gone|went) ahead and\s+)*(?:updated|changed|edited|deleted|removed|voided|sent|messaged|replied|blocked|unblocked|added|saved|published|unpublished|set|lowered|raised|completed|rejected|accepted|recorded|notified|emailed|texted)\b/iu',
+        '/\b(?:na|ni|i)-?(?:update|change|delete|void|send|block|save|publish|reject|accept|complete|set)\s+(?:ko|namin)\b/iu',
+        '/\b(?:binago|binura|tinanggal|pinadala|ipinadala|sinend|inupdate|ni-?void|binlock)\s+(?:ko|namin)\b/iu',
+    ];
+
     public function guard(string $reply, CustomerRecords $records): string
+    {
+        return $this->filter($reply, fn (string $sentence) => $this->claims($sentence, $records), config('assistant.messages.claim_unverified'));
+    }
+
+    /**
+     * The action-claim part only, for the owner's Ask Lumi (Phase 7E-3a): every sentence where Lumi says it DID
+     * something (booked, recorded, changed, sent ...) is removed; status facts are NumberGuard's and the tools' matter.
+     */
+    public function guardActions(string $reply, string $fallback): string
+    {
+        return $this->filter($reply, fn (string $sentence) => $this->claimsAction($sentence), $fallback);
+    }
+
+    public function claimsAction(string $sentence): bool
+    {
+        if (str_ends_with(rtrim($sentence), '?')) {
+            return false;
+        }
+
+        foreach ([...self::ACTIONS, ...self::OWNER_ACTIONS] as $pattern) {
+            if (preg_match($pattern, $sentence)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** @param \Closure(string): bool $claims */
+    private function filter(string $reply, \Closure $claims, string $fallback): string
     {
         $removed = 0;
         $lines = [];
@@ -112,7 +152,7 @@ class ClaimGuard
             $kept = [];
 
             foreach (preg_split('/(?<=[.?!])\s+/u', trim($line)) as $sentence) {
-                if ($this->claims($sentence, $records)) {
+                if ($claims($sentence)) {
                     $removed++;
                 } else {
                     $kept[] = $sentence;
@@ -131,7 +171,9 @@ class ClaimGuard
         Log::info('assistant.claims_removed', ['removed' => $removed]);
         $text = trim(preg_replace('/\n{3,}/u', "\n\n", implode("\n", $lines)) ?? '');
 
-        return $text === '' ? config('assistant.messages.claim_unverified') : $text;
+        app(GuardStats::class)->removed(GuardStats::CLAIM, $removed, $text === '');
+
+        return $text === '' ? $fallback : $text;
     }
 
     public function claims(string $sentence, CustomerRecords $records): bool

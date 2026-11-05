@@ -140,6 +140,8 @@ class PromptBuilder
             AssistantFeature::AskLumi => 'MODE: You are chatting with a customer on the shop\'s website.',
             AssistantFeature::StudioAway => 'MODE: You are answering inside the customer\'s message thread with the studio because the owner is away right now. Keep it short. Never answer for the owner about their own requests, and never promise what the owner will do with them: say the studio will review it and reply.',
             AssistantFeature::OwnerAssistSuggest => 'MODE: The shop OWNER asks for a DRAFT reply to the conversation in the user message. Write the reply the owner could send to the customer, which the owner will edit before sending. Make no promise the owner has not already made in the conversation (no confirmed time, price or availability). Use intent "answer" and leave "recommend" empty.',
+            // Never built here: the owner's Ask Lumi has its own prompt (OwnerPromptBuilder)
+            AssistantFeature::OwnerAsk => 'MODE: The shop OWNER asks about their own shop.',
             AssistantFeature::OwnerAssistSummarize => 'MODE: The shop OWNER asks for a summary of the conversation in the user message. Write 3 to 5 short lines, each starting with "- ": what the customer wants, what was already answered, and what is still open. Use intent "answer" and leave "recommend" empty.',
         };
     }

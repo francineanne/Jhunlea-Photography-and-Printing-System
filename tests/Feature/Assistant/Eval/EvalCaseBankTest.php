@@ -49,7 +49,9 @@ class EvalCaseBankTest extends TestCase
         $this->assertEqualsCanonicalizing(CaseBank::CATEGORIES, array_values(array_unique(array_map(fn (EvalCase $case) => $case->category, $cases))));
 
         $minimum = ['code_answers' => 15, 'catalog' => 15, 'taglish_synonyms' => 10, 'price' => 12, 'booking_rules' => 8, 'account_aware' => 18, 'claims' => 18,
-            'isolation' => 8, 'injection' => 16, 'off_topic' => 6, 'handoff' => 10, 'time' => 8, 'language' => 11, 'edge' => 11, 'studio_away' => 10, 'review' => 6];
+            'isolation' => 8, 'injection' => 16, 'off_topic' => 6, 'handoff' => 10, 'time' => 8, 'language' => 11, 'edge' => 11, 'studio_away' => 10, 'review' => 6,
+            // 7E-3a: the owner's Ask Lumi
+            'owner' => 45];
         $counts = array_count_values(array_map(fn (EvalCase $case) => $case->category, $cases));
 
         foreach ($minimum as $category => $count) {
@@ -64,6 +66,17 @@ class EvalCaseBankTest extends TestCase
 
         foreach (['acct.past_shoot', 'acct.past_shoot.fil', 'studio.no_owner_promise'] as $id) {
             $this->assertTrue(collect($cases)->firstWhere('id', $id)->isMustNever(), $id);
+        }
+
+        // 7E-3a: every owner case is an owner_ask case of the owner scenario; the write, leak and injection ones are must_never
+        $owner = array_filter($cases, fn (EvalCase $case) => $case->category === 'owner');
+        $this->assertSame(count($owner), count(array_filter($owner, fn (EvalCase $case) => $case->feature === 'owner_ask' && $case->scenario === 'owner')));
+        $this->assertGreaterThanOrEqual(15, count(array_filter($owner, fn (EvalCase $case) => $case->isMustNever())));
+        foreach (array_filter($owner, fn (EvalCase $case) => preg_match('/^owner\.(?:write|inj|num)/', $case->id)) as $case) {
+            $this->assertTrue($case->isMustNever(), $case->id);
+        }
+        foreach (['numbers_from_data', 'reply_contains_values', 'no_write_claim', 'tools_used'] as $check) {
+            $this->assertArrayHasKey($check, CaseBank::CHECKS);
         }
 
         // ClaimGuard cases cost nothing, and two cases move the clock across the Manila midnight
@@ -110,7 +123,7 @@ class EvalCaseBankTest extends TestCase
         $this->assertSame(0, $json['skipped']);
         $this->assertSame(0, $json['provider_failed']);
         $this->assertGreaterThan(0, $json['answered_by_code']);
-        $this->assertCount(16, $json['categories']);
+        $this->assertCount(17, $json['categories']);
     }
 
     public function test_the_whole_bank_runs_through_the_real_claude_provider_class_with_http_faked(): void
@@ -121,6 +134,15 @@ class EvalCaseBankTest extends TestCase
 
         // A plausible, careful Claude reply for every call, with the usage block of a cache hit
         Http::fake(['api.anthropic.com/*' => function (Request $request) {
+            // 7E-3a: the owner's planning call forces the "plan" tool; a careful plan asks the owner to say more
+            if (str_contains($request->body(), '"tool_choice":{"type":"tool","name":"plan"}')) {
+                return Http::response([
+                    'id' => 'msg_test', 'type' => 'message', 'role' => 'assistant', 'model' => 'claude-haiku-5-5', 'stop_reason' => 'tool_use',
+                    'content' => [['type' => 'tool_use', 'id' => 'toolu_1', 'name' => 'plan', 'input' => ['action' => 'clarify', 'tools' => [], 'question' => 'Which period do you mean?']]],
+                    'usage' => ['input_tokens' => 2000, 'output_tokens' => 250, 'cache_read_input_tokens' => 2700, 'cache_creation_input_tokens' => 0],
+                ]);
+            }
+
             $reply = str_contains($request->body(), 'Solo Portrait') ? 'The Solo Portrait Session is ₱1,200.00. You can book it on Book a photoshoot.'
                 : 'I am not sure about that from here. Please message the studio in the Studio tab and they will help you.';
 

@@ -26,6 +26,9 @@ class AnthropicProvider implements AssistantProvider
 
     public const TOOL = 'reply';
 
+    /** Phase 7E-3a: the forced tool of the owner's planning call */
+    public const PLAN_TOOL = 'plan';
+
     public function __construct(
         private readonly string $apiKey,
         private readonly string $model,
@@ -78,8 +81,10 @@ class AnthropicProvider implements AssistantProvider
 
         $input = null;
 
+        $tool = $request->schema === ProviderRequest::PLAN ? self::PLAN_TOOL : self::TOOL;
+
         foreach ($data['content'] as $block) {
-            if (is_array($block) && ($block['type'] ?? null) === 'tool_use' && ($block['name'] ?? null) === self::TOOL && is_array($block['input'] ?? null)) {
+            if (is_array($block) && ($block['type'] ?? null) === 'tool_use' && ($block['name'] ?? null) === $tool && is_array($block['input'] ?? null)) {
                 $input = $block['input'];
 
                 break;
@@ -114,12 +119,16 @@ class AnthropicProvider implements AssistantProvider
                 'role' => $message->role === ProviderMessage::USER ? 'user' : 'assistant',
                 'content' => $message->text,
             ], $request->messages),
-            'tools' => [[
+            'tools' => [$request->schema === ProviderRequest::PLAN ? [
+                'name' => self::PLAN_TOOL,
+                'description' => 'Sends your plan: which read-only tools to run, or a clarifying question. Always answer through this tool, exactly once.',
+                'input_schema' => self::planSchema(),
+            ] : [
                 'name' => self::TOOL,
                 'description' => 'Sends your answer to the customer. Always answer through this tool, exactly once.',
                 'input_schema' => self::inputSchema(),
             ]],
-            'tool_choice' => ['type' => 'tool', 'name' => self::TOOL],
+            'tool_choice' => ['type' => 'tool', 'name' => $request->schema === ProviderRequest::PLAN ? self::PLAN_TOOL : self::TOOL],
         ];
     }
 
@@ -139,6 +148,29 @@ class AnthropicProvider implements AssistantProvider
         }
 
         return $blocks;
+    }
+
+    /**
+     * The owner's plan (Phase 7E-3a) as a JSON Schema. Each tool's parameters come as a JSON string, checked again by
+     * the tool's own validation; OwnerPlan rejects anything else.
+     *
+     * @return array<string, mixed>
+     */
+    public static function planSchema(): array
+    {
+        return [
+            'type' => 'object',
+            'properties' => [
+                'action' => ['type' => 'string', 'enum' => ['tools', 'clarify', 'out_of_scope', 'write_request']],
+                'tools' => ['type' => 'array', 'maxItems' => 3, 'items' => ['type' => 'object', 'properties' => [
+                    'name' => ['type' => 'string'],
+                    'params_json' => ['type' => 'string', 'description' => 'The parameters as a JSON object, {} for none.'],
+                ], 'required' => ['name', 'params_json']]],
+                'question' => ['type' => 'string', 'description' => 'For clarify: one short question to the owner.'],
+                'reason' => ['type' => 'string', 'description' => 'For out_of_scope or write_request: a few words.'],
+            ],
+            'required' => ['action', 'tools'],
+        ];
     }
 
     /**

@@ -41,7 +41,7 @@ class ResponseValidator
     {
         $text = strip_tags(html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         // Special and zero-width spaces become normal ones, so "Nov 3" never reads as "Nov3" (7E-2c)
-        $text = PlainText::spaces($text);
+        $text = PlainText::repair(PlainText::spaces($text));
         $text = preg_replace('/!?\[([^\]]*)\]\([^)]*\)/u', '$1', $text) ?? '';
         $text = preg_replace('~\b(?:https?|ftp)://\S+|\bwww\.\S+~iu', '', $text) ?? '';
         $text = preg_replace('~\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|ph|io|co|me|app|dev|info|biz|xyz|link|ly|gg|site|online|shop|store)\b(?:/\S*)?~iu', '', $text) ?? '';

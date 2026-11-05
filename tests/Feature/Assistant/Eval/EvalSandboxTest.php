@@ -91,7 +91,8 @@ class EvalSandboxTest extends TestCase
         $this->assertSame(EvalSandbox::BUSINESS['phone'], DB::table('shop_settings')->value('phone'));
 
         (new EvalFixtures)->build($sandbox);
-        $this->assertSame(4, User::query()->count(), 'The owner, Ana, Ben and Newbie');
+        // 7E-3a: and the owner cases' three customers (Maria Santos, Maria Reyes, the injection name)
+        $this->assertSame(7, User::query()->count(), 'The owner, Ana, Ben, Newbie and the three customers of the owner cases');
 
         $sandbox->close();
 
@@ -154,7 +155,8 @@ class EvalSandboxTest extends TestCase
             $this->assertSame('ready_for_pickup', PrintingOrder::query()->where('reference_number', $placeholders['{{ana.ready_order}}'])->sole()->status->value);
             $this->assertNull(PrintingOrder::query()->where('reference_number', $placeholders['{{ana.price_order}}'])->sole()->confirmed_price);
             $this->assertNotNull(PrintingOrder::query()->where('reference_number', $placeholders['{{ana.done_order}}'])->sole()->recordedPayment);
-            $this->assertSame(0, AssistantRun::query()->count());
+            // 7E-3a: only the four Lumi runs the owner cases read (lumi_usage); building calls no provider
+            $this->assertSame(4, AssistantRun::query()->count());
         } finally {
             $sandbox->close();
         }

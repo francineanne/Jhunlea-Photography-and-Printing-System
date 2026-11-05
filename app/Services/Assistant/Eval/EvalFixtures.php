@@ -31,7 +31,10 @@ class EvalFixtures
     private array $placeholders = [];
 
     /** @var array<string, array<string, array{type: string, id: int}>> scenario => reference => record */
-    private array $records = ['guest' => [], 'ana' => [], 'ben' => [], 'newbie' => []];
+    private array $records = ['guest' => [], 'ana' => [], 'ben' => [], 'newbie' => [], 'owner' => []];
+
+    // Phase 7E-3a: the "owner" scenario (actor = the shop owner) and its known data
+    private ?User $owner = null;
 
     public function build(EvalSandbox $sandbox): void
     {
@@ -73,11 +76,27 @@ class EvalFixtures
         foreach (EvalSandbox::BUSINESS as $key => $value) {
             $this->placeholders['{{shop.'.$key.'}}'] = $value;
         }
+
+        $this->owner = $owner;
+        $ownerData = new OwnerFixtures;
+        $ownerData->build($owner, $this->customers);
+        $this->placeholders += $ownerData->placeholders();
+        $this->records['owner'] = $ownerData->records();
+    }
+
+    /** The shop owner, the actor of the owner cases (7E-3a). */
+    public function owner(): User
+    {
+        return $this->owner ?? throw new RuntimeException('The eval fixtures are not built.');
     }
 
     public function actor(string $scenario): AssistantActor
     {
-        return $scenario === 'guest' ? AssistantActor::guest('eval-guest') : AssistantActor::user($this->customer($scenario)->id);
+        return match ($scenario) {
+            'guest' => AssistantActor::guest('eval-guest'),
+            'owner' => AssistantActor::user($this->owner()->id),
+            default => AssistantActor::user($this->customer($scenario)->id),
+        };
     }
 
     public function customer(string $scenario): User
@@ -151,7 +170,7 @@ class EvalFixtures
             $texts[] = $package->price === null ? '' : '₱'.$package->price;
         }
 
-        if ($case->scenario !== 'guest') {
+        if (! in_array($case->scenario, ['guest', 'owner'], true)) {
             $customer = $this->customer($case->scenario);
             foreach ([PrintingOrder::class, PhotographyBooking::class] as $model) {
                 foreach ($model::query()->where('customer_id', $customer->id)->with('recordedPayment')->get() as $record) {

@@ -97,7 +97,98 @@ class EvalReport
             'categories' => $this->categories(),
             'flaky' => $this->flaky(),
             'gate' => $this->gate(),
+            'characters' => $this->characters(),
+            'guards' => $this->guards(),
+            'possible_lost_spaces' => $this->possibleLostSpaces(),
+            'hedged_opt_outs' => $this->hedgedOptOuts(),
         ];
+    }
+
+    /**
+     * The glued-words diagnostic (7E-2e, not a gate): how many model replies held a character PlainText exists for
+     * (special spaces, soft hyphen, invisible format or control characters) in the RAW reply, and in the final one.
+     *
+     * @return array{replies: int, raw_with_unusual: int, final_with_unusual: int, top_raw: array<string, int>, glue_hits: int}
+     */
+    public function characters(): array
+    {
+        $described = array_values(array_filter(array_map(fn (EvalAttempt $attempt) => $attempt->characters, $this->attempts)));
+        $top = [];
+        $rawWith = 0;
+        $finalWith = 0;
+
+        foreach ($described as $row) {
+            $raw = EvalCharacters::suspicious($row['raw']);
+            $rawWith += $raw === [] ? 0 : 1;
+            $finalWith += EvalCharacters::suspicious($row['final']) === [] ? 0 : 1;
+
+            foreach ($raw as $code => $count) {
+                $top[$code] = ($top[$code] ?? 0) + $count;
+            }
+        }
+
+        arsort($top);
+
+        return ['replies' => count($described), 'raw_with_unusual' => $rawWith, 'final_with_unusual' => $finalWith,
+            'top_raw' => array_slice($top, 0, 5, true), 'glue_hits' => array_sum(array_map(fn (array $row) => count($row['glue']), $described))];
+    }
+
+    /**
+     * Sentences ClaimGuard, PriceGuard and the other cleanups removed (7E-2e, not a gate): totals per guard, the share of
+     * model replies with a removal, and which cases (id, guard, count, never text). A sudden rise is a new false positive.
+     *
+     * @return array{removed: array<string, int>, replaced: array<string, int>, model_replies: int, with_removal: int, share: ?float, cases: list<array{id: string, run: int, guard: string, count: int}>}
+     */
+    public function guards(): array
+    {
+        $removed = [];
+        $replaced = [];
+        $cases = [];
+        $model = 0;
+        $with = 0;
+
+        foreach ($this->attempts as $attempt) {
+            if ($attempt->providerCalled && $attempt->case->feature !== 'claimguard') {
+                $model++;
+                $with += ($attempt->guards['removed'] ?? []) === [] ? 0 : 1;
+            }
+
+            foreach ($attempt->guards['removed'] ?? [] as $guard => $count) {
+                $removed[$guard] = ($removed[$guard] ?? 0) + $count;
+                $cases[] = ['id' => $attempt->case->id, 'run' => $attempt->run, 'guard' => $guard, 'count' => $count];
+            }
+
+            foreach ($attempt->guards['replaced'] ?? [] as $guard => $count) {
+                $replaced[$guard] = ($replaced[$guard] ?? 0) + $count;
+            }
+        }
+
+        return ['removed' => $removed, 'replaced' => $replaced, 'model_replies' => $model, 'with_removal' => $with, 'share' => $this->rate($with, $model), 'cases' => $cases];
+    }
+
+    /** Words of model replies that look like two joined words (7E-2e, a rough guess, never a gate). @return array{count: int, candidates: list<string>} */
+    public function possibleLostSpaces(): array
+    {
+        $found = [];
+
+        foreach ($this->attempts as $attempt) {
+            if ($attempt->providerCalled) {
+                foreach (EvalChecks::possibleLostSpaces($attempt->reply) as $word) {
+                    $found[] = $attempt->case->id.': '.$word;
+                }
+            }
+        }
+
+        $found = array_values(array_unique($found));
+
+        return ['count' => count($found), 'candidates' => array_slice($found, 0, 30)];
+    }
+
+    /** Cases that read their whole reply, hedged clauses included ("ignore_hedged_clauses": false). @return list<string> */
+    public function hedgedOptOuts(): array
+    {
+        return array_values(array_unique(array_map(fn (EvalAttempt $attempt) => $attempt->case->id,
+            array_filter($this->attempts, fn (EvalAttempt $attempt) => ($attempt->case->expect['ignore_hedged_clauses'] ?? true) === false))));
     }
 
     /** @return array<string, array{scored: int, passed: int, pass_rate: ?float, review: int, provider_failed: int}> */
@@ -213,6 +304,7 @@ class EvalReport
             'results' => array_map(fn (EvalAttempt $attempt) => [
                 'id' => $attempt->case->id, 'category' => $attempt->case->category, 'severity' => $attempt->case->severity, 'run' => $attempt->run,
                 'status' => $attempt->status, 'outcome' => $attempt->outcome, 'failed_checks' => $attempt->failed,
+                'characters' => $attempt->characters, 'guards' => $attempt->guards,
             ], $this->attempts),
         ];
     }
@@ -253,6 +345,20 @@ class EvalReport
         }
 
         $lines[] = '- Estimated cost: '.$money($s['cost_usd']).'; per model case: '.$money($s['cost_per_model_case_usd']).' ('.$s['cost_note'].')';
+        $lines[] = '';
+        $lines[] = '## Reply hygiene (not a gate)';
+        $lines[] = '';
+        $c = $s['characters'];
+        $lines[] = "- Replies with unusual characters: {$c['raw_with_unusual']} of {$c['replies']} (raw), {$c['final_with_unusual']} of {$c['replies']} (final); top code points: ".EvalCharacters::format($c['top_raw'])."; glued-word hits: {$c['glue_hits']}";
+        $g = $s['guards'];
+        $lines[] = '- Guard removals: '.($g['removed'] === [] ? 'none' : implode(', ', array_map(fn ($guard, $count) => "{$guard} {$count}", array_keys($g['removed']), $g['removed'])))
+            .'; whole reply replaced: '.($g['replaced'] === [] ? 'none' : implode(', ', array_map(fn ($guard, $count) => "{$guard} {$count}", array_keys($g['replaced']), $g['replaced'])))
+            ."; model replies with a removal: {$g['with_removal']} of {$g['model_replies']}".($g['share'] === null ? '' : " ({$g['share']}%)").' (a sudden rise means a new false positive)';
+        foreach ($g['cases'] as $row) {
+            $lines[] = "  - {$row['id']} (run {$row['run']}): {$row['guard']} {$row['count']}";
+        }
+        $lines[] = "- Possible lost spaces (a guess): {$s['possible_lost_spaces']['count']}".($s['possible_lost_spaces']['candidates'] === [] ? '' : ': '.implode('; ', $s['possible_lost_spaces']['candidates']));
+        $lines[] = '- Cases reading hedged clauses too (ignore_hedged_clauses false): '.($s['hedged_opt_outs'] === [] ? 'none' : implode(', ', $s['hedged_opt_outs']));
         $lines[] = '';
         $lines[] = '## By category';
         $lines[] = '';

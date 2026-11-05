@@ -13,6 +13,8 @@ enum AssistantFeature: string
     case StudioAway = 'studio_away';
     case OwnerAssistSuggest = 'owner_assist_suggest';
     case OwnerAssistSummarize = 'owner_assist_summarize';
+    // Phase 7E-3a: the owner asks about their own shop (OwnerAskService, read-only tools); never through AssistantEngine
+    case OwnerAsk = 'owner_ask';
 
     /** The share of the shop's daily budget this feature draws from (config assistant.limits.global_shares). */
     public function budgetGroup(): string
@@ -21,6 +23,7 @@ enum AssistantFeature: string
             self::AskLumi => 'ask_lumi',
             self::StudioAway => 'studio_away',
             self::OwnerAssistSuggest, self::OwnerAssistSummarize => 'owner_assist',
+            self::OwnerAsk => 'owner_ask',
         };
     }
 
@@ -35,10 +38,16 @@ enum AssistantFeature: string
         return $this->budgetGroup() === 'owner_assist';
     }
 
-    /** Only replies to customers carry recommendation cards; owner drafts are plain text. */
+    /** Only replies to customers carry recommendation cards; owner drafts are plain text (owner_ask has its own). */
     public function showsCards(): bool
     {
-        return ! $this->isOwnerAssist();
+        return ! $this->isOwnerAssist() && $this !== self::OwnerAsk;
+    }
+
+    /** Phase 7E-3a: features answered by OwnerAskService, not AssistantEngine. */
+    public function isOwnerAsk(): bool
+    {
+        return $this === self::OwnerAsk;
     }
 
     /** The fixed text used when this feature cannot reach the model (config assistant.messages). */
@@ -48,12 +57,17 @@ enum AssistantFeature: string
             self::AskLumi => config('assistant.messages.unavailable'),
             self::StudioAway => config('assistant.messages.studio_away'),
             self::OwnerAssistSuggest, self::OwnerAssistSummarize => config('assistant.messages.owner_assist'),
+            self::OwnerAsk => config('assistant.messages.owner_ask'),
         };
     }
 
     /** The text for a customer who used up their own daily limit. The other features keep their usual fallback. */
     public function userLimitMessage(): string
     {
-        return $this === self::AskLumi ? config('assistant.messages.limit_user') : $this->fallbackMessage();
+        return match ($this) {
+            self::AskLumi => config('assistant.messages.limit_user'),
+            self::OwnerAsk => config('assistant.messages.owner_ask_limit'),
+            default => $this->fallbackMessage(),
+        };
     }
 }

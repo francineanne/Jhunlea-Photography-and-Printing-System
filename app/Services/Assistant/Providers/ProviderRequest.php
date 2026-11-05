@@ -12,6 +12,11 @@ use App\Enums\AssistantFeature;
  */
 final class ProviderRequest
 {
+    /** The output contracts (Phase 7E-3a): the usual reply, or the owner's Ask Lumi plan (which tools to run). */
+    public const REPLY = 'reply';
+
+    public const PLAN = 'plan';
+
     public readonly string $systemInstruction;
 
     /** @param list<ProviderMessage> $messages oldest first; the last one is the message to answer */
@@ -20,6 +25,7 @@ final class ProviderRequest
         public readonly array $messages,
         public readonly AssistantFeature $feature,
         public readonly string $volatileSystem = '',
+        public readonly string $schema = self::REPLY,
     ) {
         $this->systemInstruction = $volatileSystem === '' ? $stableSystem : $stableSystem."\n\n".$volatileSystem;
     }

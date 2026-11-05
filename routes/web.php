@@ -23,6 +23,7 @@ use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
 use App\Http\Controllers\Owner\MessageController as OwnerMessageController;
+use App\Http\Controllers\Owner\OwnerAskController;
 use App\Http\Controllers\Owner\OwnerAssistController;
 use App\Http\Controllers\Owner\OwnerPresenceController;
 use App\Http\Controllers\Owner\PackageController;
@@ -327,6 +328,13 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/assistant/conversations
     Route::get('/', 'index')->middleware('throttle:60,1,chat-assistant-list')->name('index');
     Route::post('/', 'store')->middleware('throttle:10,1,chat-assistant-new')->name('store');
     Route::get('/{conversation}/handoff-draft', 'handoffDraft')->whereNumber('conversation')->middleware('throttle:20,1,chat-handoff-draft')->name('handoff-draft');
+});
+
+// The owner's own Ask Lumi (Phase 7E-3a): read-only answers about the shop, JSON only (the page is 7E-3b)
+Route::middleware(['auth', 'role:owner'])->prefix('owner/assistant')->name('owner.assistant.')->controller(OwnerAskController::class)->group(function () {
+    Route::post('/ask', 'ask')->middleware('throttle:10,1,owner-ask-question')->name('ask');
+    Route::get('/history', 'history')->middleware('throttle:60,1,owner-ask-history')->name('history');
+    Route::get('/briefing', 'briefing')->middleware('throttle:30,1,owner-ask-briefing')->name('briefing');
 });
 
 // The owner's studio inbox, threads and presence; Ask Lumi conversations are never reachable here
