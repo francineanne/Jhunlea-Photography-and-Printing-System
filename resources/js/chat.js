@@ -1,7 +1,7 @@
 // The customer chat (Phase 7C): one component for the floating panel ("compact") and the full page ("full"), with the
 // tabs Ask Lumi and Studio. Everything shown comes from the server; messages are only ever rendered with x-text.
 
-import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX } from './chat-common';
+import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
 
 const LUMI_RETRIES = 5;
 const LUMI_RETRY_MS = 2000;
@@ -58,8 +58,6 @@ const writeLocal = (key, value) => {
         // storage unavailable: the notice shows again next time
     }
 };
-
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
 // The last "Who do you want to talk to?" choice (7F): a convenience for this browser only. Without storage the chooser
 // simply shows each time.
@@ -987,7 +985,7 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
 
         // A reader who scrolled up is left where they are; a new message glides in unless motion is reduced
         if (log && (force || this.isNearBottom())) {
-            log.scrollTo({ top: log.scrollHeight, behavior: force || reducedMotion() ? 'auto' : 'smooth' });
+            scrollToEnd(log, force);
         }
     },
 });

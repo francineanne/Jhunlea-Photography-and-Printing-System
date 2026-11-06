@@ -6,6 +6,14 @@ export const MAX_REFRESH_PAGES = 10;
 
 export const NEAR_BOTTOM_PX = 120;
 
+// Every chat list scrolls to its end the same way (7F-2): at once when asked to (opening, sending), otherwise a short
+// glide, never with reduced motion
+export const scrollToEnd = (log, force = false) => {
+    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    log.scrollTo({ top: log.scrollHeight, behavior: force || reduced ? 'auto' : 'smooth' });
+};
+
 export const clientId = () => {
     if (window.crypto?.randomUUID) {
         return window.crypto.randomUUID();

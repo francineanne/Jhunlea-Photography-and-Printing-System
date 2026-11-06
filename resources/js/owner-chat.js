@@ -1,7 +1,7 @@
 // The owner's studio inbox (Phase 7D): the list of studio threads, the open thread with its composer, Suggest reply and
 // Summarize (drafts only), and the presence control. Everything shown comes from the server and is drawn with x-text.
 
-import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX } from './chat-common';
+import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
 
 const LIST_POLL_MS = 30000;
 const PRESENCE_POLL_MS = 60000;
@@ -549,7 +549,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
         const log = this.$refs.log;
 
         if (log && (force || this.isNearBottom())) {
-            log.scrollTop = log.scrollHeight;
+            scrollToEnd(log, force);
         }
     },
 });

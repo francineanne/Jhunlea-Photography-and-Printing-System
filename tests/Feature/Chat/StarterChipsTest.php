@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Chat;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,6 +36,20 @@ class StarterChipsTest extends TestCase
         $this->assertSame(4, substr_count($html, 'data-chat-prompt '));
         $this->assertStringContainsString('What printing services do you offer?', $html);
         $this->assertStringNotContainsString('Where is my order?', $html);
+    }
+
+    public function test_the_owner_panel_shows_four_chips_and_the_full_page_five(): void
+    {
+        $owner = User::factory()->owner()->create();
+        $prompts = config('assistant.owner.suggested_prompts');
+
+        // The floating panel (every owner page but its own): at most 4, in order; the full page: up to 5
+        $panel = $this->actingAs($owner)->get(route('owner.dashboard'))->assertOk()->getContent();
+        $this->assertSame(min(4, count($prompts)), substr_count($panel, 'data-owner-ask-chip '));
+        $this->assertStringContainsString("x-on:click=\"ask('{$prompts[0]}')\"", $panel);
+
+        $page = $this->actingAs($owner)->get(route('owner.assistant.index'))->assertOk()->getContent();
+        $this->assertSame(min(5, count($prompts)), substr_count($page, 'data-owner-ask-chip '));
     }
 
     public function test_the_chips_hide_once_the_customer_has_written(): void

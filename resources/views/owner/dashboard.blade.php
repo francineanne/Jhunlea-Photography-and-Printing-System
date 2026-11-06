@@ -168,7 +168,7 @@
                     </template>
                 </ul>
                 <button type="button" x-show="state === 'ready'" x-cloak x-on:click="askAbout(@js(config('assistant.owner.glance_prompt')))" data-owner-glance-ask
-                    class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border px-3 text-sm font-semibold hover:border-brand hover:text-brand focus-ring">
+                    class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border px-3 text-sm font-semibold hover:border-brand hover:text-brand focus-ring dark:hover:text-[#ffb4ac]">
                     <x-ui.icon name="camera" :size="18" />Ask {{ config('assistant.name') }} about this
                 </button>
             </section>

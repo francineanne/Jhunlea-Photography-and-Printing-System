@@ -1,7 +1,7 @@
 // The owner's Ask Lumi (Phase 7E-3b): the floating panel on every owner page and the full page are this one Alpine
 // component. It only talks to the read-only endpoints (ask, history, briefing); every text is drawn with x-text and
 // every link is a relative owner path the server built.
-import { apiRequest, clientId } from './chat-common';
+import { apiRequest, clientId, scrollToEnd } from './chat-common';
 
 const SHEET_BELOW_PX = 640;
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -282,7 +282,41 @@ export default ({ mode, urls, texts, prefill = null }) => ({
     scrollDown() {
         const log = this.$refs.log;
 
-        if (log) log.scrollTop = log.scrollHeight;
+        if (log) scrollToEnd(log, !this.loaded);
+    },
+
+    // ---- How the list is drawn (7F-2): a date line when the day changes, the avatar and name once per group ----
+
+    dayOf(row) {
+        return row?.time?.match(/^[A-Za-z]+ \d+, \d+/)?.[0] ?? null;
+    },
+
+    // The date to show above this row, or null when the day did not change
+    dayLine(row) {
+        const index = this.rows.indexOf(row);
+        const day = this.dayOf(row);
+
+        if (day === null) return null;
+
+        for (let i = index - 1; i >= 0; i -= 1) {
+            const earlier = this.dayOf(this.rows[i]);
+
+            if (earlier !== null) return earlier === day ? null : day;
+        }
+
+        return day;
+    },
+
+    isFirst(row) {
+        const previous = this.rows[this.rows.indexOf(row) - 1];
+
+        return !previous || previous.role !== row.role || row.role === 'notice' || this.dayLine(row) !== null;
+    },
+
+    clock(row) {
+        const day = this.dayOf(row);
+
+        return day ? row.time.slice(day.length).trim() : row.time;
     },
 });
 

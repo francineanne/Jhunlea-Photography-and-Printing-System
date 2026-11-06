@@ -220,6 +220,10 @@
 
         {{-- The conversation --}}
         <div x-show="!choosing && !signInNeeded" x-ref="log" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:p-4">
+            {{-- Bottom anchor (7H.1): takes the free space above, so a short conversation (or the greeting and its chips)
+                 rests on the message box; a long one scrolls as usual --}}
+            <div class="mt-auto" aria-hidden="true"></div>
+
             <button type="button" x-show="thread.state?.has_more_before" x-cloak x-on:click="loadEarlier()" x-bind:disabled="thread.earlier"
                 class="mx-auto inline-flex min-h-11 items-center gap-1.5 rounded-full border border-app-border px-4 text-sm font-semibold text-app-text-2 hover:bg-black/5 disabled:opacity-60 focus-ring dark:hover:bg-white/5">
                 <x-ui.icon name="expand_less" :size="18" />Load earlier
@@ -230,38 +234,16 @@
             <x-chat.rows />
 
             {{-- Suggestions for a conversation nobody has written in yet --}}
-            <div x-show="showPrompts" x-cloak class="mt-4 flex flex-col gap-1.5" data-chat-prompts>
-                <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Try asking</p>
-                <div class="flex flex-wrap gap-1.5">
-                    @foreach (config($guest ? 'chat.suggested_prompts_guest' : 'chat.suggested_prompts') as $prompt)
-                        <button type="button" data-chat-prompt x-on:click="drafts.ask = @js($prompt); submit()" class="min-h-11 rounded-full bg-neutral-100 px-3 py-1.5 text-left text-sm transition-colors duration-150 hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">{{ $prompt }}</button>
-                    @endforeach
-                </div>
-            </div>
+            <x-chat.prompts :prompts="config($guest ? 'chat.suggested_prompts_guest' : 'chat.suggested_prompts')" click="drafts.ask = %s; submit()" marker="data-chat-prompt"
+                :max="$full ? 5 : 4" x-show="showPrompts" x-cloak data-chat-prompts />
 
-            <div x-show="thread.typing" x-cloak class="mt-4 flex items-center gap-2" data-chat-typing>
-                <x-chat.avatar who="lumi" decorative />
-                <p class="flex items-center gap-2 rounded-card rounded-tl-md bg-neutral-100 px-3.5 py-2.5 text-xs text-app-text-2 dark:bg-white/10">
-                    <span class="flex items-center gap-1" aria-hidden="true">
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand motion-reduce:animate-none"></span>
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.2s] motion-reduce:animate-none"></span>
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.4s] motion-reduce:animate-none"></span>
-                    </span>
-                    {{ $name }} is typing
-                </p>
-            </div>
+            <x-chat.typing :text="$name.' is typing'" x-show="thread.typing" x-cloak data-chat-typing />
         </div>
 
         {{-- Anything that went wrong, in plain words, with a way forward --}}
-        <div x-show="banner" x-cloak role="alert" class="mx-2 mb-1 flex flex-wrap items-center gap-x-2 rounded-control border border-status-red/30 bg-status-red-bg py-1 pl-3 pr-1 text-sm text-[#991B1B] dark:border-[#ffb4ac]/30 dark:bg-[#ffb4ac]/10 dark:text-[#ffb4ac] sm:mx-3" data-chat-banner>
-            <x-ui.icon name="error" :size="18" />
-            <p class="min-w-0 flex-1 basis-40" x-text="banner?.text"></p>
-            {{-- !!: Alpine calls an expression that evaluates to a function, which here would run the retry on every render --}}
-            <button type="button" x-show="!!banner?.retry" x-on:click="runRetry()" class="min-h-11 rounded-control px-2 font-semibold underline focus-ring">Try again</button>
+        <x-chat.banner data-chat-banner>
             <button type="button" x-show="banner?.kind === 'full'" x-on:click="newConversation()" class="min-h-11 rounded-control px-2 font-semibold underline focus-ring">Start a new conversation</button>
-            <button type="button" x-show="banner?.kind === 'session'" x-on:click="window.location.reload()" class="min-h-11 rounded-control px-2 font-semibold underline focus-ring">Reload the page</button>
-            <button type="button" x-on:click="banner = null" aria-label="Dismiss this message" class="grid size-11 place-items-center rounded-control focus-ring"><x-ui.icon name="close" :size="18" /></button>
-        </div>
+        </x-chat.banner>
 
         {{-- The composer --}}
         <form x-show="!choosing && !signInNeeded" x-on:submit.prevent="submit()" class="border-t border-app-border px-2 pb-1.5 pt-2 sm:px-3">
@@ -272,15 +254,7 @@
             <p x-show="tab === 'studio' && fromAssistant" x-cloak class="mb-1.5 flex items-center gap-1 text-xs text-app-text-2">
                 <x-ui.icon name="camera" :size="14" />Sent from your Ask Lumi chat. Please check the text before you send it.
             </p>
-            <div class="flex items-end gap-1.5 rounded-control border border-app-border bg-app-card p-1 focus-within:border-brand focus-within:shadow-[0_0_0_3px_rgba(198,40,40,0.12)]">
-                <textarea x-ref="input" x-model="draft" x-on:keydown="onKeydown($event)" x-on:input="resize()" rows="1" maxlength="{{ (int) config('chat.message_max_chars') }}"
-                    aria-label="Your message" x-bind:placeholder="tab === 'ask' ? 'Ask about our services' : 'Write to the studio'"
-                    class="max-h-36 min-h-11 min-w-0 flex-1 resize-none bg-transparent px-2 py-2.5 text-base leading-6 placeholder:text-app-text-2 focus:outline-none sm:text-sm"></textarea>
-                <button type="submit" x-bind:disabled="!canSend" aria-label="Send message"
-                    class="grid size-11 shrink-0 place-items-center rounded-control bg-brand text-white transition-[background-color,transform] duration-150 hover:bg-brand-deep active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 focus-ring">
-                    <x-ui.icon name="arrow_upward" />
-                </button>
-            </div>
+            <x-chat.composer-box label="Your message" send-label="Send message" placeholder-bind="tab === 'ask' ? 'Ask about our services' : 'Write to the studio'" />
             {{-- One quiet line under the box: the way to a person (Ask Lumi), the sign-in note (guests), the counter --}}
             <div class="mt-0.5 flex min-h-6 items-center justify-between gap-2 px-1 text-[11px] text-app-text-2">
                 <span x-show="guest && tab === 'ask'" x-cloak>Signing in saves this conversation. <a href="{{ route('login') }}" class="inline-flex min-h-11 min-w-11 items-center justify-center rounded font-semibold text-brand underline focus-ring dark:text-[#ffb4ac] sm:min-h-6 sm:min-w-0">Log in</a></span>
