@@ -31,7 +31,7 @@
         <button type="button" x-ref="launcher" x-show="!open" x-on:click="show()" data-owner-ask-launcher x-cloak
             class="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-4 z-30 flex min-h-11 items-center gap-2.5 rounded-full border border-app-border bg-app-card py-1.5 pl-1.5 pr-4 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.18),0_4px_8px_-2px_rgba(23,23,23,0.08)] transition-transform duration-[280ms] ease-brand hover:scale-[1.02] focus-ring motion-reduce:transition-none motion-reduce:hover:scale-100 sm:right-6"
             aria-label="Open Ask {{ $name }}, the AI assistant for your shop's records">
-            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand text-white shadow-sm" aria-hidden="true"><x-ui.icon name="auto_awesome" /></span>
+            <x-chat.avatar who="lumi" size="md" decorative />
             <span class="text-left leading-tight" aria-hidden="true">
                 <span class="block text-sm font-semibold">Ask {{ $name }}</span>
                 <span class="block text-[10px] font-bold uppercase tracking-wider text-brand dark:text-[#ffb4ac]">Your shop's records</span>
@@ -48,7 +48,7 @@
         ])>
 
         <header class="flex items-center gap-3 bg-neutral-100/80 p-3 dark:bg-white/5 sm:px-4">
-            <span class="grid size-10 shrink-0 place-items-center rounded-card bg-brand text-white shadow-sm" aria-hidden="true"><x-ui.icon name="auto_awesome" :size="22" /></span>
+            <x-chat.avatar who="lumi" size="lg" />
             <div class="min-w-0 flex-1">
                 <p class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                     <span class="font-semibold">Ask {{ $name }}</span>
@@ -100,7 +100,7 @@
             {{-- The greeting, for a conversation with no question yet --}}
             <div x-show="showChips" x-cloak class="flex flex-col gap-3" data-owner-ask-chips>
                 <div class="flex max-w-[92%] items-start gap-2 self-start">
-                    <span class="grid size-8 shrink-0 place-items-center rounded-full bg-brand text-white shadow-sm" aria-hidden="true"><x-ui.icon name="auto_awesome" :size="16" /></span>
+                    <x-chat.avatar who="lumi" />
                     <p class="rounded-card rounded-tl-none bg-neutral-100 px-3 py-2 text-sm dark:bg-white/10">Hi! I'm {{ $name }}, an AI assistant. Ask me about payments, unpaid balances, orders, bookings, the schedule, customers or messages. I only read your records; I never change anything.</p>
                 </div>
                 <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Try asking</p>
@@ -122,8 +122,8 @@
 
                     <template x-if="row.role !== 'notice'">
                         <div class="flex max-w-[92%] items-start gap-2" x-bind:class="row.role === 'owner' ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-owner-ask-row="row.role">
-                            <span class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full text-[16px] text-white shadow-sm" aria-hidden="true"
-                                x-bind:class="row.role === 'lumi' ? 'bg-brand' : 'bg-ink dark:bg-neutral-600'" x-text="row.role === 'lumi' ? 'auto_awesome' : 'person'"></span>
+                            <x-chat.avatar who="lumi" x-show="row.role === 'lumi'" />
+                            <span x-show="row.role !== 'lumi'" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-ink text-[16px] text-white shadow-sm dark:bg-neutral-600" aria-hidden="true">person</span>
 
                             <div class="flex min-w-0 flex-col gap-1" x-bind:class="row.role === 'owner' ? 'items-end' : 'items-start'">
                                 <p class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.role === 'owner' ? 'justify-end' : ''">
@@ -166,7 +166,7 @@
             </template>
 
             <div x-show="waiting" x-cloak class="flex items-center gap-2" data-owner-ask-typing>
-                <span class="grid size-8 shrink-0 place-items-center rounded-full bg-brand/15 text-brand dark:text-[#ffb4ac]" aria-hidden="true"><x-ui.icon name="auto_awesome" :size="16" /></span>
+                <x-chat.avatar who="lumi" decorative />
                 <p class="flex items-center gap-2 rounded-full bg-neutral-100 px-3 py-2 text-xs text-app-text-2 dark:bg-white/10">
                     <span class="flex items-center gap-1" aria-hidden="true">
                         <span class="size-1.5 animate-bounce rounded-full bg-brand motion-reduce:animate-none"></span>

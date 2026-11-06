@@ -12,7 +12,7 @@
         ['label' => 'Customers', 'icon' => 'group', 'route' => 'owner.customers.index', 'match' => 'owner.customers.*'],
         ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.index', 'match' => 'owner.reports.*'],
         ['label' => 'Messages', 'icon' => 'forum', 'route' => 'owner.messages.index', 'match' => 'owner.messages.*', 'badge' => $unanswered ?? 0],
-        ['label' => 'Ask '.config('assistant.name'), 'icon' => 'auto_awesome', 'route' => 'owner.assistant.index', 'match' => 'owner.assistant.*'],
+        ['label' => 'Ask '.config('assistant.name'), 'icon' => 'camera', 'route' => 'owner.assistant.index', 'match' => 'owner.assistant.*'],
         ['label' => 'Notifications', 'icon' => 'notifications', 'route' => 'owner.notifications.index', 'match' => 'owner.notifications.*', 'badge' => $bell['unread'] ?? 0],
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],

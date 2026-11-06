@@ -30,7 +30,7 @@
                 <h1 class="mt-2 font-display text-3xl font-semibold leading-tight sm:text-5xl">Photography packages</h1>
                 <p class="mt-3 text-app-text-2">Pick the session that fits your occasion. Tick up to three packages to compare them side by side, or let the finder suggest where to start.</p>
                 <x-ui.button :href="route('packages.finder')" variant="outline" class="mt-4">
-                    <x-ui.icon name="auto_awesome" :size="20" /> Help me choose
+                    <x-ui.icon name="travel_explore" :size="20" /> Help me choose
                 </x-ui.button>
             </div>
             @if ($total > 0)

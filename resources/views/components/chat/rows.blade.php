@@ -5,7 +5,7 @@
 {{--
     The rows of a conversation (Phase 7D), shared by the customer chat and the owner's thread. The parent Alpine component
     provides: rows (buildRows), tab, viewer ('guest', 'customer' or 'owner'), retryMessage(), discardMessage(),
-    switchTab() and contactOwner(). Everything from a message, a name or a card is drawn with x-text, never as HTML.
+    switchTab() and contactOwner(). Avatars: <x-chat.avatar> (the brand mark; Lumi's has the AI badge). Everything from a message, a name or a card is drawn with x-text, never as HTML.
 --}}
 <template x-for="row in rows" x-bind:key="row.key">
     <div class="flex flex-col">
@@ -28,14 +28,16 @@
 
         <template x-if="row.type === 'bubble'">
             <div class="flex max-w-[92%] items-start gap-2" x-bind:class="row.message.mine ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-chat-sender="row.message.sender_type">
-                <span class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full text-[16px] text-white shadow-sm" aria-hidden="true"
-                    x-bind:class="row.message.sender_type === 'assistant' ? 'bg-brand' : (row.message.sender_type === 'owner' ? 'bg-neutral-700' : 'bg-ink dark:bg-neutral-600')"
-                    x-text="row.message.sender_type === 'assistant' ? 'auto_awesome' : (row.message.sender_type === 'owner' ? 'storefront' : 'person')"></span>
+                {{-- Lumi and the studio share the brand mark; only Lumi's carries the AI badge (and the names say who) --}}
+                <x-chat.avatar who="lumi" x-show="row.message.sender_type === 'assistant'" />
+                <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner'" />
+                <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner'" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-ink text-[16px] text-white shadow-sm dark:bg-neutral-600" aria-hidden="true">person</span>
 
                 <div class="flex min-w-0 flex-col gap-1" x-bind:class="row.message.mine ? 'items-end' : 'items-start'">
                     <p class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.message.mine ? 'justify-end' : ''">
                         <span class="font-semibold" x-text="row.message.sender_label"></span>
                     <span x-show="viewer === 'owner' && row.message.sender_type === 'customer'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10">Customer</span>
+                        <span x-show="viewer !== 'owner' && row.message.sender_type === 'owner'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10" data-chat-studio-tag>Studio</span>
                         <span x-show="row.message.sender_type === 'assistant'" class="rounded bg-brand/10 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI</span>
                         {{-- The backup provider wrote this reply (7E-2a); which provider is never shown --}}
                         <span x-show="row.message.sender_type === 'assistant' && row.message.via_backup === true" x-cloak title="{{ $liteText }}" tabindex="0" data-chat-lite

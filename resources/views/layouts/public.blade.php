@@ -6,7 +6,7 @@
     $links = [
         ['label' => 'Printing services', 'icon' => 'print', 'route' => 'services.index'],
         ['label' => 'Photography packages', 'icon' => 'photo_camera', 'route' => 'packages.index', 'match' => ['packages.index', 'packages.show', 'packages.compare']],
-        ['label' => 'Package finder', 'icon' => 'auto_awesome', 'route' => 'packages.finder'],
+        ['label' => 'Package finder', 'icon' => 'travel_explore', 'route' => 'packages.finder'],
     ];
 
     // rescue(): this layout also wraps the error pages, which must never throw (session store down, odd role value)

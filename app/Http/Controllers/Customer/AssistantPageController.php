@@ -20,9 +20,19 @@ class AssistantPageController extends Controller
 
     public function __invoke(Request $request): View
     {
+        // No ?tab= leaves the choice to the chooser (7F) or the customer's remembered choice
+        $tab = match ($request->query('tab')) {
+            'studio' => 'studio',
+            'ask' => 'ask',
+            default => null,
+        };
+        $about = $tab === 'studio' ? $this->about($request->user(), $request->query('about')) : null;
+
         return view('customer.assistant.page', [
-            'tab' => $request->query('tab') === 'studio' ? 'studio' : 'ask',
-            'about' => $this->about($request->user(), $request->query('about')),
+            'tab' => $tab,
+            'about' => $about,
+            // Only typed into the box; the customer sends it themselves
+            'draft' => $about === null ? null : 'Hi, about '.$about['reference'].': ',
         ]);
     }
 

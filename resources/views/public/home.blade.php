@@ -81,7 +81,7 @@
                 </x-ui.card>
 
                 <x-ui.card hover design class="flex flex-col">
-                    <span class="grid size-12 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="auto_awesome" :size="26" /></span>
+                    <span class="grid size-12 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="travel_explore" :size="26" /></span>
                     <h3 class="mt-4 font-display text-xl font-semibold">Package finder</h3>
                     <p class="mt-2 text-sm text-app-text-2">Not sure which package suits you? Answer a few questions and see the closest matches, with the reasons why.</p>
                     <div class="mt-auto pt-5"><x-ui.button :href="route('packages.finder')" variant="outline" size="sm">Help me choose</x-ui.button></div>

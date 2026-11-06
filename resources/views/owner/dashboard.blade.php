@@ -147,7 +147,7 @@
                  A failure shows a short note; the page never breaks --}}
             <section x-data="ownerBriefing(@js(route('owner.assistant.briefing')))" class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="glance-title" data-owner-glance>
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
-                    <h2 id="glance-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="auto_awesome" :size="22" class="text-brand" />Today at a glance</h2>
+                    <h2 id="glance-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="today" :size="22" class="text-brand" />Today at a glance</h2>
                     <span class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">From your records</span>
                 </div>
                 <noscript><p class="mt-3 text-sm text-app-text-2">Turn on JavaScript to see today at a glance.</p></noscript>
@@ -169,7 +169,7 @@
                 </ul>
                 <button type="button" x-show="state === 'ready'" x-cloak x-on:click="askAbout(@js(config('assistant.owner.glance_prompt')))" data-owner-glance-ask
                     class="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border px-3 text-sm font-semibold hover:border-brand hover:text-brand focus-ring">
-                    <x-ui.icon name="auto_awesome" :size="18" />Ask {{ config('assistant.name') }} about this
+                    <x-ui.icon name="camera" :size="18" />Ask {{ config('assistant.name') }} about this
                 </button>
             </section>
 

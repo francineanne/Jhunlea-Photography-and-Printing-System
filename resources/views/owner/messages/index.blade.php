@@ -120,7 +120,7 @@
                                         <span class="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold">
                                             <span x-show="item.unread_count > 0" class="rounded-full bg-brand px-2 py-0.5 text-white" x-text="item.unread_count + ' new'"></span>
                                             <span x-show="item.needs_reply && !item.resolved" class="rounded-full bg-status-amber-bg px-2 py-0.5 text-[#92400E]">Unanswered</span>
-                                            <span x-show="item.needs_owner" class="inline-flex items-center gap-1 rounded-full bg-status-violet-bg px-2 py-0.5 text-status-violet"><x-ui.icon name="auto_awesome" :size="12" />{{ $name }} handed off</span>
+                                            <span x-show="item.needs_owner" class="inline-flex items-center gap-1 rounded-full bg-status-violet-bg px-2 py-0.5 text-status-violet"><x-ui.icon name="support_agent" :size="12" />{{ $name }} handed off</span>
                                             <span x-show="item.resolved" class="rounded-full bg-status-gray-bg px-2 py-0.5 text-status-gray">Resolved</span>
                                         </span>
                                     </span>
@@ -166,7 +166,7 @@
                                 <button type="button" x-show="thread.conversation?.resolved" x-cloak x-on:click="setResolved(false)" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-3 text-sm font-semibold text-app-text-2 hover:bg-black/5 focus-ring dark:hover:bg-white/10"><x-ui.icon name="undo" :size="18" />Reopen</button>
                             </div>
                             <p class="flex items-center gap-1.5 text-xs" data-lumi-status>
-                                <x-ui.icon name="auto_awesome" :size="14" class="text-brand dark:text-[#ffb4ac]" />
+                                <x-ui.icon name="camera" :size="14" class="text-brand dark:text-[#ffb4ac]" />
                                 <span x-show="thread.state?.studio?.lumi_active" class="text-app-text-2">{{ $name }} is answering in this thread while you are away. Your next reply stops it.</span>
                                 <span x-show="!thread.state?.studio?.lumi_active" class="text-app-text-2">{{ $name }} is not answering in this thread.</span>
                             </p>

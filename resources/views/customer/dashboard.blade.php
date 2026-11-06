@@ -30,7 +30,7 @@
     </div>
 
     {{-- What a customer can start, as the action cards of the design --}}
-    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         @foreach ([['route' => 'customer.printing.create', 'icon' => 'print', 'title' => 'Request printing', 'text' => 'Choose a service, add your files and send a request.', 'cta' => 'Upload files'],
             ['route' => 'customer.bookings.create', 'icon' => 'photo_camera', 'title' => 'Book a photoshoot', 'text' => 'Choose a package and a free time, then send a request to the studio.', 'cta' => 'Pick a time']] as $action)
             <a href="{{ route($action['route']) }}" class="group flex items-start gap-4 rounded-card border border-app-border bg-app-card p-5 shadow-sm transition-[border-color,box-shadow,translate] duration-[280ms] ease-brand hover:-translate-y-[3px] hover:border-brand hover:shadow-md focus-ring motion-reduce:hover:translate-y-0 dark:shadow-none">
@@ -42,6 +42,15 @@
                 </span>
             </a>
         @endforeach
+        {{-- A person, not the AI: opens the chat on the Studio tab (7F) --}}
+        <x-chat.message-studio class="group flex items-start gap-4 rounded-card border border-app-border bg-app-card p-5 shadow-sm transition-[border-color,box-shadow,translate] duration-[280ms] ease-brand hover:-translate-y-[3px] hover:border-brand hover:shadow-md focus-ring motion-reduce:hover:translate-y-0 sm:col-span-2 lg:col-span-1 dark:shadow-none">
+            <span class="grid size-11 shrink-0 place-items-center rounded-control bg-brand/10 text-brand transition-colors duration-200 group-hover:bg-brand group-hover:text-white" aria-hidden="true"><x-ui.icon name="forum" :size="24" /></span>
+            <span class="min-w-0">
+                <span class="block font-semibold">Message the studio</span>
+                <span class="mt-0.5 block text-sm text-app-text-2">Talk to a person for changes, special requests or anything to confirm.</span>
+                <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand">Write a message<x-ui.icon name="arrow_forward" :size="16" class="transition-transform duration-200 group-hover:translate-x-1" /></span>
+            </span>
+        </x-chat.message-studio>
     </div>
 
     <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

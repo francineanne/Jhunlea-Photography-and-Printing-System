@@ -42,17 +42,50 @@ const writeSession = (key, value) => {
     }
 };
 
-export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls, texts }) => ({
+// The last "Who do you want to talk to?" choice (7F): a convenience for this browser only. Without storage the chooser
+// simply shows each time.
+const CHOICE_KEY = 'chat-choice';
+
+const readChoice = () => {
+    try {
+        const value = localStorage.getItem(CHOICE_KEY);
+
+        return value === 'ask' || value === 'studio' ? value : null;
+    } catch (error) {
+        return null;
+    }
+};
+
+const writeChoice = (value) => {
+    try {
+        localStorage.setItem(CHOICE_KEY, value);
+    } catch (error) {
+        // storage unavailable: nothing is remembered
+    }
+};
+
+// The tab to start on, or null for the chooser. A guest only ever starts on Ask Lumi once they chose it: the studio
+// needs an account, so a remembered "studio" shows the chooser again
+const startTab = (guest, tab, chosen) => {
+    if (chosen) return tab;
+
+    const remembered = readChoice();
+
+    return remembered === null || (guest && remembered === 'studio') ? null : remembered;
+};
+
+export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, maxChars, urls, texts }) => ({
     mode,
     guest,
-    tab,
+    tab: startTab(guest, tab, chosen) ?? tab,
+    choosing: startTab(guest, tab, chosen) === null,
     about,
     name,
     pageUrl,
     maxChars,
     open: mode === 'full',
     threads: { ask: newThread(), studio: newThread() },
-    drafts: { ask: '', studio: '' },
+    drafts: { ask: '', studio: draft ?? '' },
     fromAssistant: null,
     banner: null,
     policyHidden: readSession(BANNER_KEY) === '1',
@@ -73,7 +106,10 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
         window.visualViewport?.addEventListener('resize', () => this.fitSheet());
         window.visualViewport?.addEventListener('scroll', () => this.fitSheet());
 
-        if (this.open) {
+        // "Message the studio" buttons on the customer's pages: open the Studio tab with a typed draft, never send it
+        window.addEventListener('chat:studio', (event) => this.openStudio(event.detail ?? {}));
+
+        if (this.open && !this.choosing) {
             this.loadTab();
         }
     },
@@ -98,6 +134,16 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
 
     get signInNeeded() {
         return this.guest && this.tab === 'studio';
+    },
+
+    // The Studio tab's coarse line: only the server's owner_away and lumi_active, never a time or what the owner did
+    get presenceText() {
+        const studio = this.studioState;
+
+        if (!studio) return 'Your messages with the studio';
+        if (!studio.owner_away) return 'The studio is online';
+
+        return studio.lumi_active ? `The studio is away. ${this.name} can help in the meantime.` : 'The studio is away.';
     },
 
     get canSend() {
@@ -129,11 +175,85 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
     show() {
         this.open = true;
         this.lockPage(true);
-        this.loadTab();
+
+        if (!this.choosing) {
+            this.loadTab();
+        }
+
         this.$nextTick(() => {
             this.fitSheet();
+
+            if (this.choosing) {
+                requestAnimationFrame(() => this.$refs.chooseAsk?.focus());
+
+                return;
+            }
+
             this.scrollDown(true);
             this.$refs.input?.focus();
+        });
+    },
+
+    // ---- Who do you want to talk to? ----
+
+    choose(next) {
+        this.choosing = false;
+        this.banner = null;
+
+        // Nothing to remember for a guest's studio: it needs an account
+        if (!(this.guest && next === 'studio')) {
+            writeChoice(next);
+        }
+
+        this.tab = next;
+        this.loadTab();
+        this.$nextTick(() => {
+            this.scrollDown(true);
+            this.$refs.input?.focus();
+        });
+    },
+
+    openChooser() {
+        this.choosing = true;
+        this.banner = null;
+        clearTimeout(this.pollTimer);
+        // After the chooser is drawn, so the focus lands on a visible card
+        this.$nextTick(() => requestAnimationFrame(() => this.$refs.chooseAsk?.focus()));
+    },
+
+    // The draft is only typed into the box (when the box is empty, so nothing the customer wrote is lost); the customer
+    // reads it and presses send. The about chip is checked again by the server on send.
+    openStudio({ draft = '', about = null } = {}) {
+        if (this.guest) return;
+
+        if (about && typeof about.reference === 'string') {
+            this.about = { type: about.type, id: about.id, reference: about.reference };
+        }
+
+        if (typeof draft === 'string' && this.drafts.studio.trim() === '') {
+            this.drafts.studio = draft.slice(0, this.maxChars);
+        }
+
+        this.choosing = false;
+        writeChoice('studio');
+
+        if (this.tab !== 'studio') {
+            this.tab = 'studio';
+            this.banner = null;
+        }
+
+        if (this.mode === 'compact' && !this.open) {
+            this.show();
+        } else {
+            this.loadTab();
+        }
+
+        this.$nextTick(() => {
+            this.resize();
+            const input = this.$refs.input;
+
+            input?.focus();
+            input?.setSelectionRange(input.value.length, input.value.length);
         });
     },
 
@@ -191,7 +311,13 @@ export default ({ mode, guest, tab, about, name, pageUrl, intro, maxChars, urls,
     },
 
     switchTab(next) {
+        this.choosing = false;
+
         if (this.tab === next) return;
+
+        if (!(this.guest && next === 'studio')) {
+            writeChoice(next);
+        }
 
         this.tab = next;
         this.banner = null;

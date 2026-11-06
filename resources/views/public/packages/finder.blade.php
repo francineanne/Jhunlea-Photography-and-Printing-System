@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <x-ui.button type="submit"><x-ui.icon name="auto_awesome" :size="20" />Show suggestions</x-ui.button>
+                    <x-ui.button type="submit"><x-ui.icon name="travel_explore" :size="20" />Show suggestions</x-ui.button>
                     @if ($asked)
                         <x-ui.button :href="route('packages.finder')" variant="ghost">Start over</x-ui.button>
                     @endif
