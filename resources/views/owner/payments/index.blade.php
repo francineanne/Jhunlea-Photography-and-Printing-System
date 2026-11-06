@@ -10,6 +10,8 @@
 
     $peso = fn (int $cents) => Money::format(Money::fromCents($cents));
     $period = match (true) {
+        $range === 'today' => 'Today',
+        $range === 'yesterday' => 'Yesterday',
         $filters['from'] && $filters['to'] => Carbon::parse($filters['from'])->format('M j, Y').' to '.Carbon::parse($filters['to'])->format('M j, Y'),
         (bool) $filters['from'] => 'From '.Carbon::parse($filters['from'])->format('M j, Y'),
         (bool) $filters['to'] => 'Up to '.Carbon::parse($filters['to'])->format('M j, Y'),
@@ -26,14 +28,35 @@
     <div class="flex flex-wrap items-start justify-between gap-4">
         <div>
             <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span>Payments</p>
-            <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Payments ledger</h1>
-            <p class="mt-2 max-w-2xl text-app-text-2">Every payment recorded at the counter, and the orders and photoshoots still waiting for theirs. To record a payment, open the order or booking.</p>
+            <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Payments and counter</h1>
+            <p class="mt-2 max-w-2xl text-app-text-2">Record a payment at the counter, see what is ready for pickup or still waiting for payment, and every payment recorded today.</p>
+        </div>
+        {{-- The counter bar (Phase 8B): record a payment, or start a walk-in (the 8A forms) --}}
+        <div class="flex flex-wrap gap-2">
+            <x-ui.button x-data x-on:click="$dispatch('counter-open')"><x-ui.icon name="add_card" :size="18" />Record payment</x-ui.button>
+            <div class="relative" x-data="{ open: false }" x-on:keydown.escape="if (open) { open = false; $refs.button.focus() }" x-on:click.outside="open = false">
+                <x-ui.button variant="outline" x-ref="button" x-on:click="open = ! open" x-bind:aria-expanded="open" aria-haspopup="menu">
+                    <x-ui.icon name="storefront" :size="18" />New walk-in<x-ui.icon name="expand_more" :size="18" />
+                </x-ui.button>
+                <div x-show="open" x-cloak x-transition.opacity.duration.150ms role="menu" aria-label="New walk-in"
+                    class="absolute right-0 top-full z-40 mt-2 w-60 rounded-card border border-app-border bg-app-card p-2 shadow-xl">
+                    <a role="menuitem" href="{{ route('owner.orders.walk-in.create') }}" class="flex min-h-11 items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10"><x-ui.icon name="print" :size="20" />Walk-in printing order</a>
+                    <a role="menuitem" href="{{ route('owner.bookings.walk-in.create') }}" class="flex min-h-11 items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10"><x-ui.icon name="photo_camera" :size="20" />Walk-in booking</a>
+                </div>
+            </div>
         </div>
     </div>
 
     <x-ui.notice variant="payment" class="mt-6">
         <p class="text-app-text-2">The system only records and monitors payments received face to face, in cash or by GCash. It never takes a payment online. Each order or photoshoot is paid in full, once.</p>
     </x-ui.notice>
+
+    @if (session('receipt_url'))
+        <x-ui.notice class="mt-4"><a href="{{ session('receipt_url') }}" class="inline-flex min-h-11 items-center gap-1 font-semibold text-brand hover:underline focus-ring rounded"><x-ui.icon name="print" :size="18" />Print the receipt of the payment you just recorded</a></x-ui.notice>
+    @endif
+
+    @include('owner.payments._queues')
+    @include('owner.payments._counter-modal')
 
     @if ($errors->any())
         <x-ui.notice class="mt-6 !border-status-red/30 !bg-status-red-bg">
@@ -74,8 +97,22 @@
         </x-ui.stat-tile>
     </div>
 
+    {{-- The working view: today by default, with quick days (Phase 8B) --}}
+    <nav aria-label="Ledger days" class="mt-6 flex flex-wrap gap-2">
+        @foreach (['today' => 'Today', 'yesterday' => 'Yesterday', 'all' => 'All dates'] as $key => $label)
+            <a href="{{ route('owner.payments.index', ['range' => $key]) }}" @if ($range === $key && ! $filters['method'] && ! $filters['status'] && $filters['search'] === '') aria-current="page" @endif
+                @class(['inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-semibold transition-colors focus-ring',
+                    'border-brand bg-brand text-white' => $range === $key,
+                    'border-app-border text-app-text-2 hover:border-brand hover:text-brand' => $range !== $key])>{{ $label }}</a>
+        @endforeach
+    </nav>
+
     <form method="GET" action="{{ route('owner.payments.index') }}" role="search"
-        class="mt-6 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end dark:shadow-none">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end dark:shadow-none">
+        {{-- Never "today": a search from the default view must still find every day (PaymentLedgerRequest::range()) --}}
+        @if (in_array($range, ['yesterday', 'all'], true))
+            <input type="hidden" name="range" value="{{ $range }}">
+        @endif
         <div class="sm:col-span-2 lg:col-span-2">
             <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="PAY, PR, PB, customer or GCash ref." />
         </div>
@@ -91,8 +128,8 @@
                 <option value="{{ $item->value }}" @selected($filters['status'] === $item)>{{ $item->label() }}</option>
             @endforeach
         </x-ui.select>
-        <x-ui.input label="From" name="from" type="date" :value="$filters['from']" />
-        <x-ui.input label="To" name="to" type="date" :value="$filters['to']" />
+        <x-ui.input label="From" name="from" type="date" :value="$range === 'custom' ? $filters['from'] : null" />
+        <x-ui.input label="To" name="to" type="date" :value="$range === 'custom' ? $filters['to'] : null" />
         <div class="flex gap-2 sm:col-span-2 lg:col-span-6">
             <x-ui.button type="submit">Filter</x-ui.button>
             @if ($hasFilters)
@@ -114,6 +151,10 @@
                     @if ($hasFilters)
                         <x-ui.empty-state icon="search_off" title="No payments found" description="Nothing matches your search or filters. Try other words or dates, or clear the filters.">
                             <x-ui.button :href="route('owner.payments.index')" variant="outline">Clear filters</x-ui.button>
+                        </x-ui.empty-state>
+                    @elseif ($everPaid)
+                        <x-ui.empty-state icon="point_of_sale" title="No payments recorded today" description="Payments recorded at the counter today appear here.">
+                            <x-ui.button :href="route('owner.payments.index', ['range' => 'all'])" variant="outline">See all dates</x-ui.button>
                         </x-ui.empty-state>
                     @else
                         <x-ui.empty-state icon="point_of_sale" title="No payments recorded yet" description="Payments appear here once you record them on an order or a booking." />
@@ -140,12 +181,14 @@
                                     <td class="px-4 py-4">
                                         <p @class(['font-mono text-sm font-bold text-brand', 'line-through' => ! $payment->isRecorded()])>{{ $payment->reference_number }}</p>
                                         <x-ui.badge :tone="$payment->isRecorded() ? 'green' : 'gray'" class="mt-1">{{ $payment->status->label() }}</x-ui.badge>
+                                        <a href="{{ route('owner.payments.receipt', $payment) }}" class="mt-1 flex min-h-9 items-center gap-1 rounded text-xs font-semibold text-app-text-2 hover:text-brand focus-ring"><x-ui.icon name="print" :size="14" />Print receipt</a>
                                     </td>
                                     <td class="whitespace-nowrap px-4 py-4 font-mono text-xs"><x-ui.date :value="$payment->received_at" /></td>
                                     <td class="px-4 py-4">
                                         @if ($payment->payable)
                                             <a href="{{ $payableUrl($payment->payable) }}" class="rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring">{{ $payment->payable->reference_number }}</a>
-                                            <p class="text-xs text-app-text-2">{{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}</p>
+                                            <p class="flex flex-wrap items-center gap-1.5 text-xs text-app-text-2">{{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}
+                                                @if ($payment->payable->isWalkIn())<x-walk-in.badge :record="$payment->payable" />@else<span class="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10">Online</span>@endif</p>
                                         @else
                                             <span class="text-app-text-2">Removed record</span>
                                         @endif
@@ -197,11 +240,15 @@
                                     <dd class="break-words text-xs">{{ $payment->receiver?->name ?? 'Deleted account' }}</dd>
                                 </div>
                             </dl>
-                            @if ($payment->payable)
-                                <a href="{{ $payableUrl($payment->payable) }}" class="mt-3 inline-flex min-h-11 items-center gap-1 rounded font-mono text-sm font-semibold text-brand hover:underline focus-ring">
-                                    {{ $payment->payable->reference_number }} · {{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}<x-ui.icon name="arrow_forward" :size="16" />
-                                </a>
-                            @endif
+                            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1">
+                                @if ($payment->payable)
+                                    <a href="{{ $payableUrl($payment->payable) }}" class="inline-flex min-h-11 items-center gap-1 rounded font-mono text-sm font-semibold text-brand hover:underline focus-ring">
+                                        {{ $payment->payable->reference_number }} · {{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}<x-ui.icon name="arrow_forward" :size="16" />
+                                    </a>
+                                    @if ($payment->payable->isWalkIn())<x-walk-in.badge :record="$payment->payable" />@else<span class="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10">Online</span>@endif
+                                @endif
+                                <a href="{{ route('owner.payments.receipt', $payment) }}" class="inline-flex min-h-11 items-center gap-1 rounded text-sm font-semibold text-app-text-2 hover:text-brand focus-ring"><x-ui.icon name="print" :size="16" />Print receipt</a>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
@@ -245,46 +292,6 @@
                     </dl>
                 </div>
                 <p class="mt-4 text-xs text-app-text-2">Recorded payments only. Voided records and prices not yet paid are not counted.</p>
-            </section>
-
-            <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="awaiting-title">
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                    <h2 id="awaiting-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="pending_actions" :size="22" class="text-status-red" />Awaiting payment</h2>
-                    <span class="font-mono text-xs text-app-text-2">{{ $awaiting['count'] }} · {{ $peso($awaiting['cents']) }}</span>
-                </div>
-                <p class="mt-1 text-xs text-app-text-2">Confirmed prices with no payment recorded yet. Open one to record its payment.</p>
-
-                @if ($awaiting['orders']->isEmpty() && $awaiting['bookings']->isEmpty())
-                    <p class="mt-4 rounded-control bg-neutral-100 p-3 text-sm text-app-text-2 dark:bg-white/5">Nothing is waiting for payment.</p>
-                @else
-                    <ul class="mt-4 divide-y divide-app-border">
-                        @foreach ($awaiting['bookings'] as $booking)
-                            <li>
-                                <a href="{{ route('owner.bookings.show', $booking) }}#payment" class="flex min-h-11 items-center justify-between gap-3 rounded py-2.5 hover:text-brand focus-ring">
-                                    <span class="min-w-0">
-                                        <span class="block font-mono text-sm font-semibold">{{ $booking->reference_number }} <span class="font-sans text-xs font-normal text-app-text-2">· Photoshoot <x-ui.date :value="$booking->starts_at" format="M j" /></span></span>
-                                        <span class="block truncate text-xs text-app-text-2">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
-                                    </span>
-                                    <span class="shrink-0 font-semibold tabular-nums">{{ Money::format($booking->confirmed_price) }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                        @foreach ($awaiting['orders'] as $order)
-                            <li>
-                                <a href="{{ route('owner.orders.show', $order) }}#payment" class="flex min-h-11 items-center justify-between gap-3 rounded py-2.5 hover:text-brand focus-ring">
-                                    <span class="min-w-0">
-                                        <span class="block font-mono text-sm font-semibold">{{ $order->reference_number }} <span class="font-sans text-xs font-normal text-app-text-2">· {{ $order->status->label() }}</span></span>
-                                        <span class="block truncate text-xs text-app-text-2">{{ $order->customer?->name ?? 'Deleted account' }}</span>
-                                    </span>
-                                    <span class="shrink-0 font-semibold tabular-nums">{{ Money::format($order->confirmed_price) }}</span>
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                    @if ($awaiting['count'] > $awaiting['orders']->count() + $awaiting['bookings']->count())
-                        <p class="mt-3 text-xs text-app-text-2">Showing the first {{ $awaiting['orders']->count() + $awaiting['bookings']->count() }} of {{ $awaiting['count'] }}. Use the order and booking lists for the rest.</p>
-                    @endif
-                @endif
             </section>
         </div>
     </div>

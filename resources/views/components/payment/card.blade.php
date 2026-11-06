@@ -91,6 +91,9 @@
                 </div>
             @endif
         </dl>
+        @if ($owner)
+            <x-ui.button :href="route('owner.payments.receipt', $paid)" variant="outline" size="sm" class="mt-3"><x-ui.icon name="print" :size="18" />Print receipt</x-ui.button>
+        @endif
     @endif
 
     <p class="mt-3 flex items-start gap-2 text-xs text-app-text-2"><x-ui.icon name="storefront" :size="16" class="mt-px shrink-0 text-brand" />
@@ -108,6 +111,9 @@
     @if ($canRecord)
         {{-- With scripts: a two-step dialog (choose, then confirm). Without: the plain form below --}}
         <x-ui.button x-cloak class="mt-4 w-full" x-on:click="$dispatch('open-modal', '{{ $modal }}')"><x-ui.icon name="add_card" :size="18" />Record payment</x-ui.button>
+        <a x-cloak href="{{ route('owner.payments.index', ['pay' => $payable->getMorphClass().':'.$payable->getKey()]) }}" class="mt-2 flex min-h-11 items-center justify-center gap-1 rounded text-sm font-semibold text-app-text-2 hover:text-brand focus-ring">
+            <x-ui.icon name="point_of_sale" :size="18" />Open at the counter (change calculator, receipt)
+        </a>
 
         <details class="group mt-4 rounded-card border border-app-border open:bg-neutral-50 dark:open:bg-white/5" data-no-js-only @if ($openForm === 'payment') open @endif>
             <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-card px-4 py-2 text-sm font-semibold text-status-green focus-ring [&::-webkit-details-marker]:hidden">
@@ -227,6 +233,7 @@
                         </p>
                         <p class="mt-1 text-app-text-2">Voided <x-ui.date :value="$payment->voided_at" /> by {{ $payment->voider?->name ?? 'Deleted account' }}</p>
                         <p class="mt-1 whitespace-pre-line break-words">{{ $payment->void_reason }}</p>
+                        <a href="{{ route('owner.payments.receipt', $payment) }}" class="mt-1 inline-flex min-h-11 items-center gap-1 rounded font-semibold text-app-text-2 hover:text-brand focus-ring"><x-ui.icon name="print" :size="16" />Print receipt (void)</a>
                     </li>
                 @endforeach
             </ul>

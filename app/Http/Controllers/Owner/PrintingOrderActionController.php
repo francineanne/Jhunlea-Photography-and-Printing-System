@@ -86,7 +86,10 @@ class PrintingOrderActionController extends Controller
 
     private function act(PrintingOrder $order, Closure $action, string $done): RedirectResponse
     {
-        $back = redirect()->to(route('owner.orders.show', $order).'#actions');
+        // The Payments page's "Ready for pickup" queue releases an order and comes back to it (Phase 8B); only that one place
+        $back = request()->input('return') === 'payments'
+            ? redirect()->to(route('owner.payments.index').'#ready-title')
+            : redirect()->to(route('owner.orders.show', $order).'#actions');
 
         try {
             $action();

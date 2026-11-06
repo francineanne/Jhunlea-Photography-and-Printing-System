@@ -19,6 +19,7 @@ use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\Customer\RequestHistoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
+use App\Http\Controllers\Owner\CounterController;
 use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
@@ -184,6 +185,15 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 Route::get('/owner/payments', [PaymentController::class, 'index'])
     ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-payments-ledger'])
     ->name('owner.payments.index');
+
+// The shop counter on the Payments page (Phase 8B): find an order or booking, record its full payment through
+// PaymentService, and print a payment receipt (not an official receipt)
+Route::middleware(['auth', 'role:owner'])->prefix('owner/payments')->name('owner.payments.')->controller(CounterController::class)->group(function () {
+    Route::get('/counter/search', 'search')->middleware('throttle:120,1,owner-counter-search')->name('counter.search');
+    Route::get('/counter/target', 'target')->middleware('throttle:120,1,owner-counter-target')->name('counter.target');
+    Route::post('/counter', 'record')->middleware('throttle:30,1,owner-counter-record')->name('counter.record');
+    Route::get('/{payment}/receipt', 'receipt')->whereNumber('payment')->middleware('throttle:60,1,owner-payment-receipt')->name('receipt');
+});
 
 // The owner's customers (Phase 6A): the directory and one customer's page, read only. An id that is not a customer is 404
 Route::middleware(['auth', 'role:owner'])->prefix('owner/customers')->name('owner.customers.')->controller(CustomerController::class)->group(function () {

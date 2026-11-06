@@ -44,7 +44,7 @@
         </x-ui.notice>
     @endif
 
-    <form method="POST" action="{{ route('owner.orders.walk-in.store') }}" enctype="multipart/form-data" class="mt-6 max-w-3xl space-y-6"
+    <form method="POST" action="{{ route('owner.orders.walk-in.store') }}" enctype="multipart/form-data" class="mt-6 max-w-3xl space-y-6 pb-24 sm:pb-0"
         x-data="walkInOrder({ priceUrl: @js(route('owner.orders.walk-in.price')), perPage: @js($perPage), initial: @js($initial) })">
         @csrf
         <input type="hidden" name="counter_token" value="{{ old('counter_token', $token) }}">

@@ -4,7 +4,9 @@ namespace App\Http\Requests\Owner\Payments;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordStatus;
+use App\Support\LocalTime;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 /** The filters of the payments ledger. Anything that does not pass sends the owner back to the full ledger. */
@@ -29,7 +31,28 @@ class PaymentLedgerRequest extends FormRequest
             'q' => ['nullable', 'string', 'max:60'],
             'from' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:2000-01-01', 'before_or_equal:2100-12-31'],
             'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from', 'before_or_equal:2100-12-31'],
+            'range' => ['nullable', 'string', Rule::in(['today', 'yesterday', 'all'])],
         ];
+    }
+
+    /**
+     * Which days the ledger shows (Phase 8B, the counter's working view): `today` by default, when nothing at all is
+     * filtered; `today` or `yesterday` when chosen; `custom` for typed dates; `all` when chosen, or when the owner
+     * searches or filters without dates (so a search still finds every day, as before).
+     */
+    public function range(): string
+    {
+        if ($this->filled('from') || $this->filled('to')) {
+            return 'custom';
+        }
+
+        $chosen = $this->validated('range');
+
+        if ($chosen !== null) {
+            return $chosen;
+        }
+
+        return $this->filled('q') || $this->filled('method') || $this->filled('status') ? 'all' : 'today';
     }
 
     /** @return array<string, string> */
@@ -43,6 +66,7 @@ class PaymentLedgerRequest extends FormRequest
             'from.*' => 'Pick a valid start date.',
             'to.after_or_equal' => 'The end date must be on or after the start date.',
             'to.*' => 'Pick a valid end date.',
+            'range.*' => 'That choice of days does not exist.',
         ];
     }
 
@@ -53,8 +77,20 @@ class PaymentLedgerRequest extends FormRequest
             'method' => PaymentMethod::tryFrom((string) $this->validated('method')),
             'status' => PaymentRecordStatus::tryFrom((string) $this->validated('status')),
             'search' => trim((string) $this->validated('q')),
-            'from' => $this->validated('from'),
-            'to' => $this->validated('to'),
+            'from' => $this->day() ?? $this->validated('from'),
+            'to' => $this->day() ?? $this->validated('to'),
         ];
+    }
+
+    /** The one Manila day of the today and yesterday views, else null. */
+    private function day(): ?string
+    {
+        $today = LocalTime::in(Carbon::now('UTC'));
+
+        return match ($this->range()) {
+            'today' => $today->format('Y-m-d'),
+            'yesterday' => $today->subDay()->format('Y-m-d'),
+            default => null,
+        };
     }
 }

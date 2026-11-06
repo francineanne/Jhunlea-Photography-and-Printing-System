@@ -3,6 +3,7 @@ import chatWindow from './chat';
 import { ownerHeartbeat, ownerInbox } from './owner-chat';
 import ownerAsk, { ownerBriefing } from './owner-ask';
 import { walkInBooking, walkInCustomer, walkInOrder } from './walk-in';
+import paymentCounter from './counter';
 
 window.Alpine = Alpine;
 
@@ -65,9 +66,11 @@ Alpine.data('uiModal', (name) => ({
         if (event.detail !== name || this.open) return;
 
         // Safari and Firefox on Mac do not focus a button on click, so prefer the element that fired the event
-        this.trigger = event.target instanceof HTMLElement ? event.target : document.activeElement;
+        // (an event sent from a wrapper element falls back to the element that has focus)
+        this.trigger = event.target instanceof HTMLElement && event.target.matches(FOCUSABLE) ? event.target : document.activeElement;
         this.open = true;
-        root.classList.add('overflow-hidden');
+        // modal-open also hides the floating Chat / Ask Lumi launchers, so they never cover a dialog
+        root.classList.add('overflow-hidden', 'modal-open');
         this.$nextTick(() => (this.focusables()[0] ?? this.$refs.panel).focus());
     },
 
@@ -75,8 +78,9 @@ Alpine.data('uiModal', (name) => ({
         if (!this.open) return;
 
         this.open = false;
-        root.classList.remove('overflow-hidden');
+        root.classList.remove('overflow-hidden', 'modal-open');
         this.trigger?.focus();
+        this.$dispatch('modal-closed', name);
     },
 
     // Pull focus back if it ends up behind the dialog
@@ -1219,5 +1223,6 @@ Alpine.data('walkInCustomer', walkInCustomer);
 Alpine.data('walkInOrder', walkInOrder);
 Alpine.data('walkInBooking', walkInBooking);
 Alpine.data('ownerBriefing', ownerBriefing);
+Alpine.data('paymentCounter', paymentCounter);
 
 Alpine.start();

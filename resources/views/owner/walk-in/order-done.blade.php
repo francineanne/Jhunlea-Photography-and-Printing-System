@@ -2,7 +2,7 @@
 
 @section('title', 'Walk-in order saved')
 
-{{-- After a walk-in order and its payment are saved (Phase 8A). The printable payment slip comes in Phase 8B. --}}
+{{-- After a walk-in order and its payment are saved (Phase 8A). Its payment receipt prints from here (Phase 8B). --}}
 @php
     use App\Support\Money;
 
@@ -41,7 +41,10 @@
         </dl>
 
         <div class="mt-6 flex flex-wrap justify-center gap-2">
-            <x-ui.button :href="route('owner.orders.show', $order)"><x-ui.icon name="receipt_long" :size="18" />Open the order</x-ui.button>
+            @if ($payment)
+                <x-ui.button :href="route('owner.payments.receipt', $payment)"><x-ui.icon name="print" :size="18" />Print receipt</x-ui.button>
+            @endif
+            <x-ui.button :href="route('owner.orders.show', $order)" :variant="$payment ? 'outline' : 'primary'"><x-ui.icon name="receipt_long" :size="18" />Open the order</x-ui.button>
             <x-ui.button :href="route('owner.orders.walk-in.create')" variant="outline"><x-ui.icon name="add" :size="18" />Another walk-in order</x-ui.button>
         </div>
     </div>
