@@ -57,7 +57,11 @@ class ChatEntryTest extends TestCase
             ->assertSee('aria-label="'.$name.', AI assistant"', false)
             ->assertSee('aria-label="Studio"', false)
             ->assertSee('data-chat-switch', false)
-            ->assertSee($name.' is an AI. For changes or special requests,', false);
+            ->assertSee('Changes or special requests?', false)
+            ->assertSee('data-chat-more', false);
+
+        // The AI notice is said once (the dismissible notice), never again as a second line
+        $this->assertSame(1, substr_count($page->getContent(), $name.' is an AI'));
 
         // No tab asked for: the chooser (or the remembered choice) decides
         $this->assertFalse($this->chatConfig($page)['chosen']);

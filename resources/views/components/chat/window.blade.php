@@ -74,32 +74,47 @@
             'chat-glass chat-sheet fixed inset-x-0 z-[45] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:h-[min(42rem,calc(100dvh-3rem))] sm:w-[26.5rem] sm:rounded-card sm:border sm:border-app-border sm:shadow-[0_24px_48px_-12px_rgba(23,23,23,0.25)]' => ! $full,
         ])>
 
-        {{-- Header: who this is, the AI badge, and the actions --}}
-        <header class="flex items-center gap-3 bg-neutral-100/80 p-3 dark:bg-white/5 sm:px-4">
-            <x-ui.logo-mark size="lg" class="shadow-sm" x-show="choosing" />
-            <x-chat.avatar who="lumi" size="lg" x-show="!choosing && tab === 'ask'" />
-            <x-chat.avatar who="studio" size="lg" x-show="!choosing && tab === 'studio'" x-cloak />
+        {{-- Header: one row. Who this is, one small pill, one short line that truncates; the secondary actions live in
+             the "more" menu, so Expand and Close stay visible and nothing wraps --}}
+        <header class="flex items-center gap-2.5 border-b border-app-border bg-neutral-100/80 px-3 py-2 dark:bg-white/5 sm:px-4">
+            <x-ui.logo-mark class="shadow-sm" x-show="choosing" />
+            <x-chat.avatar who="lumi" size="md" x-show="!choosing && tab === 'ask'" />
+            <x-chat.avatar who="studio" size="md" x-show="!choosing && tab === 'studio'" x-cloak />
             <div class="min-w-0 flex-1">
-                <p class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <span class="font-semibold" x-text="choosing ? 'Chat' : (tab === 'ask' ? name : 'Studio')">Chat</span>
-                    <span x-show="!choosing && tab === 'ask'" class="rounded bg-brand/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI assistant</span>
-                    <span x-show="!choosing && tab === 'studio'" x-cloak class="rounded bg-neutral-200 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-app-text dark:bg-white/15">A person</span>
+                <p class="flex min-w-0 items-center gap-1.5">
+                    <span class="truncate font-semibold" x-text="choosing ? 'Chat' : (tab === 'ask' ? name : 'Studio')">Chat</span>
+                    <span x-show="!choosing && tab === 'ask'" class="shrink-0 whitespace-nowrap rounded bg-brand/10 px-1.5 py-px text-[10px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI</span>
+                    <span x-show="!choosing && tab === 'studio'" x-cloak class="shrink-0 whitespace-nowrap rounded bg-neutral-200 px-1.5 py-px text-[10px] font-bold uppercase tracking-wider text-app-text dark:bg-white/15">Person</span>
                 </p>
-                <p class="text-xs text-app-text-2" x-show="choosing">{{ $name }} AI or the studio</p>
-                <p class="text-xs text-app-text-2" x-show="!choosing && tab === 'ask'" x-cloak>About Jhunlea's services</p>
+                <p class="truncate text-xs text-app-text-2" x-show="choosing">{{ $name }} AI or the studio</p>
+                <p class="truncate text-xs text-app-text-2" x-show="!choosing && tab === 'ask'" x-cloak>AI assistant for Jhunlea's services</p>
                 {{-- Only a coarse label from the server's owner_away and lumi_active: never a time or what the owner did --}}
-                <p class="text-xs text-app-text-2" x-show="!choosing && tab === 'studio'" x-cloak data-chat-presence x-text="presenceText">Your messages with the studio</p>
+                <p class="truncate text-xs text-app-text-2" x-show="!choosing && tab === 'studio'" x-cloak data-chat-presence x-text="presenceText" x-bind:title="presenceText">Your messages with the studio</p>
             </div>
-            <div class="flex shrink-0 items-center gap-1">
-                <button type="button" x-show="!choosing" x-cloak x-on:click="openChooser()" title="Switch between {{ $name }} and the studio" aria-label="Switch between {{ $name }} and the studio" class="{{ $action }} text-app-text hover:bg-black/5 dark:hover:bg-white/10" data-chat-switch>
-                    <x-ui.icon name="swap_horiz" /><span class="hidden sm:inline" aria-hidden="true">Switch</span>
-                </button>
-                <button type="button" x-show="!choosing && tab === 'ask'" x-on:click="newConversation()" title="New conversation" class="{{ $action }} text-app-text hover:bg-black/5 dark:hover:bg-white/10">
-                    <x-ui.icon name="restart_alt" /><span class="{{ $label }}">New conversation</span>
-                </button>
-                <button type="button" x-show="!choosing && tab === 'ask'" x-on:click="contactOwner()" title="Contact the owner" class="{{ $action }} bg-ink text-white hover:bg-neutral-800 dark:bg-white dark:text-ink dark:hover:bg-neutral-200">
-                    <x-ui.icon name="support_agent" /><span class="{{ $label }}">Contact the owner</span>
-                </button>
+            <div class="flex shrink-0 items-center">
+                {{-- More: Switch, New conversation, Contact the owner. Esc closes it and returns focus to this button --}}
+                <div class="relative" x-show="!choosing" x-cloak x-on:click.outside="menuOpen = false" x-on:keydown.escape.stop="closeMenu()">
+                    <button type="button" x-ref="menuButton" x-on:click="toggleMenu()" aria-haspopup="menu" x-bind:aria-expanded="menuOpen" aria-label="More options" title="More options"
+                        class="{{ $action }} px-0 text-app-text-2 hover:bg-black/5 hover:text-app-text dark:hover:bg-white/10" data-chat-more>
+                        <x-ui.icon name="more_vert" />
+                    </button>
+                    <div x-show="menuOpen" x-cloak x-ref="menu" role="menu" aria-label="More options" x-on:keydown.down.prevent="moveMenu(1)" x-on:keydown.up.prevent="moveMenu(-1)"
+                        x-transition:enter="transition duration-150 ease-brand motion-reduce:transition-none" x-transition:enter-start="-translate-y-1 opacity-0"
+                        class="absolute right-0 top-full z-20 mt-1 w-64 rounded-card border border-app-border bg-app-card p-1 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.18)] dark:shadow-none">
+                        <button type="button" role="menuitem" x-on:click="menuOpen = false; openChooser()" aria-label="Switch between {{ $name }} and the studio" data-chat-switch
+                            class="flex min-h-11 w-full items-center gap-2.5 rounded-control px-3 text-left text-sm hover:bg-black/5 focus-ring dark:hover:bg-white/10">
+                            <x-ui.icon name="swap_horiz" :size="18" class="text-app-text-2" />Switch: {{ $name }} or the studio
+                        </button>
+                        <button type="button" role="menuitem" x-show="tab === 'ask'" x-on:click="menuOpen = false; newConversation()"
+                            class="flex min-h-11 w-full items-center gap-2.5 rounded-control px-3 text-left text-sm hover:bg-black/5 focus-ring dark:hover:bg-white/10">
+                            <x-ui.icon name="restart_alt" :size="18" class="text-app-text-2" />New conversation
+                        </button>
+                        <button type="button" role="menuitem" x-show="tab === 'ask'" x-on:click="menuOpen = false; contactOwner()"
+                            class="flex min-h-11 w-full items-center gap-2.5 rounded-control px-3 text-left text-sm hover:bg-black/5 focus-ring dark:hover:bg-white/10">
+                            <x-ui.icon name="support_agent" :size="18" class="text-app-text-2" />Contact the owner
+                        </button>
+                    </div>
+                </div>
                 @unless ($full || $guest)
                     <a href="{{ route('customer.assistant.page') }}" x-bind:href="pageUrl + '?tab=' + tab" aria-label="Open the full chat page" title="Open the full chat page" class="{{ $action }} text-app-text-2 hover:bg-black/5 hover:text-app-text max-sm:hidden dark:hover:bg-white/10">
                         <x-ui.icon name="open_in_full" :size="18" />
@@ -114,15 +129,15 @@
         </header>
 
         {{-- The two conversations --}}
-        <div role="tablist" aria-label="Conversations" x-show="!choosing" class="grid grid-cols-2 gap-1 border-b border-app-border bg-neutral-100/80 px-3 pb-2 dark:bg-white/5 sm:px-4">
+        <div role="tablist" aria-label="Conversations" x-show="!choosing" class="grid grid-cols-2 gap-1 border-b border-app-border px-3 py-1.5 sm:px-4">
             <button type="button" role="tab" x-bind:aria-selected="tab === 'ask'" x-on:click="switchTab('ask')"
-                x-bind:class="tab === 'ask' ? 'bg-app-card shadow-sm dark:bg-white/15' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
-                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring">
+                x-bind:class="tab === 'ask' ? 'bg-neutral-100 text-app-text dark:bg-white/10' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
+                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring sm:min-h-9">
                 <x-ui.icon name="camera" :size="18" />Ask {{ $name }} <span class="text-[11px] font-bold text-brand dark:text-[#ffb4ac]">(AI)</span>
             </button>
             <button type="button" role="tab" x-bind:aria-selected="tab === 'studio'" x-on:click="switchTab('studio')"
-                x-bind:class="tab === 'studio' ? 'bg-app-card shadow-sm dark:bg-white/15' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
-                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring">
+                x-bind:class="tab === 'studio' ? 'bg-neutral-100 text-app-text dark:bg-white/10' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
+                class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring sm:min-h-9">
                 <x-ui.icon name="storefront" :size="18" />Studio
                 <span x-show="unread > 0 && tab !== 'studio'" x-cloak class="grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[11px] font-bold text-white" x-text="unread > 99 ? '99+' : unread"></span>
             </button>
@@ -168,13 +183,14 @@
         </div>
 
         {{-- What Lumi is and is not --}}
-        <div x-show="!choosing && tab === 'ask' && !policyHidden" class="flex items-start gap-2 border-b border-app-border px-3 py-2 sm:px-4">
-            <x-ui.icon name="gavel" :size="18" class="mt-0.5 text-brand dark:text-[#ffb4ac]" />
-            <p class="min-w-0 flex-1 text-xs leading-relaxed text-app-text-2">
-                <span class="font-semibold text-app-text">{{ $name }} is an AI assistant.</span> It answers only about Jhunlea's services and cannot confirm bookings, set final prices or record payments. The studio confirms everything.
+        {{-- Said once: shown until dismissed (remembered in this browser when storage works) --}}
+        <div x-show="!choosing && tab === 'ask' && !policyHidden" class="flex items-center gap-2 border-b border-app-border bg-brand/5 py-1 pl-3 pr-1 dark:bg-white/5 sm:pl-4" data-chat-policy>
+            <x-ui.icon name="info" :size="16" class="shrink-0 text-brand dark:text-[#ffb4ac]" />
+            <p class="min-w-0 flex-1 py-1 text-xs leading-snug text-app-text-2">
+                <span class="font-semibold text-app-text">{{ $name }} is an AI assistant.</span> It cannot confirm bookings, set final prices or record payments. The studio confirms everything.
             </p>
-            <button type="button" x-on:click="dismissPolicy()" aria-label="Dismiss this notice" class="-my-1 -mr-1 grid size-11 shrink-0 place-items-center rounded-control text-app-text-2 hover:text-app-text focus-ring">
-                <x-ui.icon name="close" :size="18" />
+            <button type="button" x-on:click="dismissPolicy()" aria-label="Dismiss this notice" title="Dismiss" class="grid size-11 shrink-0 place-items-center rounded-control text-app-text-2 hover:text-app-text focus-ring sm:size-9">
+                <x-ui.icon name="close" :size="16" />
             </button>
         </div>
 
@@ -203,7 +219,7 @@
         @endif
 
         {{-- The conversation --}}
-        <div x-show="!choosing && !signInNeeded" x-ref="log" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:p-4">
+        <div x-show="!choosing && !signInNeeded" x-ref="log" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:p-4">
             <button type="button" x-show="thread.state?.has_more_before" x-cloak x-on:click="loadEarlier()" x-bind:disabled="thread.earlier"
                 class="mx-auto inline-flex min-h-11 items-center gap-1.5 rounded-full border border-app-border px-4 text-sm font-semibold text-app-text-2 hover:bg-black/5 disabled:opacity-60 focus-ring dark:hover:bg-white/5">
                 <x-ui.icon name="expand_less" :size="18" />Load earlier
@@ -214,7 +230,7 @@
             <x-chat.rows />
 
             {{-- Suggestions for a conversation nobody has written in yet --}}
-            <div x-show="showPrompts" x-cloak class="flex flex-col gap-1.5" data-chat-prompts>
+            <div x-show="showPrompts" x-cloak class="mt-4 flex flex-col gap-1.5" data-chat-prompts>
                 <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Try asking</p>
                 <div class="flex flex-wrap gap-1.5">
                     @foreach (config($guest ? 'chat.suggested_prompts_guest' : 'chat.suggested_prompts') as $prompt)
@@ -223,13 +239,13 @@
                 </div>
             </div>
 
-            <div x-show="thread.typing" x-cloak class="flex items-center gap-2" data-chat-typing>
+            <div x-show="thread.typing" x-cloak class="mt-4 flex items-center gap-2" data-chat-typing>
                 <x-chat.avatar who="lumi" decorative />
-                <p class="flex items-center gap-2 rounded-full bg-neutral-100 px-3 py-2 text-xs text-app-text-2 dark:bg-white/10">
+                <p class="flex items-center gap-2 rounded-card rounded-tl-md bg-neutral-100 px-3.5 py-2.5 text-xs text-app-text-2 dark:bg-white/10">
                     <span class="flex items-center gap-1" aria-hidden="true">
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand"></span>
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.2s]"></span>
-                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.4s]"></span>
+                        <span class="size-1.5 animate-bounce rounded-full bg-brand motion-reduce:animate-none"></span>
+                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.2s] motion-reduce:animate-none"></span>
+                        <span class="size-1.5 animate-bounce rounded-full bg-brand [animation-delay:0.4s] motion-reduce:animate-none"></span>
                     </span>
                     {{ $name }} is typing
                 </p>
@@ -237,7 +253,7 @@
         </div>
 
         {{-- Anything that went wrong, in plain words, with a way forward --}}
-        <div x-show="banner" x-cloak role="alert" class="flex flex-wrap items-center gap-2 border-t border-status-red/30 bg-status-red-bg px-3 py-2 text-sm text-[#991B1B] sm:px-4" data-chat-banner>
+        <div x-show="banner" x-cloak role="alert" class="mx-2 mb-1 flex flex-wrap items-center gap-x-2 rounded-control border border-status-red/30 bg-status-red-bg py-1 pl-3 pr-1 text-sm text-[#991B1B] dark:border-[#ffb4ac]/30 dark:bg-[#ffb4ac]/10 dark:text-[#ffb4ac] sm:mx-3" data-chat-banner>
             <x-ui.icon name="error" :size="18" />
             <p class="min-w-0 flex-1 basis-40" x-text="banner?.text"></p>
             {{-- !!: Alpine calls an expression that evaluates to a function, which here would run the retry on every render --}}
@@ -248,7 +264,7 @@
         </div>
 
         {{-- The composer --}}
-        <form x-show="!choosing && !signInNeeded" x-on:submit.prevent="submit()" class="border-t border-app-border bg-neutral-100/80 p-2 dark:bg-white/5 sm:p-3">
+        <form x-show="!choosing && !signInNeeded" x-on:submit.prevent="submit()" class="border-t border-app-border px-2 pb-1.5 pt-2 sm:px-3">
             <p x-show="tab === 'studio' && about" x-cloak class="mb-1.5 inline-flex items-center gap-1 rounded-full border border-app-border bg-app-card px-2 py-1 font-mono text-[11px]" data-chat-about>
                 <x-ui.icon name="receipt_long" :size="14" /><span x-text="'About ' + about?.reference"></span>
                 <button type="button" x-on:click="about = null" aria-label="Remove this reference" class="-my-3 grid size-11 place-items-center rounded-full focus-ring"><x-ui.icon name="close" :size="14" /></button>
@@ -265,17 +281,15 @@
                     <x-ui.icon name="arrow_upward" />
                 </button>
             </div>
-            <div class="mt-1 flex items-center justify-between gap-2 px-1 text-[11px] text-app-text-2">
-                <span x-show="guest && tab === 'ask'" x-cloak>Signing in saves this conversation. <a href="{{ route('login') }}" class="inline-flex min-h-11 min-w-11 items-center justify-center rounded font-semibold text-brand underline focus-ring dark:text-[#ffb4ac] sm:min-h-0 sm:min-w-0">Log in</a></span>
-                <span class="hidden sm:inline" x-show="!guest">Shift + Enter for a new line</span>
+            {{-- One quiet line under the box: the way to a person (Ask Lumi), the sign-in note (guests), the counter --}}
+            <div class="mt-0.5 flex min-h-6 items-center justify-between gap-2 px-1 text-[11px] text-app-text-2">
+                <span x-show="guest && tab === 'ask'" x-cloak>Signing in saves this conversation. <a href="{{ route('login') }}" class="inline-flex min-h-11 min-w-11 items-center justify-center rounded font-semibold text-brand underline focus-ring dark:text-[#ffb4ac] sm:min-h-6 sm:min-w-0">Log in</a></span>
+                <span x-show="!guest && tab === 'ask'" data-chat-footer>Changes or special requests?
+                    <button type="button" x-on:click="choose('studio')" class="inline-flex min-h-11 items-center rounded font-semibold text-brand underline focus-ring dark:text-[#ffb4ac] sm:min-h-6">Message the studio</button>
+                </span>
+                <span class="hidden sm:inline" x-show="!guest && tab === 'studio'" x-cloak>Shift + Enter for a new line</span>
                 <span x-show="showCounter" x-cloak class="ml-auto font-mono tabular-nums" aria-live="polite" x-text="draft.length + ' / ' + maxChars"></span>
             </div>
         </form>
-
-        {{-- One quiet line for the whole Ask Lumi conversation, never per message --}}
-        <p x-show="!choosing && tab === 'ask'" class="border-t border-app-border px-3 py-1.5 text-center text-[11px] text-app-text-2 sm:px-4" data-chat-footer>
-            {{ $name }} is an AI. For changes or special requests,
-            <button type="button" x-on:click="choose('studio')" class="inline-flex min-h-11 items-center rounded font-semibold text-brand underline focus-ring dark:text-[#ffb4ac] sm:min-h-6">message the studio</button>.
-        </p>
     </section>
 </div>

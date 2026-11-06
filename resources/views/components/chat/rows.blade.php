@@ -8,14 +8,17 @@
     switchTab() and contactOwner(). Avatars: <x-chat.avatar> (the brand mark; Lumi's has the AI badge). Everything from a message, a name or a card is drawn with x-text, never as HTML.
 --}}
 <template x-for="row in rows" x-bind:key="row.key">
-    <div class="flex flex-col">
+    {{-- Rhythm: a new group (another sender, or a pause) starts with more room; bubbles of one group sit close --}}
+    <div class="flex flex-col" x-bind:class="row.type === 'bubble' && !row.first ? 'mt-1' : 'mt-4 first:mt-0'">
         <template x-if="row.type === 'date'">
             <p class="mx-auto rounded-full bg-neutral-100 px-3 py-1 font-mono text-[11px] text-app-text-2 dark:bg-white/10" x-text="row.text"></p>
         </template>
 
         <template x-if="row.type === 'notice'">
-            <div class="mx-auto flex max-w-[90%] flex-col items-center gap-1" data-chat-notice>
-                <p class="whitespace-pre-wrap rounded-control bg-neutral-100 px-3 py-2 text-center text-xs text-app-text-2 [overflow-wrap:anywhere] dark:bg-white/5" x-text="row.message.body"></p>
+            <div class="mx-auto flex max-w-[85%] flex-col items-center gap-1" data-chat-notice>
+                <p class="inline-flex items-start gap-1.5 whitespace-pre-wrap rounded-control border border-app-border bg-app-bg/60 px-3 py-2 text-left text-xs leading-relaxed text-app-text-2 [overflow-wrap:anywhere] dark:bg-white/5">
+                    <span class="material-symbols-outlined mt-px shrink-0 select-none text-[14px] leading-none text-brand dark:text-[#ffb4ac]" aria-hidden="true">info</span><span x-text="row.message.body"></span>
+                </p>
                 {{-- Lumi could not answer: the FAQ and the studio are the ways forward --}}
                 <div x-show="tab === 'ask' && row.message.system_kind === 'ai_unavailable'" class="flex flex-wrap justify-center gap-1" data-chat-fallback-actions>
                     @if ($faqUrl ?? null)
@@ -27,14 +30,20 @@
         </template>
 
         <template x-if="row.type === 'bubble'">
-            <div class="flex max-w-[92%] items-start gap-2" x-bind:class="row.message.mine ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-chat-sender="row.message.sender_type">
-                {{-- Lumi and the studio share the brand mark; only Lumi's carries the AI badge (and the names say who) --}}
-                <x-chat.avatar who="lumi" x-show="row.message.sender_type === 'assistant'" />
-                <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner'" />
-                <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner'" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-ink text-[16px] text-white shadow-sm dark:bg-neutral-600" aria-hidden="true">person</span>
+            <div class="chat-bubble-in flex max-w-[85%] items-start gap-2" x-bind:class="row.message.mine ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-chat-sender="row.message.sender_type">
+                {{-- Lumi and the studio share the brand mark; only Lumi's carries the AI badge (and the names say who). Once per group; the column keeps its width so the bubbles stay aligned --}}
+                <div class="w-8 shrink-0">
+                    <template x-if="row.first">
+                        <div>
+                            <x-chat.avatar who="lumi" x-show="row.message.sender_type === 'assistant'" />
+                            <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner'" />
+                            <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner'" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-neutral-200 text-[16px] text-app-text-2 dark:bg-white/10" aria-hidden="true">person</span>
+                        </div>
+                    </template>
+                </div>
 
                 <div class="flex min-w-0 flex-col gap-1" x-bind:class="row.message.mine ? 'items-end' : 'items-start'">
-                    <p class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.message.mine ? 'justify-end' : ''">
+                    <p x-show="row.first" class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.message.mine ? 'justify-end' : ''">
                         <span class="font-semibold" x-text="row.message.sender_label"></span>
                     <span x-show="viewer === 'owner' && row.message.sender_type === 'customer'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10">Customer</span>
                         <span x-show="viewer !== 'owner' && row.message.sender_type === 'owner'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10" data-chat-studio-tag>Studio</span>
@@ -49,12 +58,12 @@
                         <x-ui.icon name="receipt_long" :size="14" /><span x-text="'About ' + row.message.about?.reference"></span>
                     </a>
 
-                    <div class="whitespace-pre-wrap rounded-card px-3 py-2 text-sm [overflow-wrap:anywhere]"
-                        x-bind:class="row.message.mine ? 'rounded-tr-none bg-brand-deep text-white' : 'rounded-tl-none bg-neutral-100 text-app-text dark:bg-white/10'"
+                    <div class="whitespace-pre-wrap rounded-card px-3.5 py-2.5 text-sm leading-relaxed [overflow-wrap:anywhere]"
+                        x-bind:class="(row.message.mine ? 'bg-brand-deep text-white ' + (row.first ? 'rounded-tr-md' : '') : 'bg-neutral-100 text-app-text dark:bg-white/10 ' + (row.first ? 'rounded-tl-md' : ''))"
                         x-text="row.message.body"></div>
 
                     <button type="button" x-show="tab === 'ask' && row.message.sender_type === 'assistant' && row.message.intent === 'handoff'" x-on:click="contactOwner()" data-chat-handoff
-                        class="inline-flex min-h-11 items-center gap-1.5 rounded-control bg-ink px-3 text-sm font-semibold text-white hover:bg-neutral-800 focus-ring dark:bg-white dark:text-ink dark:hover:bg-neutral-200">
+                        class="inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border bg-app-card px-3 text-sm font-semibold text-app-text hover:border-brand hover:text-brand focus-ring dark:hover:text-[#ffb4ac]">
                         <x-ui.icon name="support_agent" :size="18" />Contact the owner
                     </button>
                     <p x-show="row.message.via_lumi" class="text-[11px] text-app-text-2">Sent from your Ask Lumi chat</p>

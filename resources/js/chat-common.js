@@ -39,10 +39,15 @@ export const apiRequest = async (url, method = 'GET', body = null) => {
     return { ok: response.ok && data !== null, status: response.status, data };
 };
 
-// The list as it is drawn: a date line whenever the day changes (in the shop's time, from the server), then each message
+// Bubbles of one sender closer together than this form one group: the avatar, name and time show once, at its start
+const GROUP_WITHIN_MS = 5 * 60 * 1000;
+
+// The list as it is drawn: a date line whenever the day changes (in the shop's time, from the server), then each message.
+// `first` marks the start of a group of bubbles from the same sender, so the avatar and name are drawn once per group
 export const buildRows = (messages) => {
     const rows = [];
     let day = null;
+    let previous = null;
 
     messages.forEach((message) => {
         const local = message.created_at?.local ?? null;
@@ -50,15 +55,27 @@ export const buildRows = (messages) => {
 
         if (date && date !== day) {
             day = date;
+            previous = null;
             rows.push({ key: `date-${date}`, type: 'date', text: date });
         }
 
+        const type = message.sender_type === 'system' ? 'notice' : 'bubble';
+        const at = message.created_at?.iso ? new Date(message.created_at.iso).getTime() : null;
+        const continues = type === 'bubble'
+            && previous !== null
+            && previous.sender_type === message.sender_type
+            && previous.sender_label === message.sender_label
+            && (at === null || previous.at === null || at - previous.at < GROUP_WITHIN_MS);
+
         rows.push({
             key: message.key ?? `m-${message.id}`,
-            type: message.sender_type === 'system' ? 'notice' : 'bubble',
+            type,
+            first: !continues,
             time: local && date ? local.slice(date.length).trim() : null,
             message,
         });
+
+        previous = type === 'bubble' ? { sender_type: message.sender_type, sender_label: message.sender_label, at } : null;
     });
 
     return rows;

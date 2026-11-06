@@ -42,6 +42,25 @@ const writeSession = (key, value) => {
     }
 };
 
+// The dismissed "Lumi is an AI assistant" notice is remembered in this browser; without storage it shows again
+const readLocal = (key) => {
+    try {
+        return localStorage.getItem(key);
+    } catch (error) {
+        return null;
+    }
+};
+
+const writeLocal = (key, value) => {
+    try {
+        localStorage.setItem(key, value);
+    } catch (error) {
+        // storage unavailable: the notice shows again next time
+    }
+};
+
+const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
 // The last "Who do you want to talk to?" choice (7F): a convenience for this browser only. Without storage the chooser
 // simply shows each time.
 const CHOICE_KEY = 'chat-choice';
@@ -88,7 +107,8 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     drafts: { ask: '', studio: draft ?? '' },
     fromAssistant: null,
     banner: null,
-    policyHidden: readSession(BANNER_KEY) === '1',
+    policyHidden: readLocal(BANNER_KEY) === '1' || readSession(BANNER_KEY) === '1',
+    menuOpen: false,
     unread: 0,
     lastActivity: Date.now(),
     pollTimer: null,
@@ -258,6 +278,13 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     },
 
     close() {
+        // Esc closes the menu first, then the panel
+        if (this.menuOpen) {
+            this.closeMenu();
+
+            return;
+        }
+
         if (this.mode !== 'compact' || !this.open) return;
 
         this.open = false;
@@ -327,7 +354,37 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
 
     dismissPolicy() {
         this.policyHidden = true;
+        writeLocal(BANNER_KEY, '1');
         writeSession(BANNER_KEY, '1');
+        this.$nextTick(() => this.$refs.input?.focus());
+    },
+
+    // ---- The "more" menu in the header ----
+
+    toggleMenu() {
+        this.menuOpen = !this.menuOpen;
+
+        if (this.menuOpen) {
+            this.$nextTick(() => requestAnimationFrame(() => this.menuItems()[0]?.focus()));
+        }
+    },
+
+    closeMenu() {
+        if (!this.menuOpen) return;
+
+        this.menuOpen = false;
+        this.$refs.menuButton?.focus();
+    },
+
+    menuItems() {
+        return [...(this.$refs.menu?.querySelectorAll('[role="menuitem"]') ?? [])].filter((item) => item.offsetParent !== null);
+    },
+
+    moveMenu(step) {
+        const items = this.menuItems();
+        const index = items.indexOf(document.activeElement);
+
+        items[(index + step + items.length) % items.length]?.focus();
     },
 
     // ---- Talking to the server ----
@@ -928,8 +985,9 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     scrollDown(force = false) {
         const log = this.$refs.log;
 
+        // A reader who scrolled up is left where they are; a new message glides in unless motion is reduced
         if (log && (force || this.isNearBottom())) {
-            log.scrollTop = log.scrollHeight;
+            log.scrollTo({ top: log.scrollHeight, behavior: force || reducedMotion() ? 'auto' : 'smooth' });
         }
     },
 });
