@@ -237,13 +237,13 @@ class BookingService
         return $digits >= 7 && $digits <= 20;
     }
 
-    private function estimate(PhotographyPackage $package): ?string
+    public function estimate(PhotographyPackage $package): ?string
     {
         return $package->price;
     }
 
     /** @return array<string, mixed> */
-    private function snapshot(PhotographyPackage $package, ?Theme $theme, ?string $customThemeText): array
+    public function snapshot(PhotographyPackage $package, ?Theme $theme, ?string $customThemeText): array
     {
         return [
             'package' => [

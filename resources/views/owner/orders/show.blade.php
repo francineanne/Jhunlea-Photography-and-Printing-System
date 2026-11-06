@@ -33,6 +33,7 @@
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
                     <h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1>
+                    <x-walk-in.badge :record="$order" />
                     <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-2">

@@ -32,8 +32,11 @@ class AvailabilityService
      * @return Collection<int, Slot>
      *
      * @throws InvalidArgumentException when the range is backwards or longer than config booking.max_lookup_days
+     *
+     * $atCounter: the owner's walk-in booking form; still never a time that has passed, a closed or blocked day, or a
+     * time that is not free
      */
-    public function slots(int $durationMinutes, string $fromDate, string $toDate, ?int $ignoreBookingId = null): Collection
+    public function slots(int $durationMinutes, string $fromDate, string $toDate, ?int $ignoreBookingId = null, bool $atCounter = false): Collection
     {
         $timezone = config('app.display_timezone');
         $from = Carbon::createFromFormat('!Y-m-d', $fromDate, $timezone);
@@ -45,6 +48,12 @@ class AvailabilityService
 
         $settings = BookingSetting::current();
         [$earliest, $latest] = $this->window($settings);
+
+        // At the counter (Phase 8A) any future time of an open day may be offered: no minimum notice, no advance limit
+        if ($atCounter) {
+            [$earliest, $latest] = [Carbon::now('UTC'), $to->copy()->endOfDay()->utc()];
+        }
+
         $step = (int) config('booking.slot_step_minutes');
 
         $rules = AvailabilityRule::query()->get()->keyBy('weekday');
@@ -123,9 +132,12 @@ class AvailabilityService
      * An empty list means it keeps every rule. Other bookings are NOT looked at here: a clash with a confirmed booking
      * is ScheduleConflictService's question, and the studio can never override it.
      *
+     * At the counter (Phase 8A, a walk-in booking with the customer standing there) the minimum notice and how far
+     * ahead one may book do not apply; a time that has already passed is still reported.
+     *
      * @return list<string>
      */
-    public function ruleViolations(int $durationMinutes, CarbonInterface $startsAt): array
+    public function ruleViolations(int $durationMinutes, CarbonInterface $startsAt, bool $atCounter = false): array
     {
         $settings = BookingSetting::current();
         $timezone = config('app.display_timezone');
@@ -155,6 +167,14 @@ class AvailabilityService
         }
 
         [$earliest, $latest] = $this->window($settings);
+
+        if ($atCounter) {
+            if ($start->lte(Carbon::now('UTC'))) {
+                $reasons[] = 'The time has already passed.';
+            }
+
+            return $reasons;
+        }
 
         if ($start->lt($earliest)) {
             $reasons[] = $start->lte(Carbon::now('UTC'))

@@ -17,7 +17,8 @@ class PasswordResetLinkController extends Controller
 
     public function store(ForgotPasswordRequest $request): RedirectResponse
     {
-        $credentials = $request->only('email');
+        // A walk-in customer (Phase 8A) has no login: never sent a reset link, whatever is typed
+        $credentials = $request->only('email') + ['is_walk_in' => false];
 
         // Sent after the response: a registered email would otherwise answer slower (mail is sent) or fail with a 500 if mail is down
         dispatch(fn () => Password::sendResetLink($credentials))->afterResponse();

@@ -36,6 +36,15 @@ class StatusTransitionService
     }
 
     /**
+     * The first history row of an order the owner made at the counter (Phase 8A): it starts Accepted, with its
+     * confirmed price, so the timeline says who made it and when. Called by WalkInOrderService only.
+     */
+    public function recordCounterOrder(PrintingOrder $order, User $owner, string $note): void
+    {
+        $this->writeHistory($order, null, PrintingOrderStatus::Accepted, $owner, $note);
+    }
+
+    /**
      * Moves the order to a new status.
      *
      * Accepting needs the confirmed price, which is saved in the same transaction. Rejecting needs a reason.

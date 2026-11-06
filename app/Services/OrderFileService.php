@@ -70,6 +70,28 @@ class OrderFileService
     public function store(PrintingOrder $order, UploadedFile $file, User $uploader): OrderFile
     {
         $this->authorize($order, $uploader);
+
+        return $this->write($order, $file, $uploader);
+    }
+
+    /**
+     * At the counter (Phase 8A, WalkInOrderService) the owner attaches files to the walk-in order being created, which
+     * is already Accepted: every file rule still applies, only the owner may do it, and the status gate is skipped.
+     *
+     * @throws AuthorizationException when the uploader is not the owner
+     * @throws ValidationException when the file is not acceptable
+     */
+    public function storeAtCounter(PrintingOrder $order, UploadedFile $file, User $owner): OrderFile
+    {
+        if ($owner->role !== UserRole::Owner) {
+            throw new AuthorizationException('Only the owner adds files at the counter.');
+        }
+
+        return $this->write($order, $file, $owner);
+    }
+
+    private function write(PrintingOrder $order, UploadedFile $file, User $uploader): OrderFile
+    {
         $this->validate($file, $order->service, $order);
 
         $disk = Storage::disk(config('printing.disk'));

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Orders\OrderListRequest;
@@ -33,6 +34,7 @@ class PrintingOrderController extends Controller
                     ->where('reference_number', 'like', $like)
                     ->orWhereHas('customer', fn (Builder $customer) => $customer->where('name', 'like', $like)));
             })
+            ->when($request->source(), fn (Builder $query, RecordSource $source) => $query->where('source', $source))
             ->when($request->from(), fn (Builder $query, string $from) => $query->where('created_at', '>=', LocalTime::dayStartUtc($from)))
             ->when($request->to(), fn (Builder $query, string $to) => $query->where('created_at', '<=', LocalTime::dayEndUtc($to)))
             ->latest()
@@ -46,7 +48,8 @@ class PrintingOrderController extends Controller
             'search' => $search,
             'from' => $request->from(),
             'to' => $request->to(),
-            'hasFilters' => $status !== null || $search !== '' || $request->from() || $request->to(),
+            'source' => $request->source(),
+            'hasFilters' => $status !== null || $search !== '' || $request->from() || $request->to() || $request->source(),
             // Every order, whatever the filters, like the tabs of the design
             'counts' => PrintingOrder::query()->toBase()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')->map(fn ($total) => (int) $total),
             'statuses' => PrintingOrderStatus::cases(),

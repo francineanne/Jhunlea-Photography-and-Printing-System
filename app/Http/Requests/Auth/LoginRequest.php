@@ -44,7 +44,8 @@ class LoginRequest extends FormRequest
             Hash::make($this->string('password'));
         }
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // A walk-in customer (Phase 8A) has no email or password and can never sign in; the condition says so outright
+        if (! Auth::attempt($this->only('email', 'password') + ['is_walk_in' => false], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages(['email' => trans('auth.failed')]);

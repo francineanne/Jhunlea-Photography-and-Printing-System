@@ -33,6 +33,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $booking->reference_number }}</span>
                     <x-ui.status-badge :status="$booking->status" live />
+                    <x-walk-in.badge :record="$booking" />
                 </div>
                 <h1 id="booking-title" class="mt-2 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
                     {{ $packageName }} <span class="font-normal italic text-app-text-2">— {{ $customer?->name ?? 'Deleted account' }}</span>

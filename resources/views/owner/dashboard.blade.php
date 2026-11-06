@@ -102,7 +102,7 @@
                                 <li>
                                     <a href="{{ $list['kind'] === 'order' ? route('owner.orders.show', $row) : route('owner.bookings.show', $row) }}" class="group flex items-center gap-3 rounded-control bg-neutral-100/70 p-3 transition-colors hover:bg-neutral-100 focus-ring dark:bg-white/5 dark:hover:bg-white/10">
                                         <span class="min-w-0 flex-1">
-                                            <span class="flex flex-wrap items-baseline gap-x-2"><span class="font-mono text-sm font-bold text-brand">{{ $row->reference_number }}</span><span class="truncate font-semibold">{{ $row->customer?->name ?? 'Deleted account' }}</span></span>
+                                            <span class="flex flex-wrap items-baseline gap-x-2"><span class="font-mono text-sm font-bold text-brand">{{ $row->reference_number }}</span><x-walk-in.badge :record="$row" /><span class="truncate font-semibold">{{ $row->customer?->name ?? 'Deleted account' }}</span></span>
                                             <span class="mt-0.5 block truncate text-xs text-app-text-2">
                                                 {{ $list['kind'] === 'order' ? $row->serviceName() : ($row->snapshot['package']['name'] ?? $row->package?->name) }} ·
                                                 @if ($list['kind'] === 'order') sent <x-ui.date :value="$row->created_at" /> @else asks for <x-ui.date :value="$row->starts_at" /> @endif
@@ -189,7 +189,7 @@
                                 <a href="{{ route('owner.bookings.show', $shoot) }}" class="block rounded-control bg-neutral-100/70 p-3 transition-colors hover:bg-neutral-100 focus-ring dark:bg-white/5 dark:hover:bg-white/10">
                                     <span class="font-mono text-sm font-bold"><x-ui.date :value="$shoot->starts_at" format="g:i A" /> – <x-ui.date :value="$shoot->ends_at" format="g:i A" /></span>
                                     <span class="mt-1 block truncate font-semibold">{{ $shoot->snapshot['package']['name'] ?? $shoot->package?->name }}</span>
-                                    <span class="block truncate text-xs text-app-text-2">{{ $shoot->reference_number }} · {{ $shoot->customer?->name ?? 'Deleted account' }}</span>
+                                    <span class="block truncate text-xs text-app-text-2">{{ $shoot->reference_number }} · {{ $shoot->customer?->name ?? 'Deleted account' }}{{ $shoot->isWalkIn() ? ' · Walk-in' : '' }}</span>
                                 </a>
                             </li>
                         @endforeach

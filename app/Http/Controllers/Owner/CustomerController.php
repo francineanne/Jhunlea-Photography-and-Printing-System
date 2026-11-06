@@ -18,7 +18,7 @@ class CustomerController extends Controller
             'customers' => $directory->customers($filters),
             'tiles' => $directory->tiles(),
             'filters' => $filters,
-            'hasFilters' => $filters['search'] !== '' || $filters['awaiting'],
+            'hasFilters' => $filters['search'] !== '' || $filters['awaiting'] || $filters['type'] !== null,
         ]);
     }
 

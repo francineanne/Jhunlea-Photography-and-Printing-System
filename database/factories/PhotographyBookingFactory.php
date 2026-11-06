@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\BookingStatus;
+use App\Enums\RecordSource;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\User;
@@ -34,6 +35,12 @@ class PhotographyBookingFactory extends Factory
             'estimated_price' => '1000.00',
             'confirmed_price' => null,
         ];
+    }
+
+    /** Made by the owner at the counter (Phase 8A). */
+    public function walkIn(): static
+    {
+        return $this->state(['source' => RecordSource::WalkIn]);
     }
 
     public function status(BookingStatus $status): static

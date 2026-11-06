@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-// `role` and `theme` are deliberately not fillable: server code sets them (theme only through AccountService).
+// `role`, `theme` and `is_walk_in` are deliberately not fillable: server code sets them (theme only through
+// AccountService, is_walk_in only through WalkInCustomerService). A walk-in customer (Phase 8A) has no email and no
+// password, so they can never sign in, reset a password or get a notification.
 #[Fillable(['name', 'email', 'phone', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -33,6 +35,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
             'theme' => ColorScheme::class,
+            'is_walk_in' => 'boolean',
         ];
     }
 
@@ -50,5 +53,10 @@ class User extends Authenticatable
     public function photographyBookings(): HasMany
     {
         return $this->hasMany(PhotographyBooking::class, 'customer_id');
+    }
+
+    public function isWalkIn(): bool
+    {
+        return (bool) $this->is_walk_in;
     }
 }

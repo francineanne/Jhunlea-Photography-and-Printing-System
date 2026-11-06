@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\BookingStatus;
+use App\Enums\RecordSource;
 use App\Models\Concerns\HasPayments;
 use App\Support\Money;
 use Database\Factories\PhotographyBookingFactory;
@@ -25,11 +26,15 @@ class PhotographyBooking extends Model
     /** @use HasFactory<PhotographyBookingFactory> */
     use HasFactory, HasPayments, SoftDeletes;
 
+    // Online unless the counter (WalkInBookingService) says otherwise; never fillable (Phase 8A)
+    protected $attributes = ['source' => 'online'];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
             'status' => BookingStatus::class,
+            'source' => RecordSource::class,
             'snapshot' => 'array',
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
@@ -116,5 +121,10 @@ class PhotographyBooking extends Model
     public function confirmedText(): ?string
     {
         return $this->confirmed_price === null ? null : Money::format($this->confirmed_price);
+    }
+
+    public function isWalkIn(): bool
+    {
+        return $this->source === RecordSource::WalkIn;
     }
 }

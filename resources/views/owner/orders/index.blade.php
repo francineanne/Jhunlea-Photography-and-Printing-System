@@ -9,6 +9,7 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Printing orders</h1>
             <p class="mt-2 text-app-text-2">Every printing request customers have sent. Open one to review it, ask for information, accept it with a price or move it on.</p>
         </div>
+        <x-ui.button :href="route('owner.orders.walk-in.create')"><x-ui.icon name="storefront" :size="18" />New walk-in order</x-ui.button>
     </div>
 
     @if ($errors->any())
@@ -44,11 +45,17 @@
     </nav>
 
     <form method="GET" action="{{ route('owner.orders.index') }}" role="search"
-        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end dark:shadow-none">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end dark:shadow-none">
         @if ($status)
             <input type="hidden" name="status" value="{{ $status->value }}">
         @endif
         <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="Reference (PR-000001) or customer name" />
+        <x-ui.select id="filter-source" name="source" label="Source">
+            <option value="">Online and walk-in</option>
+            @foreach (\App\Enums\RecordSource::cases() as $item)
+                <option value="{{ $item->value }}" @selected($source === $item)>{{ $item->label() }}</option>
+            @endforeach
+        </x-ui.select>
         <x-ui.input label="From" name="from" type="date" :value="$from" />
         <x-ui.input label="To" name="to" type="date" :value="$to" />
         <div class="flex gap-2 sm:col-span-2 lg:col-span-1">
@@ -90,6 +97,7 @@
                             <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                 <td class="px-4 py-4">
                                     <a href="{{ route('owner.orders.show', $order) }}" class="rounded font-mono text-sm font-bold text-brand hover:underline focus-ring">{{ $order->reference_number }}</a>
+                                    <x-walk-in.badge :record="$order" class="mt-1" />
                                 </td>
                                 <td class="max-w-56 px-4 py-4">
                                     <div class="flex items-center gap-3">
@@ -131,7 +139,7 @@
                     <li>
                         <a href="{{ route('owner.orders.show', $order) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="font-mono text-sm font-bold text-brand">{{ $order->reference_number }}</span>
+                                <span class="flex flex-wrap items-center gap-1.5"><span class="font-mono text-sm font-bold text-brand">{{ $order->reference_number }}</span><x-walk-in.badge :record="$order" /></span>
                                 <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ $order->customer?->name ?? 'Deleted account' }}</span>

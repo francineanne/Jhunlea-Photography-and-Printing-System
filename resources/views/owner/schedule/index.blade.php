@@ -21,7 +21,10 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Schedule</h1>
             <p class="mt-2 text-app-text-2">Confirmed sessions, requests waiting for you and the days the studio is closed. Open a booking to work on it.</p>
         </div>
-        <x-ui.button :href="route('owner.schedule.edit')"><x-ui.icon name="tune" :size="18" />Hours and booking rules</x-ui.button>
+        <div class="flex flex-wrap gap-2">
+            <x-ui.button :href="route('owner.bookings.walk-in.create')" variant="outline"><x-ui.icon name="storefront" :size="18" />New walk-in booking</x-ui.button>
+            <x-ui.button :href="route('owner.schedule.edit')"><x-ui.icon name="tune" :size="18" />Hours and booking rules</x-ui.button>
+        </div>
     </div>
 
     @if ($errors->any())

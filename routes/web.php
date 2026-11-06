@@ -40,6 +40,7 @@ use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\ThemeController;
+use App\Http\Controllers\Owner\WalkInController;
 use App\Http\Controllers\Public\FaqController as PublicFaqController;
 use App\Http\Controllers\Public\GuestAssistantController;
 use App\Http\Controllers\Public\HomeController as PublicHomeController;
@@ -223,6 +224,19 @@ Route::get('/owner/reports', [ReportController::class, 'index'])
 Route::middleware('auth')->prefix('booking-images')->name('booking-images.')->whereNumber('image')->controller(BookingReferenceImageController::class)->group(function () {
     Route::get('/{image}', 'show')->middleware('throttle:240,1,booking-image-show')->name('show');
     Route::get('/{image}/download', 'download')->middleware('throttle:30,1,booking-image-download')->name('download');
+});
+
+// The owner's counter (Phase 8A): walk-in printing orders (paid when made) and walk-in bookings. These come before the
+// {order} and {booking} routes below, which only take numbers anyway
+Route::middleware(['auth', 'role:owner'])->group(function () {
+    Route::get('/owner/walk-in/customers', [WalkInController::class, 'customers'])->middleware('throttle:120,1,owner-walkin-customers')->name('owner.walk-in.customers');
+    Route::get('/owner/printing-orders/walk-in/new', [WalkInController::class, 'createOrder'])->middleware('throttle:60,1,owner-walkin-order-form')->name('owner.orders.walk-in.create');
+    Route::get('/owner/printing-orders/walk-in/price', PrintingEstimateController::class)->middleware('throttle:120,1,owner-walkin-order-price')->name('owner.orders.walk-in.price');
+    Route::post('/owner/printing-orders/walk-in', [WalkInController::class, 'storeOrder'])->middleware('throttle:20,1,owner-walkin-order-store')->name('owner.orders.walk-in.store');
+    Route::get('/owner/printing-orders/{order}/walk-in-saved', [WalkInController::class, 'orderDone'])->whereNumber('order')->middleware('throttle:60,1,owner-walkin-order-done')->name('owner.orders.walk-in.done');
+    Route::get('/owner/bookings/walk-in/new', [WalkInController::class, 'createBooking'])->middleware('throttle:60,1,owner-walkin-booking-form')->name('owner.bookings.walk-in.create');
+    Route::get('/owner/bookings/walk-in/slots', [WalkInController::class, 'slots'])->middleware('throttle:120,1,owner-walkin-booking-slots')->name('owner.bookings.walk-in.slots');
+    Route::post('/owner/bookings/walk-in', [WalkInController::class, 'storeBooking'])->middleware('throttle:20,1,owner-walkin-booking-store')->name('owner.bookings.walk-in.store');
 });
 
 // The owner's printing orders. Every action is a POST that goes through StatusTransitionService

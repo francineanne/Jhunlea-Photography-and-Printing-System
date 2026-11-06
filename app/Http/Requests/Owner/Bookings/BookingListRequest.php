@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Owner\Bookings;
 
 use App\Enums\BookingStatus;
+use App\Enums\RecordSource;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -30,6 +31,7 @@ class BookingListRequest extends FormRequest
         return [
             'status' => ['nullable', 'string', Rule::in([self::ALL, ...array_column(BookingStatus::cases(), 'value')])],
             'q' => ['nullable', 'string', 'max:60'],
+            'source' => ['nullable', 'string', Rule::enum(RecordSource::class)],
             'package' => ['nullable', 'integer', Rule::exists('photography_packages', 'id')],
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
@@ -42,6 +44,7 @@ class BookingListRequest extends FormRequest
         return [
             'status.*' => 'That status filter does not exist.',
             'q.max' => 'Search with up to :max characters.',
+            'source.*' => 'That source filter does not exist.',
             'q.string' => 'Search with plain text.',
             'package.*' => 'That package does not exist.',
             'from.date_format' => 'Pick a valid start date.',
@@ -78,5 +81,11 @@ class BookingListRequest extends FormRequest
     public function to(): ?string
     {
         return $this->validated('to');
+    }
+
+    /** Online or walk-in (Phase 8A); null shows both. */
+    public function source(): ?RecordSource
+    {
+        return RecordSource::tryFrom((string) $this->validated('source'));
     }
 }

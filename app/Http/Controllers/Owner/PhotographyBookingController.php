@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Enums\BookingStatus;
+use App\Enums\RecordSource;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Bookings\BookingListRequest;
@@ -51,6 +52,7 @@ class PhotographyBookingController extends Controller
             })
             ->when($request->package(), fn (Builder $query, int $package) => $query->where('photography_package_id', $package))
             // The session's day in the shop's calendar, as the UTC range that holds it
+            ->when($request->source(), fn (Builder $query, RecordSource $source) => $query->where('source', $source))
             ->when($request->from(), fn (Builder $query, string $from) => $query->where('starts_at', '>=', LocalTime::dayStartUtc($from)))
             ->when($request->to(), fn (Builder $query, string $to) => $query->where('starts_at', '<=', LocalTime::dayEndUtc($to)))
             ->when($status === BookingStatus::Confirmed,
@@ -68,7 +70,8 @@ class PhotographyBookingController extends Controller
             'package' => $request->package(),
             'from' => $request->from(),
             'to' => $request->to(),
-            'hasFilters' => $search !== '' || $request->package() || $request->from() || $request->to(),
+            'source' => $request->source(),
+            'hasFilters' => $search !== '' || $request->package() || $request->from() || $request->to() || $request->source(),
             // Every booking, whatever the filters, with a count on every tab (0 too), as in the design
             'counts' => $counts,
             'statuses' => BookingStatus::cases(),

@@ -40,6 +40,19 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => ['role' => UserRole::Owner]);
     }
 
+    /** A walk-in customer (Phase 8A): no email, no password, no login. */
+    public function walkIn(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => UserRole::Customer,
+            'is_walk_in' => true,
+            'email' => null,
+            'email_verified_at' => null,
+            'password' => null,
+            'remember_token' => null,
+        ]);
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      */

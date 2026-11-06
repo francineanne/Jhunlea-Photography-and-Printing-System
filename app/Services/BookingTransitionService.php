@@ -53,6 +53,21 @@ class BookingTransitionService
     }
 
     /**
+     * The first history row of a booking the owner made at the counter (Phase 8A): it starts Confirmed. Called by
+     * WalkInBookingService only, after its own schedule checks under the schedule lock.
+     */
+    public function recordCounterBooking(PhotographyBooking $booking, User $owner, string $note): void
+    {
+        $this->writeHistory($booking, null, BookingStatus::Confirmed, $owner, $note);
+    }
+
+    /** The schedule lock of confirm(), for WalkInBookingService (held until the surrounding transaction ends). */
+    public function lockSchedule(): void
+    {
+        $this->takeScheduleLock();
+    }
+
+    /**
      * The studio confirms the time the customer asked for. The price defaults to the estimate and may be changed;
      * a package priced on request has no estimate, so the price is required.
      *

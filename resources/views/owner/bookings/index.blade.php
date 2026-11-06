@@ -15,6 +15,7 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Photography bookings</h1>
             <p class="mt-2 max-w-2xl text-app-text-2">Every photoshoot request. Open one to confirm it, offer another time, reject it, or mark the shoot done. Requests do not hold a time until you confirm them.</p>
         </div>
+        <x-ui.button :href="route('owner.bookings.walk-in.create')"><x-ui.icon name="storefront" :size="18" />New walk-in booking</x-ui.button>
     </div>
 
     @if ($errors->any())
@@ -53,13 +54,19 @@
     </nav>
 
     <form method="GET" action="{{ route('owner.bookings.index') }}" role="search"
-        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
         <input type="hidden" name="status" value="{{ $status?->value ?? 'all' }}">
         <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="PB-000001, customer name or contact number" />
         <x-ui.select id="filter-package" name="package" label="Package">
             <option value="">All packages</option>
             @foreach ($packages as $item)
                 <option value="{{ $item->id }}" @selected($package === $item->id)>{{ $item->name }}{{ $item->deleted_at ? ' (removed)' : '' }}</option>
+            @endforeach
+        </x-ui.select>
+        <x-ui.select id="filter-source" name="source" label="Source">
+            <option value="">Online and walk-in</option>
+            @foreach (\App\Enums\RecordSource::cases() as $item)
+                <option value="{{ $item->value }}" @selected($source === $item)>{{ $item->label() }}</option>
             @endforeach
         </x-ui.select>
         <x-ui.input label="Session from" name="from" type="date" :value="$from" />
@@ -106,6 +113,7 @@
                                 <td class="whitespace-nowrap px-3 py-4 align-top">
                                     <a href="{{ route('owner.bookings.show', $booking) }}" class="inline-flex min-h-9 items-center gap-0.5 rounded font-mono text-sm font-bold text-brand hover:underline focus-ring">{{ $booking->reference_number }}<x-ui.icon name="chevron_right" :size="16" /></a>
                                     <p class="mt-0.5 text-[11px] uppercase text-app-text-2"><x-ui.date :value="$booking->created_at" format="M j" /></p>
+                                    <x-walk-in.badge :record="$booking" class="mt-1" />
                                 </td>
                                 <td class="px-3 py-4 align-top">
                                     <div class="flex w-52 items-center gap-3">
@@ -155,7 +163,7 @@
                     <li>
                         <a href="{{ route('owner.bookings.show', $booking) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span>
+                                <span class="flex flex-wrap items-center gap-1.5"><span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span><x-walk-in.badge :record="$booking" /></span>
                                 <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$booking->status" live /><x-payment.badge :payable="$booking" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</span>

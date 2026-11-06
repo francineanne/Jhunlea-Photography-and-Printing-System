@@ -47,10 +47,15 @@
     </div>
 
     <form method="GET" action="{{ route('owner.customers.index') }}" role="search"
-        class="mt-6 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-[1fr_auto] sm:items-end dark:shadow-none">
+        class="mt-6 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-[1fr_auto_auto] sm:items-end dark:shadow-none">
         <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="Name, email or phone" />
         <x-ui.checkbox name="awaiting" value="1" :checked="$filters['awaiting']">Only with something awaiting payment</x-ui.checkbox>
-        <div class="flex gap-2 sm:col-span-2">
+        <x-ui.select id="filter-type" name="type" label="Customers">
+            <option value="">Online and walk-in</option>
+            <option value="online" @selected($filters['type'] === 'online')>Online accounts</option>
+            <option value="walk_in" @selected($filters['type'] === 'walk_in')>Walk-in (no login)</option>
+        </x-ui.select>
+        <div class="flex gap-2 sm:col-span-3">
             <x-ui.button type="submit">Filter</x-ui.button>
             @if ($hasFilters)
                 <x-ui.button :href="route('owner.customers.index')" variant="ghost">Clear</x-ui.button>
@@ -95,8 +100,8 @@
                         @foreach ($customers as $customer)
                             <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                 <td class="max-w-60 px-4 py-4">
-                                    <p class="truncate font-semibold" title="{{ $customer->name }}">{{ $customer->name }}</p>
-                                    <p class="truncate text-xs text-app-text-2" title="{{ $customer->email }}">{{ $customer->email }}</p>
+                                    <p class="flex min-w-0 items-center gap-1.5"><span class="truncate font-semibold" title="{{ $customer->name }}">{{ $customer->name }}</span><x-walk-in.badge :record="$customer" class="shrink-0" /></p>
+                                    <p class="truncate text-xs text-app-text-2" title="{{ $customer->email }}">@if ($customer->email){{ $customer->email }}@else<span class="italic">Walk-in, no login</span>@endif</p>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-4 font-mono text-xs">{{ $customer->phone ?: '—' }}</td>
                                 <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$customer->created_at" format="M j, Y" /></td>
@@ -120,8 +125,8 @@
                         <a href="{{ route('owner.customers.show', $customer) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex items-start justify-between gap-3">
                                 <span class="min-w-0">
-                                    <span class="block break-words font-semibold">{{ $customer->name }}</span>
-                                    <span class="block break-all text-xs text-app-text-2">{{ $customer->email }}</span>
+                                    <span class="flex flex-wrap items-center gap-1.5"><span class="break-words font-semibold">{{ $customer->name }}</span><x-walk-in.badge :record="$customer" /></span>
+                                    <span class="block break-all text-xs text-app-text-2">@if ($customer->email){{ $customer->email }}@else<span class="italic">Walk-in, no login</span>@endif</span>
                                 </span>
                                 @if ($customer->awaiting_cents > 0)
                                     <x-ui.badge tone="red" class="shrink-0">Due {{ $peso($customer->awaiting_cents) }}</x-ui.badge>

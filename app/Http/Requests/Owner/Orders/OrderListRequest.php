@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Owner\Orders;
 
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,6 +26,7 @@ class OrderListRequest extends FormRequest
         return [
             'status' => ['nullable', 'string', Rule::enum(PrintingOrderStatus::class)],
             'q' => ['nullable', 'string', 'max:60'],
+            'source' => ['nullable', 'string', Rule::enum(RecordSource::class)],
             'from' => ['nullable', 'date_format:Y-m-d'],
             'to' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:from'],
         ];
@@ -36,6 +38,7 @@ class OrderListRequest extends FormRequest
         return [
             'status.*' => 'That status filter does not exist.',
             'q.max' => 'Search with up to :max characters.',
+            'source.*' => 'That source filter does not exist.',
             'q.string' => 'Search with plain text.',
             'from.date_format' => 'Pick a valid start date.',
             'to.date_format' => 'Pick a valid end date.',
@@ -61,5 +64,11 @@ class OrderListRequest extends FormRequest
     public function to(): ?string
     {
         return $this->validated('to');
+    }
+
+    /** Online or walk-in (Phase 8A); null shows both. */
+    public function source(): ?RecordSource
+    {
+        return RecordSource::tryFrom((string) $this->validated('source'));
     }
 }

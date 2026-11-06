@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
@@ -31,6 +32,12 @@ class PrintingOrderFactory extends Factory
             'rejection_reason' => null,
             'info_request' => null,
         ];
+    }
+
+    /** Made by the owner at the counter (Phase 8A). */
+    public function walkIn(): static
+    {
+        return $this->state(['source' => RecordSource::WalkIn]);
     }
 
     public function status(PrintingOrderStatus $status): static

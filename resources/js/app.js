@@ -2,6 +2,7 @@ import Alpine from 'alpinejs';
 import chatWindow from './chat';
 import { ownerHeartbeat, ownerInbox } from './owner-chat';
 import ownerAsk, { ownerBriefing } from './owner-ask';
+import { walkInBooking, walkInCustomer, walkInOrder } from './walk-in';
 
 window.Alpine = Alpine;
 
@@ -1214,6 +1215,9 @@ Alpine.data('chatWindow', chatWindow);
 Alpine.data('ownerInbox', ownerInbox);
 Alpine.data('ownerHeartbeat', ownerHeartbeat);
 Alpine.data('ownerAsk', ownerAsk);
+Alpine.data('walkInCustomer', walkInCustomer);
+Alpine.data('walkInOrder', walkInOrder);
+Alpine.data('walkInBooking', walkInBooking);
 Alpine.data('ownerBriefing', ownerBriefing);
 
 Alpine.start();

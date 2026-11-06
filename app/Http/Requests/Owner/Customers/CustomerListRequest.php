@@ -23,6 +23,7 @@ class CustomerListRequest extends FormRequest
         return [
             'q' => ['nullable', 'string', 'max:60', 'not_regex:/[\x00-\x1F\x7F]/u'],
             'awaiting' => ['nullable', 'string', 'in:1'],
+            'type' => ['nullable', 'string', 'in:walk_in,online'],
             'page' => ['nullable', 'integer', 'min:1', 'max:100000'],
         ];
     }
@@ -34,16 +35,18 @@ class CustomerListRequest extends FormRequest
             'q.max' => 'Search with up to :max characters.',
             'q.*' => 'Search with plain text.',
             'awaiting.*' => 'That filter does not exist.',
+            'type.*' => 'That filter does not exist.',
             'page.*' => 'That page does not exist.',
         ];
     }
 
-    /** @return array{search: string, awaiting: bool} */
+    /** @return array{search: string, awaiting: bool, type: ?string} */
     public function filters(): array
     {
         return [
             'search' => trim((string) $this->validated('q')),
             'awaiting' => $this->validated('awaiting') === '1',
+            'type' => $this->validated('type'),
         ];
     }
 }

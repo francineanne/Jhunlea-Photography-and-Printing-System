@@ -87,7 +87,7 @@ class NotificationDispatcher
     public function messageReplied(Conversation $conversation, User $owner): void
     {
         $this->sendMessageNotice(NotificationKind::MessageReplied, $conversation, $owner,
-            fn () => User::query()->whereKey($conversation->customer_id)->where('role', UserRole::Customer)->get());
+            fn () => User::query()->whereKey($conversation->customer_id)->where('role', UserRole::Customer)->where('is_walk_in', false)->get());
     }
 
     /** Opening a thread marks the reader's unread message notices of that conversation read. */
@@ -147,7 +147,8 @@ class NotificationDispatcher
             try {
                 $recipients = ($kind->audience() === UserRole::Owner
                     ? User::query()->where('role', UserRole::Owner)
-                    : User::query()->whereKey($customerId)->where('role', UserRole::Customer))
+                    // A walk-in customer (Phase 8A) has no account to read a notice in: never told anything
+                    : User::query()->whereKey($customerId)->where('role', UserRole::Customer)->where('is_walk_in', false))
                     ->whereKeyNot($actorId)
                     ->get();
 

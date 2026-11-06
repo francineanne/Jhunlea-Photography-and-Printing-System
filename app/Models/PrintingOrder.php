@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OptionGroup;
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use App\Models\Concerns\HasPayments;
 use App\Support\Money;
 use Database\Factories\PrintingOrderFactory;
@@ -22,11 +23,15 @@ class PrintingOrder extends Model
     /** @use HasFactory<PrintingOrderFactory> */
     use HasFactory, HasPayments, SoftDeletes;
 
+    // Online unless the counter (WalkInOrderService) says otherwise; never fillable (Phase 8A)
+    protected $attributes = ['source' => 'online'];
+
     /** @return array<string, string> */
     protected function casts(): array
     {
         return [
             'status' => PrintingOrderStatus::class,
+            'source' => RecordSource::class,
             'snapshot' => 'array',
             'quantity' => 'integer',
             'estimated_price' => 'decimal:2',
@@ -114,5 +119,10 @@ class PrintingOrder extends Model
     public function needsInfo(): bool
     {
         return $this->info_request !== null && $this->info_request !== '';
+    }
+
+    public function isWalkIn(): bool
+    {
+        return $this->source === RecordSource::WalkIn;
     }
 }

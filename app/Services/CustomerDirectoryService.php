@@ -31,7 +31,7 @@ class CustomerDirectoryService
     ) {}
 
     /**
-     * @param  array{search: string, awaiting: bool}  $filters
+     * @param  array{search: string, awaiting: bool, type?: ?string}  $filters  type: 'walk_in', 'online' or null (Phase 8A)
      * @return LengthAwarePaginator<int, User>
      */
     public function customers(array $filters): LengthAwarePaginator
@@ -39,7 +39,8 @@ class CustomerDirectoryService
         $search = $filters['search'];
 
         return $this->customersQuery()
-            ->select(['id', 'name', 'email', 'phone', 'created_at'])
+            ->select(['id', 'name', 'email', 'phone', 'is_walk_in', 'created_at'])
+            ->when($filters['type'] ?? null, fn (Builder $query, string $type) => $query->where('is_walk_in', $type === 'walk_in'))
             ->withCount(['printingOrders', 'photographyBookings'])
             ->withMax('printingOrders', 'created_at')
             ->withMax('photographyBookings', 'created_at')
