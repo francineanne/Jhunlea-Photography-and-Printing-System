@@ -33,6 +33,8 @@
         <p class="mt-2 max-w-2xl text-app-text-2">Requests created and payments received in the period you choose. Dates are the shop’s calendar days (Philippine time).</p>
     </div>
 
+    @include('owner.reports._tabs')
+
     @if ($errors->any())
         <x-ui.notice class="mt-6 !border-status-red/30 !bg-status-red-bg">
             @foreach ($errors->all() as $message)<p>{{ $message }}</p>@endforeach

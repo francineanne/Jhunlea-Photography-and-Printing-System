@@ -62,6 +62,7 @@
     --animate-ring-pulse: ring-pulse 3s ease-in-out infinite;
     --animate-ring-sweep: ring-sweep 900ms var(--ease-brand) 200ms both;
     --animate-bar-grow: bar-grow 700ms var(--ease-brand) 200ms both;
+    --animate-bar-rise: bar-rise 700ms var(--ease-brand) 200ms both;
 
     @keyframes aperture-turn {
         0% { transform: rotate(0deg); }
@@ -107,6 +108,11 @@
     /* The bars of the reports design: each grows from the left edge to its width */
     @keyframes bar-grow {
         from { transform: scaleX(0); }
+    }
+
+    /* The income chart's bars (Phase 8C): each rises from the zero line to its height */
+    @keyframes bar-rise {
+        from { transform: scaleY(0); }
     }
 }
 
@@ -413,6 +419,74 @@
 @media (prefers-reduced-motion: reduce) {
     .chat-bubble-in {
         animation: none;
+    }
+}
+
+/*
+ * Income report charts (Phase 8C). Series A is the brand red; series B is ink (light) or a light gray (dark) with a
+ * diagonal stripe, so the two never differ by color alone. Every chart also has its numbers in a table.
+ */
+:root {
+    --chart-b: #171717;
+}
+
+.dark {
+    --chart-b: #D4D4D4;
+}
+
+.chart-a {
+    background-color: var(--color-brand);
+}
+
+.chart-b {
+    background-color: var(--chart-b);
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgba(128, 128, 128, 0.45) 4px 6px);
+}
+
+/* Printing the income report: only the report, black on white, whatever the screen theme */
+@media print {
+    @page {
+        size: A4;
+        margin: 12mm;
+    }
+
+    html:has(#income-report),
+    html:has(#income-report) .dark {
+        --app-bg: #FFFFFF;
+        --app-card: #FFFFFF;
+        --app-border: #9CA3AF;
+        --app-text: #000000;
+        --app-text-2: #333333;
+        --app-muted: #555555;
+        --chart-b: #171717;
+        color-scheme: light;
+        background: #FFFFFF;
+    }
+
+    html:has(#income-report) body * {
+        visibility: hidden;
+    }
+
+    html:has(#income-report) #income-report,
+    html:has(#income-report) #income-report * {
+        visibility: visible;
+        box-shadow: none !important;
+        animation: none !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    html:has(#income-report) #income-report {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        color: #000000;
+    }
+
+    #income-report section,
+    #income-report tr {
+        break-inside: avoid;
     }
 }
 

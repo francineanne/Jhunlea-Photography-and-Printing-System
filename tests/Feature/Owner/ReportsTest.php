@@ -266,7 +266,8 @@ class ReportsTest extends TestCase
         $html = $this->report()->assertOk()->assertDontSee('<script>alert(1)</script>', false)->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)->getContent();
 
         $main = substr($html, strpos($html, '<main'));
-        foreach (['revenue', 'sales', 'profit', 'income', 'average order', 'growth'] as $word) {
+        // Phase 8C allows "Income" (the Income report's tab sits on this page); revenue, sales and profit stay banned
+        foreach (['revenue', 'sales', 'profit', 'average order', 'growth'] as $word) {
             $this->assertStringNotContainsStringIgnoringCase($word, $main, $word);
         }
         $this->assertMatchesRegularExpression('/href="'.preg_quote(route('owner.reports.index'), '/').'"\s+aria-current="page"/', $html);

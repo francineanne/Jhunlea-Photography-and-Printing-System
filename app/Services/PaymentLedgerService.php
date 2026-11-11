@@ -33,17 +33,40 @@ class PaymentLedgerService
      */
     public function payments(array $filters, string $pageName = 'page'): LengthAwarePaginator
     {
+        return $this->listing($filters)
+            ->latest('received_at')
+            ->latest('id')
+            ->paginate(self::PER_PAGE, pageName: $pageName)
+            ->withQueryString();
+    }
+
+    /**
+     * The ledger's rows (recorded and voided, or one status) with what a row shows loaded, unordered and unpaged. The
+     * ledger pages it; the income report's end-of-day page and CSV (Phase 8C) read the same rows.
+     *
+     * @param  array{method: ?PaymentMethod, status: ?PaymentRecordStatus, search: string, from: ?string, to: ?string, customer?: int}  $filters
+     * @return Builder<Payment>
+     */
+    public function listing(array $filters): Builder
+    {
         return $this->filtered($filters)
             ->when($filters['status'], fn (Builder $query, PaymentRecordStatus $status) => $query->where('status', $status))
             ->with(['receiver:id,name', 'voider:id,name'])
             ->with(['payable' => fn (MorphTo $morph) => $morph->morphWith([
                 PrintingOrder::class => ['customer:id,name'],
                 PhotographyBooking::class => ['customer:id,name'],
-            ])])
-            ->latest('received_at')
-            ->latest('id')
-            ->paginate(self::PER_PAGE, pageName: $pageName)
-            ->withQueryString();
+            ])]);
+    }
+
+    /**
+     * Every payment (recorded and voided) received in a period of shop calendar days (null ends: all time), with the
+     * same date rule as totals(). The income report counts the voided ones apart from it (Phase 8C).
+     *
+     * @return Builder<Payment>
+     */
+    public function inPeriod(?string $from, ?string $to): Builder
+    {
+        return $this->filtered(['method' => null, 'status' => null, 'search' => '', 'from' => $from, 'to' => $to]);
     }
 
     /**
@@ -129,8 +152,7 @@ class PaymentLedgerService
      */
     public function recorded(?string $from, ?string $to): Builder
     {
-        return $this->filtered(['method' => null, 'status' => null, 'search' => '', 'from' => $from, 'to' => $to])
-            ->where('status', PaymentRecordStatus::Recorded);
+        return $this->inPeriod($from, $to)->where('status', PaymentRecordStatus::Recorded);
     }
 
     /** Whole centavos of the confirmed prices a query finds (one query). */

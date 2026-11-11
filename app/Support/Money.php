@@ -42,6 +42,25 @@ class Money
         return preg_match('/^\d{1,8}(\.\d{1,2})?$/', $value) ? self::fromCents(self::toCents($value)) : null;
     }
 
+    /** Whole centavos as a peso string (1250 becomes "₱12.50"). */
+    public static function cents(int $cents): string
+    {
+        return self::format(self::fromCents($cents));
+    }
+
+    /** A short label for chart bars (Phase 8C): "₱850", "₱1.3k", "₱2.5M". The full amount is always in the table. */
+    public static function compact(int $cents): string
+    {
+        $pesos = $cents / 100;
+        $short = fn (float $value, string $unit) => rtrim(rtrim(number_format($value, 1, '.', ''), '0'), '.').$unit;
+
+        return '₱'.match (true) {
+            $pesos >= 1_000_000 => $short($pesos / 1_000_000, 'M'),
+            $pesos >= 1_000 => $short($pesos / 1_000, 'k'),
+            default => number_format($pesos, 0),
+        };
+    }
+
     /** For option price modifiers: "+₱25.00", or "No extra charge" when zero. */
     public static function modifier(string|int|float|null $amount): string
     {

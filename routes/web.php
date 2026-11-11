@@ -23,6 +23,7 @@ use App\Http\Controllers\Owner\CounterController;
 use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
+use App\Http\Controllers\Owner\IncomeReportController;
 use App\Http\Controllers\Owner\MessageController as OwnerMessageController;
 use App\Http\Controllers\Owner\OwnerAskController;
 use App\Http\Controllers\Owner\OwnerAssistController;
@@ -228,6 +229,14 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/faqs')->name('owner.faq
 Route::get('/owner/reports', [ReportController::class, 'index'])
     ->middleware(['auth', 'role:owner', 'throttle:60,1,owner-reports'])
     ->name('owner.reports.index');
+
+// The owner's income report (Phase 8C): daily, weekly, monthly, custom and all time, the printable end-of-day
+// summary and the CSV of the period's payments
+Route::middleware(['auth', 'role:owner'])->prefix('owner/reports/income')->name('owner.reports.')->controller(IncomeReportController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:60,1,owner-income-report')->name('income');
+    Route::get('/end-of-day', 'endOfDay')->middleware('throttle:30,1,owner-income-end-of-day')->name('end-of-day');
+    Route::get('/csv', 'csv')->middleware('throttle:10,1,owner-income-csv')->name('csv');
+});
 
 // A reference image of a booking, for the owner or the customer whose booking it is (BookingReferenceImagePolicy).
 // Shown in the page only when its content is a real JPEG, PNG or WebP image; the download link always downloads

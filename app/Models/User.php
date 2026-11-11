@@ -15,7 +15,8 @@ use Illuminate\Notifications\Notifiable;
 
 // `role`, `theme` and `is_walk_in` are deliberately not fillable: server code sets them (theme only through
 // AccountService, is_walk_in only through WalkInCustomerService). A walk-in customer (Phase 8A) has no email and no
-// password, so they can never sign in, reset a password or get a notification.
+// password, so they can never sign in, reset a password or get a notification. `report_view` (Phase 8C, the owner's
+// remembered income report view) is not fillable either: only ReportViewPreference writes it.
 #[Fillable(['name', 'email', 'phone', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable

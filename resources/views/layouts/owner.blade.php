@@ -10,7 +10,7 @@
         ['label' => 'Schedule', 'icon' => 'calendar_month', 'route' => 'owner.schedule.index', 'match' => 'owner.schedule.*'],
         ['label' => 'Payments', 'icon' => 'point_of_sale', 'route' => 'owner.payments.index', 'match' => 'owner.payments.*'],
         ['label' => 'Customers', 'icon' => 'group', 'route' => 'owner.customers.index', 'match' => 'owner.customers.*'],
-        ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.index', 'match' => 'owner.reports.*'],
+        ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.income', 'match' => 'owner.reports.*'],
         ['label' => 'Messages', 'icon' => 'forum', 'route' => 'owner.messages.index', 'match' => 'owner.messages.*', 'badge' => $unanswered ?? 0],
         ['label' => 'Ask '.config('assistant.name'), 'icon' => 'camera', 'route' => 'owner.assistant.index', 'match' => 'owner.assistant.*'],
         ['label' => 'Notifications', 'icon' => 'notifications', 'route' => 'owner.notifications.index', 'match' => 'owner.notifications.*', 'badge' => $bell['unread'] ?? 0],
