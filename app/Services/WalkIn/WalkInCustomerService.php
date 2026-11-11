@@ -2,8 +2,10 @@
 
 namespace App\Services\WalkIn;
 
+use App\Enums\AuditAction;
 use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
@@ -64,6 +66,9 @@ class WalkInCustomerService
             'role' => UserRole::Customer,
             'is_walk_in' => true,
         ])->save();
+
+        // Audit trail (8E): inside the counter form's transaction; the name only (the owner sees it), never the phone
+        app(AuditLogger::class)->record(AuditAction::WalkInCustomerCreated, $customer);
 
         return $customer;
     }

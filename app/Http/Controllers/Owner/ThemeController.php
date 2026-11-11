@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\ThemeRequest;
 use App\Models\PackageImage;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -90,6 +92,7 @@ class ThemeController extends Controller
                 $theme->image_path = $newPath;
                 $theme->save();
                 $theme->packages()->sync($packageIds);
+                app(AuditLogger::class)->catalog(AuditAction::CatalogCreated, $theme, 'theme');
 
                 return $theme;
             });
@@ -126,7 +129,11 @@ class ThemeController extends Controller
                 }
 
                 $theme->save();
-                $theme->packages()->sync($packageIds);
+                $packages = $theme->packages()->sync($packageIds);
+
+                if ($theme->wasChanged() || array_filter($packages) !== []) {
+                    app(AuditLogger::class)->catalog(AuditAction::CatalogUpdated, $theme, 'theme');
+                }
 
                 // The old file goes only after the change has committed, so a failed save never loses the photo
                 if ($removeOld && $oldPath) {
@@ -146,14 +153,21 @@ class ThemeController extends Controller
     public function destroy(Theme $theme): RedirectResponse
     {
         // Soft delete: its photo stays on disk with it
-        $theme->delete();
+        // The change and its audit row in one transaction (8E): a failed audit write undoes the change
+        DB::transaction(function () use ($theme) {
+            $theme->delete();
+            app(AuditLogger::class)->catalog(AuditAction::CatalogDeleted, $theme, 'theme');
+        });
 
         return redirect()->route('owner.themes.index')->with('status', "\"{$theme->name}\" was deleted.");
     }
 
     public function publish(Theme $theme): RedirectResponse
     {
-        $theme->update(['is_published' => ! $theme->is_published]);
+        DB::transaction(function () use ($theme) {
+            $theme->update(['is_published' => ! $theme->is_published]);
+            app(AuditLogger::class)->published($theme, 'theme');
+        });
 
         return back()->with('status', $theme->is_published
             ? "\"{$theme->name}\" is now published."

@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\ColorScheme;
+use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -35,6 +38,11 @@ class AccountService
             $user->save();
         }
 
+        // Audit trail (8E), the owner's account only: that the email changed, never the address itself
+        if ($emailChanged && $user->role === UserRole::Owner) {
+            app(AuditLogger::class)->record(AuditAction::EmailChanged, null, actor: $user);
+        }
+
         return ['changed' => $changed, 'emailChanged' => $emailChanged];
     }
 
@@ -49,10 +57,20 @@ class AccountService
 
         $session->migrate(true);
 
-        return DB::table(config('session.table', 'sessions'))
+        $signedOut = DB::table(config('session.table', 'sessions'))
             ->where('user_id', $user->getKey())
             ->where('id', '!=', $session->getId())
             ->delete();
+
+        // Audit trail (8E), the owner's account only: never the password, the token or a session id
+        if ($user->role === UserRole::Owner) {
+            app(AuditLogger::class)->record(AuditAction::PasswordChanged, null, actor: $user);
+            if ($signedOut > 0) {
+                app(AuditLogger::class)->record(AuditAction::SessionsSignedOut, null, ['count' => $signedOut], actor: $user);
+            }
+        }
+
+        return $signedOut;
     }
 
     public function setTheme(User $user, ColorScheme $theme): void

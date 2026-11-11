@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\BookingEvent;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentStatus;
@@ -12,6 +13,7 @@ use App\Models\BookingStatusHistory;
 use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use App\Support\LocalTime;
 use App\Support\Money;
 use Carbon\CarbonInterface;
@@ -59,6 +61,7 @@ class BookingTransitionService
     public function recordCounterBooking(PhotographyBooking $booking, User $owner, string $note): void
     {
         $this->writeHistory($booking, null, BookingStatus::Confirmed, $owner, $note);
+        app(AuditLogger::class)->record(AuditAction::BookingWalkInCreated, $booking, ['price_cents' => AuditLogger::cents($booking->confirmed_price), 'customer' => $booking->customer?->name], actor: $owner);
     }
 
     /** The schedule lock of confirm(), for WalkInBookingService (held until the surrounding transaction ends). */
@@ -262,6 +265,7 @@ class BookingTransitionService
 
             $note = 'Confirmed price changed from '.Money::format($old).' to '.Money::format($new).'.'.($reason ? ' '.$reason : '');
             $this->writeHistory($current, $current->status, $current->status, $owner, $note, BookingEvent::PriceChanged);
+            app(AuditLogger::class)->record(AuditAction::BookingPriceChanged, $current, ['old_cents' => AuditLogger::cents($old), 'new_cents' => AuditLogger::cents($new), 'reason' => $reason], actor: $owner);
         });
     }
 
@@ -393,6 +397,20 @@ class BookingTransitionService
             'changed_by' => $actor->getKey(),
             'note' => $note,
         ])->save();
+
+        // Audit trail (8E): every real status move (a proposal, an acceptance, a new time asked are moves too), in the
+        // action's transaction; payments and prices log themselves
+        if ($from !== null && $from !== $to && ! in_array($event, [BookingEvent::PaymentRecorded, BookingEvent::PaymentVoided, BookingEvent::PriceChanged], true)) {
+            app(AuditLogger::class)->record(match ($to) {
+                BookingStatus::Cancelled => AuditAction::BookingCancelled,
+                BookingStatus::Rejected => AuditAction::BookingRejected,
+                BookingStatus::Completed => AuditAction::BookingCompleted,
+                default => AuditAction::BookingStatusChanged,
+            }, $booking, array_filter(['from' => $from->value, 'to' => $to->value,
+                'price_cents' => $to === BookingStatus::Confirmed ? AuditLogger::cents($booking->confirmed_price) : null,
+                'reason' => in_array($to, [BookingStatus::Cancelled, BookingStatus::Rejected], true) ? $note : null,
+            ], fn ($value) => $value !== null), actor: $actor);
+        }
 
         $this->notifications->bookingHistory($booking, $from, $to, $event, $actor, $context);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\BookingEvent;
 use App\Enums\BookingStatus;
 use App\Enums\OrderEvent;
@@ -14,6 +15,7 @@ use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use App\Support\Money;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -78,6 +80,8 @@ class PaymentService
                 // The customer reads this history: the GCash reference stays out of it
                 $note = 'Payment recorded ('.$method->label().'): '.$payment->reference_number.', '.Money::format($payment->amount).'.';
                 $this->history($current, $owner, 'recorded', $note, ['payment' => $payment->reference_number, 'amount' => $payment->amount]);
+                // Audit trail (8E), in this transaction: the PAY number and the method, never the GCash reference
+                app(AuditLogger::class)->record(AuditAction::PaymentRecorded, $payment, ['amount_cents' => Money::toCents($payment->amount), 'method' => $method->value, 'for' => $current->reference_number], actor: $owner);
 
                 $payable->unsetRelation('recordedPayment')->unsetRelation('payments');
 
@@ -132,6 +136,7 @@ class PaymentService
             ])->save();
 
             $this->history($current, $owner, 'voided', null, ['payment' => $row->reference_number]);
+            app(AuditLogger::class)->record(AuditAction::PaymentVoided, $row, ['amount_cents' => Money::toCents($row->amount), 'method' => $row->method->value, 'for' => $current->reference_number, 'reason' => $reason], actor: $owner);
 
             $payment->setRawAttributes($row->getAttributes(), true);
             $payable->unsetRelation('recordedPayment')->unsetRelation('payments');

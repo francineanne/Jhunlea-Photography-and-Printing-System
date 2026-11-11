@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Reports\EndOfDayRequest;
 use App\Http\Requests\Owner\Reports\IncomeReportRequest;
 use App\Models\Payment;
 use App\Models\PrintingOrder;
+use App\Services\Audit\AuditLogger;
 use App\Services\PaymentLedgerService;
 use App\Services\Reports\IncomePeriod;
 use App\Services\Reports\IncomeReportService;
@@ -49,6 +51,7 @@ class IncomeReportController extends Controller
     public function endOfDay(EndOfDayRequest $request, ShopSettings $shop): View
     {
         $period = IncomePeriod::resolve('daily', $request->day(), null, null, LocalTime::in(Carbon::now('UTC')));
+        app(AuditLogger::class)->record(AuditAction::EndOfDayOpened, null, ['date' => $period->date]);
 
         return view('owner.reports.end-of-day', [
             'period' => $period,
@@ -63,6 +66,7 @@ class IncomeReportController extends Controller
         $period = $request->period($this->preference->for($request->user()));
         $name = 'jhunlea-income-'.($period->from === null && $period->to === null ? 'all-time' : ($period->from ?? 'start').'-to-'.($period->to ?? 'today')).'.csv';
         $rows = $this->ledger->listing($period->filters())->oldest('received_at')->oldest('id');
+        app(AuditLogger::class)->record(AuditAction::ReportCsvExported, null, ['view' => $period->view, 'from' => $period->from, 'to' => $period->to, 'rows' => (clone $rows)->count()]);
 
         return response()->streamDownload(function () use ($rows) {
             $out = fopen('php://output', 'w');

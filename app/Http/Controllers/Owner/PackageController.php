@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\AuditAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\PackageRequest;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -100,6 +102,7 @@ class PackageController extends Controller
             }
 
             $package->themes()->sync($themeIds);
+            app(AuditLogger::class)->catalog(AuditAction::CatalogCreated, $package, 'package');
 
             return $package;
         });
@@ -124,7 +127,11 @@ class PackageController extends Controller
         try {
             DB::transaction(function () use ($package, $data, $themeIds) {
                 $package->update($data);
-                $package->themes()->sync($themeIds);
+                $themes = $package->themes()->sync($themeIds);
+
+                if ($package->wasChanged() || array_filter($themes) !== []) {
+                    app(AuditLogger::class)->catalog(AuditAction::CatalogUpdated, $package, 'package');
+                }
             });
         } catch (UniqueConstraintViolationException) {
             // Another request took this address between the check and the save
@@ -139,7 +146,11 @@ class PackageController extends Controller
     public function destroy(PhotographyPackage $package): RedirectResponse
     {
         // Soft delete: the photos stay on disk with the package
-        $package->delete();
+        // The change and its audit row in one transaction (8E): a failed audit write undoes the change
+        DB::transaction(function () use ($package) {
+            $package->delete();
+            app(AuditLogger::class)->catalog(AuditAction::CatalogDeleted, $package, 'package');
+        });
 
         return redirect()
             ->route('owner.packages.index')
@@ -148,7 +159,10 @@ class PackageController extends Controller
 
     public function publish(PhotographyPackage $package): RedirectResponse
     {
-        $package->update(['is_published' => ! $package->is_published]);
+        DB::transaction(function () use ($package) {
+            $package->update(['is_published' => ! $package->is_published]);
+            app(AuditLogger::class)->published($package, 'package');
+        });
 
         return back()->with('status', $package->is_published
             ? "\"{$package->name}\" is now published."

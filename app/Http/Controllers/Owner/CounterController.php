@@ -2,21 +2,26 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\AuditAction;
 use App\Enums\PaymentMethod;
 use App\Exceptions\PaymentException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Payments\CounterPaymentRequest;
 use App\Http\Requests\Owner\WalkIn\WalkInLookupRequest;
+use App\Models\AuditLog;
 use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
+use App\Services\Audit\AuditLogger;
 use App\Services\Counter\CounterService;
 use App\Services\PaymentService;
+use App\Support\LocalTime;
 use App\Support\Money;
 use App\Support\ShopSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 /**
@@ -96,6 +101,12 @@ class CounterController extends Controller
     {
         // Payment::payable() already includes removed orders and bookings, so an old receipt still prints
         $payment->load(['payable.customer:id,name', 'receiver:id,name', 'voider:id,name']);
+
+        // Audit trail (8E): opening a receipt is logged once per payment per Manila day, so reprints stay cheap
+        $today = LocalTime::dayStartUtc(LocalTime::in(Carbon::now('UTC'))->format('Y-m-d'));
+        if (! AuditLog::query()->where('action', AuditAction::ReceiptOpened)->where('subject_type', 'payment')->where('subject_id', $payment->id)->where('occurred_at', '>=', $today)->exists()) {
+            app(AuditLogger::class)->record(AuditAction::ReceiptOpened, $payment, ['for' => $payment->payable?->reference_number]);
+        }
 
         return view('owner.payments.receipt', ['payment' => $payment, 'shop' => $shop->business()]);
     }

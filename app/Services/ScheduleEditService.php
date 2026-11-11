@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\BookingSetting;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +26,8 @@ class ScheduleEditService
     public function saveHours(array $hours): void
     {
         DB::transaction(function () use ($hours) {
+            $changed = [];
+
             foreach ($hours as $weekday => $day) {
                 $rule = AvailabilityRule::query()->lockForUpdate()->firstWhere('weekday', $weekday) ?? new AvailabilityRule;
                 $rule->weekday = $weekday;
@@ -31,7 +35,18 @@ class ScheduleEditService
                     'is_open' => $day['open'],
                     'opens_at' => $day['open'] ? $day['opens'].':00' : null,
                     'closes_at' => $day['open'] ? $day['closes'].':00' : null,
-                ])->save();
+                ]);
+
+                if ($rule->isDirty()) {
+                    $changed[Carbon::now()->startOfWeek(Carbon::SUNDAY)->addDays((int) $weekday)->format('l')] = $day['open'] ? $day['opens'].' to '.$day['closes'] : 'closed';
+                }
+
+                $rule->save();
+            }
+
+            // Audit trail (8E): only the days that changed, in this transaction
+            if ($changed !== []) {
+                app(AuditLogger::class)->record(AuditAction::HoursChanged, null, ['hours' => $changed]);
             }
         });
     }
@@ -47,6 +62,18 @@ class ScheduleEditService
     {
         DB::transaction(function () use ($settings) {
             DB::table('booking_settings')->insertOrIgnore(['id' => BookingSetting::ROW_ID] + config('booking.defaults') + ['lock_version' => 0, 'created_at' => now(), 'updated_at' => now()]);
+            $before = (array) DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->first();
+            $changes = [];
+
+            foreach (['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'concurrent_sessions'] as $key) {
+                if ((int) ($before[$key] ?? 0) !== (int) $settings[$key]) {
+                    $changes[$key] = ['old' => (int) ($before[$key] ?? 0), 'new' => (int) $settings[$key]];
+                }
+            }
+
+            if ($changes !== []) {
+                app(AuditLogger::class)->record(AuditAction::ScheduleRulesChanged, null, ['changes' => $changes]);
+            }
 
             DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->update([
                 'buffer_minutes' => $settings['buffer_minutes'],
@@ -69,11 +96,24 @@ class ScheduleEditService
         $now = Carbon::now();
         $rows = array_map(fn (string $day) => ['date' => $day, 'reason' => $reason, 'created_by' => $owner->getKey(), 'created_at' => $now, 'updated_at' => $now], $days);
 
-        return DB::table('blocked_dates')->insertOrIgnore($rows);
+        return DB::transaction(function () use ($rows, $days, $reason, $owner) {
+            $added = DB::table('blocked_dates')->insertOrIgnore($rows);
+
+            // Audit trail (8E): only when a day was really added (a repeated click adds none)
+            if ($added > 0) {
+                app(AuditLogger::class)->record(AuditAction::DateBlocked, null, ['dates' => array_values($days), 'reason' => $reason], actor: $owner);
+            }
+
+            return $added;
+        });
     }
 
     public function unblock(BlockedDate $blocked): void
     {
-        $blocked->delete();
+        DB::transaction(function () use ($blocked) {
+            $date = $blocked->date instanceof \DateTimeInterface ? $blocked->date->format('Y-m-d') : (string) $blocked->date;
+            $blocked->delete();
+            app(AuditLogger::class)->record(AuditAction::DateUnblocked, null, ['date' => $date], subjectLabel: $date);
+        });
     }
 }

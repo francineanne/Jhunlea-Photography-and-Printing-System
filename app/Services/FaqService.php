@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Models\Faq;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -30,6 +32,7 @@ class FaqService
             $faq = new Faq($data);
             $faq->position = (int) Faq::query()->max('position') + 1;
             $faq->save();
+            app(AuditLogger::class)->record(AuditAction::FaqCreated, $faq, ['question' => $faq->question]);
 
             return $faq;
         });
@@ -41,20 +44,37 @@ class FaqService
         $this->settings->locked(function () use ($faq, $data) {
             $this->refuseDuplicate($data['question'], $faq->id);
             $faq->fill($data)->save();
+
+            if ($faq->wasChanged()) {
+                app(AuditLogger::class)->record(AuditAction::FaqUpdated, $faq, ['question' => $faq->question]);
+            }
         });
     }
 
     /** Show or hide on the public page. Setting the state it already has changes nothing. */
     public function setPublished(Faq $faq, bool $published): void
     {
-        $this->settings->locked(fn () => $faq->forceFill(['is_published' => $published])->save());
+        $this->settings->locked(function () use ($faq, $published) {
+            $faq->forceFill(['is_published' => $published])->save();
+
+            // Setting the state it already has changes nothing and logs nothing
+            if ($faq->wasChanged('is_published')) {
+                app(AuditLogger::class)->record($published ? AuditAction::FaqPublished : AuditAction::FaqUnpublished, $faq, ['question' => $faq->question]);
+            }
+        });
     }
 
     /** @return bool false when it was already gone (a second click on Delete) */
     public function delete(int $id): bool
     {
         return $this->settings->locked(function () use ($id) {
+            $faq = Faq::query()->find($id);
             $deleted = Faq::query()->whereKey($id)->delete() > 0;
+
+            // A second click on Delete finds nothing and logs nothing
+            if ($deleted && $faq !== null) {
+                app(AuditLogger::class)->record(AuditAction::FaqDeleted, $faq, ['question' => $faq->question]);
+            }
             $this->renumber(Faq::query()->ordered()->pluck('id')->all());
 
             return $deleted;

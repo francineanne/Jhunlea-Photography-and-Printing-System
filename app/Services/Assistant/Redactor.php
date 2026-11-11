@@ -36,7 +36,8 @@ class Redactor
         // Anything else that looks like a phone number: 7 or more digits split by spaces, dashes, dots or brackets,
         // for example (02) 8123-4567. Dates written as 2026-11-10 are kept
         $text = preg_replace_callback('/\+?\(?\d(?:[\s().-]{0,2}\d){6,15}/', function (array $match): string {
-            if (preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $match[0])) {
+            // (8E: also with the opening bracket the run may start with, as in "(2026-11-12, 2 rows)")
+            if (preg_match('/^\(?\d{4}-\d{1,2}-\d{1,2}$/', $match[0])) {
                 return $match[0];
             }
 

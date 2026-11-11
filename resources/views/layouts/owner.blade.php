@@ -17,7 +17,7 @@
         ['label' => 'Services', 'icon' => 'print', 'route' => 'owner.services.index', 'match' => 'owner.services.*'],
         ['label' => 'Packages', 'icon' => 'photo_camera', 'route' => 'owner.packages.index', 'match' => 'owner.packages.*'],
         ['label' => 'Themes', 'icon' => 'palette', 'route' => 'owner.themes.index', 'match' => 'owner.themes.*'],
-        ['label' => 'Settings', 'icon' => 'settings', 'route' => 'owner.settings.index', 'match' => ['owner.settings.*', 'owner.faqs.*']],
+        ['label' => 'Settings', 'icon' => 'settings', 'route' => 'owner.settings.index', 'match' => ['owner.settings.*', 'owner.faqs.*', 'owner.activity.*']],
     ];
 @endphp
 

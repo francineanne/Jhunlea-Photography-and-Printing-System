@@ -19,6 +19,7 @@ use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\Customer\RequestHistoryController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
+use App\Http\Controllers\Owner\ActivityLogController;
 use App\Http\Controllers\Owner\CounterController;
 use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
@@ -208,6 +209,12 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/settings')->name('owner
     Route::post('/business', 'business')->middleware('throttle:20,1,owner-settings-business')->name('business');
     Route::post('/uploads', 'uploads')->middleware('throttle:20,1,owner-settings-uploads')->name('uploads');
     Route::post('/uploads/reset', 'resetUploads')->middleware('throttle:10,1,owner-settings-uploads-reset')->name('uploads.reset');
+});
+
+// The owner's Activity log (Phase 8E): the audit trail, read only, reached from Settings. No route edits or deletes a row
+Route::middleware(['auth', 'role:owner'])->prefix('owner/activity')->name('owner.activity.')->controller(ActivityLogController::class)->group(function () {
+    Route::get('/', 'index')->middleware('throttle:60,1,owner-activity')->name('index');
+    Route::get('/csv', 'csv')->middleware('throttle:10,1,owner-activity-csv')->name('csv');
 });
 
 // The owner's FAQ editor (Phase 6B). Every change goes through FaqService; moves, show/hide and delete are plain POST forms

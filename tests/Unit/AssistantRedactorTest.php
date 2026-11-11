@@ -48,6 +48,9 @@ class AssistantRedactorTest extends TestCase
             'amounts in a list' => ['Cash ₱3,925.00 (4 payments), GCash ₱920.00 (3 payments), walk-in ₱240.00 (2 payments).'],
             'P amounts' => ['P1,715.00 (P785.00 less, 31.4%)'],
             'percentages in brackets' => ['Online 95.1% (₱4,605.00), walk-in 4.9% (₱240.00)'],
+            // 8E: a date in brackets (an audit row once read "exported the income CSV [phone], 2 rows)")
+            'date in brackets' => ['Exported the income CSV (2026-11-12, 2 rows).'],
+            'date range in brackets' => ['Exported the activity log (2026-11-01 to 2026-11-12, 14 rows).'],
         ];
     }
 

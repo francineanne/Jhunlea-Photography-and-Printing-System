@@ -18,6 +18,7 @@
         'uploads' => ['3. Upload rules', 'upload_file'],
         'payments' => ['4. Payments', 'payments'],
         'faq' => ['5. FAQ', 'quiz'],
+        'activity' => ['6. Activity log', 'history'],
     ];
     $hourText = fn (?string $time) => $time ? \Illuminate\Support\Carbon::createFromFormat('H:i:s', $time)->format('g:i A') : '';
     $unit = fn (int $value, string $unit) => $value.' '.($unit === 'files' ? Str::plural('file', $value) : $unit);
@@ -245,6 +246,17 @@
                     <p class="mt-1 text-sm text-app-text-2">{{ $faqPublished }} {{ Str::plural('question', $faqPublished) }} shown on the public FAQ page{{ $faqCount > $faqPublished ? ', '.($faqCount - $faqPublished).' hidden' : '' }}.</p>
                 </div>
                 <x-ui.button :href="route('owner.faqs.index')" class="shrink-0"><x-ui.icon name="edit_note" :size="18" />Open the FAQ editor</x-ui.button>
+            </div>
+        </section>
+
+        {{-- 6. Activity log (Phase 8E) --}}
+        <section id="activity" x-show="tab === 'activity'" x-transition.opacity.duration.200ms class="mt-6 scroll-mt-24" aria-labelledby="activity-title">
+            <div class="flex flex-col gap-4 rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between sm:p-6 dark:shadow-none">
+                <div>
+                    <h2 id="activity-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="history" :size="22" class="text-brand" />Activity log</h2>
+                    <p class="mt-1 text-sm text-app-text-2">Who recorded or voided a payment, changed a price or a status, made a walk-in, changed a setting or exported data, and when. Rows are never edited or deleted.</p>
+                </div>
+                <x-ui.button :href="route('owner.activity.index')" class="shrink-0"><x-ui.icon name="history" :size="18" />Open the activity log</x-ui.button>
             </div>
         </section>
     </div>

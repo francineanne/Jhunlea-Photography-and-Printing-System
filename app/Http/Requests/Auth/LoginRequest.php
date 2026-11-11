@@ -2,10 +2,14 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\AuditAction;
+use App\Enums\UserRole;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -47,11 +51,29 @@ class LoginRequest extends FormRequest
         // A walk-in customer (Phase 8A) has no email or password and can never sign in; the condition says so outright
         if (! Auth::attempt($this->only('email', 'password') + ['is_walk_in' => false], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+            $this->auditFailedOwnerLogin();
 
             throw ValidationException::withMessages(['email' => trans('auth.failed')]);
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Audit trail (8E): a failed sign-in to an OWNER account writes a row (no email, no password; the IP is the row's
+     * own column), at most one per IP in config audit.failed_login_window_minutes, so a flood writes one row.
+     */
+    private function auditFailedOwnerLogin(): void
+    {
+        if (! User::query()->where('email', $this->string('email'))->where('role', UserRole::Owner)->exists()) {
+            return;
+        }
+
+        $window = (int) config('audit.failed_login_window_minutes');
+
+        if (Cache::add('audit.login_failed.'.sha1((string) $this->ip()), true, now()->addMinutes($window))) {
+            app(AuditLogger::class)->record(AuditAction::LoginFailed);
+        }
     }
 
     private function ensureIsNotRateLimited(): void

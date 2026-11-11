@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\AuditAction;
 use App\Enums\OptionGroup;
 use App\Enums\PricingType;
 use App\Enums\PrintFileType;
@@ -9,9 +10,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\ServiceRequest;
 use App\Models\PrintingService;
 use App\Models\PrintingServiceOption;
+use App\Services\Audit\AuditLogger;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ServiceController extends Controller
@@ -87,12 +90,18 @@ class ServiceController extends Controller
     {
         $data = $this->attributes($request);
 
-        try {
-            $service = PrintingService::create($data);
-        } catch (UniqueConstraintViolationException) {
-            // Another request took the same address a moment ago: pick the next free one
-            $service = PrintingService::create(['slug' => PrintingService::uniqueSlug($data['name'])] + $data);
-        }
+        // The change and its audit row in one transaction (8E): a failed audit write undoes the change
+        $service = DB::transaction(function () use ($data) {
+            try {
+                $service = PrintingService::create($data);
+            } catch (UniqueConstraintViolationException) {
+                // Another request took the same address a moment ago: pick the next free one
+                $service = PrintingService::create(['slug' => PrintingService::uniqueSlug($data['name'])] + $data);
+            }
+            app(AuditLogger::class)->catalog(AuditAction::CatalogCreated, $service, 'printing service');
+
+            return $service;
+        });
 
         return redirect()
             ->route('owner.services.edit', $service)
@@ -111,7 +120,12 @@ class ServiceController extends Controller
 
     public function update(ServiceRequest $request, PrintingService $service): RedirectResponse
     {
-        $service->update($this->attributes($request, $service));
+        DB::transaction(function () use ($request, $service) {
+            $service->update($this->attributes($request, $service));
+            if ($service->wasChanged()) {
+                app(AuditLogger::class)->catalog(AuditAction::CatalogUpdated, $service, 'printing service');
+            }
+        });
 
         return redirect()
             ->route('owner.services.edit', $service)
@@ -120,7 +134,10 @@ class ServiceController extends Controller
 
     public function destroy(PrintingService $service): RedirectResponse
     {
-        $service->delete();
+        DB::transaction(function () use ($service) {
+            $service->delete();
+            app(AuditLogger::class)->catalog(AuditAction::CatalogDeleted, $service, 'printing service');
+        });
 
         return redirect()
             ->route('owner.services.index')
@@ -129,7 +146,10 @@ class ServiceController extends Controller
 
     public function publish(PrintingService $service): RedirectResponse
     {
-        $service->update(['is_published' => ! $service->is_published]);
+        DB::transaction(function () use ($service) {
+            $service->update(['is_published' => ! $service->is_published]);
+            app(AuditLogger::class)->published($service, 'printing service');
+        });
 
         return back()->with('status', $service->is_published
             ? "\"{$service->name}\" is now published."

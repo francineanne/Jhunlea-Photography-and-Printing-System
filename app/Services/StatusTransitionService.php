@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\OrderEvent;
 use App\Enums\PaymentStatus;
 use App\Enums\PrintingOrderStatus;
@@ -11,6 +12,7 @@ use App\Models\OrderStatusHistory;
 use App\Models\Payment;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use App\Support\Money;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -42,6 +44,7 @@ class StatusTransitionService
     public function recordCounterOrder(PrintingOrder $order, User $owner, string $note): void
     {
         $this->writeHistory($order, null, PrintingOrderStatus::Accepted, $owner, $note);
+        app(AuditLogger::class)->record(AuditAction::OrderWalkInCreated, $order, ['price_cents' => AuditLogger::cents($order->confirmed_price), 'customer' => $order->customer?->name], actor: $owner);
     }
 
     /**
@@ -191,6 +194,7 @@ class StatusTransitionService
 
             $note = 'Confirmed price changed from '.Money::format($old).' to '.Money::format($new).'.'.($reason ? ' '.$reason : '');
             $this->writeHistory($current, $current->status, $current->status, $owner, $note, OrderEvent::PriceChanged);
+            app(AuditLogger::class)->record(AuditAction::OrderPriceChanged, $current, ['old_cents' => AuditLogger::cents($old), 'new_cents' => AuditLogger::cents($new), 'reason' => $reason], actor: $owner);
         });
     }
 
@@ -269,6 +273,19 @@ class StatusTransitionService
             'changed_by' => $actor->getKey(),
             'note' => $note,
         ])->save();
+
+        // Audit trail (8E): every real status move, in the action's transaction (payments and prices log themselves)
+        if ($from !== null && $from !== $to && $event === null) {
+            app(AuditLogger::class)->record(match ($to) {
+                PrintingOrderStatus::Cancelled => AuditAction::OrderCancelled,
+                PrintingOrderStatus::Rejected => AuditAction::OrderRejected,
+                PrintingOrderStatus::Completed => AuditAction::OrderCompleted,
+                default => AuditAction::OrderStatusChanged,
+            }, $order, array_filter(['from' => $from->value, 'to' => $to->value,
+                'price_cents' => $to === PrintingOrderStatus::Accepted ? AuditLogger::cents($order->confirmed_price) : null,
+                'reason' => in_array($to, [PrintingOrderStatus::Cancelled, PrintingOrderStatus::Rejected], true) ? $note : null,
+            ], fn ($value) => $value !== null), actor: $actor);
+        }
 
         $this->notifications->orderHistory($order, $from, $to, $event, $actor, $context);
     }

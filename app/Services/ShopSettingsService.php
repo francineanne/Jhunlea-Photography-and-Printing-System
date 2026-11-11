@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\AuditAction;
 use App\Enums\OwnerPresenceMode;
 use App\Models\ShopSetting;
+use App\Services\Audit\AuditLogger;
 use App\Support\ShopSettings;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +17,9 @@ use Illuminate\Support\Facades\DB;
  */
 class ShopSettingsService
 {
+    /** Settings whose values the audit trail never keeps (only that they changed): the shop's contact details. */
+    public const PRIVATE_KEYS = ['address', 'phone', 'email'];
+
     public function __construct(private readonly ShopSettings $settings) {}
 
     /** @param  array{shop_name: ?string, address: ?string, phone: ?string, email: ?string}  $info */
@@ -46,8 +51,20 @@ class ShopSettingsService
     {
         DB::transaction(function () use ($values) {
             DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
-            DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->lockForUpdate()->first();
+            $before = (array) DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->lockForUpdate()->first();
             DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->update($values + ['updated_at' => now()]);
+
+            // Audit trail (8E): the keys that changed; old and new values only for keys that hold no contact details
+            $keys = array_keys(array_filter($values, fn ($value, string $key) => (string) ($before[$key] ?? '') !== (string) ($value ?? ''), ARRAY_FILTER_USE_BOTH));
+
+            if ($keys !== []) {
+                $changes = [];
+                foreach (array_diff($keys, self::PRIVATE_KEYS) as $key) {
+                    $changes[$key] = ['old' => $before[$key] ?? null, 'new' => $values[$key]];
+                }
+
+                app(AuditLogger::class)->record(AuditAction::SettingsChanged, null, ['keys' => $keys, 'changes' => $changes]);
+            }
         });
 
         $this->settings->forget();
