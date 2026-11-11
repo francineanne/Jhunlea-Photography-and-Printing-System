@@ -239,6 +239,10 @@ class OwnerAskService
         if ($this->claims->guardActions($text, '') !== $text) {
             $text = $this->text('owner_ask_write');
         }
+        // Never "revenue", "sales" or "profit", even in a denial (8D): those sentences go, and when the owner asked for
+        // one of them a fixed sentence says the system records payments only (the income) and does not track costs
+        $text = app(MoneyWordGuard::class)->guard($text, $question, $this->text('owner_ask_money_words'), $fallback);
+
         // A phone number is a number no tool fact holds, so NumberGuard removes its sentence; the redactor after it
         // still hides any phone number or email address left (no tool ever returns one)
         $text = $this->redactor->redact($this->numbers->guard($text, $facts, $question, $fallback));

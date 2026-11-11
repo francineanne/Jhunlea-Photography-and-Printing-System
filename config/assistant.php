@@ -308,6 +308,9 @@ return [
         'owner_ask_cannot_show_fil' => 'Hindi ko maipapakita iyon dito. Makikita ninyo ito sa page na naka-link sa ibaba.',
         'owner_ask_out_of_scope' => 'I can answer questions about your shop: income and the reports, the counter, unpaid balances, walk-ins, orders, bookings, the schedule, customers, messages and Lumi usage. What would you like to know?',
         'owner_ask_write' => 'I can only read your records; I cannot change anything. You can do it on the page linked below.',
+        // 8D: added by MoneyWordGuard when the owner asked for revenue, sales or profit (it must never use those words)
+        'owner_ask_money_words' => 'The system records payments only, and their total is your income. It does not track costs.',
+        'owner_ask_money_words_fil' => 'Mga bayad lang ang itinatala ng system, at ang kabuuan nito ang kita ninyo. Hindi nito itinatala ang mga gastos.',
         // Used when ClaimGuard removed every sentence of a reply because each claimed an action or a status the
         // customer's records do not show
         'claim_unverified' => 'I can\'t confirm that from here. Please check My orders or My bookings for the latest status, or message the studio.',

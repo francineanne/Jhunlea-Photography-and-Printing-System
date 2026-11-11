@@ -152,6 +152,15 @@ tested); (5) NumberGuard removed a sentence in six answers: `income_summary` gav
 but not their payment counts, so "Printing: ₱X (4 payments)" lost its sentence; the counts are now facts, and a test
 writes every figure of the tool as a sentence and proves the guard keeps it.
 
+**After the second live run:** `owner8.no_revenue_words` still failed because the model repeats the owner's words
+("The system does not track revenue, sales or profit"), so a prompt rule alone is not enough. `MoneyWordGuard` now
+removes every sentence of an owner answer that holds one of the three words and, when the owner asked for one, adds a
+fixed sentence (English or Filipino): the system records payments only, their total is the income, and it does not
+track costs. Its removals show in the report's guard section as `money_word_guard`. The "glued words" seen in that
+report ("from 4payments", "is₱1,145") were not in the files: both the `.md` and `.json` hold a normal space (byte
+`0x20`) there and the glued-word count was 0, so the viewer that showed the report dropped them; nothing was changed
+for that.
+
 Without `--live` (the fake provider cannot plan) these cases fail like the other owner cases: a dry run only proves
 that the harness loads, seeds and runs them (96 owner cases, 0 harness errors). Run them live after a review:
 

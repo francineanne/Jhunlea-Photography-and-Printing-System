@@ -15,6 +15,9 @@ final class GuardStats
 
     public const NUMBER = 'number_guard';
 
+    /** The owner's answers: sentences with "revenue", "sales" or "profit" (8D). */
+    public const MONEY_WORDS = 'money_word_guard';
+
     public const DANGLING_COLON = 'dangling_colon';
 
     /** @var array<string, int> */
