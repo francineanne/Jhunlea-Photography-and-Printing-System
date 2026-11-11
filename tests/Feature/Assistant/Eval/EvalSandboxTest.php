@@ -91,8 +91,9 @@ class EvalSandboxTest extends TestCase
         $this->assertSame(EvalSandbox::BUSINESS['phone'], DB::table('shop_settings')->value('phone'));
 
         (new EvalFixtures)->build($sandbox);
-        // 7E-3a: and the owner cases' three customers (Maria Santos, Maria Reyes, the injection name)
-        $this->assertSame(7, User::query()->count(), 'The owner, Ana, Ben, Newbie and the three customers of the owner cases');
+        // 7E-3a: and the owner cases' three customers (Maria Santos, Maria Reyes, the injection name); 8D: and the
+        // walk-in customer Lito Bautista
+        $this->assertSame(8, User::query()->count(), 'The owner, Ana, Ben, Newbie and the four customers of the owner cases');
 
         $sandbox->close();
 

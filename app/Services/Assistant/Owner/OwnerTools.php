@@ -6,6 +6,7 @@ use App\Services\Assistant\Owner\Tools\BookingLookup;
 use App\Services\Assistant\Owner\Tools\BookingsSchedule;
 use App\Services\Assistant\Owner\Tools\Briefing;
 use App\Services\Assistant\Owner\Tools\CatalogPerformance;
+use App\Services\Assistant\Owner\Tools\CounterQueues;
 use App\Services\Assistant\Owner\Tools\CustomerProfile;
 use App\Services\Assistant\Owner\Tools\CustomerSearch;
 use App\Services\Assistant\Owner\Tools\HowTo;
@@ -16,10 +17,11 @@ use App\Services\Assistant\Owner\Tools\OrderLookup;
 use App\Services\Assistant\Owner\Tools\OrdersOverview;
 use App\Services\Assistant\Owner\Tools\SlotAvailability;
 use App\Services\Assistant\Owner\Tools\UnpaidBalances;
+use App\Services\Assistant\Owner\Tools\WalkInSummary;
 
 /**
- * THE list of the owner's Ask Lumi tools (Phase 7E-3a). Registering a tool is one line in TOOLS; Phase 8 adds its
- * walk-in and income tools here. Every tool is read-only.
+ * THE list of the owner's Ask Lumi tools (Phase 7E-3a). Registering a tool is one line in TOOLS; Phase 8D added the
+ * counter and walk-in tools here. Every tool is read-only.
  */
 class OwnerTools
 {
@@ -27,6 +29,8 @@ class OwnerTools
     public const TOOLS = [
         IncomeSummary::class,
         UnpaidBalances::class,
+        CounterQueues::class,
+        WalkInSummary::class,
         OrdersOverview::class,
         OrderLookup::class,
         BookingsSchedule::class,

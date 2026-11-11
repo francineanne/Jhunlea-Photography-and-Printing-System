@@ -19,6 +19,7 @@ final class RecordFacts
         return array_filter([
             'reference' => $order->reference_number,
             'customer' => $order->customer?->name,
+            'source' => self::source($order),
             'service' => $order->snapshot['service']['name'] ?? 'Printing service',
             'quantity' => $order->quantity === null ? null : $result->count((int) $order->quantity),
             'status' => $order->status->label(),
@@ -32,12 +33,19 @@ final class RecordFacts
         ], fn ($value) => $value !== null);
     }
 
+    /** Online (sent by the customer) or walk-in (made by the owner at the counter; Phase 8A). */
+    public static function source(PrintingOrder|PhotographyBooking $record): string
+    {
+        return $record->isWalkIn() ? 'walk-in (made at the counter; the customer has no account and is never notified)' : 'online';
+    }
+
     /** @return array<string, mixed> */
     public static function booking(PhotographyBooking $booking, ToolResult $result): array
     {
         return array_filter([
             'reference' => $booking->reference_number,
             'customer' => $booking->customer?->name,
+            'source' => self::source($booking),
             'package' => $booking->snapshot['package']['name'] ?? 'Photography package',
             'status' => $booking->status->label(),
             'session' => $result->moment($booking->starts_at),

@@ -9,6 +9,7 @@ use App\Models\PhotographyPackage;
 use App\Models\PrintingService;
 use App\Services\PaymentLedgerService;
 use App\Support\LocalTime;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -52,6 +53,25 @@ class IncomeReportService
             ],
             'comparison' => $this->compare($totals['cents'], $period->previous),
         ];
+    }
+
+    /**
+     * The comparison line of a built report, in the report's own words (the page and the owner's Ask Lumi both use it):
+     * "Up ₱50.00 (50%) from the day before (₱100.00).", "No income in the previous period (the day before).", or null
+     * for All time.
+     *
+     * @param  array<string, mixed>  $report  a build() result
+     */
+    public static function comparisonText(array $report): ?string
+    {
+        $cmp = $report['comparison'];
+
+        return $cmp === null ? null : match (true) {
+            $cmp['cents'] === 0 && $report['cents'] === 0 => 'No income in this period or in '.$cmp['label'].'.',
+            $cmp['cents'] === 0 => 'No income in the previous period ('.$cmp['label'].').',
+            $cmp['direction'] === 'same' => 'The same as '.$cmp['label'].' ('.Money::cents($cmp['cents']).').',
+            default => ($cmp['direction'] === 'up' ? 'Up ' : 'Down ').Money::cents(abs($cmp['change'])).' ('.abs($cmp['percent']).'%) from '.$cmp['label'].' ('.Money::cents($cmp['cents']).').',
+        };
     }
 
     /**

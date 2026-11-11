@@ -21,6 +21,10 @@ class AssistantRedactorTest extends TestCase
             'email' => ['Email ko: maria.santos+shop@gmail.com', 'Email ko: [email]'],
             'long digit run' => ['Card 4111111111111111', 'Card [number]'],
             'account number' => ['Account 12345678', 'Account [number]'],
+            // 8D: still redacted next to money and percentages
+            'landline plain' => ['Tawag kayo sa 8123-4567', 'Tawag kayo sa [phone]'],
+            'phone after an amount' => ['Bayad ₱785.00, text 0917 123 4567', 'Bayad ₱785.00, text [phone]'],
+            'phone after a percentage' => ['Down 31.4%, call +63 917 123 4567', 'Down 31.4%, call [phone]'],
         ];
     }
 
@@ -38,6 +42,12 @@ class AssistantRedactorTest extends TestCase
             'date' => ['Pwede ba sa 2026-11-10 ng 10:30?'],
             'reference' => ['Status of PR-000123?'],
             'year' => ['Graduation 2026 photos'],
+            // 8D: an amount followed by a percentage once became "₱[phone]%)" in an owner answer
+            'amount and percentage' => ['Down ₱785.00 (31.4%) from the day before (₱2,500.00).'],
+            'filipino comparison' => ['₱1,715.00, mas mababa ng ₱785.00 (31.4%) kumpara sa kahapon na ₱2,500.00.'],
+            'amounts in a list' => ['Cash ₱3,925.00 (4 payments), GCash ₱920.00 (3 payments), walk-in ₱240.00 (2 payments).'],
+            'P amounts' => ['P1,715.00 (P785.00 less, 31.4%)'],
+            'percentages in brackets' => ['Online 95.1% (₱4,605.00), walk-in 4.9% (₱240.00)'],
         ];
     }
 

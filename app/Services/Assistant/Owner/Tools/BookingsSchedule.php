@@ -3,6 +3,7 @@
 namespace App\Services\Assistant\Owner\Tools;
 
 use App\Enums\BookingStatus;
+use App\Enums\RecordSource;
 use App\Models\PhotographyBooking;
 use App\Models\User;
 use App\Services\Assistant\Owner\OwnerTool;
@@ -25,7 +26,10 @@ class BookingsSchedule extends OwnerTool
 
     public function parameters(): array
     {
-        return self::rangeParameters() + ['status' => ['type' => 'string', 'enum' => ['confirmed', 'waiting', 'all'], 'default' => 'confirmed']];
+        return self::rangeParameters() + [
+            'status' => ['type' => 'string', 'enum' => ['confirmed', 'waiting', 'all'], 'default' => 'confirmed'],
+            'source' => ['type' => 'string', 'enum' => ['all', 'online', 'walk_in'], 'default' => 'all', 'description' => 'walk_in: booked at the counter'],
+        ];
     }
 
     protected function handle(array $params, User $owner): ToolResult
@@ -40,7 +44,8 @@ class BookingsSchedule extends OwnerTool
 
         $query = PhotographyBooking::query()->whereIn('status', $statuses)
             ->when($range->from, fn (Builder $q, string $day) => $q->where('starts_at', '>=', LocalTime::dayStartUtc($day)))
-            ->when($range->to, fn (Builder $q, string $day) => $q->where('starts_at', '<=', LocalTime::dayEndUtc($day)));
+            ->when($range->to, fn (Builder $q, string $day) => $q->where('starts_at', '<=', LocalTime::dayEndUtc($day)))
+            ->when($params['source'] !== 'all', fn (Builder $q) => $q->where('source', RecordSource::from($params['source'])));
 
         $result->total = (clone $query)->count();
 
@@ -50,7 +55,8 @@ class BookingsSchedule extends OwnerTool
         }
 
         $result->data = ['period' => $result->label($range->label), 'from' => $result->day($range->from), 'to' => $result->day($range->to),
-            'which' => $params['status'], 'sessions' => $result->count($result->total)];
+            'which' => $params['status'], 'source' => $params['source'] === 'all' ? 'online and walk-in' : ($params['source'] === 'walk_in' ? 'walk-in only' : 'online only'),
+            'sessions' => $result->count($result->total)];
         $result->link('Schedule', route('owner.schedule.index', array_filter(['view' => 'day', 'date' => $range->from])));
 
         return $result;

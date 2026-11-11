@@ -56,6 +56,7 @@ class CustomerProfile extends OwnerTool
 
         $result->data = [
             'name' => $customer->name,
+            'type' => $customer->is_walk_in ? CustomerSearch::WALK_IN : 'online account',
             'customer_since' => $result->moment($customer->created_at),
             'orders' => $result->count((clone $orders)->count()),
             'bookings' => $result->count((clone $bookings)->count()),

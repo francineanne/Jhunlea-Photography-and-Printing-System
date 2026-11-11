@@ -48,7 +48,7 @@ class OwnerToolsTest extends TestCase
 
     public function test_the_registry_holds_every_tool_with_a_catalog_line(): void
     {
-        $this->assertSame(['income_summary', 'unpaid_balances', 'orders_overview', 'order_lookup', 'bookings_schedule', 'booking_lookup', 'slot_availability',
+        $this->assertSame(['income_summary', 'unpaid_balances', 'counter_queues', 'walk_in_summary', 'orders_overview', 'order_lookup', 'bookings_schedule', 'booking_lookup', 'slot_availability',
             'customer_search', 'customer_profile', 'messages_overview', 'catalog_performance', 'lumi_usage', 'how_to', 'briefing'], app(OwnerTools::class)->names());
 
         foreach (app(OwnerTools::class)->all() as $tool) {
@@ -76,13 +76,16 @@ class OwnerToolsTest extends TestCase
             }
         }
 
-        // The voided ₱999.00 never counts, and an explicit range works like the preset
-        $this->assertNotContains('₱999.00', $this->tool('income_summary', ['range' => 'today'])->facts());
+        // The voided ₱999.00 never counts (8D: it is shown apart, as not counted), and an explicit range works like the preset
+        $today = $this->tool('income_summary', ['range' => 'today']);
+        $this->assertNotSame('₱999.00', $today->data['income']);
+        $this->assertStringContainsString('₱999.00 (never counted as income)', $today->data['voided_not_counted']);
         $this->assertSame($this->tool('income_summary', ['range' => 'last_month'])->data['income'], $this->tool('income_summary', ['from' => '2026-10-01', 'to' => '2026-10-31'])->data['income']);
 
+        // 8D: the comparison is the Income report's own sentence, its numbers are facts
         $compare = $this->tool('income_summary', ['range' => 'this_week', 'compare_previous' => true]);
-        $this->assertArrayHasKey('previous_period', $compare->data);
-        $this->assertContains($compare->data['previous_period']['income'], $compare->facts());
+        $this->assertArrayHasKey('compared_with_before', $compare->data);
+        $this->assertStringContainsString('the week before', $compare->data['compared_with_before']);
     }
 
     public function test_unpaid_balances_equal_the_ledgers_awaiting_rule(): void
@@ -114,7 +117,8 @@ class OwnerToolsTest extends TestCase
 
         $today = $this->tool('bookings_schedule', ['range' => 'today']);
         $this->assertSame(app(DashboardService::class)->owner($this->owner)['shootCount'], $today->total);
-        $this->assertSame('Maria Santos', $today->rows[0]['customer']);
+        // 8D: the seeded shop has Lito's 1:00 PM walk-in session before Maria Santos's 3:00 PM one
+        $this->assertSame(['Lito Bautista', 'Maria Santos'], array_column($today->rows, 'customer'));
 
         $booking = $this->tool('booking_lookup', ['reference' => $today->rows[0]['reference']]);
         $this->assertSame('Confirmed', $booking->data['status']);

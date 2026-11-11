@@ -28,12 +28,7 @@
         default => [],
     };
     $bucketWords = ['hour' => 'per hour', 'day' => 'per day', 'month' => 'per month'][$period->bucket];
-    $cmpLine = $cmp === null ? null : match (true) {
-        $cmp['cents'] === 0 && $r['cents'] === 0 => 'No income in this period or in '.$cmp['label'].'.',
-        $cmp['cents'] === 0 => 'No income in the previous period ('.$cmp['label'].').',
-        $cmp['direction'] === 'same' => 'The same as '.$cmp['label'].' ('.Money::cents($cmp['cents']).').',
-        default => ($cmp['direction'] === 'up' ? 'Up ' : 'Down ').Money::cents(abs($cmp['change'])).' ('.abs($cmp['percent']).'%) from '.$cmp['label'].' ('.Money::cents($cmp['cents']).').',
-    };
+    $cmpLine = \App\Services\Reports\IncomeReportService::comparisonText($r);
     $cmpIcon = $cmp === null ? null : ['up' => 'trending_up', 'down' => 'trending_down', 'same' => 'trending_flat'][$cmp['direction']];
     $itemMax = max(1, (int) collect($r['items']['rows'])->max('cents'));
     $payableUrl = fn ($payable) => $payable instanceof PrintingOrder ? route('owner.orders.show', $payable) : route('owner.bookings.show', $payable);

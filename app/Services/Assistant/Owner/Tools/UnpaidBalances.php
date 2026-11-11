@@ -8,9 +8,9 @@ use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Services\Assistant\Owner\OwnerTool;
 use App\Services\Assistant\Owner\ToolResult;
+use App\Services\Counter\CounterService;
 use App\Services\PaymentLedgerService;
 use App\Support\Money;
-use Illuminate\Support\Carbon;
 
 /** Who still has to pay, how much and for how many days: the ledger's awaiting rule (a confirmed price, no payment). */
 class UnpaidBalances extends OwnerTool
@@ -51,24 +51,31 @@ class UnpaidBalances extends OwnerTool
 
         foreach ($rows as $record) {
             $order = $record instanceof PrintingOrder;
-            $result->rows[] = [
+            $result->rows[] = array_filter([
                 'reference' => $record->reference_number,
                 'customer' => $record->customer?->name,
                 'kind' => $order ? 'printing order' : 'photography booking',
+                'walk_in' => $record->isWalkIn() ? 'yes (no account: reached by the phone number on file, never notified)' : null,
                 'status' => $record->status->label(),
                 'amount_due' => $result->money(Money::toCents($record->confirmed_price)),
-                'days_waiting' => $result->count((int) $record->created_at->diffInDays(Carbon::now())),
+                // Whole Manila days, like the counter's Awaiting payment queue (Phase 8D)
+                'days_waiting' => $result->count(CounterService::daysWaiting($record)),
                 'session' => $record instanceof PhotographyBooking ? $result->moment($record->starts_at) : null,
-            ];
-            $result->card($record->reference_number, $order ? route('owner.orders.show', $record) : route('owner.bookings.show', $record));
+            ], fn ($value) => $value !== null);
+            // Opens the counter's record-payment window on this record (8B)
+            $result->card($record->reference_number, route('owner.payments.index', ['pay' => $record->getMorphClass().':'.$record->id]));
         }
 
         $result->total = $count;
-        $result->data = [
+        $oldest = $rows->first();
+        $result->data = array_filter([
             'awaiting_payment_count' => $result->count($count),
             'awaiting_payment_total' => $result->money($cents),
             'ready_for_pickup_unpaid' => $result->count((clone $this->ledger->awaitingOrders())->where('status', PrintingOrderStatus::ReadyForPickup)->count()),
-        ];
+            'oldest_waiting' => $oldest === null ? null : $oldest->reference_number.', '.$result->count(CounterService::daysWaiting($oldest)).' days',
+            'note' => 'Awaiting payment is a confirmed price with no recorded payment yet. It is never income. Each is paid in full at the counter.',
+        ], fn ($value) => $value !== null);
+        $result->link('Counter: awaiting payment', route('owner.payments.index', ['awaiting' => 1]));
         $result->link('Payments ledger', route('owner.payments.index'));
 
         return $result;

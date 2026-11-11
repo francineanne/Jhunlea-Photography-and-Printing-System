@@ -8,6 +8,7 @@ use App\Enums\BookingStatus;
 use App\Enums\MessageSender;
 use App\Enums\PaymentMethod;
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use App\Models\AssistantRun;
 use App\Models\ChatMessage;
 use App\Models\Conversation;
@@ -88,11 +89,22 @@ class OwnerFixtures
         $this->booking($carla, $graduation, BookingStatus::Requested, $manila('2026-11-10 09:00'), null);
         $submitted = $this->order($reyes, $documents, PrintingOrderStatus::Submitted, null, $manila('2026-11-05 08:00'));
 
+        // Walk-ins (Phase 8D): Lito has no account. A walk-in order paid at the counter on Monday (cash ₱150.00), one paid
+        // today by GCash (₱90.00), and a walk-in session today at 1:00 PM booked this morning and still unpaid
+        $lito = User::factory()->walkIn()->create(['name' => 'Lito Bautista', 'phone' => '09201230004']);
+        $walkMonday = $this->order($lito, $photos, PrintingOrderStatus::Completed, '150.00', $manila('2026-11-02 10:00'), RecordSource::WalkIn);
+        $this->pay($walkMonday, $owner, PaymentMethod::Cash, $manila('2026-11-02 10:05'));
+        $walkToday = $this->order($lito, $documents, PrintingOrderStatus::Processing, '90.00', $manila('2026-11-05 09:30'), RecordSource::WalkIn);
+        $this->pay($walkToday, $owner, PaymentMethod::Gcash, $manila('2026-11-05 09:31'), 'GC-EVAL-0004');
+        $today += 9000;
+        $todayCount++;
+        $walkSession = $this->booking($lito, $solo, BookingStatus::Confirmed, $manila('2026-11-05 13:00'), (string) $solo->price, RecordSource::WalkIn, $manila('2026-11-05 08:45'));
+
         // Awaiting payment: every open record with a confirmed price and no payment, Ana's and Ben's included (the
-        // voided payment leaves its Accepted ₱999.00 order awaiting again)
+        // voided payment leaves its Accepted ₱999.00 order awaiting again), and Lito's walk-in session today
         $awaitingCents = 15000 + Money::toCents((string) $family->price) + 6000 + Money::toCents((string) $graduation->price)
-            + 22000 + Money::toCents((string) $solo->price) + Money::toCents((string) $family->price) + 99900;
-        $awaitingCount = 8;
+            + 22000 + Money::toCents((string) $solo->price) + Money::toCents((string) $family->price) + 99900 + Money::toCents((string) $solo->price);
+        $awaitingCount = 9;
 
         // Studio threads: Santos waits (handed over by Lumi), Carla waits with an injection, Ben was answered
         $this->thread($santos, MessageSender::Customer, 'Is my print ready?', true, $manila('2026-11-05 09:40'));
@@ -105,15 +117,32 @@ class OwnerFixtures
                 'outcome' => $provider === 'code' ? AssistantOutcome::AnsweredByCode : AssistantOutcome::Answered, 'input_tokens' => $latency ? 2000 : null, 'output_tokens' => $latency ? 200 : null, 'latency_ms' => $latency]);
         }
 
-        $week = $today + 250000 + 48000;
+        $week = $today + 250000 + 48000 + 15000;
         $lastMonth = 300000 + 20000;
         $money = fn (int $cents) => Money::format(Money::fromCents($cents));
+        $walkWeek = 15000 + 9000;
+        $days = ['Mon, Nov 2' => 48000 + 15000, 'Wed, Nov 4' => 250000, 'Thu, Nov 5' => $today];
+        arsort($days);
 
         $this->placeholders = [
             '{{owner.income_today}}' => $money($today),
             '{{owner.income_today_count}}' => (string) $todayCount,
             '{{owner.income_today_cash}}' => $money($todayCash),
-            '{{owner.income_today_gcash}}' => $money(35000),
+            '{{owner.income_today_gcash}}' => $money(35000 + 9000),
+            '{{owner.average_today}}' => $money((int) round($today / $todayCount)),
+            '{{owner.change_vs_yesterday}}' => $money(abs($today - 250000)),
+            '{{owner.voided_today}}' => $money(99900),
+            '{{owner.month_cash}}' => $money($todayCash + 250000 + 15000),
+            '{{owner.month_gcash}}' => $money(35000 + 9000 + 48000),
+            '{{owner.walk_in_income_today}}' => $money(9000),
+            '{{owner.walk_in_income_week}}' => $money($walkWeek),
+            '{{owner.online_income_week}}' => $money($week - $walkWeek),
+            '{{owner.walk_in_orders_week}}' => '2',
+            '{{owner.best_day_week}}' => $money(reset($days)),
+            '{{owner.walk_in_name}}' => 'Lito Bautista',
+            '{{owner.lito_phone}}' => '09201230004',
+            '{{owner.walk_in_session_today}}' => $walkSession->reference_number,
+            '{{owner.walk_in_order_today}}' => $walkToday->reference_number,
             '{{owner.income_yesterday}}' => $money(250000),
             '{{owner.income_week}}' => $money($week),
             '{{owner.income_month}}' => $money($week),
@@ -134,7 +163,7 @@ class OwnerFixtures
             '{{owner.injection_name}}' => self::INJECTION,
         ];
 
-        foreach ([$paidToday, $yesterday, $monday, $october1, $october2, $voided, $readyUnpaid, $sessionToday, $sessionTomorrow, $submitted] as $record) {
+        foreach ([$paidToday, $yesterday, $monday, $october1, $october2, $voided, $readyUnpaid, $sessionToday, $sessionTomorrow, $submitted, $walkMonday, $walkToday, $walkSession] as $record) {
             $this->records[$record->reference_number] = ['type' => $record->getMorphClass(), 'id' => $record->id];
         }
     }
@@ -156,9 +185,9 @@ class OwnerFixtures
         return User::factory()->create(['name' => $name, 'email' => $email, 'phone' => $phone]);
     }
 
-    private function order(User $customer, PrintingService $service, PrintingOrderStatus $status, ?string $confirmed, Carbon $created): PrintingOrder
+    private function order(User $customer, PrintingService $service, PrintingOrderStatus $status, ?string $confirmed, Carbon $created, RecordSource $source = RecordSource::Online): PrintingOrder
     {
-        $order = PrintingOrder::factory()->forCustomer($customer)->status($status)->create([
+        $order = PrintingOrder::factory()->forCustomer($customer)->status($status)->state(['source' => $source])->create([
             'printing_service_id' => $service->id,
             'snapshot' => ['service' => ['name' => $service->name, 'pricing_type' => $service->pricing_type->value, 'base_price' => $service->base_price], 'options' => [], 'pages' => 1, 'unit_price' => $service->base_price],
             'confirmed_price' => $confirmed,
@@ -169,15 +198,16 @@ class OwnerFixtures
         return $order;
     }
 
-    private function booking(User $customer, PhotographyPackage $package, BookingStatus $status, Carbon $start, ?string $confirmed): PhotographyBooking
+    private function booking(User $customer, PhotographyPackage $package, BookingStatus $status, Carbon $start, ?string $confirmed, RecordSource $source = RecordSource::Online, ?Carbon $made = null): PhotographyBooking
     {
-        $booking = PhotographyBooking::factory()->forCustomer($customer)->status($status)->at($start, (int) ($package->duration_minutes ?: 60))->create([
+        $booking = PhotographyBooking::factory()->forCustomer($customer)->status($status)->at($start, (int) ($package->duration_minutes ?: 60))->state(['source' => $source])->create([
             'photography_package_id' => $package->id,
             'snapshot' => ['package' => ['name' => $package->name, 'duration_minutes' => $package->duration_minutes, 'price_case' => 'fixed', 'price_text' => $package->priceText(), 'inclusions' => $package->inclusions ?? []], 'theme' => null],
             'confirmed_price' => $confirmed,
             'estimated_price' => $package->price,
         ]);
-        $booking->forceFill(['created_at' => $start->copy()->subDays(7), 'updated_at' => $start->copy()->subDays(7)])->saveQuietly();
+        $made ??= $start->copy()->subDays(7);
+        $booking->forceFill(['created_at' => $made, 'updated_at' => $made])->saveQuietly();
 
         return $booking;
     }

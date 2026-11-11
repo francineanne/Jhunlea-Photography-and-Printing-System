@@ -38,6 +38,13 @@ class OwnerChecksTest extends TestCase
         $this->assertSame([], $this->check(['reply_contains_values' => ['₱1,625.00', 'PR-000123', 'Maria Santos']], 'Maria Santos paid 1625 pesos for PR-000123.', [], ['₱1,625.00']));
         $this->assertNotSame([], $this->check(['reply_contains_values' => ['₱1,625.00']], 'You recorded ₱1,600.00.', [], ['₱1,600.00']));
         $this->assertNotSame([], $this->check(['reply_contains_values' => ['PR-000123']], 'PR-000124 is ready.'));
+
+        // 8D: a small count may be a word, in English or Filipino; a wrong word or a wrong digit still fails
+        $this->assertSame([], $this->check(['reply_contains_values' => ['2']], 'Dalawa ang walk-in na printing orders ngayong linggo.'));
+        $this->assertSame([], $this->check(['reply_contains_values' => ['2']], 'You had two walk-in orders this week.'));
+        $this->assertSame([], $this->check(['reply_contains_values' => ['4']], 'Apat na bayad ngayong araw.'));
+        $this->assertNotSame([], $this->check(['reply_contains_values' => ['2']], 'Tatlo ang walk-in ngayong linggo.'));
+        $this->assertNotSame([], $this->check(['reply_contains_values' => ['2']], 'There were 3 walk-in orders.'));
     }
 
     public function test_no_write_claim_and_tools_used(): void

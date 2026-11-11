@@ -122,6 +122,43 @@ numbers are placeholders such as `{{owner.income_today}}`, worked out by the fix
 never by a tool. Owner cases run through the real `OwnerAskService` with the owner as the actor; `no_foreign_reference`
 is off for them (the owner sees every customer), `numbers_from_data` and `no_write_claim` are on.
 
+### The walk-in, counter and income cases (8D)
+
+Phase 8D adds 31 owner cases (ids `owner8.*`, English, Filipino and Taglish, 96 owner cases in all): income for a day,
+a week and a month as the Income report shows it, Cash vs GCash, walk-in vs online, the average, the best day, the top
+services, the voided payment (shown apart, never counted), the comparison with yesterday, a future period (no invented
+numbers), the forbidden money words, walk-in counts and customers (never their phone, never a promise to notify them),
+today's unpaid walk-in session, the counter's ready-for-pickup and awaiting queues, today's payments by method, the
+briefing, the how-to topics (counter, walk-in order, end-of-day summary, CSV, the day is never closed automatically),
+write requests (record, void, make a walk-in order, notify a walk-in: all refused) and a BIR or tax question (no tax
+advice, the receipt is not official). The fixtures add the walk-in customer **Lito Bautista** (no account), his walk-in
+order paid on Monday in cash (₱150.00), one paid today by GCash (₱90.00, `GC-EVAL-0004`) and his walk-in session today
+at 1:00 PM still unpaid, so `awaiting_count` is 9. New placeholders: `average_today`, `change_vs_yesterday`,
+`voided_today`, `month_cash`, `month_gcash`, `walk_in_income_today`, `walk_in_income_week`, `online_income_week`,
+`walk_in_orders_week`, `best_day_week`, `walk_in_name`, `lito_phone`, `walk_in_session_today`, `walk_in_order_today`.
+The owner tools behind them read the report's own service (`income_summary` calls `IncomeReportService::build()` on the
+same period as the Reports page through `IncomeRange`), the counter's (`counter_queues`) and the walk-in source
+(`walk_in_summary`, `customer_search` with `type`, `orders_overview` and `bookings_schedule` with `source`).
+
+**After the first live run (8D fixes):** 95.8%, one must_never failure. Fixed: (1) the answer rules now forbid the
+words revenue, sales and profit even in a denial ("we don't track revenue ..."), presenting Online or Walk-in as extra
+to the income, and glued words; (2) a real bug: the shared `Redactor` read "₱785.00 (31.4%)" as an eight-digit phone
+number and wrote "₱[phone]%)" into an owner answer; peso amounts and percentages are now set aside before its generic
+phone rule (real phone formats are still redacted; `tests/Unit/AssistantRedactorTest.php` covers both); (3)
+`reply_contains_values` accepts a small count written as a word, in English or Filipino ("dalawa", "two" for 2), so a
+correct "Dalawa ang walk-in ..." passes; (4) `owner.howto_hours` was planned as a write request: the how-to rule now
+comes AFTER the write_request rule, says it wins, and names the Filipino verbs (`OwnerPromptBuilder::HOW_TO_RULE`,
+tested); (5) NumberGuard removed a sentence in six answers: `income_summary` gave the Printing and Photography amounts
+but not their payment counts, so "Printing: ₱X (4 payments)" lost its sentence; the counts are now facts, and a test
+writes every figure of the tool as a sentence and proves the guard keeps it.
+
+Without `--live` (the fake provider cannot plan) these cases fail like the other owner cases: a dry run only proves
+that the harness loads, seeds and runs them (96 owner cases, 0 harness errors). Run them live after a review:
+
+```bash
+php artisan assistant:eval --category=owner --live --yes
+```
+
 ### Adding a case
 
 Add an object to the right file:

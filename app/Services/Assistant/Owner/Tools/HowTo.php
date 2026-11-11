@@ -19,7 +19,7 @@ class HowTo extends OwnerTool
 
     public function description(): string
     {
-        return 'Steps to do something in the admin pages (record a payment, confirm a booking, change hours, ...) with a link to the page. Lumi never does it itself.';
+        return 'Steps to do something in the admin pages, with a link to the page: record a payment at the counter, the payment receipt, a walk-in order or booking, void a payment, the income report (Daily, Weekly, Monthly), the end-of-day summary, the CSV, printing the report, what awaiting payment means, official receipts, BIR or taxes (the system\'s receipt is not official), confirm a booking, change hours and more. Lumi never does it itself.';
     }
 
     public function parameters(): array

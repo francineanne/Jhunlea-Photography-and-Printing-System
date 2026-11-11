@@ -52,7 +52,8 @@ class OwnerAskEndpointTest extends TestCase
             ->assertExactJson([
                 'reply' => 'Here is what is still unpaid.',
                 'cards' => $this->fakeCards(),
-                'links' => [['label' => 'Payments ledger', 'url' => '/owner/payments']],
+                // 8D: unpaid balances also link the counter's Awaiting payment queue
+                'links' => [['label' => 'Counter: awaiting payment', 'url' => '/owner/payments?awaiting=1'], ['label' => 'Payments ledger', 'url' => '/owner/payments']],
                 'tools_used' => ['unpaid_balances'],
                 'via_backup' => false,
                 'notice' => null,

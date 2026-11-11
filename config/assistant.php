@@ -202,14 +202,50 @@ return [
         // The most characters of tool data sent to the phrasing call
         'data_max_chars' => 6000,
         'how_to' => [
-            'record_payment' => ['page' => 'Printing orders or Bookings', 'route' => 'owner.orders.index', 'steps' => [
-                'Open the order or booking (it must be Accepted or Confirmed and have a confirmed price).',
-                'In the Payment card, choose Cash or GCash; for GCash type the GCash reference.',
-                'Press Record payment. The full confirmed price is recorded; there are no partial payments.']],
+            // Phase 8D: the counter on the Payments page (8B) is the usual place to record a payment
+            'record_payment' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
+                'Open Payments and press Record payment.',
+                'Find the order or booking by customer name, phone, or the PR- or PB- number, and choose it. It needs a confirmed price; the amount to collect is always the full confirmed price (no partial payment or downpayment).',
+                'Choose Cash or GCash. For GCash type the GCash reference number. For cash you may type the cash received: it only works out the change and is not saved.',
+                'Tick "I collected the full amount", press Continue, check the details and press Record payment.',
+                'You get the PAY number; press Print receipt if the customer wants one. You can also record it from the Payment card of the order or booking.']],
+            'payment_receipt' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
+                'After recording a payment press Print receipt, or press Print receipt on its row in the Payments ledger or on the order or booking.',
+                'It prints on a normal printer and can be printed again any time. A voided payment prints with a VOID mark.',
+                'It is a payment receipt from the system, not an official receipt.']],
+            'walk_in_order' => ['page' => 'Payments and counter', 'route' => 'owner.orders.walk-in.create', 'steps' => [
+                'On Payments press New walk-in, then Walk-in printing order.',
+                'Find the customer by name or phone, or add a new walk-in customer (a name and an optional phone; they get no account).',
+                'Choose the printing service, options and copies; the price comes from the catalog, or type the price and why it differs.',
+                'A walk-in printing order is paid when it is made: choose Cash or GCash and press Save order and payment. Printing starts right away.']],
+            'walk_in_booking' => ['page' => 'Payments and counter', 'route' => 'owner.bookings.walk-in.create', 'steps' => [
+                'On Payments press New walk-in, then Walk-in booking.',
+                'Find or add the customer and type their contact number, choose the package and a free time, and press Save confirmed booking.',
+                'The booking is confirmed right away and is paid on the day of the shoot with Record payment.']],
             'void_payment' => ['page' => 'Payments', 'route' => 'owner.payments.index', 'steps' => [
                 'Open the order or booking that holds the payment.',
-                'In the Payment card press Void payment and write the reason.',
-                'A voided payment stays in the ledger but never counts. It cannot be voided after Completed.']],
+                'In the Payment card press Void this payment record and write the reason.',
+                'A voided payment stays in the ledger but never counts as income. It cannot be voided after Completed. There is no refund workflow.']],
+            'income_report' => ['page' => 'Reports', 'route' => 'owner.reports.income', 'steps' => [
+                'Open Reports. The Income tab shows the income of the period you choose; the Requests tab shows requests per status.',
+                'Choose Daily, Weekly (Monday to Sunday), Monthly, Custom or All time, then use the arrows, the presets or the date picker.',
+                'Your last choice of Daily, Weekly or Monthly is remembered for the next time.',
+                'Income is the recorded payments only; voided payments and prices still awaiting payment are never counted.']],
+            'end_of_day' => ['page' => 'Reports', 'route' => 'owner.reports.end-of-day', 'steps' => [
+                'Open Reports, choose Daily and the day, then press End-of-day summary.',
+                'It lists the day\'s payments, the voided ones apart, Cash and GCash, and what is still awaiting payment. Press Print summary.',
+                'The system does not count the cash drawer or close the day; the Cash total is what should be in the drawer.']],
+            'export_csv' => ['page' => 'Reports', 'route' => 'owner.reports.income', 'steps' => [
+                'Open Reports and choose the period, then press Export CSV.',
+                'The file lists every payment of the period (voided ones marked Voided) and opens in Excel with the peso sign.']],
+            'print_report' => ['page' => 'Reports', 'route' => 'owner.reports.income', 'steps' => [
+                'Open Reports, choose the period and press Print report. Only the report prints, in black on white.']],
+            'awaiting_payment' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
+                'Awaiting payment means an order or booking has a confirmed price but no recorded payment yet. It is never income.',
+                'The Awaiting payment tab on Payments lists them, the longest waiting first; press Record payment on one to collect it.']],
+            'official_receipt' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
+                'The system only records payments; its payment receipt says "This is not an official receipt."',
+                'For official receipts, invoices or taxes, please ask your accountant or the BIR. Lumi cannot give tax advice.']],
             'confirm_booking' => ['page' => 'Bookings', 'route' => 'owner.bookings.index', 'steps' => [
                 'Open the booking request.',
                 'Check the requested time on the schedule, then set the confirmed price.',
@@ -234,8 +270,8 @@ return [
                 'Open FAQ and add or edit a question.',
                 'Published questions show on the public FAQ page and Lumi reads them.']],
             'reports' => ['page' => 'Reports', 'route' => 'owner.reports.index', 'steps' => [
-                'Open Reports and pick a period.',
-                'It shows requests per status, the most requested items and recorded payments.']],
+                'Open Reports. The Income tab shows the money received; the Requests tab shows requests per status and the most requested items.',
+                'Pick a period on either tab.']],
             'reply_messages' => ['page' => 'Messages', 'route' => 'owner.messages.index', 'steps' => [
                 'Open Messages and choose Unanswered.',
                 'Open a thread and reply; Suggest reply writes a draft you can edit.']],
@@ -267,10 +303,10 @@ return [
         'owner_ask_limit_fil' => 'Naabot na ang limit ng Ask Lumi para ngayong araw. Magre-reset ito sa hatinggabi. Nasa Reports page ang parehong numero.',
         'owner_ask_unverified_fil' => 'Hindi ko ma-check ang mga numerong iyon sa records ninyo kaya hindi ko isinama. Tingnan po ang Reports page para sa eksaktong numero.',
         'owner_ask_clarify_fil' => 'Pakidagdagan po ng kaunti. Halimbawa, anong panahon (ngayon, ngayong linggo, noong isang buwan) o aling customer, order o booking.',
-        'owner_ask_out_of_scope_fil' => 'Mga tanong tungkol sa shop ninyo lang ang kaya kong sagutin: bayad, hindi pa bayad, orders, bookings, schedule, customers, messages at paggamit ng Lumi. Ano po ang gusto ninyong malaman?',
+        'owner_ask_out_of_scope_fil' => 'Mga tanong tungkol sa shop ninyo lang ang kaya kong sagutin: kita at reports, ang counter, hindi pa bayad, walk-in, orders, bookings, schedule, customers, messages at paggamit ng Lumi. Ano po ang gusto ninyong malaman?',
         'owner_ask_write_fil' => 'Nakakabasa lang ako ng records ninyo; hindi ako makakapagbago ng kahit ano. Magagawa ninyo ito sa page na naka-link sa ibaba.',
         'owner_ask_cannot_show_fil' => 'Hindi ko maipapakita iyon dito. Makikita ninyo ito sa page na naka-link sa ibaba.',
-        'owner_ask_out_of_scope' => 'I can answer questions about your shop: payments, unpaid balances, orders, bookings, the schedule, customers, messages and Lumi usage. What would you like to know?',
+        'owner_ask_out_of_scope' => 'I can answer questions about your shop: income and the reports, the counter, unpaid balances, walk-ins, orders, bookings, the schedule, customers, messages and Lumi usage. What would you like to know?',
         'owner_ask_write' => 'I can only read your records; I cannot change anything. You can do it on the page linked below.',
         // Used when ClaimGuard removed every sentence of a reply because each claimed an action or a status the
         // customer's records do not show

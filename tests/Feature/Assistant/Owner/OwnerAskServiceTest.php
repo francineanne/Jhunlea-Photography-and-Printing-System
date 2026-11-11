@@ -104,7 +104,8 @@ class OwnerAskServiceTest extends TestCase
         $result = $this->askOwner('How much today?');
 
         $this->assertSame(config('assistant.messages.owner_ask_unverified'), $result->reply);
-        $this->assertContains('Reports', array_column($result->links, 'label'));
+        // 8D: income_summary links the Income report of the same period
+        $this->assertContains('Income report', array_column($result->links, 'label'));
     }
 
     public function test_a_clarification_needs_one_call(): void
@@ -143,8 +144,8 @@ class OwnerAskServiceTest extends TestCase
 
         $this->assertSame(config('assistant.messages.owner_ask_write'), $result->reply);
         $this->assertSame(AssistantOutcome::Refused, $result->outcome);
-        // 7E-3b: links are relative owner paths
-        $this->assertSame('/owner/printing-orders', $result->links[0]['url']);
+        // 7E-3b: links are relative owner paths (8D: recording a payment is done at the counter on Payments)
+        $this->assertSame('/owner/payments', $result->links[0]['url']);
         $this->assertCount(2, $this->fake->requests, 'One call each');
     }
 

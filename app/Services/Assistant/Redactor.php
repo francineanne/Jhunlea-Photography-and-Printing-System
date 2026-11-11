@@ -24,14 +24,25 @@ class Redactor
 
         $text = preg_replace('/\d{8,}/', self::NUMBER, $text) ?? '';
 
+        // Peso amounts and percentages are set aside first (8D fix): the run below once read "₱785.00 (31.4%)" as
+        // 7850 0314, eight digits split by dots and a bracket, and replaced the amount with [phone]
+        $kept = [];
+        $text = preg_replace_callback('/(?:₱|PHP\s?|\bP(?=\s?\d))\s?\d[\d,]*(?:\.\d{1,2})?|\d+(?:\.\d+)?\s?%/u', function (array $match) use (&$kept): string {
+            $kept[] = $match[0];
+
+            return "\u{E000}".(count($kept) - 1)."\u{E001}";
+        }, $text) ?? '';
+
         // Anything else that looks like a phone number: 7 or more digits split by spaces, dashes, dots or brackets,
         // for example (02) 8123-4567. Dates written as 2026-11-10 are kept
-        return preg_replace_callback('/\+?\(?\d(?:[\s().-]{0,2}\d){6,15}/', function (array $match): string {
+        $text = preg_replace_callback('/\+?\(?\d(?:[\s().-]{0,2}\d){6,15}/', function (array $match): string {
             if (preg_match('/^\d{4}-\d{1,2}-\d{1,2}$/', $match[0])) {
                 return $match[0];
             }
 
             return strlen((string) preg_replace('/\D/', '', $match[0])) >= 7 ? self::PHONE : $match[0];
         }, $text) ?? '';
+
+        return preg_replace_callback('/\x{E000}(\d+)\x{E001}/u', fn (array $match): string => $kept[(int) $match[1]] ?? '', $text) ?? '';
     }
 }

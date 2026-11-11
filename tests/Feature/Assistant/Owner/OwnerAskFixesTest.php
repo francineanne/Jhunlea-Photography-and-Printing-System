@@ -155,7 +155,8 @@ class OwnerAskFixesTest extends TestCase
 
             $this->assertSame(AssistantOutcome::Refused, $result->outcome, $question);
             $this->assertSame(config("assistant.messages.{$key}"), $result->reply, $question);
-            $this->assertSame('/owner/printing-orders', $result->links[0]['url']);
+            // 8D: recording a payment is done at the counter on Payments
+            $this->assertSame('/owner/payments', $result->links[0]['url']);
         }
 
         // A phrased write claim in a Filipino question is replaced by the Filipino refusal

@@ -3,6 +3,7 @@
 namespace App\Services\Assistant\Owner\Tools;
 
 use App\Enums\PrintingOrderStatus;
+use App\Enums\RecordSource;
 use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Services\Assistant\Owner\OwnerTool;
@@ -27,6 +28,7 @@ class OrdersOverview extends OwnerTool
     {
         return self::rangeParameters('all_time') + [
             'status' => ['type' => 'string', 'enum' => array_map(fn (PrintingOrderStatus $status) => $status->value, PrintingOrderStatus::cases())],
+            'source' => ['type' => 'string', 'enum' => ['all', 'online', 'walk_in'], 'default' => 'all', 'description' => 'walk_in: made at the counter'],
         ];
     }
 
@@ -36,7 +38,8 @@ class OrdersOverview extends OwnerTool
         $result = new ToolResult($this->name());
         $period = PrintingOrder::query()
             ->when($range->from, fn (Builder $query, string $day) => $query->where('created_at', '>=', LocalTime::dayStartUtc($day)))
-            ->when($range->to, fn (Builder $query, string $day) => $query->where('created_at', '<=', LocalTime::dayEndUtc($day)));
+            ->when($range->to, fn (Builder $query, string $day) => $query->where('created_at', '<=', LocalTime::dayEndUtc($day)))
+            ->when($params['source'] !== 'all', fn (Builder $query) => $query->where('source', RecordSource::from($params['source'])));
 
         $counts = (clone $period)->toBase()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
         $perStatus = [];
@@ -61,8 +64,9 @@ class OrdersOverview extends OwnerTool
             'per_status' => $perStatus,
             'waiting_for_review' => $result->count(($perStatus[PrintingOrderStatus::Submitted->label()] ?? 0) + ($perStatus[PrintingOrderStatus::UnderReview->label()] ?? 0)),
             'listed_status' => isset($params['status']) ? PrintingOrderStatus::from($params['status'])->label() : 'all',
+            'source' => $params['source'] === 'all' ? 'online and walk-in' : ($params['source'] === 'walk_in' ? 'walk-in only' : 'online only'),
         ];
-        $result->link('Printing orders', route('owner.orders.index'));
+        $result->link('Printing orders', route('owner.orders.index', $params['source'] === 'all' ? [] : ['source' => $params['source']]));
 
         return $result;
     }

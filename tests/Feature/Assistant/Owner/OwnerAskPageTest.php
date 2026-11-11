@@ -87,10 +87,14 @@ class OwnerAskPageTest extends TestCase
             ->assertSee('owner\/assistant\/briefing', false);
 
         $items = $this->actingAs($this->owner)->getJson(route('owner.assistant.briefing'))->assertOk()->json('items');
-        $this->assertCount(6, $items);
+        // 8D: the seeded shop has an unpaid order ready for pickup and an unpaid walk-in session today, so their counter
+        // lines are shown too (only when above zero)
+        $this->assertCount(8, $items);
+        $this->assertContains('Ready for pickup, not paid yet: 1', array_column($items, 'text'));
+        $this->assertContains('Walk-in sessions today, not paid yet: 1', array_column($items, 'text'));
         $this->assertStringStartsWith('Recorded payments today: ₱', $items[0]['text']);
         $this->assertSame('/owner/payments', $items[0]['url']);
-        $this->assertSame('/owner/messages?filter=unanswered', $items[5]['url']);
+        $this->assertSame('/owner/messages?filter=unanswered', $items[7]['url']);
         $this->assertSame([], $this->fake->requests);
         Http::assertNothingSent();
     }

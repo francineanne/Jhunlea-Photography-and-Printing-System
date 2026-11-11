@@ -290,8 +290,21 @@ class EvalChecks
             return mb_stripos($reply, $value) !== false;
         }
 
+        // 8D: a small count may be written as a word ("Dalawa ang walk-in ...", "two walk-in orders")
+        if (preg_match('/^\d{1,2}$/', trim($value)) && isset(self::NUMBER_WORDS[(int) $value])
+            && preg_match('/(?<!\p{L})(?:'.implode('|', self::NUMBER_WORDS[(int) $value]).')(?!\p{L})/iu', $reply)) {
+            return true;
+        }
+
         return array_diff($wanted, $guard->values($reply)) === [];
     }
+
+    /** Small counts as words, English and Filipino (with the linked form "dalawang"), for reply_contains_values only. */
+    private const NUMBER_WORDS = [
+        1 => ['one', 'isa', 'isang'], 2 => ['two', 'dalawa', 'dalawang'], 3 => ['three', 'tatlo', 'tatlong'], 4 => ['four', 'apat'],
+        5 => ['five', 'lima', 'limang'], 6 => ['six', 'anim'], 7 => ['seven', 'pito', 'pitong'], 8 => ['eight', 'walo', 'walong'],
+        9 => ['nine', 'siyam'], 10 => ['ten', 'sampu', 'sampung'],
+    ];
 
     /** True when the last non-empty line ends with a colon and nothing follows (7E-2e). */
     public static function danglingColon(string $reply): bool
