@@ -19,6 +19,7 @@ use App\Models\PrintingService;
 use App\Models\Theme;
 use App\Models\User;
 use App\Services\AvailabilityService;
+use App\Services\ReferenceNumberService;
 use App\Services\WalkIn\CounterRecordAlreadySaved;
 use App\Services\WalkIn\WalkInBookingService;
 use App\Services\WalkIn\WalkInCustomerService;
@@ -77,6 +78,9 @@ class WalkInController extends Controller
 
         try {
             $order = DB::transaction(function () use ($request, $orders, $service) {
+                // The payment number is locked before a new walk-in customer writes its audit row (see place(), 9B)
+                app(ReferenceNumberService::class)->lock(ReferenceNumberService::PAYMENT);
+
                 $result = $orders->place(
                     $request->user(),
                     $this->customer($request),

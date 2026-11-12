@@ -214,6 +214,7 @@ class ProviderFailoverTest extends TestCase
 
     public function test_the_row_is_still_written_when_the_fallback_from_column_is_missing(): void
     {
+        $this->changesSchema(); // drops or truncates a table: see Tests\TestCase (9B)
         Schema::table('assistant_runs', fn ($table) => $table->dropColumn('fallback_from'));
         $this->claude->push(new ProviderUnavailable(ProviderUnavailable::HTTP, 529));
         $this->gemini->push(self::reply('answer', 'Still answered.'));
@@ -224,6 +225,7 @@ class ProviderFailoverTest extends TestCase
 
     public function test_the_row_is_still_written_when_the_cache_columns_are_missing(): void
     {
+        $this->changesSchema(); // drops or truncates a table: see Tests\TestCase (9B)
         // A database where the 7E-2a migration has not run yet
         Schema::table('assistant_runs', fn ($table) => $table->dropColumn(['cache_read_tokens', 'cache_write_tokens']));
         $this->claude->push(self::reply('answer', 'Answered without the cache columns.'));

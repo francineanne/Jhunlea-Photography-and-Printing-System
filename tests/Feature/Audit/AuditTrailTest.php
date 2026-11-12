@@ -241,6 +241,7 @@ class AuditTrailTest extends TestCase
 
     public function test_a_deleted_or_reordered_row_is_detected(): void
     {
+        $this->changesSchema(); // drops or truncates a table: see Tests\TestCase (9B)
         foreach (range(1, 4) as $i) {
             app(AuditLogger::class)->record(AuditAction::LoggedIn);
         }
@@ -355,7 +356,7 @@ class AuditTrailTest extends TestCase
     {
         Carbon::setTestNow(Carbon::now('UTC')->subDays(800));
         app(AuditLogger::class)->record(AuditAction::LoggedIn);
-        app(AuditLogger::class)->record(AuditAction::LoggedIn);
+        $lastOld = app(AuditLogger::class)->record(AuditAction::LoggedIn)->id;
         Carbon::setTestNow();
         app(AuditLogger::class)->record(AuditAction::EndOfDayOpened, null, ['date' => '2026-11-12']);
 
@@ -366,7 +367,8 @@ class AuditTrailTest extends TestCase
 
         $this->artisan('audit:prune --force')->assertSuccessful();
         $this->assertSame(['report.end_of_day_opened', 'audit.pruned'], $this->actions());
-        $this->assertSame(2, AuditLog::query()->where('action', 'audit.pruned')->value('meta')['pruned_up_to_id']);
+        // The id of the last old row (not "2": MySQL never reuses ids of rolled-back rows, 9B)
+        $this->assertSame($lastOld, AuditLog::query()->where('action', 'audit.pruned')->value('meta')['pruned_up_to_id']);
         $this->artisan('audit:verify')->assertSuccessful();
 
         // Prune never touches the head: it still points at the newest row, the checkpoint
@@ -464,7 +466,9 @@ class AuditTrailTest extends TestCase
     {
         $faq = new Faq;
         $faq->forceFill(['question' => 'Q?', 'answer' => 'A.', 'is_published' => true, 'position' => 1])->save();
-        DB::statement('DROP TABLE audit_logs');
+        // Every audit write fails from here. A listener, not DROP TABLE: MySQL commits DDL at once, which would end the
+        // test's own transaction and really drop the table of the test database (9B)
+        AuditLog::creating(fn () => throw new RuntimeException('The audit table is unavailable.'));
 
         // Outside a transaction (a CSV, a receipt, a sign-in): the action goes on, the failure is only logged
         $outside = new class(app(Redactor::class)) extends AuditLogger

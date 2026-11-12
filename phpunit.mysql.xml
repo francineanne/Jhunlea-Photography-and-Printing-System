@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Phase 9B: the tests on REAL MySQL (XAMPP), on the throwaway database jhunlea_test ONLY. See docs/MYSQL_TESTING.md.
+    Run: php -d memory_limit=1G vendor/bin/phpunit -c phpunit.mysql.xml (add testsuite MySql, Feature or Unit to pick one)
+    The values are forced exactly like phpunit.xml (env with force="true" AND a server copy). The guard in
+    tests/TestCase.php (TestDatabaseGuard) accepts this run only when the marker is 1, the connection is local MySQL and
+    the LIVE connection reports a database ending with "_test"; otherwise the run stops before anything is touched.
+    The normal phpunit.xml never runs tests/MySql and forces the marker off.
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="MySql">
+            <directory>tests/MySql</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing" force="true"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file" force="true"/>
+        <env name="BCRYPT_ROUNDS" value="4" force="true"/>
+        <env name="BROADCAST_CONNECTION" value="null" force="true"/>
+        <env name="CACHE_STORE" value="array" force="true"/>
+        <env name="JHUNLEA_MYSQL_TESTS" value="1" force="true"/>
+        <env name="DB_CONNECTION" value="mysql" force="true"/>
+        <env name="DB_HOST" value="127.0.0.1" force="true"/>
+        <env name="DB_PORT" value="3306" force="true"/>
+        <env name="DB_DATABASE" value="jhunlea_test" force="true"/>
+        <env name="DB_USERNAME" value="root" force="true"/>
+        <env name="DB_PASSWORD" value="" force="true"/>
+        <env name="DB_URL" value="" force="true"/>
+        <env name="DB_SOCKET" value="" force="true"/>
+        <env name="MAIL_MAILER" value="array" force="true"/>
+        <env name="FILESYSTEM_DISK" value="local" force="true"/>
+        <env name="PRINTING_FILES_DISK" value="local" force="true"/>
+        <env name="BOOKING_IMAGES_DISK" value="local" force="true"/>
+        <env name="QUEUE_CONNECTION" value="sync" force="true"/>
+        <env name="SESSION_DRIVER" value="array" force="true"/>
+        <env name="PULSE_ENABLED" value="false" force="true"/>
+        <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <env name="NIGHTWATCH_ENABLED" value="false" force="true"/>
+        <env name="AI_PROVIDER" value="" force="true"/>
+        <env name="AI_API_KEY" value="" force="true"/>
+        <env name="AI_MODEL" value="" force="true"/>
+        <env name="AI_ENABLED" value="" force="true"/>
+        <env name="AI_FALLBACK_PROVIDER" value="" force="true"/>
+        <env name="ANTHROPIC_API_KEY" value="" force="true"/>
+        <env name="ANTHROPIC_MODEL" value="" force="true"/>
+        <env name="AI_ANTHROPIC_API_KEY" value="" force="true"/>
+        <env name="AI_ANTHROPIC_MODEL" value="" force="true"/>
+
+        <server name="APP_ENV" value="testing"/>
+        <server name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <server name="BCRYPT_ROUNDS" value="4"/>
+        <server name="BROADCAST_CONNECTION" value="null"/>
+        <server name="CACHE_STORE" value="array"/>
+        <server name="JHUNLEA_MYSQL_TESTS" value="1"/>
+        <server name="DB_CONNECTION" value="mysql"/>
+        <server name="DB_HOST" value="127.0.0.1"/>
+        <server name="DB_PORT" value="3306"/>
+        <server name="DB_DATABASE" value="jhunlea_test"/>
+        <server name="DB_USERNAME" value="root"/>
+        <server name="DB_PASSWORD" value=""/>
+        <server name="DB_URL" value=""/>
+        <server name="DB_SOCKET" value=""/>
+        <server name="MAIL_MAILER" value="array"/>
+        <server name="FILESYSTEM_DISK" value="local"/>
+        <server name="PRINTING_FILES_DISK" value="local"/>
+        <server name="BOOKING_IMAGES_DISK" value="local"/>
+        <server name="QUEUE_CONNECTION" value="sync"/>
+        <server name="SESSION_DRIVER" value="array"/>
+        <server name="PULSE_ENABLED" value="false"/>
+        <server name="TELESCOPE_ENABLED" value="false"/>
+        <server name="NIGHTWATCH_ENABLED" value="false"/>
+        <server name="AI_PROVIDER" value=""/>
+        <server name="AI_API_KEY" value=""/>
+        <server name="AI_MODEL" value=""/>
+        <server name="AI_ENABLED" value=""/>
+        <server name="AI_FALLBACK_PROVIDER" value=""/>
+        <server name="ANTHROPIC_API_KEY" value=""/>
+        <server name="ANTHROPIC_MODEL" value=""/>
+        <server name="AI_ANTHROPIC_API_KEY" value=""/>
+        <server name="AI_ANTHROPIC_MODEL" value=""/>
+    </php>
+</phpunit>

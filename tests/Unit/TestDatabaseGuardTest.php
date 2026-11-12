@@ -89,6 +89,39 @@ class TestDatabaseGuardTest extends TestCase
         }
     }
 
+    public function test_the_mysql_mode_accepts_only_a_local_database_ending_with_test(): void
+    {
+        $mysql = fn (string $database, string $host = '127.0.0.1', ?string $url = null, string $driver = 'mysql') => ['mysql' => ['driver' => $driver, 'database' => $database, 'host' => $host, 'url' => $url]];
+
+        $this->assertNull(TestDatabaseGuard::mysqlProblem('testing', 'mysql', $mysql('jhunlea_test')));
+        $this->assertNull(TestDatabaseGuard::mysqlProblem('testing', 'mysql', $mysql('jhunlea_test', 'localhost', null, 'mariadb')));
+
+        foreach ([
+            'the real database' => ['testing', 'mysql', $mysql('jhunlea')],
+            'a name that only contains test' => ['testing', 'mysql', $mysql('jhunlea_test_copy')],
+            'another machine' => ['testing', 'mysql', $mysql('jhunlea_test', 'db.example.com')],
+            'a database url' => ['testing', 'mysql', $mysql('jhunlea_test', '127.0.0.1', 'mysql://root@127.0.0.1/jhunlea')],
+            'local environment' => ['local', 'mysql', $mysql('jhunlea_test')],
+            'sqlite connection' => ['testing', 'sqlite', self::SAFE],
+        ] as $case => [$environment, $default, $connections]) {
+            $this->assertStringStartsWith('Refusing to run the MySQL tests:', (string) TestDatabaseGuard::mysqlProblem($environment, $default, $connections), $case);
+        }
+    }
+
+    public function test_the_normal_config_forces_the_mysql_marker_off_and_the_mysql_config_forces_the_test_database(): void
+    {
+        $root = dirname(__DIR__, 2);
+        $normal = simplexml_load_file($root.'/phpunit.xml');
+        $this->assertCount(1, $normal->xpath('//env[@name="'.TestDatabaseGuard::MYSQL_MARKER.'"][@value=""][@force="true"]'));
+        $this->assertCount(1, $normal->xpath('//server[@name="'.TestDatabaseGuard::MYSQL_MARKER.'"][@value=""]'));
+
+        $mysql = simplexml_load_file($root.'/phpunit.mysql.xml');
+        foreach (['DB_CONNECTION' => 'mysql', 'DB_HOST' => '127.0.0.1', 'DB_DATABASE' => 'jhunlea_test', 'APP_ENV' => 'testing', TestDatabaseGuard::MYSQL_MARKER => '1', 'DB_URL' => ''] as $name => $value) {
+            $this->assertCount(1, $mysql->xpath("//env[@name=\"{$name}\"][@value=\"{$value}\"][@force=\"true\"]"), "phpunit.mysql.xml must force {$name}={$value}");
+            $this->assertCount(1, $mysql->xpath("//server[@name=\"{$name}\"][@value=\"{$value}\"]"), "phpunit.mysql.xml needs a <server> copy of {$name}");
+        }
+    }
+
     public function test_every_feature_test_goes_through_the_guarded_test_case(): void
     {
         $root = dirname(__DIR__, 2).'/tests';

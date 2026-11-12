@@ -229,6 +229,7 @@ class NotificationRulesTest extends TestCase
 
     public function test_a_failure_to_write_a_notification_never_breaks_the_action(): void
     {
+        $this->changesSchema(); // drops or truncates a table: see Tests\TestCase (9B)
         Log::spy();
         Schema::drop('notifications');
 

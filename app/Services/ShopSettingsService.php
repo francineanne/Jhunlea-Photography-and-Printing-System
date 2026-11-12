@@ -50,7 +50,10 @@ class ShopSettingsService
     private function write(array $values): void
     {
         DB::transaction(function () use ($values) {
-            DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
+            // Insert only when missing (9B): an INSERT IGNORE on the existing row takes a shared lock before the lock below
+            if (! DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->exists()) {
+                DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
+            }
             $before = (array) DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->lockForUpdate()->first();
             DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->update($values + ['updated_at' => now()]);
 
@@ -82,7 +85,10 @@ class ShopSettingsService
     public function locked(callable $callback): mixed
     {
         return DB::transaction(function () use ($callback) {
-            DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
+            // Insert only when missing (9B): an INSERT IGNORE on the existing row takes a shared lock before the lock below
+            if (! DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->exists()) {
+                DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
+            }
             DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->lockForUpdate()->first();
 
             return $callback();

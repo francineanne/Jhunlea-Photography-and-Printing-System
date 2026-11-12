@@ -347,11 +347,17 @@ class BookingTransitionService
         });
     }
 
-    /** Held until the transaction ends. The settings row is created from the config defaults if it is missing. */
+    /**
+     * Held until the transaction ends. The settings row is created from the config defaults if it is missing. The
+     * UPDATE comes first (Phase 9B, found on MySQL): an INSERT IGNORE on the existing row takes a SHARED lock, and two
+     * confirms holding it while both wait for the exclusive one deadlock (1213). Insert only when the row is missing.
+     */
     private function takeScheduleLock(): void
     {
-        DB::table('booking_settings')->insertOrIgnore(['id' => BookingSetting::ROW_ID] + config('booking.defaults') + ['lock_version' => 0, 'created_at' => now(), 'updated_at' => now()]);
-        DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->increment('lock_version');
+        if (DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->increment('lock_version') === 0) {
+            DB::table('booking_settings')->insertOrIgnore(['id' => BookingSetting::ROW_ID] + config('booking.defaults') + ['lock_version' => 0, 'created_at' => now(), 'updated_at' => now()]);
+            DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->increment('lock_version');
+        }
     }
 
     private function ownerOnly(User $actor): void

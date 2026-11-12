@@ -81,7 +81,9 @@ class EvalSandboxTest extends TestCase
 
     public function test_it_writes_only_its_own_file_and_removes_it(): void
     {
-        $before = DB::connection('sqlite')->table('users')->count();
+        // The test's own connection: sqlite in the normal run, mysql in phpunit.mysql.xml (9B)
+        $test = DB::getDefaultConnection();
+        $before = DB::connection($test)->table('users')->count();
         $sandbox = $this->sandbox();
         $sandbox->open();
 
@@ -98,9 +100,9 @@ class EvalSandboxTest extends TestCase
         $sandbox->close();
 
         $this->assertFileDoesNotExist($sandbox->path());
-        $this->assertSame('sqlite', DB::getDefaultConnection(), 'The test connection is back');
-        $this->assertSame($before, DB::connection('sqlite')->table('users')->count(), 'Nothing reached the test database');
-        $this->assertSame(0, DB::connection('sqlite')->table('printing_services')->count());
+        $this->assertSame($test, DB::getDefaultConnection(), 'The test connection is back');
+        $this->assertSame($before, DB::connection($test)->table('users')->count(), 'Nothing reached the test database');
+        $this->assertSame(0, DB::connection($test)->table('printing_services')->count());
     }
 
     public function test_the_clock_is_frozen_on_a_thursday_morning_in_manila_and_the_limits_are_raised(): void

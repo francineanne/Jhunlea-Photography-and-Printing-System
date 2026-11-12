@@ -22,16 +22,41 @@ class ReferenceNumberService
     public function next(string $prefix = self::PRINTING): string
     {
         return DB::transaction(function () use ($prefix) {
-            // Make sure the row exists, then lock it. insertOrIgnore keeps two first-ever requests from colliding
-            DB::table('reference_counters')->insertOrIgnore(['prefix' => $prefix, 'last_number' => 0]);
-
-            $last = (int) DB::table('reference_counters')->where('prefix', $prefix)->lockForUpdate()->value('last_number');
-            $number = $last + 1;
+            $number = $this->lockedLast($prefix) + 1;
 
             DB::table('reference_counters')->where('prefix', $prefix)->update(['last_number' => $number]);
 
             return $this->format($prefix, $number);
         });
+    }
+
+    /**
+     * Locks a prefix's counter row for the caller's transaction without taking a number (Phase 9B). A transaction that
+     * will need a number of this prefix only AFTER it has locked something else (the audit chain head) takes this lock
+     * first, so every transaction locks the counter before the head and two of them can never wait on each other.
+     */
+    public function lock(string $prefix): void
+    {
+        $this->lockedLast($prefix);
+    }
+
+    /**
+     * The counter row, locked (SELECT ... FOR UPDATE), created first when the prefix has none yet. Lock FIRST, insert
+     * only when missing (Phase 9B, found on MySQL): an INSERT IGNORE on an existing row takes a SHARED lock on it, and
+     * two transactions holding that shared lock both waiting for the exclusive one is a deadlock (1213) every time two
+     * numbers of a prefix are asked for at once. Only the very first number of a prefix can still race; insertOrIgnore
+     * keeps that one from failing.
+     */
+    private function lockedLast(string $prefix): int
+    {
+        $last = DB::table('reference_counters')->where('prefix', $prefix)->lockForUpdate()->value('last_number');
+
+        if ($last === null) {
+            DB::table('reference_counters')->insertOrIgnore(['prefix' => $prefix, 'last_number' => 0]);
+            $last = DB::table('reference_counters')->where('prefix', $prefix)->lockForUpdate()->value('last_number');
+        }
+
+        return (int) $last;
     }
 
     public function format(string $prefix, int $number): string

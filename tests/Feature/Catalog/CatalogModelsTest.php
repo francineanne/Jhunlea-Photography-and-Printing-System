@@ -114,6 +114,13 @@ class CatalogModelsTest extends TestCase
 
     public function test_every_new_migration_can_be_reverted_and_applied_again(): void
     {
+        // SQLite only: reverting a slice of the history while later tables still point at these ones works only because
+        // SQLite does not check foreign keys on DROP, and MySQL commits DDL at once (it would end this test's
+        // transaction). On MySQL the whole history is reverted and applied instead: MySqlSetupTest (Phase 9B)
+        if (DB::connection()->getDriverName() !== 'sqlite') {
+            $this->markTestSkipped('SQLite-specific: on MySQL see Tests\MySql\MySqlSetupTest::test_every_migration_reverts_and_applies_again.');
+        }
+
         $migrations = [
             '2026_10_29_100300_create_package_theme_table' => 'package_theme',
             '2026_10_29_100200_create_themes_table' => 'themes',

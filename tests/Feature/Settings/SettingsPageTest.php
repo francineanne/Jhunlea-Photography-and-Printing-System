@@ -260,6 +260,7 @@ class SettingsPageTest extends TestCase
 
     public function test_the_site_keeps_working_before_the_new_tables_exist(): void
     {
+        $this->changesSchema(); // drops or truncates a table: see Tests\TestCase (9B)
         Schema::drop('faqs');
         Schema::drop('shop_settings');
         $this->app->forgetScopedInstances();

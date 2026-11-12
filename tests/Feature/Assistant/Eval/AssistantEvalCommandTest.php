@@ -51,6 +51,8 @@ class AssistantEvalCommandTest extends TestCase
 
     public function test_a_run_answered_by_code_passes_the_gate_writes_both_files_and_touches_no_real_database(): void
     {
+        // The test's own connection: sqlite in the normal run, mysql in phpunit.mysql.xml (9B)
+        $test = DB::getDefaultConnection();
         $this->artisan('assistant:eval', ['--case' => self::CODE_CASES, '--report' => $this->evalReportName()])
             ->expectsOutputToContain('Overall pass rate: **100%** (7 of 7 scored)')
             ->expectsOutputToContain('Quality gate PASSED.')
@@ -65,7 +67,7 @@ class AssistantEvalCommandTest extends TestCase
 
         // The sandbox file is gone and nothing reached the test database
         $this->assertFileDoesNotExist((string) config('assistant.eval.database'));
-        $this->assertSame('sqlite', DB::getDefaultConnection());
+        $this->assertSame($test, DB::getDefaultConnection());
         $this->assertSame(0, User::query()->count());
         $this->assertSame(0, AssistantRun::query()->count());
     }

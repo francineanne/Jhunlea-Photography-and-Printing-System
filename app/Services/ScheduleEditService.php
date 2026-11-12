@@ -61,7 +61,10 @@ class ScheduleEditService
     public function saveSettings(array $settings): void
     {
         DB::transaction(function () use ($settings) {
-            DB::table('booking_settings')->insertOrIgnore(['id' => BookingSetting::ROW_ID] + config('booking.defaults') + ['lock_version' => 0, 'created_at' => now(), 'updated_at' => now()]);
+            // Insert only when missing (9B): an INSERT IGNORE on the existing row takes a shared lock (deadlock risk)
+            if (! DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->exists()) {
+                DB::table('booking_settings')->insertOrIgnore(['id' => BookingSetting::ROW_ID] + config('booking.defaults') + ['lock_version' => 0, 'created_at' => now(), 'updated_at' => now()]);
+            }
             $before = (array) DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->first();
             $changes = [];
 

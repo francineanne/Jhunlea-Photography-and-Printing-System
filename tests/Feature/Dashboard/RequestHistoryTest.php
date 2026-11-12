@@ -139,7 +139,8 @@ class RequestHistoryTest extends TestCase
 
     public function test_long_and_hostile_names_are_escaped_and_cut(): void
     {
-        $service = PrintingService::factory()->published()->create(['name' => '<script>alert(1)</script>'.str_repeat('Very long service name ', 12)]);
+        // 232 characters: longer than the form allows (120) but within the column (255), which MySQL enforces (9B)
+        $service = PrintingService::factory()->published()->create(['name' => '<script>alert(1)</script>'.str_repeat('Very long service name ', 9)]);
         $this->order($this->ana, '2026-11-01 10:00', ['printing_service_id' => $service->id, 'snapshot' => ['service' => ['name' => $service->name], 'options' => []]]);
 
         $this->list()->assertOk()->assertDontSee('<script>alert(1)</script>', false)->assertSee('&lt;script&gt;', false)->assertSee('truncate', false);

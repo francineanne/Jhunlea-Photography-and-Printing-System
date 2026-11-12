@@ -118,6 +118,11 @@ class WalkInOrderService
 
         try {
             return DB::transaction(function () use ($owner, $customer, $service, $estimate, $quantity, $notes, $price, $priceChoice, $priceNote, $method, $gcashReference, $counterToken, $uploads, &$written, &$orderId) {
+                // Lock order (Phase 9B, found on MySQL): the payment number is locked FIRST. This transaction writes
+                // audit rows (the chain head lock) before it records the payment, while a normal payment locks its
+                // counter before the head; taking the counter first here keeps the two from deadlocking
+                $this->references->lock(ReferenceNumberService::PAYMENT);
+
                 $snapshot = $estimate->snapshot($service->name, $service->pricing_type->value, $service->base_price);
                 // The price the owner charged and who set it, kept with the order (the audit trail of a custom price)
                 $snapshot['counter'] = [

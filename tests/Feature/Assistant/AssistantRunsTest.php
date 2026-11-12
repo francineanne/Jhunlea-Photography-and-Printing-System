@@ -28,10 +28,13 @@ class AssistantRunsTest extends TestCase
 
     public function test_the_table_has_no_column_that_could_hold_message_text(): void
     {
-        $this->assertSame(
+        // Exactly these columns, in any order: MySQL honours ->after() in the later migrations, SQLite appends (9B)
+        $columns = Schema::getColumnListing('assistant_runs');
+        $this->assertEqualsCanonicalizing(
             ['id', 'user_id', 'guest_key', 'feature', 'provider', 'model', 'outcome', 'intent', 'input_tokens', 'output_tokens', 'latency_ms', 'created_at', 'fallback_from', 'cache_read_tokens', 'cache_write_tokens', 'tools'],
-            Schema::getColumnListing('assistant_runs'),
+            $columns,
         );
+        $this->assertCount(16, $columns);
     }
 
     public function test_every_call_writes_one_row_with_metadata_only(): void
