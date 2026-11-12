@@ -1,0 +1,7 @@
+# Phase 9A: this folder (served as /storage) holds uploaded package and theme images only, under random names.
+# Defense in depth: even if a script ever got in, Apache refuses to run or serve it.
+<IfModule mod_authz_core.c>
+    <FilesMatch "(?i)\.(php[0-9]?|phtml|phar|pht|pl|py|cgi|sh|asp|aspx|jsp|shtml|svg|html?)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>

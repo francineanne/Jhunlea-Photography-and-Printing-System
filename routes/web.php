@@ -64,23 +64,23 @@ Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where(
 Route::get('/faq', PublicFaqController::class)->middleware('throttle:60,1,public-faq')->name('faq');
 
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [LoginController::class, 'create'])->name('login');
+    Route::get('/login', [LoginController::class, 'create'])->middleware('throttle:60,1,login-form')->name('login');
     // Each throttle names its own counter, so failed logins never block registering or a password reset
     Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:20,1,login');
 
-    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::get('/register', [RegisterController::class, 'create'])->middleware('throttle:60,1,register-form')->name('register');
     Route::post('/register', [RegisterController::class, 'store'])->middleware('throttle:10,1,register');
 
-    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('throttle:60,1,password-request-form')->name('password.request');
     Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
         ->middleware('throttle:6,1,password-email')
         ->name('password.email');
 
-    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->middleware('throttle:60,1,password-reset-form')->name('password.reset');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->middleware('throttle:6,1,password-reset')->name('password.update');
 });
 
-Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
+Route::post('/logout', [LoginController::class, 'destroy'])->middleware(['auth', 'throttle:30,1,logout'])->name('logout');
 
 // The account page (Phase 6C): one controller for both areas, each in its own role group. Viewing is relaxed; the
 // profile, password and appearance forms each have their own, stricter counter
@@ -267,8 +267,8 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 
 // The owner's printing orders. Every action is a POST that goes through StatusTransitionService
 Route::middleware(['auth', 'role:owner'])->prefix('owner/printing-orders')->name('owner.orders.')->group(function () {
-    Route::get('/', [OwnerPrintingOrderController::class, 'index'])->name('index');
-    Route::get('/{order}', [OwnerPrintingOrderController::class, 'show'])->whereNumber('order')->name('show');
+    Route::get('/', [OwnerPrintingOrderController::class, 'index'])->middleware('throttle:120,1,owner-order-list')->name('index');
+    Route::get('/{order}', [OwnerPrintingOrderController::class, 'show'])->whereNumber('order')->middleware('throttle:120,1,owner-order-show')->name('show');
 
     // 30 a minute for each action, each with its own counter, so a busy run of one action never blocks another
     Route::whereNumber('order')->controller(PrintingOrderActionController::class)->group(function () {
@@ -300,48 +300,49 @@ Route::get('/owner', OwnerDashboardController::class)
     ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-dashboard'])
     ->name('owner.dashboard');
 
+// The owner's catalog. Phase 9A: every route has its own named counter, generous enough that the owner never meets it
 Route::middleware(['auth', 'role:owner'])->prefix('owner/services')->name('owner.services.')->group(function () {
-    Route::get('/', [ServiceController::class, 'index'])->name('index');
-    Route::get('/create', [ServiceController::class, 'create'])->name('create');
-    Route::post('/', [ServiceController::class, 'store'])->name('store');
-    Route::get('/{service}/edit', [ServiceController::class, 'edit'])->name('edit');
-    Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
-    Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
-    Route::post('/{service}/publish', [ServiceController::class, 'publish'])->name('publish');
+    Route::get('/', [ServiceController::class, 'index'])->middleware('throttle:120,1,owner-service-list')->name('index');
+    Route::get('/create', [ServiceController::class, 'create'])->middleware('throttle:60,1,owner-service-create')->name('create');
+    Route::post('/', [ServiceController::class, 'store'])->middleware('throttle:30,1,owner-service-store')->name('store');
+    Route::get('/{service}/edit', [ServiceController::class, 'edit'])->middleware('throttle:120,1,owner-service-edit')->name('edit');
+    Route::put('/{service}', [ServiceController::class, 'update'])->middleware('throttle:30,1,owner-service-update')->name('update');
+    Route::delete('/{service}', [ServiceController::class, 'destroy'])->middleware('throttle:30,1,owner-service-destroy')->name('destroy');
+    Route::post('/{service}/publish', [ServiceController::class, 'publish'])->middleware('throttle:30,1,owner-service-publish')->name('publish');
 
     Route::scopeBindings()->group(function () {
-        Route::post('/{service}/options', [ServiceOptionController::class, 'store'])->name('options.store');
-        Route::put('/{service}/options/{option}', [ServiceOptionController::class, 'update'])->name('options.update');
-        Route::delete('/{service}/options/{option}', [ServiceOptionController::class, 'destroy'])->name('options.destroy');
+        Route::post('/{service}/options', [ServiceOptionController::class, 'store'])->middleware('throttle:60,1,owner-option-store')->name('options.store');
+        Route::put('/{service}/options/{option}', [ServiceOptionController::class, 'update'])->middleware('throttle:60,1,owner-option-update')->name('options.update');
+        Route::delete('/{service}/options/{option}', [ServiceOptionController::class, 'destroy'])->middleware('throttle:60,1,owner-option-destroy')->name('options.destroy');
     });
 });
 
 Route::middleware(['auth', 'role:owner'])->prefix('owner/packages')->name('owner.packages.')->group(function () {
-    Route::get('/', [PackageController::class, 'index'])->name('index');
-    Route::get('/create', [PackageController::class, 'create'])->name('create');
-    Route::post('/', [PackageController::class, 'store'])->name('store');
-    Route::get('/{package}/edit', [PackageController::class, 'edit'])->name('edit');
-    Route::put('/{package}', [PackageController::class, 'update'])->name('update');
-    Route::delete('/{package}', [PackageController::class, 'destroy'])->name('destroy');
-    Route::post('/{package}/publish', [PackageController::class, 'publish'])->name('publish');
-    Route::post('/{package}/feature', [PackageController::class, 'feature'])->name('feature');
+    Route::get('/', [PackageController::class, 'index'])->middleware('throttle:120,1,owner-package-list')->name('index');
+    Route::get('/create', [PackageController::class, 'create'])->middleware('throttle:60,1,owner-package-create')->name('create');
+    Route::post('/', [PackageController::class, 'store'])->middleware('throttle:30,1,owner-package-store')->name('store');
+    Route::get('/{package}/edit', [PackageController::class, 'edit'])->middleware('throttle:120,1,owner-package-edit')->name('edit');
+    Route::put('/{package}', [PackageController::class, 'update'])->middleware('throttle:30,1,owner-package-update')->name('update');
+    Route::delete('/{package}', [PackageController::class, 'destroy'])->middleware('throttle:30,1,owner-package-destroy')->name('destroy');
+    Route::post('/{package}/publish', [PackageController::class, 'publish'])->middleware('throttle:30,1,owner-package-publish')->name('publish');
+    Route::post('/{package}/feature', [PackageController::class, 'feature'])->middleware('throttle:30,1,owner-package-feature')->name('feature');
 
     Route::scopeBindings()->group(function () {
-        Route::post('/{package}/images', [PackageImageController::class, 'store'])->name('images.store');
-        Route::put('/{package}/images/{image}', [PackageImageController::class, 'update'])->name('images.update');
-        Route::post('/{package}/images/{image}/cover', [PackageImageController::class, 'cover'])->name('images.cover');
-        Route::delete('/{package}/images/{image}', [PackageImageController::class, 'destroy'])->name('images.destroy');
+        Route::post('/{package}/images', [PackageImageController::class, 'store'])->middleware('throttle:20,1,owner-package-image-upload')->name('images.store');
+        Route::put('/{package}/images/{image}', [PackageImageController::class, 'update'])->middleware('throttle:60,1,owner-package-image-update')->name('images.update');
+        Route::post('/{package}/images/{image}/cover', [PackageImageController::class, 'cover'])->middleware('throttle:60,1,owner-package-image-cover')->name('images.cover');
+        Route::delete('/{package}/images/{image}', [PackageImageController::class, 'destroy'])->middleware('throttle:60,1,owner-package-image-destroy')->name('images.destroy');
     });
 });
 
 Route::middleware(['auth', 'role:owner'])->prefix('owner/themes')->name('owner.themes.')->group(function () {
-    Route::get('/', [ThemeController::class, 'index'])->name('index');
-    Route::get('/create', [ThemeController::class, 'create'])->name('create');
-    Route::post('/', [ThemeController::class, 'store'])->name('store');
-    Route::get('/{theme}/edit', [ThemeController::class, 'edit'])->name('edit');
-    Route::put('/{theme}', [ThemeController::class, 'update'])->name('update');
-    Route::delete('/{theme}', [ThemeController::class, 'destroy'])->name('destroy');
-    Route::post('/{theme}/publish', [ThemeController::class, 'publish'])->name('publish');
+    Route::get('/', [ThemeController::class, 'index'])->middleware('throttle:120,1,owner-theme-list')->name('index');
+    Route::get('/create', [ThemeController::class, 'create'])->middleware('throttle:60,1,owner-theme-create')->name('create');
+    Route::post('/', [ThemeController::class, 'store'])->middleware('throttle:20,1,owner-theme-store')->name('store');
+    Route::get('/{theme}/edit', [ThemeController::class, 'edit'])->middleware('throttle:120,1,owner-theme-edit')->name('edit');
+    Route::put('/{theme}', [ThemeController::class, 'update'])->middleware('throttle:20,1,owner-theme-update')->name('update');
+    Route::delete('/{theme}', [ThemeController::class, 'destroy'])->middleware('throttle:30,1,owner-theme-destroy')->name('destroy');
+    Route::post('/{theme}/publish', [ThemeController::class, 'publish'])->middleware('throttle:30,1,owner-theme-publish')->name('publish');
 });
 
 // The guest chat on the public pages (7C): nothing is stored in the chat tables. Signed-in customers use their stored

@@ -24,7 +24,7 @@
 | 6 | Customers, reports, settings, profile | BF | Approved (Her merges phase-6-admin into main): 6A customers directory, customer detail and reports, and 6B settings, upload limits, FAQ editor and public /faq committed; 6C account page (/my/account and /owner/account: profile, password, appearance) built. |
 | 7 | Chat and AI assistant "Lumi" | BF | Done (merged into main): chat, Ask Lumi, studio chat, owner assist, the owner's Ask Lumi and the evaluation harness (`php artisan assistant:eval`, `docs/AI_EVALUATION.md`). |
 | 8 | Walk-in logging, counter, logbook and income reports | Her | In progress: 8A walk-in foundation (walk-in customers without login, `source` on orders and bookings, owner-made walk-in orders paid at creation and walk-in bookings, badges and filters) built, waiting for review; its two migrations must be run. 8B counter in Payments (record payment modal, payment receipt, ready for pickup and awaiting payment queues, ledger today by default; no migration) built, waiting for review. 8C income report (`/owner/reports/income`: daily, weekly, monthly, custom, all time, charts, end-of-day summary, CSV; one migration `report_view` on users) committed. 8D owner Ask Lumi reads walk-ins, the counter and the income report (no migration) merged. 8E audit trail (branch `phase-8e-audit-trail`: `audit_logs` append-only with a hash chain, Activity log under Settings, CSV, `audit:verify`, `audit:prune`; one migration) built, waiting for review. |
-| 9 | Testing, mobile pass, animation polish, deployment | Her | Not started |
+| 9 | Testing, mobile pass, animation polish, deployment | Her | In progress: 9A security pass (branch `phase-9a-security`: route access matrix test, named throttles on every route, security headers, secure session cookie, trusted hosts, `php artisan jhunlea:preflight`, `docs/SECURITY_AUDIT.md`; no migration) built, waiting for review. |
 
 Update this table when a phase is approved and merged into `main`.
 
@@ -298,6 +298,15 @@ Every throttled route names its own counter (`throttle:N,1,name`); `ThrottleCoun
 - Rate limit login, uploads and the AI endpoint.
 - Secrets only in `.env`. Never commit `.env`. Never expose API keys in JS.
 - Customer-facing errors never show stack traces (`APP_DEBUG=false` in production).
+
+**Phase 9A (security pass; full audit in `docs/SECURITY_AUDIT.md`):**
+- **Route matrix:** `tests/Feature/Security/RouteAccessMatrixTest.php` lists EVERY route with its access class (public, guest, signed_in, customer, owner, framework). A new route without a line fails the test: add it to `MATRIX`, and to `CROSS_USER` when it takes a customer's record. The test also checks each route's middleware, sends a guest and the wrong role everywhere, and proves another customer cannot reach a customer's records.
+- **Another customer's record answers 403** (its policy); a conversation and a notification answer 404 on purpose (ConversationPolicy, own-rows lookup).
+- **Throttles:** every route except `/up`, `/ui-kit` and the fallback has its own named counter, inline in `routes/web.php` (`throttle:N,1,name`), including the owner catalog, the owner order list and detail, logout and the guest form pages (9A).
+- **Headers:** `App\Http\Middleware\SecurityHeaders` (web group): nosniff, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, geolocation, payment off), HSTS over https only; a header the response set itself is kept. No enforcing CSP (Alpine needs eval; the Report-Only proposal is in the audit).
+- **Session and hosts:** `session.secure` follows SESSION_SECURE_COOKIE, else is true exactly when APP_URL is https; `$middleware->trustHosts()` accepts only the APP_URL host outside local (password reset links can never carry a forged Host).
+- **Files:** the private `local` disk has `serve => false` (no Laravel `/storage/{path}` routes); `storage/app/public/.htaccess` refuses scripts in the uploaded images folder (Apache).
+- **Preflight:** `php artisan jhunlea:preflight` before hosting: read only, PASS/WARN/FAIL lines, exit 1 on any FAIL, never prints a key (only "set" or "missing") or a database error message. Checks for `App\Support\Preflight\PreflightProbe` are faked in `PreflightCommandTest`.
 
 ---
 

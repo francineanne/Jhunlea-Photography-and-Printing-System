@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,11 +22,18 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust X-Forwarded-* only from a tunnel on this machine (ngrok), so asset links use https; never '*' (spoofable IPs break rate limits)
         $middleware->trustProxies(at: ['127.0.0.1', '::1']);
 
+        // Phase 9A: outside local, only the APP_URL host (and its subdomains) is accepted, so a forged Host header can
+        // never put another site's address into a password reset link. Laravel skips this check in local and in tests
+        $middleware->trustHosts();
+
         // Check the role before route model binding, so a customer gets 403 (not 404) for an id that does not exist
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureRole::class);
 
         // Signs out other sessions of a user as soon as their password changes (for example after a reset)
         $middleware->web(append: [AuthenticateSession::class]);
+
+        // Phase 9A: nosniff, frame, referrer and permissions headers on every web page, HSTS over https only
+        $middleware->web(append: [SecurityHeaders::class]);
 
         // Signed-in users who open a guest-only page (login, register...) go to their own home
         $middleware->redirectUsersTo(fn () => auth()->user()->role->home());

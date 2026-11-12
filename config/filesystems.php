@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Phase 9A: off. Private files are only served by the app's own controllers after a policy check
+            // (files.download, booking-images.*); Laravel's signed /storage/{path} routes are not used and stay closed
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

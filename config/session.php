@@ -169,7 +169,8 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Phase 9A: SESSION_SECURE_COOKIE wins; without it the cookie is https-only exactly when APP_URL is https
+    'secure' => env('SESSION_SECURE_COOKIE', str_starts_with((string) env('APP_URL', ''), 'https://')),
 
     /*
     |--------------------------------------------------------------------------
