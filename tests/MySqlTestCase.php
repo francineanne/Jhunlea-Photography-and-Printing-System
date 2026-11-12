@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Services\Audit\AuditLogger;
+use App\Services\ReferenceNumberService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -67,5 +68,9 @@ abstract class MySqlTestCase extends TestCase
         }
 
         DB::table(AuditLogger::HEAD)->insert(['id' => 1, 'last_id' => null, 'last_hash' => AuditLogger::genesis()]);
+
+        // And the counter rows the 9B-2 migration creates, so every test starts like a freshly migrated database
+        DB::table('reference_counters')->insert(array_map(fn (string $prefix) => ['prefix' => $prefix, 'last_number' => 0],
+            [ReferenceNumberService::PRINTING, ReferenceNumberService::BOOKING, ReferenceNumberService::PAYMENT]));
     }
 }

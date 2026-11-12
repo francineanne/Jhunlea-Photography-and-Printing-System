@@ -44,7 +44,8 @@ class ReferenceNumberServiceTest extends TestCase
 
     public function test_the_number_grows_past_six_digits_without_being_cut_off(): void
     {
-        DB::table('reference_counters')->insert(['prefix' => 'PR', 'last_number' => 999999]);
+        // The row exists from the start since 9B-2 (the migration creates it): set it rather than insert it
+        DB::table('reference_counters')->updateOrInsert(['prefix' => 'PR'], ['last_number' => 999999]);
 
         $this->assertSame('PR-1000000', $this->service()->next());
     }

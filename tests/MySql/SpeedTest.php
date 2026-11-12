@@ -36,13 +36,14 @@ class SpeedTest extends MySqlTestCase
 
     private const LIMIT_MS = 1000;
 
-    /** As the schema is today (without the proposed index): a regression guard, not the goal. */
+    /** A regression guard for every screen, the known slow ones included; not the goal. */
     private const GUARD_MS = 2500;
 
-    private const TRIAL_INDEX = 'speed_trial_notifiable_created';
+    /** Added by the 9B-2 migration (2026_11_14_100000). */
+    private const BELL_INDEX = 'notifications_notifiable_created_at_index';
 
     /**
-     * Over a second with the proposed index too, on purpose and reported (9B): All time adds up EVERY payment four ways
+     * Over a second with the bell index too, on purpose and reported (9B): All time adds up EVERY payment four ways
      * (total, Online/Walk-in, Printing/Photography, the months); a full scan by design, about 1.1 s for 21,000 payments
      * on XAMPP's 16 MB buffer pool. The ledger search matches a customer's name with LIKE '%...%' through subqueries on
      * orders and bookings, which no index can serve: 0.9 to 1.3 s over three runs. Both still held to GUARD_MS.
@@ -81,27 +82,15 @@ class SpeedTest extends MySqlTestCase
             'customer notifications page, busiest' => [$this->busiest, route('customer.notifications.index')],
         ];
 
-        // 1. The schema as it is now
         $timings = [];
         foreach ($screens as $name => [$user, $url]) {
             $timings[$name] = $this->measure($user, $url);
         }
 
-        // 2. With the index this report proposes (Finding: the bell's latest-8 sorts every row of the owner's
-        //    notifications). Created on the guarded test database for the measurement only and dropped again: no migration
-        $this->assertLiveTestDatabase();
+        // The bell's latest-8 must use the 9B-2 index (it sorted every one of the owner's notifications before)
         $bell = $this->bellQuery();
-        DB::statement('create index '.self::TRIAL_INDEX.' on notifications (notifiable_type, notifiable_id, created_at)');
-        try {
-            $withIndex = [];
-            foreach ($screens as $name => [$user, $url]) {
-                $withIndex[$name] = $this->measure($user, $url);
-            }
-            $bell['after_ms'] = $this->bellQuery()['before_ms'];
-            $bell['explain_after'] = $this->bellQuery()['explain'];
-        } finally {
-            DB::statement('drop index '.self::TRIAL_INDEX.' on notifications');
-        }
+        $this->assertSame(self::BELL_INDEX, $bell['explain'][0]['key'] ?? null, 'The bell query uses its index');
+        $this->assertStringNotContainsString('filesort', (string) ($bell['explain'][0]['Extra'] ?? ''));
 
         // audit:verify on the full table (no limit asserted; reported)
         Cache::forget(AuditChain::LAST_FULL);
@@ -112,19 +101,18 @@ class SpeedTest extends MySqlTestCase
         $this->assertSame(self::SIZES['audit'] + 1, $verify['checked']);
 
         $report = ['seeded' => $seeded, 'server' => DB::selectOne('select version() as v')->v, 'buffer_pool_mb' => (int) (DB::selectOne('select @@innodb_buffer_pool_size as b')->b / 1048576),
-            'audit_verify_ms' => $verifyMs, 'bell_index_trial' => $bell, 'timings' => $timings, 'timings_with_proposed_index' => $withIndex];
+            'audit_verify_ms' => $verifyMs, 'bell_query' => $bell, 'timings' => $timings];
         @file_put_contents(storage_path('logs/mysql-speed.json'), json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-        fwrite(STDERR, PHP_EOL.'[speed] now: '.json_encode(array_map(fn ($t) => $t['ms'], $timings), JSON_UNESCAPED_SLASHES)
-            .PHP_EOL.'[speed] with the proposed index: '.json_encode(array_map(fn ($t) => $t['ms'], $withIndex), JSON_UNESCAPED_SLASHES)
-            .PHP_EOL."[speed] audit:verify {$verifyMs} ms".PHP_EOL);
+        fwrite(STDERR, PHP_EOL.'[speed] '.json_encode(array_map(fn ($t) => $t['ms'], $timings), JSON_UNESCAPED_SLASHES)
+            .PHP_EOL."[speed] bell latest-8 {$bell['ms']} ms, audit:verify {$verifyMs} ms".PHP_EOL);
 
-        // With the proposed index every screen is under a second; as the schema is today, under the regression guard
-        $over = fn (array $set, int $limit) => array_keys(array_filter($set, fn ($t) => $t['ms'] > $limit));
-        $this->assertSame([], array_values(array_diff($over($withIndex, self::LIMIT_MS), self::KNOWN_OVER_A_SECOND)), 'Over 1 s even with the proposed index (see storage/logs/mysql-speed.json)');
-        $this->assertSame([], $over($timings, self::GUARD_MS), 'Over the regression guard as the schema is today (see storage/logs/mysql-speed.json)');
+        // Every screen under a second but the two known ones; every screen, those too, under the regression guard
+        $over = fn (int $limit) => array_keys(array_filter($timings, fn ($t) => $t['ms'] > $limit));
+        $this->assertSame([], array_values(array_diff($over(self::LIMIT_MS), self::KNOWN_OVER_A_SECOND)), 'Over 1 s (see storage/logs/mysql-speed.json)');
+        $this->assertSame([], $over(self::GUARD_MS), 'Over the regression guard (see storage/logs/mysql-speed.json)');
     }
 
-    /** @return array{before_ms: float, explain: list<array<string, mixed>>} the bell's latest-8 query, timed and explained */
+    /** @return array{ms: float, explain: list<array<string, mixed>>} the bell's latest-8 query, timed and explained */
     private function bellQuery(): array
     {
         $sql = 'select * from notifications where notifiable_type = ? and notifiable_id = ? order by created_at desc limit 8';
@@ -138,7 +126,7 @@ class SpeedTest extends MySqlTestCase
         }
         sort($runs);
 
-        return ['before_ms' => round($runs[1], 1), 'explain' => array_map(fn ($row) => (array) $row, DB::select('explain '.$sql, $bindings))];
+        return ['ms' => round($runs[1], 1), 'explain' => array_map(fn ($row) => (array) $row, DB::select('explain '.$sql, $bindings))];
     }
 
     /** @return array{ms: float, queries: int, slowest: ?array, explain: ?array} */

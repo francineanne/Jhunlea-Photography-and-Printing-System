@@ -90,14 +90,19 @@ php -d memory_limit=1G artisan test
      confirms at once could deadlock). The same guard was added in `ShopSettingsService` and `ScheduleEditService`.
 - Speed: with the data shaped like a shop's year (the newest 400 orders open, older ones completed or cancelled),
   the owner pages took 0.5 to 1.8 s; the slowest query of EVERY owner page was the notification bell's "latest 8"
-  (300 to 700 ms: it sorts all 25,000 of the owner's notifications). With the proposed index
-  `notifications (notifiable_type, notifiable_id, created_at)` (not created: the reviewer decides) that query takes
-  about 2 ms and every screen is under one second except the Income report "All time" (1.1 to 1.6 s; it adds up every
+  (300 to 700 ms: it sorts all 25,000 of the owner's notifications). Phase 9B-2 added the index
+  `notifications_notifiable_created_at_index` on `notifications (notifiable_type, notifiable_id, created_at)`
+  (migration `2026_11_14_100000`, which also creates the PR, PB and PAY counter rows so even the first number of a
+  prefix cannot deadlock). That query now takes about 2 ms, `SpeedTest` checks that MySQL uses the index without a
+  filesort, and every screen is under one second except the Income report "All time" (1.1 to 1.6 s; it adds up every
   payment four ways) and the payments ledger search by customer name (0.9 to 1.3 s; `LIKE '%...%'` through order and
   booking subqueries, which no index serves). Both are listed in `SpeedTest::KNOWN_OVER_A_SECOND` and held to 2.5 s.
   Times on this laptop vary by about 40% between runs; run the speed test with nothing else running. With an even spread of statuses (43% of 20,000 orders open, not realistic) the awaiting-payment
   queries scan the whole orders table and the owner pages take up to 3 s.
 - `audit:verify` on 20,001 rows: about 1.1 to 1.5 s.
+- XAMPP's InnoDB buffer pool is only 16 MB, so every big query reads from disk. Set it in `C:\xampp\mysql\bin\my.ini`
+  (`innodb_buffer_pool_size=256M` on the laptop; at least 128M on the hosting server) and restart MySQL in the XAMPP
+  Control Panel. The timings above were measured with 16 MB.
 
 ## What each part proves
 
