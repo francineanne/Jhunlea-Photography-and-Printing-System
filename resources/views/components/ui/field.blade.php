@@ -11,7 +11,7 @@
     {{ $slot }}
 
     @if ($error)
-        <p id="{{ $id }}-error" class="mt-1.5 flex items-start gap-1 text-sm text-status-red">
+        <p id="{{ $id }}-error" role="alert" class="mt-1.5 flex items-start gap-1 text-sm text-status-red">
             <x-ui.icon name="error" :size="16" class="mt-0.5" />
             <span>{{ $error }}</span>
         </p>

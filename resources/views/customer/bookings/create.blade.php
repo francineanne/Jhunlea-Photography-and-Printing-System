@@ -54,6 +54,12 @@
             </x-ui.empty-state>
         </x-ui.card>
     @else
+        {{-- 9C: the steps and the free times of the calendar need JavaScript; say so instead of a half-working page --}}
+        <noscript>
+            <x-ui.notice class="mb-6" data-noscript>
+                <p><span class="font-semibold">This booking form needs JavaScript.</span> Please turn on JavaScript in your browser settings, then reload this page.</p>
+            </x-ui.notice>
+        </noscript>
         <form method="POST" action="{{ route('customer.bookings.store') }}" enctype="multipart/form-data" novalidate
             x-data="bookingWizard(@js([
                 'start' => $startStep,
@@ -84,7 +90,7 @@
                                 <span class="min-w-0">
                                     <span class="block text-[10px] font-bold uppercase tracking-wider"
                                         x-bind:class="step === {{ $number }} ? 'text-white/80' : 'text-app-text-2'">Step {{ $number }}</span>
-                                    <span class="block truncate text-sm font-semibold">{{ $item['label'] }}</span>
+                                    <span class="block text-sm font-semibold leading-tight sm:truncate">{{ $item['label'] }}</span>
                                 </span>
                             </a>
                         </li>
@@ -447,7 +453,7 @@
                                                 <span><x-ui.icon name="image_not_supported" :size="28" class="mx-auto mb-1" />No preview</span>
                                             </span>
                                         </div>
-                                        <p class="mt-1 truncate text-xs font-semibold" x-text="image.name"></p>
+                                        <p class="mt-1 truncate text-xs font-semibold" x-text="image.name" x-bind:title="image.name"></p>
                                         <p class="text-xs" x-bind:class="image.error ? 'text-status-red' : 'text-app-text-2'" x-text="image.error || image.size"></p>
                                         <button type="button" x-on:click="removeImage(index)" x-bind:aria-label="`Remove ${image.name}`"
                                             class="mt-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring sm:min-h-9">
@@ -532,7 +538,7 @@
                                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Reference images</dt>
                                     <dd class="mt-0.5 text-app-text-2" x-show="!images.length">None</dd>
                                     <dd x-show="images.length">
-                                        <ul class="space-y-0.5"><template x-for="image in images" x-bind:key="image.key"><li class="truncate" x-text="image.name"></li></template></ul>
+                                        <ul class="space-y-0.5"><template x-for="image in images" x-bind:key="image.key"><li class="truncate" x-text="image.name" x-bind:title="image.name"></li></template></ul>
                                     </dd>
                                 </div>
                                 <a href="#step-4" x-on:click.prevent="goTo(4)" class="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-brand hover:bg-brand/5 focus-ring sm:min-h-9">

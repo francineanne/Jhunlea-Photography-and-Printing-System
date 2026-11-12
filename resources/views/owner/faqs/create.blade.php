@@ -7,7 +7,7 @@
         <ol class="flex flex-wrap items-center gap-1.5">
             <li><a href="{{ route('owner.settings.index') }}#faq" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Settings</a></li>
             <li aria-hidden="true">/</li>
-            <li><a href="{{ route('owner.faqs.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">FAQ</a></li>
+            <li><a href="{{ route('owner.faqs.index') }}" class="inline-flex min-h-11 min-w-11 items-center rounded hover:text-brand focus-ring">FAQ</a></li>
             <li aria-hidden="true">/</li>
             <li aria-current="page" class="text-brand">Add</li>
         </ol>

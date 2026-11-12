@@ -254,7 +254,7 @@
                 <x-ui.button variant="outline" size="sm" :href="route('owner.payments.index', $period->ledgerQuery())" class="print:hidden"><x-ui.icon name="open_in_new" :size="18" />Open in Payments ledger</x-ui.button>
             </div>
 
-            <div class="mt-4 hidden overflow-x-auto rounded-control border border-app-border lg:block">
+            <div class="mt-4 hidden relative overflow-x-auto rounded-control border border-app-border lg:block">
                 <table class="w-full text-left text-sm">
                     <caption class="sr-only">Payments in the period, newest first</caption>
                     <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">
@@ -283,7 +283,7 @@
                                 <td class="max-w-44 px-3 py-3"><p class="truncate font-semibold" title="{{ $payment->payable?->customer?->name }}">{{ $payment->payable?->customer?->name ?? 'Deleted account' }}</p></td>
                                 <td class="px-3 py-3">
                                     @if ($payment->payable)
-                                        <a href="{{ $payableUrl($payment->payable) }}" class="rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring">{{ $payment->payable->reference_number }}</a>
+                                        <a href="{{ $payableUrl($payment->payable) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring sm:min-h-0">{{ $payment->payable->reference_number }}</a>
                                         <p class="flex flex-wrap items-center gap-1.5 text-xs text-app-text-2">{{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}
                                             @if ($payment->payable->isWalkIn())<x-walk-in.badge :record="$payment->payable" />@else<span class="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10">Online</span>@endif</p>
                                     @else

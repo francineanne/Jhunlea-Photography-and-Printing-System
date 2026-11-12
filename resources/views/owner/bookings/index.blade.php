@@ -26,7 +26,7 @@
     @endif
 
     {{-- Status tabs with a count on every tab (0 too), as in the design; Requested is the work queue and opens first --}}
-    <nav aria-label="Filter by status" class="mt-6 -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+    <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
         <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
             @foreach ($statuses as $item)
                 <li>
@@ -93,7 +93,7 @@
                 @endif
             </x-ui.card>
         @else
-            <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none min-[1400px]:block">
+            <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none min-[1400px]:block">
                 <table class="w-full text-left text-sm">
                     <caption class="sr-only">Photography bookings</caption>
                     <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">

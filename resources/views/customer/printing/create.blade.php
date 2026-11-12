@@ -63,6 +63,12 @@
             </x-ui.empty-state>
         </x-ui.card>
     @else
+        {{-- 9C: the steps, the live price and the file list need JavaScript; say so instead of a half-working page --}}
+        <noscript>
+            <x-ui.notice class="mb-6" data-noscript>
+                <p><span class="font-semibold">This order form needs JavaScript.</span> Please turn on JavaScript in your browser settings, then reload this page.</p>
+            </x-ui.notice>
+        </noscript>
         <form method="POST" action="{{ route('customer.printing.store') }}" enctype="multipart/form-data" novalidate
             x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxTotalMb' => $maxTotalMb, 'maxQuantity' => $maxQuantity]))"
             x-on:change="sync()" x-on:submit="submit($event)">
@@ -86,7 +92,7 @@
                                 <span class="min-w-0">
                                     <span class="block text-[11px] font-bold uppercase tracking-wider"
                                         x-bind:class="{{ $number }} <= reached ? 'text-brand' : 'text-app-text-2'">Step {{ $number }}</span>
-                                    <span class="block truncate text-sm font-semibold">{{ $item['label'] }}</span>
+                                    <span class="block text-sm font-semibold leading-tight sm:truncate">{{ $item['label'] }}</span>
                                 </span>
                                 <x-ui.icon :name="$item['icon']" :size="18" class="ml-auto hidden shrink-0 sm:block"
                                     x-bind:class="{{ $number }} <= reached ? 'text-brand' : 'text-app-text-2'" />
@@ -277,7 +283,7 @@
                                             <x-ui.icon name="warning" :size="20" x-show="file.error" />
                                         </span>
                                         <span class="min-w-0 flex-1">
-                                            <span class="block truncate text-sm font-semibold" x-text="file.name"></span>
+                                            <span class="block truncate text-sm font-semibold" x-text="file.name" x-bind:title="file.name"></span>
                                             <span class="block text-xs" x-bind:class="file.error ? 'text-status-red' : 'text-app-text-2'" x-text="file.error || file.size"></span>
                                         </span>
                                         <button type="button" x-on:click="removeFile(index)" x-bind:aria-label="`Remove ${file.name}`"
@@ -331,7 +337,7 @@
                                     <dd class="mt-0.5">
                                         <p x-show="!files.length" class="text-status-red">No files added yet.</p>
                                         <ul class="space-y-0.5">
-                                            <template x-for="(file, index) in files" x-bind:key="index + file.name"><li class="truncate" x-text="file.name"></li></template>
+                                            <template x-for="(file, index) in files" x-bind:key="index + file.name"><li class="truncate" x-text="file.name" x-bind:title="file.name"></li></template>
                                         </ul>
                                     </dd>
                                 </div>

@@ -341,7 +341,7 @@
 
             {{-- The studio's private notes: never shown to the customer and never written to the history --}}
             <section id="internal-notes" class="scroll-mt-24 rounded-card border border-status-amber/30 bg-status-amber-bg/60 p-4 sm:p-6" aria-labelledby="notes-title">
-                <h2 id="notes-title" class="flex items-center justify-between gap-2 text-sm font-bold uppercase tracking-wider text-status-amber">
+                <h2 id="notes-title" class="flex items-center justify-between gap-2 text-sm font-bold uppercase tracking-wider text-[#92400e] dark:text-status-amber">
                     <span class="flex items-center gap-2"><x-ui.icon name="lock" :size="18" />Internal notes</span>
                     <span class="font-mono text-[11px] font-medium normal-case">Studio only</span>
                 </h2>

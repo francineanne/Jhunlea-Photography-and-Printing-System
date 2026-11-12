@@ -9,6 +9,13 @@
         <p class="hidden text-sm text-app-text-2 sm:block">Ask {{ config('assistant.name') }}, our AI assistant, or write to the studio (a person).</p>
     </div>
 
+    {{-- 9C: the chat sends and loads messages with JavaScript --}}
+    <noscript>
+        <x-ui.notice class="mx-auto mb-3 max-w-4xl" data-noscript>
+            <p><span class="font-semibold">The chat needs JavaScript.</span> Please turn on JavaScript in your browser settings, then reload this page.</p>
+        </x-ui.notice>
+    </noscript>
+
     <div class="mx-auto h-[calc(100dvh-9.5rem)] min-h-[26rem] max-w-4xl sm:h-[calc(100dvh-11.5rem)]">
         <x-chat.window mode="full" :tab="$tab" :about="$about" :draft="$draft" />
     </div>

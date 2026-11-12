@@ -8,7 +8,8 @@
         'confirmed' => 'bg-ink text-white hover:bg-neutral-800 dark:bg-white dark:text-ink dark:hover:bg-neutral-200',
         'completed' => 'bg-neutral-200 text-app-text-2 hover:bg-neutral-300 dark:bg-white/15 dark:hover:bg-white/20',
         'proposed' => 'border border-dashed border-status-blue bg-status-blue-bg/60 text-status-blue hover:bg-status-blue-bg',
-        default => 'border border-dashed border-status-amber bg-status-amber-bg/60 text-status-amber hover:bg-status-amber-bg',
+        // 9C contrast: the darker amber text in light mode (the token alone is 3.2:1 on this tint)
+        default => 'border border-dashed border-status-amber bg-status-amber-bg/60 text-[#92400e] hover:bg-status-amber-bg dark:text-status-amber',
     };
 @endphp
 <a href="{{ route('owner.bookings.show', $booking) }}"

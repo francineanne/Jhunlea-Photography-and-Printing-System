@@ -59,8 +59,9 @@
                     class="grid size-11 shrink-0 place-items-center rounded-control border border-app-border bg-app-card focus-ring lg:hidden">
                     <x-ui.icon name="menu" />
                 </button>
-                <a href="{{ route('owner.dashboard') }}" class="inline-flex min-h-11 items-center rounded-control focus-ring lg:hidden" aria-label="Jhunlea Photography &amp; Printing, overview">
-                    <x-ui.logo compact />
+                {{-- 9C: below 420px only the mark shows (as in the customer header), so bell, theme and account fit a 320px phone --}}
+                <a href="{{ route('owner.dashboard') }}" class="group inline-flex min-h-11 min-w-11 items-center rounded-control focus-ring lg:hidden" aria-label="Jhunlea Photography &amp; Printing, overview">
+                    <x-ui.logo mark compact tight />
                 </a>
                 <p class="hidden items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-app-text-2 lg:flex">Jhunlea <span aria-hidden="true">/</span> <span class="text-brand">Admin console</span></p>
             </div>

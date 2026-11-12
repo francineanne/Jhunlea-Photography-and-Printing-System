@@ -129,13 +129,21 @@
         </header>
 
         {{-- The two conversations --}}
-        <div role="tablist" aria-label="Conversations" x-show="!choosing" class="grid grid-cols-2 gap-1 border-b border-app-border px-3 py-1.5 sm:px-4">
-            <button type="button" role="tab" x-bind:aria-selected="tab === 'ask'" x-on:click="switchTab('ask')"
+        {{-- 9C: the ARIA tabs pattern. One panel (the conversation below) shows the chosen tab; arrows, Home and End move
+             between the tabs, and only the chosen tab is in the Tab order --}}
+        <div role="tablist" aria-label="Conversations" x-show="!choosing" class="grid grid-cols-2 gap-1 border-b border-app-border px-3 py-1.5 sm:px-4"
+            x-on:keydown.arrow-right.prevent="switchTab(tab === 'ask' ? 'studio' : 'ask'); $nextTick(() => $refs['tab_' + tab]?.focus())"
+            x-on:keydown.arrow-left.prevent="switchTab(tab === 'ask' ? 'studio' : 'ask'); $nextTick(() => $refs['tab_' + tab]?.focus())"
+            x-on:keydown.home.prevent="switchTab('ask'); $nextTick(() => $refs.tab_ask?.focus())"
+            x-on:keydown.end.prevent="switchTab('studio'); $nextTick(() => $refs.tab_studio?.focus())">
+            <button type="button" role="tab" id="chat-tab-ask-{{ $mode }}" x-ref="tab_ask" aria-controls="chat-panel-{{ $mode }}"
+                x-bind:aria-selected="tab === 'ask' ? 'true' : 'false'" x-bind:tabindex="tab === 'ask' ? 0 : -1" x-on:click="switchTab('ask')"
                 x-bind:class="tab === 'ask' ? 'bg-neutral-100 text-app-text dark:bg-white/10' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
                 class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring sm:min-h-9">
                 <x-ui.icon name="camera" :size="18" />Ask {{ $name }} <span class="text-[11px] font-bold text-brand dark:text-[#ffb4ac]">(AI)</span>
             </button>
-            <button type="button" role="tab" x-bind:aria-selected="tab === 'studio'" x-on:click="switchTab('studio')"
+            <button type="button" role="tab" id="chat-tab-studio-{{ $mode }}" x-ref="tab_studio" aria-controls="chat-panel-{{ $mode }}"
+                x-bind:aria-selected="tab === 'studio' ? 'true' : 'false'" x-bind:tabindex="tab === 'studio' ? 0 : -1" x-on:click="switchTab('studio')"
                 x-bind:class="tab === 'studio' ? 'bg-neutral-100 text-app-text dark:bg-white/10' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
                 class="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-control text-sm font-semibold transition-colors duration-150 focus-ring sm:min-h-9">
                 <x-ui.icon name="storefront" :size="18" />Studio
@@ -182,6 +190,9 @@
             </div>
         </div>
 
+        {{-- The tab panel (9C): everything below the tabs belongs to the chosen tab; hidden while choosing --}}
+        <div role="tabpanel" id="chat-panel-{{ $mode }}" x-bind:aria-labelledby="'chat-tab-' + tab + '-{{ $mode }}'" aria-labelledby="chat-tab-ask-{{ $mode }}"
+            x-bind:class="choosing ? 'hidden' : 'flex'" class="flex min-h-0 flex-1 flex-col">
         {{-- What Lumi is and is not --}}
         {{-- Said once: shown until dismissed (remembered in this browser when storage works) --}}
         <div x-show="!choosing && tab === 'ask' && !policyHidden" class="flex items-center gap-2 border-b border-app-border bg-brand/5 py-1 pl-3 pr-1 dark:bg-white/5 sm:pl-4" data-chat-policy>
@@ -265,5 +276,6 @@
                 <span x-show="showCounter" x-cloak class="ml-auto font-mono tabular-nums" aria-live="polite" x-text="draft.length + ' / ' + maxChars"></span>
             </div>
         </form>
+        </div>
     </section>
 </div>

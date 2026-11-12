@@ -43,6 +43,10 @@
 
 @section('main')
     <div x-data="ownerInbox(@js($config))" class="mx-auto max-w-[1280px]" data-owner-inbox>
+        {{-- 9C: on phones an open thread hides the title row below; this keeps one h1 for screen readers there --}}
+        @if ($conversation)
+            <h1 class="sr-only lg:hidden">Messages</h1>
+        @endif
         {{-- Title and presence: one compact row on wide screens, so the conversation gets the height (7F-2) --}}
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between" @if ($conversation) x-bind:class="'max-lg:hidden'" @endif>
             <div class="min-w-0">
@@ -70,7 +74,7 @@
 
         {{-- Filters and search --}}
         <div class="mt-4 flex flex-col gap-2 rounded-card border border-app-border bg-app-card p-1.5 shadow-sm md:flex-row md:items-center dark:shadow-none" @if ($conversation) x-bind:class="'max-lg:hidden'" @endif>
-            <div class="flex gap-1 overflow-x-auto" role="tablist" aria-label="Filter conversations">
+            <div class="flex gap-1 relative overflow-x-auto" role="tablist" aria-label="Filter conversations">
                 @foreach ($tabs as $key => $label)
                     <button type="button" role="tab" x-bind:aria-selected="list.filter === '{{ $key }}'" x-on:click="setFilter('{{ $key }}')"
                         x-bind:class="list.filter === '{{ $key }}' ? 'bg-brand text-white' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"

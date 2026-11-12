@@ -21,7 +21,7 @@
     <article class="mx-auto max-w-[1280px] px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
         <nav aria-label="Breadcrumb" class="mb-6 text-xs font-semibold uppercase tracking-wider text-app-text-2">
             <ol class="flex flex-wrap items-center gap-1.5">
-                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
+                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 min-w-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
                 <li aria-hidden="true">/</li>
                 <li><a href="{{ route('packages.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Photography packages</a></li>
                 <li aria-hidden="true">/</li>

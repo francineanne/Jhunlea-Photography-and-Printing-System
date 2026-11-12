@@ -201,10 +201,49 @@
 }
 
 /* Keyboard focus ring for buttons, links and other non-field controls */
+/*
+ * Phase 9C (contrast): the brand red #C62828 on the dark background is about 3.4:1, under the 4.5:1 small text needs.
+ * In dark mode brand-coloured TEXT uses the light brand tint the dark designs already use (#ffb4ac, about 9:1).
+ * An element that sets its own dark:text-*, or sits on a white chip (bg-white...), is left alone. Brand backgrounds
+ * (bg-brand) are unchanged.
+ */
+@layer utilities {
+    :where(.dark) .text-brand:not([class*='dark:text-'], [class*='bg-white']) {
+        color: #ffb4ac;
+    }
+}
+
+/*
+ * Phase 9C (contrast): in light mode the status text tokens on their own tinted backgrounds are under 4.5:1 for the
+ * small pill and notice text (amber 2.9, green 3.0, red 3.9). Where an element has BOTH the tinted background and the
+ * same-hue text, light mode uses a darker shade of the same hue (7.1, 6.5 and 5.4:1). The tokens, the backgrounds,
+ * icons, borders and dark mode are unchanged.
+ */
+@layer utilities {
+    :where(html:not(.dark)) .bg-status-amber-bg.text-status-amber {
+        color: #92400e;
+    }
+
+    :where(html:not(.dark)) .bg-status-green-bg.text-status-green {
+        color: #166534;
+    }
+
+    :where(html:not(.dark)) .bg-status-red-bg.text-status-red {
+        color: #b91c1c;
+    }
+}
+
 @utility focus-ring {
     &:focus-visible {
         outline: 2px solid var(--color-brand);
         outline-offset: 2px;
+    }
+}
+
+/* 9C: on dark surfaces (the owner sidebar is #2F3131) the brand red ring is under the 3:1 a focus indicator needs; the light brand tint is about 9:1 */
+@layer utilities {
+    :where(.dark) .focus-ring:focus-visible {
+        outline-color: #ffb4ac;
     }
 }
 

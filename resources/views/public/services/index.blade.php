@@ -20,7 +20,7 @@
     <section class="mx-auto max-w-[1280px] px-4 pb-16 pt-8 sm:px-6 sm:pt-12">
         <nav aria-label="Breadcrumb" class="mb-6 text-xs font-semibold uppercase tracking-wider text-app-text-2">
             <ol class="flex flex-wrap items-center gap-1.5">
-                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
+                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 min-w-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
                 <li aria-hidden="true">/</li>
                 <li aria-current="page" class="text-brand">Printing services</li>
             </ol>
@@ -52,7 +52,7 @@
                     <div class="relative flex-1">
                         <x-ui.icon name="search" :size="20" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
                         <input id="service-search" type="search" name="q" value="{{ $search }}" maxlength="60" placeholder="Search by service name"
-                            class="h-11 w-full rounded-control border border-app-border bg-app-bg pl-11 pr-4 text-sm focus-ring" autocomplete="off">
+                            class="h-11 w-full rounded-control border border-app-border bg-app-bg pl-11 pr-4 text-base focus-ring sm:text-sm" autocomplete="off">
                     </div>
                     <x-ui.button type="submit">Search</x-ui.button>
                 </form>

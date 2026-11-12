@@ -161,7 +161,7 @@
                     @endif
                 </x-ui.card>
             @else
-                <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
+                <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
                     <table class="w-full text-left text-sm">
                         <caption class="sr-only">Payments, newest first</caption>
                         <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">
@@ -186,7 +186,7 @@
                                     <td class="whitespace-nowrap px-4 py-4 font-mono text-xs"><x-ui.date :value="$payment->received_at" /></td>
                                     <td class="px-4 py-4">
                                         @if ($payment->payable)
-                                            <a href="{{ $payableUrl($payment->payable) }}" class="rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring">{{ $payment->payable->reference_number }}</a>
+                                            <a href="{{ $payableUrl($payment->payable) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring sm:min-h-0">{{ $payment->payable->reference_number }}</a>
                                             <p class="flex flex-wrap items-center gap-1.5 text-xs text-app-text-2">{{ $payment->payable instanceof PrintingOrder ? 'Printing order' : 'Photoshoot' }}
                                                 @if ($payment->payable->isWalkIn())<x-walk-in.badge :record="$payment->payable" />@else<span class="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10">Online</span>@endif</p>
                                         @else

@@ -28,7 +28,7 @@
     @endif
 
     {{-- Status tabs with counts, as in the design. Only statuses you have orders in are listed --}}
-    <nav aria-label="Filter by status" class="mt-6 -mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+    <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
         <ul class="flex w-max gap-1 sm:w-auto sm:flex-wrap">
             <li>
                 <a href="{{ route('customer.printing.index') }}" @if (! $status) aria-current="page" @endif
@@ -70,7 +70,7 @@
             </x-ui.card>
         @else
             {{-- Table on large screens --}}
-            <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none lg:block">
+            <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none lg:block">
                 <table class="w-full text-left text-sm">
                     <caption class="sr-only">My printing orders</caption>
                     <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">

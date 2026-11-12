@@ -39,7 +39,7 @@
         <div class="mb-6 flex flex-wrap items-center justify-between gap-x-4 text-xs font-semibold uppercase tracking-wider text-app-text-2">
         <nav aria-label="Breadcrumb">
             <ol class="flex flex-wrap items-center gap-1.5">
-                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
+                <li><a href="{{ route('home') }}" class="inline-flex min-h-11 min-w-11 items-center rounded hover:text-brand focus-ring">Home</a></li>
                 <li aria-hidden="true">/</li>
                 <li><a href="{{ route('packages.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Photography packages</a></li>
                 <li aria-hidden="true">/</li>
@@ -60,7 +60,7 @@
 
         @if (! $ready)
             <x-ui.card class="mt-8">
-                <x-ui.empty-state icon="compare_arrows" title="Choose at least {{ $min }} packages to compare"
+                <x-ui.empty-state icon="compare_arrows" :level="2" title="Choose at least {{ $min }} packages to compare"
                     description="{{ $packages->count() === 1 ? 'Only one package is ready to compare.' : 'No packages are chosen yet.' }} Go back to the list, tick Compare on {{ $min }} or {{ $max }} packages, then press Compare packages.">
                     <x-ui.button :href="route('packages.index')">Browse packages</x-ui.button>
                 </x-ui.empty-state>

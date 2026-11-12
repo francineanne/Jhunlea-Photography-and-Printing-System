@@ -96,10 +96,10 @@
                 <nav aria-label="Footer">
                     <ul class="flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold">
                         @foreach ($links as $link)
-                            <li><a href="{{ route($link['route']) }}" class="inline-flex min-h-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">{{ $link['label'] }}</a></li>
+                            <li><a href="{{ route($link['route']) }}" class="inline-flex min-h-11 min-w-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">{{ $link['label'] }}</a></li>
                         @endforeach
                         @if ($hasFaq ?? false)
-                            <li><a href="{{ route('faq') }}" class="inline-flex min-h-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">FAQ</a></li>
+                            <li><a href="{{ route('faq') }}" class="inline-flex min-h-11 min-w-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">FAQ</a></li>
                         @endif
                     </ul>
                 </nav>

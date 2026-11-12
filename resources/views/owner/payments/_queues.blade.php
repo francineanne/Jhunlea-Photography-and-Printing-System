@@ -45,7 +45,7 @@
                     <li class="flex flex-wrap items-center justify-between gap-3 py-3">
                         <div class="min-w-0">
                             <p class="flex flex-wrap items-center gap-2">
-                                <a href="{{ $detailUrl($order) }}" class="rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring">{{ $order->reference_number }}</a>
+                                <a href="{{ $detailUrl($order) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring sm:min-h-0">{{ $order->reference_number }}</a>
                                 <x-walk-in.badge :record="$order" />
                                 <x-ui.badge :tone="$settled ? 'green' : 'red'">{{ $order->paymentStatus()->label() }}</x-ui.badge>
                             </p>
@@ -85,7 +85,7 @@
                     <li class="flex flex-wrap items-center justify-between gap-3 py-3">
                         <div class="min-w-0">
                             <p class="flex flex-wrap items-center gap-2">
-                                <a href="{{ $detailUrl($record) }}#payment" class="rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring">{{ $record->reference_number }}</a>
+                                <a href="{{ $detailUrl($record) }}#payment" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring sm:min-h-0">{{ $record->reference_number }}</a>
                                 <x-walk-in.badge :record="$record" />
                                 <span class="text-xs text-app-text-2">{{ $isOrder ? 'Printing order' : 'Photoshoot' }} · {{ $record->status->label() }}</span>
                             </p>

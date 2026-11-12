@@ -162,7 +162,7 @@
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm dark:shadow-none" aria-labelledby="hours-title">
                 <div class="flex items-center justify-between gap-2">
                     <h2 id="hours-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="schedule" :size="20" class="text-brand" />Opening hours</h2>
-                    <a href="{{ route('owner.schedule.edit') }}#hours" class="inline-flex min-h-11 items-center rounded text-xs font-semibold text-brand hover:underline focus-ring sm:min-h-8">Edit</a>
+                    <a href="{{ route('owner.schedule.edit') }}#hours" class="inline-flex min-h-11 min-w-11 items-center rounded text-xs font-semibold text-brand hover:underline focus-ring sm:min-h-8">Edit</a>
                 </div>
                 <dl class="mt-3 space-y-1 text-sm">
                     @foreach (SaveHoursRequest::DAYS as $weekday => $name)

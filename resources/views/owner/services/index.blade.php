@@ -51,7 +51,7 @@
                 </x-ui.card>
             @else
                 {{-- Table on large screens --}}
-                <div class="hidden overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
+                <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
                     <table class="w-full text-left text-sm">
                         <caption class="sr-only">Printing services</caption>
                         <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">

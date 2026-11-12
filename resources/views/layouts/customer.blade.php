@@ -31,7 +31,7 @@
                     class="grid size-11 shrink-0 place-items-center rounded-control border border-app-border bg-app-card focus-ring xl:hidden">
                     <x-ui.icon name="menu" />
                 </button>
-                <a href="{{ route('customer.dashboard') }}" class="group inline-flex min-h-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, my dashboard">
+                <a href="{{ route('customer.dashboard') }}" class="group inline-flex min-h-11 min-w-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, my dashboard">
                     <x-ui.logo mark compact tight />
                 </a>
                 {{-- From 1280px, as in the customer designs (hidden xl:flex): four items and the account menu need the room --}}
