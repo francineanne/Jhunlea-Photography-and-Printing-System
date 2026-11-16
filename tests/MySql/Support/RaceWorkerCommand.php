@@ -25,6 +25,7 @@ use App\Services\Chat\MessageService;
 use App\Services\PaymentService;
 use App\Services\ReferenceNumberService;
 use App\Services\StatusTransitionService;
+use App\Services\WalkIn\WalkInBookingService;
 use App\Services\WalkIn\WalkInCustomerService;
 use App\Services\WalkIn\WalkInOrderService;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -78,6 +79,7 @@ class RaceWorkerCommand extends Command
             'price' => [$this->attempt('price', fn () => app(StatusTransitionService::class)->changePrice(PrintingOrder::query()->findOrFail($payload['order_id']), $this->owner($payload), $payload['price'])->id)],
             'confirm' => [$this->attempt('confirm', fn () => app(BookingTransitionService::class)->confirm(PhotographyBooking::query()->findOrFail($payload['booking_id']), $this->owner($payload), outsideSchedule: true)->id)],
             'book' => [$this->attempt('book', fn () => $this->book($payload))],
+            'walk_in_book' => [$this->attempt('walk_in_book', fn () => $this->walkInBook($payload))],
             'studio' => [$this->attempt('studio', fn () => app(ConversationService::class)->studioFor(User::query()->findOrFail($payload['customer_id']))->id)],
             'send' => [$this->attempt('send', fn () => $this->send($payload))],
             'mixed' => $this->mixed($payload),
@@ -166,6 +168,32 @@ class RaceWorkerCommand extends Command
             null,
             false,
         )->id;
+    }
+
+    /**
+     * Phase 10A: a walk-in booking as WalkInController::storeBooking does it: the schedule lock first, then a NEW
+     * walk-in customer (an audit row) and the confirmed booking, in one transaction.
+     */
+    private function walkInBook(array $payload): int
+    {
+        return DB::transaction(function () use ($payload) {
+            app(BookingTransitionService::class)->lockSchedule();
+
+            return app(WalkInBookingService::class)->place(
+                $this->owner($payload),
+                app(WalkInCustomerService::class)->create('Race Walk-in '.Str::random(6), null),
+                PhotographyPackage::query()->findOrFail($payload['package_id']),
+                null,
+                'Race test idea',
+                Carbon::parse($payload['starts_at'], 'UTC'),
+                1,
+                '09171234567',
+                null,
+                null,
+                false,
+                (string) Str::uuid(),
+            )['booking']->id;
+        });
     }
 
     /** @return array{id: int, stored_now: bool} */

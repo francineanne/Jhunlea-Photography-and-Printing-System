@@ -209,6 +209,30 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 
 ---
 
+## Phase 10 — Scheduling at downpayment (Her)
+
+### 10A — Scheduling (branch `phase-10a-scheduling`) · built, naghihintay ng review
+- [x] Isang migration (`2026_11_16_100000_add_scheduling_holds_and_limits`): `hold_expires_at`, `min_people`, `request_hold_hours`, `max_sessions_per_day`, `shop_settings.opening_hours`, at `concurrent_sessions` = 1. Walang binabagong booking.
+- [x] Isang holding rule (`PhotographyBooking::scopeHoldingTime()` at `holdsTime()`): hawak ng request ang oras nito nang 48 oras (setting), at hawak din ang oras na in-propose ng studio
+- [x] Schedule lock sa `BookingService::place()`, `propose()` at `askForAnotherTime()`; iisang lock order; "Someone just requested this time. Please choose another."
+- [x] Expired (derived): lumipas na ang oras ng request; hindi na hawak ang oras, hindi na kasama sa 3 open requests, may "Expired" badge at filter
+- [x] Isang studio (`concurrent_sessions` laging 1) at "Maximum photoshoots per day" (walang laman = walang limit); walk-in na lampas sa limit ay kailangan ng sariling tick
+- [x] `min_people` sa package; iisang rule at mensahe para sa customer at walk-in
+- [x] "Photoshoot hours" (Schedule editor) hiwalay sa "Shop opening hours" (text sa Settings, makikita sa footer at alam ni Lumi)
+- [x] Mas malinaw na pagpili ng oras: Morning / Afternoon / Evening, "ends 10:30 AM", day timeline, at dahilan kapag walang oras ang araw
+- [x] Tests: `tests/Feature/Booking/SchedulingHoldsTest.php` (19) at dalawang MySQL race test (`test_i`, `test_j`)
+- [ ] Bukas pa (10A):
+  - [ ] `OwnerPresence::awayNotice()` ay gumagamit pa rin ng photoshoot hours para sa "we open at ..." (ang shop hours ay text lang, kaya hindi ito makukuwenta)
+  - [ ] Eval cases ni Lumi (`database/evals`) para sa shop hours vs photoshoot hours; hindi pa na-run ang `assistant:eval` pagkatapos ng 10A
+  - [ ] Hindi pa nasusubukan sa totoong phone ang bagong time picker; walang notification kapag nag-expire ang hold o ang request
+  - [ ] Ang calendar ng owner ay hindi pa nagpapakita kung alin sa mga request ang may hawak na oras (nasa booking detail lang)
+  - [ ] Ang no-JavaScript na listahan ng oras ay walang timeline (may "ends" at ang paalala lang)
+
+### 10B — Downpayment (hindi pa nasisimulan)
+- [ ] Downpayment na may deadline, status na "Awaiting downpayment", at awtomatikong pag-release ng oras. Idadagdag ang kaso nito sa `scopeHoldingTime()` at `holdsTime()` lang.
+
+---
+
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)
 1. Totoong listahan ng printing services, paper options at presyo
 2. Totoong photography packages, presyo, inclusions, add-ons, at mga litrato na puwedeng gamitin

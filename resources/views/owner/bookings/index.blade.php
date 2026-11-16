@@ -43,11 +43,21 @@
                 </li>
             @endforeach
             <li>
-                <a href="{{ route('owner.bookings.index', ['status' => 'all'] + $keep) }}" @if (! $status) aria-current="page" @endif
+                <a href="{{ route('owner.bookings.index', ['status' => 'all'] + $keep) }}" @if (! $status && ! $expired) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
-                        'bg-app-card text-app-text shadow-sm dark:bg-white/10' => ! $status,
-                        'text-app-text-2 hover:text-app-text' => $status])>
+                        'bg-app-card text-app-text shadow-sm dark:bg-white/10' => ! $status && ! $expired,
+                        'text-app-text-2 hover:text-app-text' => $status || $expired])>
                     All bookings <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs tabular-nums dark:bg-white/15">{{ $counts->sum() }}</span>
+                </a>
+            </li>
+            {{-- Phase 10A: requests whose time passed without being confirmed; they hold no time and wait to be rejected --}}
+            <li>
+                <a href="{{ route('owner.bookings.index', ['status' => 'all', 'expired' => 1] + $keep) }}" @if ($expired) aria-current="page" @endif
+                    @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
+                        'bg-app-card text-app-text shadow-sm dark:bg-white/10' => $expired,
+                        'text-app-text-2 hover:text-app-text' => ! $expired])>
+                    <span class="size-2 rounded-full bg-neutral-400" aria-hidden="true"></span>
+                    Expired <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs tabular-nums dark:bg-white/15">{{ $expiredCount }}</span>
                 </a>
             </li>
         </ul>
@@ -56,6 +66,7 @@
     <form method="GET" action="{{ route('owner.bookings.index') }}" role="search"
         class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
         <input type="hidden" name="status" value="{{ $status?->value ?? 'all' }}">
+        @if ($expired)<input type="hidden" name="expired" value="1">@endif
         <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="PB-000001, customer name or contact number" />
         <x-ui.select id="filter-package" name="package" label="Package">
             <option value="">All packages</option>
@@ -86,6 +97,8 @@
                     <x-ui.empty-state icon="search_off" title="No bookings found" description="Nothing matches your search or filters. Try other words or dates, or clear the filters.">
                         <x-ui.button :href="route('owner.bookings.index', ['status' => $status?->value ?? 'all'])" variant="outline">Clear filters</x-ui.button>
                     </x-ui.empty-state>
+                @elseif ($expired)
+                    <x-ui.empty-state icon="event_available" title="No expired requests" description="Requests whose time passed without being confirmed appear here, for you to reject." />
                 @elseif ($status)
                     <x-ui.empty-state icon="event_available" title="No {{ strtolower($status->label()) }} bookings" description="{{ $status->value === 'requested' ? 'Nothing is waiting for you. New requests appear here as soon as customers send them.' : 'Bookings with this status appear here.' }}" />
                 @else
@@ -149,7 +162,7 @@
                                     <p class="text-xs text-app-text-2">Est. {{ $booking->estimateText() }}</p>
                                     <p class="font-bold tabular-nums {{ $booking->confirmed_price !== null ? 'text-brand' : 'text-app-text-2' }}">{{ $booking->confirmedText() ?? 'Not confirmed' }}</p>
                                 </td>
-                                <td class="px-3 py-4 align-top"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$booking->status" live /><x-payment.badge :payable="$booking" /></span></td>
+                                <td class="px-3 py-4 align-top"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live /><x-payment.badge :payable="$booking" /></span></td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -164,7 +177,7 @@
                         <a href="{{ route('owner.bookings.show', $booking) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="flex flex-wrap items-center gap-1.5"><span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span><x-walk-in.badge :record="$booking" /></span>
-                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$booking->status" live /><x-payment.badge :payable="$booking" /></span>
+                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live /><x-payment.badge :payable="$booking" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
                             <span class="block break-words text-sm text-app-text-2">{{ $booking->snapshot['package']['name'] ?? $booking->package?->name }} · {{ $booking->group_size }} {{ $booking->group_size === 1 ? 'person' : 'people' }}</span>

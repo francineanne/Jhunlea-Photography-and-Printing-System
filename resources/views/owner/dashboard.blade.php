@@ -108,7 +108,7 @@
                                                 @if ($list['kind'] === 'order') sent <x-ui.date :value="$row->created_at" /> @else asks for <x-ui.date :value="$row->starts_at" /> @endif
                                             </span>
                                         </span>
-                                        <x-ui.status-badge :status="$row->status" />
+                                        <x-ui.status-badge :status="$row->status" :expired="$row instanceof \App\Models\PhotographyBooking && $row->isExpired()" />
                                         <x-ui.icon name="arrow_forward" :size="18" class="shrink-0 text-app-text-2 transition-transform group-hover:translate-x-0.5" />
                                     </a>
                                 </li>

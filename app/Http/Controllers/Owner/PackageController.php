@@ -79,6 +79,7 @@ class PackageController extends Controller
     {
         return view('owner.packages.create', $this->formData(new PhotographyPackage([
             'duration_minutes' => 60,
+            'min_people' => 1,
             'max_people' => 1,
             'inclusions' => [],
             'price_requires_confirmation' => false,

@@ -18,6 +18,14 @@ final readonly class Slot
         return LocalTime::format($this->startsAt, 'g:i A').' – '.LocalTime::format($this->endsAt, 'g:i A');
     }
 
+    /** Morning (before noon), Afternoon (noon to before 5 PM) or Evening, by the start in shop local time. */
+    public function period(): string
+    {
+        $hour = (int) LocalTime::format($this->startsAt, 'G');
+
+        return $hour < 12 ? 'Morning' : ($hour < 17 ? 'Afternoon' : 'Evening');
+    }
+
     /** "Mon, Nov 3, 2026" in shop local time. */
     public function dateText(): string
     {
@@ -44,6 +52,9 @@ final readonly class Slot
             'date' => $this->localDate(),
             'time' => LocalTime::format($this->startsAt, 'g:i A'),
             'time_text' => $this->timeText(),
+            // Phase 10A: the wizard shows the start time with "ends 10:30 AM" under it, grouped by part of the day
+            'ends' => LocalTime::format($this->endsAt, 'g:i A'),
+            'period' => $this->period(),
             'date_text' => $this->dateText(),
         ];
     }

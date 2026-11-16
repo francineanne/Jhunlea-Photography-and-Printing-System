@@ -239,6 +239,66 @@ class RaceConditionsTest extends MySqlTestCase
         }
     }
 
+    // Phase 10A: a request HOLDS its time. Four customers ask for the same time at the same moment: exactly one
+    // booking holds it, the others read the friendly refusal, and no deadlock or exception reaches anyone
+    public function test_i_four_customers_request_the_same_time_at_once(): void
+    {
+        $package = $this->openSchedule();
+
+        foreach (range(1, self::REPEATS) as $repeat) {
+            $start = $this->slot(20 + $repeat);
+            $customers = User::factory()->count(4)->create();
+
+            $outputs = Race::run('book', $customers->map(fn (User $customer) => ['customer_id' => $customer->id, 'package_id' => $package->id, 'starts_at' => $start->toIso8601String()])->all());
+            $this->assertStartedTogether($outputs, 'same time');
+            $results = Race::results($outputs);
+            $this->assertNoErrors($results, 'same time');
+
+            $this->assertCount(1, array_filter($results, fn ($r) => $r['outcome'] === 'ok'), 'Exactly one request is saved');
+            $refused = array_values(array_filter($results, fn ($r) => $r['outcome'] === 'refused'));
+            $this->assertCount(3, $refused);
+            foreach ($refused as $result) {
+                $this->assertSame(BookingService::SLOT_JUST_TAKEN_MESSAGE, $result['reason']);
+            }
+
+            $at = PhotographyBooking::query()->where('starts_at', $start)->get();
+            $this->assertCount(1, $at, 'One booking exists for that time');
+            $this->assertTrue($at[0]->holdsTime());
+            $this->assertSame(1, PhotographyBooking::query()->holdingTime()->where('starts_at', $start)->count());
+        }
+    }
+
+    // Phase 10A: a customer's request and the owner's walk-in booking (with a NEW walk-in customer, so an audit row is
+    // written inside the schedule lock) for the same time at the same moment: exactly one wins
+    public function test_j_a_customer_request_and_a_walk_in_for_the_same_time_at_once(): void
+    {
+        $package = $this->openSchedule();
+
+        foreach (range(1, self::REPEATS) as $repeat) {
+            $start = $this->slot(30 + $repeat);
+            $payload = ['package_id' => $package->id, 'starts_at' => $start->toIso8601String()];
+
+            $outputs = Race::runMixed([
+                ['book', $payload + ['customer_id' => User::factory()->create()->id]],
+                ['walk_in_book', $payload + ['owner_id' => $this->owner->id]],
+            ]);
+            $this->assertStartedTogether($outputs, 'request and walk-in');
+            $results = Race::results($outputs);
+            $this->assertNoErrors($results, 'request and walk-in');
+
+            $this->assertCount(1, array_filter($results, fn ($r) => $r['outcome'] === 'ok'), 'Exactly one wins');
+            $refused = array_values(array_filter($results, fn ($r) => $r['outcome'] === 'refused'));
+            $this->assertCount(1, $refused);
+            $this->assertSame($refused[0]['op'] === 'book' ? BookingService::SLOT_JUST_TAKEN_MESSAGE : BookingTransitionException::conflict()->getMessage(), $refused[0]['reason']);
+            $this->assertSame(1, PhotographyBooking::query()->where('starts_at', $start)->count());
+            $this->assertSame(1, PhotographyBooking::query()->holdingTime()->where('starts_at', $start)->count());
+        }
+
+        // The loser's new walk-in customer was rolled back with its booking, and the audit chain is whole
+        $this->assertSame(PhotographyBooking::query()->where('source', 'walk_in')->count(), User::query()->where('is_walk_in', true)->count());
+        $this->assertChainIntact();
+    }
+
     public function test_g_one_studio_thread_and_one_message_per_client_id(): void
     {
         foreach (range(1, self::REPEATS) as $repeat) {

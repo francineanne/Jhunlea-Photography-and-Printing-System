@@ -1,4 +1,5 @@
-@props(['status', 'live' => false])
+{{-- expired (Phase 10A): a booking request whose time passed without being confirmed reads "Expired" (derived, never stored) --}}
+@props(['status', 'live' => false, 'expired' => false])
 
 @php
     // Single source of truth for status -> tone (statuses from AGENTS.md section 8)
@@ -45,4 +46,8 @@
         });
 @endphp
 
+@if ($expired)
+    <x-ui.badge tone="gray" {{ $attributes }}>{{ \App\Models\PhotographyBooking::EXPIRED_LABEL }}</x-ui.badge>
+@else
 <x-ui.badge :tone="$tone" :pulse="$pulse" {{ $attributes }}>{{ $label ?? ucfirst(str_replace('_', ' ', $status)) }}</x-ui.badge>
+@endif

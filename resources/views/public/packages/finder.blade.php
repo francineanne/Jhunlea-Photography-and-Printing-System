@@ -115,7 +115,7 @@
                                             @endif
                                         </div>
 
-                                        <p class="mt-2 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · up to {{ $package->max_people }} {{ $package->max_people === 1 ? 'person' : 'people' }} · <span class="font-semibold text-app-text tabular-nums">{{ $package->priceText() }}</span></p>
+                                        <p class="mt-2 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · {{ lcfirst($package->fitsText()) }} · <span class="font-semibold text-app-text tabular-nums">{{ $package->priceText() }}</span></p>
 
                                         @if ($result->reasons)
                                             <div class="mt-4">

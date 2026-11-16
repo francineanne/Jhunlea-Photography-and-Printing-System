@@ -32,7 +32,7 @@
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $booking->reference_number }}</span>
-                    <x-ui.status-badge :status="$booking->status" live />
+                    <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live />
                     <x-walk-in.badge :record="$booking" />
                 </div>
                 <h1 id="booking-title" class="mt-2 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
@@ -64,6 +64,21 @@
                     <li class="flex items-start gap-1"><x-ui.icon name="error" :size="16" class="mt-0.5 shrink-0" /><span class="min-w-0 break-words">{{ $message }}</span></li>
                 @endforeach
             </ul>
+        @endif
+
+        @if ($booking->isExpired())
+            <x-ui.notice class="mt-4" role="status">
+                <p class="font-semibold">{{ \App\Models\PhotographyBooking::EXPIRED_NOTE }}</p>
+                <p class="mt-1 text-sm">It holds no time. Reject it, or propose another time if the customer still wants the session.</p>
+            </x-ui.notice>
+        @elseif (in_array($booking->status, [Status::Requested, Status::Proposed], true))
+            <p class="mt-4 flex items-start gap-1.5 text-sm text-app-text-2"><x-ui.icon name="lock_clock" :size="18" class="mt-0.5 shrink-0 text-brand" />
+                @if ($booking->holdsTime())
+                    <span>This request holds {{ $booking->status === Status::Proposed ? 'the proposed time' : 'its time' }} until <x-ui.date :value="$booking->hold_expires_at" />. Other customers cannot request it until then.</span>
+                @else
+                    <span>This request does not hold its time{{ $booking->hold_expires_at ? ' any more (the hold ran out)' : '' }}. Other customers may request the same time; it can still be confirmed while the time is free.</span>
+                @endif
+            </p>
         @endif
 
         @if ($moves->isEmpty())
@@ -234,7 +249,7 @@
                     @else
                         <ul class="mt-2 space-y-1 text-sm">
                             @foreach ($schedule['competing'] as $other)
-                                <li><a href="{{ route('owner.bookings.show', $other) }}" class="font-mono font-semibold text-brand hover:underline focus-ring rounded">{{ $other->reference_number }}</a> · {{ $other->status->label() }} · <x-ui.date :value="$other->starts_at" format="g:i A" /></li>
+                                <li><a href="{{ route('owner.bookings.show', $other) }}" class="font-mono font-semibold text-brand hover:underline focus-ring rounded">{{ $other->reference_number }}</a> · {{ $other->statusLabel() }} · <x-ui.date :value="$other->heldStart()" format="g:i A" /></li>
                             @endforeach
                         </ul>
                         <p class="mt-2 text-xs text-app-text-2">Confirming this one makes the others clash.</p>

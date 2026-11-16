@@ -28,7 +28,10 @@ use Illuminate\Validation\ValidationException;
  * with its first history row, in one transaction under the same schedule lock as BookingTransitionService::confirm(),
  * so it blocks that time for online customers exactly like any confirmed booking.
  *
- * Rules: a clash with another confirmed booking is NEVER allowed (ScheduleConflictService, the same message as
+ * Phase 10A: a day at the owner's daily limit is booked only with the explicit "over the daily limit" confirmation
+ * ($overDailyLimit), which never sets aside a clash or a passed time.
+ *
+ * Rules: a clash with a booking that holds the time is NEVER allowed (ScheduleConflictService, the same message as
  * confirm()); a time that has passed is never allowed; the minimum notice and how far ahead one may book do not apply
  * (the customer is at the counter); opening hours and blocked dates apply unless the owner says "confirm anyway".
  * The price is optional: it may be set now or later, and the booking is paid on the day of the shoot with the usual
@@ -64,6 +67,7 @@ class WalkInBookingService
         ?string $confirmedPrice,
         bool $outsideSchedule,
         string $counterToken,
+        bool $overDailyLimit = false,
     ): array {
         if ($owner->role !== UserRole::Owner) {
             throw new AuthorizationException('Only the owner makes walk-in bookings.');
@@ -91,7 +95,7 @@ class WalkInBookingService
             $this->fail('custom_theme_text', BookingService::CUSTOM_THEME_MESSAGE);
         }
 
-        if ($groupSize < 1 || $groupSize > $package->max_people) {
+        if (! BookingService::groupSizeFits($package, $groupSize)) {
             $this->fail('group_size', BookingService::groupSizeMessage($package));
         }
 
@@ -112,7 +116,7 @@ class WalkInBookingService
         $end = $start->copy()->addMinutes($package->duration_minutes);
 
         try {
-            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $outsideSchedule, $counterToken) {
+            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $outsideSchedule, $counterToken, $overDailyLimit) {
                 $this->transitions->lockSchedule();
 
                 if (! $this->conflicts->isFree($start, $end)) {
@@ -127,6 +131,12 @@ class WalkInBookingService
 
                 if ($reasons !== [] && ! $outsideSchedule) {
                     throw BookingTransitionException::outsideSchedule($reasons);
+                }
+
+                $overLimit = $this->availability->dayIsFull($start);
+
+                if ($overLimit && ! $overDailyLimit) {
+                    throw BookingTransitionException::dailyLimit(AvailabilityService::dailyLimitReason());
                 }
 
                 $booking = new PhotographyBooking([
@@ -154,7 +164,8 @@ class WalkInBookingService
 
                 $note = 'Created at the counter (walk-in) and confirmed by the studio.'
                     .($price !== null ? ' Price '.Money::format($price).'.' : ' The price is set later.')
-                    .($reasons !== [] ? ' Confirmed outside the usual schedule: '.implode(' ', $reasons) : '');
+                    .($reasons !== [] ? ' Confirmed outside the usual schedule: '.implode(' ', $reasons) : '')
+                    .($overLimit ? ' Booked over the daily limit.' : '');
                 $this->transitions->recordCounterBooking($booking, $owner, $note);
 
                 return ['booking' => $booking->refresh(), 'created' => true];

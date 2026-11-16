@@ -75,7 +75,7 @@ class PackageFilters
     {
         $query
             ->when($this->category !== null, fn ($q) => $q->where('category', $this->category))
-            ->when($this->people !== null, fn ($q) => $q->where('max_people', '>=', $this->people))
+            ->when($this->people !== null, fn ($q) => $q->where('max_people', '>=', $this->people)->where('min_people', '<=', $this->people))
             ->when($this->minutes !== null, fn ($q) => $q->where('duration_minutes', '<=', $this->minutes))
             // A package with no listed price has no amount to compare, so a budget leaves it out
             ->when($this->budget !== null, fn ($q) => $q->where('price', '<=', $this->budget))

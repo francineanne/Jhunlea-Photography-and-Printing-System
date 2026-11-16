@@ -8,9 +8,11 @@ use App\Models\BlockedDate;
 use App\Models\BookingSetting;
 use App\Models\PhotographyBooking;
 use App\Services\AvailabilityService;
+use App\Services\ScheduleConflictService;
 use App\Support\Slot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Tests\TestCase;
 
@@ -198,25 +200,31 @@ class AvailabilityServiceTest extends TestCase
         $this->assertNotContains('14:00', $times);
     }
 
-    public function test_two_sessions_at_once_need_two_bookings_to_block(): void
+    // Phase 10A: the shop has ONE studio. "Sessions at the same time" is no longer a setting, so one booking blocks
+    // its time whatever an older settings row says (this test used to prove that two bookings were needed with 2)
+    public function test_one_studio_one_booking_blocks_its_time_even_if_an_old_row_says_two(): void
     {
         $this->setUpSchedule(sessions: 2);
+        DB::table('booking_settings')->update(['concurrent_sessions' => 2]);
         $this->confirmedAt('2026-11-03 10:00');
 
-        $this->assertContains('10:00', $this->times(60, '2026-11-03'));
-
-        $this->confirmedAt('2026-11-03 10:00');
+        $this->assertSame(1, BookingSetting::current()->concurrent_sessions);
         $this->assertNotContains('10:00', $this->times(60, '2026-11-03'));
+        $this->assertContains('11:00', $this->times(60, '2026-11-03'));
     }
 
+    // Phase 10A: mostAtOnce() still counts what runs at the same moment (two bookings that never run together are
+    // one), but with one studio a session that touches either of them is not offered any more
     public function test_two_bookings_that_never_run_together_count_as_one(): void
     {
         $this->setUpSchedule(sessions: 2);
         $this->confirmedAt('2026-11-03 09:30', 45);  // 9:30 to 10:15
         $this->confirmedAt('2026-11-03 10:30', 45);  // 10:30 to 11:15
 
-        // A 10:00 to 11:00 session touches both, but at no moment do all three run: there is room
-        $this->assertContains('10:00', $this->times(60, '2026-11-03'));
+        $taken = PhotographyBooking::query()->get();
+        $this->assertSame(1, ScheduleConflictService::mostAtOnce($taken, $this->manila('2026-11-03 10:00'), $this->manila('2026-11-03 11:00'), 0));
+        $this->assertNotContains('10:00', $this->times(60, '2026-11-03'));
+        $this->assertContains('11:30', $this->times(60, '2026-11-03'));
     }
 
     public function test_manila_mornings_are_the_previous_day_in_utc(): void

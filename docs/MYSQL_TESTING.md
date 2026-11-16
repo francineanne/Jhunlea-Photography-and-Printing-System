@@ -112,3 +112,21 @@ php -d memory_limit=1G artisan test
 | `tests/MySql/RaceConditionsTest.php` | real parallel processes: audit chain, double payment, shared GCash reference, payment against a price change, two confirmations for one slot, the open request limit, the studio thread and `client_id`, 20 seconds of mixed load |
 | `tests/MySql/SqlBehaviourTest.php` | strict GROUP BY on every heavy screen, LIKE with `%` and `_` as text, case-insensitive emails and reference numbers, money in cents, JSON and utf8mb4 in the audit chain, the Manila midnight |
 | `tests/MySql/SpeedTest.php` | the main screens under one second on about 130,000 fake rows |
+
+## Phase 10A: scheduling races
+
+Two more races in `tests/MySql/RaceConditionsTest.php`, each repeated 5 times:
+
+- `test_i`: 4 customers request the same time at the same moment (`BookingService::place()`). Exactly one booking
+  holds the time; the other three read "Someone just requested this time. Please choose another."; no deadlock or
+  exception reaches a caller.
+- `test_j`: a customer's request and the owner's walk-in booking with a NEW walk-in customer (scenario `walk_in_book`,
+  as `WalkInController::storeBooking` does it) for the same time at the same moment. Exactly one wins, the loser's
+  walk-in customer is rolled back with its booking, and the audit chain stays whole.
+
+The lock order they prove (written in `BookingTransitionService`): the schedule lock first, then the customer's row,
+the booking row, the reference counter, and the audit chain head last.
+
+```bash
+php -d memory_limit=1G vendor/bin/phpunit -c phpunit.mysql.xml tests/MySql/RaceConditionsTest.php --filter "test_i|test_j"
+```

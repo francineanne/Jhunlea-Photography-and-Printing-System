@@ -140,7 +140,7 @@
                                             <span class="mt-2 text-sm font-semibold tabular-nums text-brand">{{ $package->priceText() }}</span>
                                             <span class="mt-3 space-y-1.5 text-sm text-app-text-2">
                                                 <span class="flex items-center gap-1.5"><x-ui.icon name="schedule" :size="16" class="text-brand" />{{ $package->duration_minutes }} mins</span>
-                                                <span class="flex items-center gap-1.5"><x-ui.icon name="group" :size="16" class="text-brand" />Up to {{ $package->max_people }} {{ $people($package->max_people) }}</span>
+                                                <span class="flex items-center gap-1.5"><x-ui.icon name="group" :size="16" class="text-brand" />{{ $package->fitsText() }}</span>
                                                 @if ($package->digital_outputs)
                                                     <span class="flex items-center gap-1.5"><x-ui.icon name="photo_library" :size="16" class="text-brand" />{{ $package->digital_outputs }} edited {{ $package->digital_outputs === 1 ? 'photo' : 'photos' }}</span>
                                                 @endif
@@ -173,15 +173,16 @@
                         <div class="grid gap-5 md:grid-cols-2">
                             <x-ui.field id="group_size" label="Number of people" :error="$errors->first('group_size')" :required="true">
                                 <div class="flex items-center gap-1 rounded-control border border-neutral-200 bg-app-card p-0.5 dark:border-neutral-700">
-                                    <button type="button" x-cloak x-on:click="changePeople(-1)" aria-label="One person fewer" aria-controls="group_size"
+                                    <button type="button" x-cloak x-on:click="changePeople(-1)" x-bind:disabled="fixedPeople()" aria-label="One person fewer" aria-controls="group_size"
                                         class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
                                         <x-ui.icon name="remove" :size="18" />
                                     </button>
-                                    <input id="group_size" type="number" name="group_size" value="{{ old('group_size', 1) }}" min="1" max="{{ $chosen?->max_people }}" x-bind:max="maxPeople()" step="1" inputmode="numeric" required
+                                    <input id="group_size" type="number" name="group_size" value="{{ old('group_size', $chosen?->minPeople() ?? 1) }}" min="{{ $chosen?->minPeople() ?? 1 }}" max="{{ $chosen?->max_people }}" x-bind:min="minPeople()" x-bind:max="maxPeople()" step="1" inputmode="numeric" required
+                                        @if ($chosen && $chosen->minPeople() === $chosen->max_people) readonly @endif x-bind:readonly="fixedPeople()" x-on:change="clampPeople(); collect()"
                                         x-ref="people"
                                         @if ($errors->has('group_size')) aria-invalid="true" aria-describedby="group_size-error" @else aria-describedby="group_size-hint" @endif
                                         class="h-11 min-w-0 flex-1 rounded-[8px] bg-transparent text-center text-lg font-semibold tabular-nums field-focus">
-                                    <button type="button" x-cloak x-on:click="changePeople(1)" aria-label="One person more" aria-controls="group_size"
+                                    <button type="button" x-cloak x-on:click="changePeople(1)" x-bind:disabled="fixedPeople()" aria-label="One person more" aria-controls="group_size"
                                         class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
                                         <x-ui.icon name="add" :size="18" />
                                     </button>
@@ -252,7 +253,7 @@
                                     <div class="relative">
                                         <div class="grid grid-cols-7 transition-opacity duration-200 sm:gap-1.5" x-bind:class="slotState === 'loading' ? 'opacity-50' : ''">
                                             <template x-for="cell in cells()" x-bind:key="cell.key">
-                                                <button type="button" x-on:click="pickDay(cell)" x-bind:disabled="cell.state !== 'free'"
+                                                <button type="button" x-on:click="pickDay(cell)" x-bind:disabled="cell.state !== 'free' && cell.state !== 'none'"
                                                     x-bind:aria-label="cell.label" x-bind:aria-pressed="cell.date && selectedDate === cell.date ? 'true' : 'false'"
                                                     x-bind:tabindex="cell.state === 'blank' ? -1 : null" x-bind:aria-hidden="cell.state === 'blank' ? 'true' : null"
                                                     class="relative grid h-11 w-full place-items-center rounded-lg text-sm tabular-nums transition-[background-color,color,box-shadow] duration-200 focus-ring"
@@ -268,7 +269,7 @@
                                     </div>
                                     <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 px-1 pb-1 text-xs text-app-text-2 sm:p-0">
                                         <span class="inline-flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-status-green" aria-hidden="true"></span>Has free times</span>
-                                        <span class="inline-flex items-center gap-1.5"><span class="line-through">12</span>No free times</span>
+                                        <span class="inline-flex items-center gap-1.5"><span class="line-through">12</span>No free times (tap to see why)</span>
                                     </p>
                                 </div>
 
@@ -283,21 +284,52 @@
                                 </div>
 
                                 <div class="mt-5" x-show="selectedDate">
-                                    <p class="text-sm font-semibold">Free times on <span x-text="selectedDateText()"></span></p>
-                                    <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4" role="radiogroup" aria-label="Free times">
-                                        <template x-for="slot in daySlots()" x-bind:key="slot.starts_at">
-                                            <button type="button" role="radio" x-on:click="pickSlot(slot)" x-bind:aria-checked="(selected === slot.starts_at).toString()"
-                                                class="flex min-h-14 flex-col items-center justify-center rounded-control px-2 py-2 text-center transition-colors duration-200 focus-ring"
-                                                x-bind:class="selected === slot.starts_at ? 'bg-brand text-white shadow-sm' : 'bg-neutral-100 hover:bg-neutral-200 dark:bg-white/5 dark:hover:bg-white/10'">
-                                                <span class="flex items-center gap-1.5 font-mono text-sm font-semibold">
-                                                    <x-ui.icon name="check_circle" :size="16" x-show="selected === slot.starts_at" />
-                                                    <x-ui.icon name="schedule" :size="16" class="text-app-text-2" x-show="selected !== slot.starts_at" />
-                                                    <span x-text="slot.time"></span>
-                                                </span>
-                                                <span class="text-[11px] opacity-80" x-text="slot.time_text"></span>
-                                            </button>
+                                    <h3 class="text-sm font-semibold">Start times on <span x-text="selectedDateText()"></span></h3>
+
+                                    {{-- The day at a glance: the photoshoot hours, with the time that cannot be chosen shaded. Never who booked --}}
+                                    <template x-if="timeline()">
+                                        <div class="mt-3">
+                                            <div class="relative h-4 overflow-hidden rounded-full bg-status-green-bg ring-1 ring-inset ring-status-green/30" role="img" x-bind:aria-label="timelineLabel()">
+                                                <template x-for="(part, index) in timeline().busy" x-bind:key="index">
+                                                    <span class="timeline-busy absolute inset-y-0" x-bind:style="`left:${part.left}%;width:${part.width}%`"></span>
+                                                </template>
+                                            </div>
+                                            <div class="mt-1 flex justify-between font-mono text-[11px] text-app-text-2" aria-hidden="true">
+                                                <span x-text="timeline().from"></span><span x-text="timeline().to"></span>
+                                            </div>
+                                            <p class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-app-text-2" aria-hidden="true">
+                                                <span class="inline-flex items-center gap-1.5"><span class="h-2.5 w-4 rounded-sm bg-status-green-bg ring-1 ring-inset ring-status-green/30"></span>Free</span>
+                                                <span class="inline-flex items-center gap-1.5"><span class="timeline-busy h-2.5 w-4 rounded-sm"></span>Not available</span>
+                                            </p>
+                                        </div>
+                                    </template>
+
+                                    <p class="mt-4 flex items-center gap-2 rounded-control bg-neutral-100 p-3 text-sm font-semibold dark:bg-white/5" role="status" x-show="dayText()">
+                                        <x-ui.icon name="event_busy" :size="18" class="shrink-0 text-app-text-2" /><span x-text="dayText()"></span>
+                                    </p>
+
+                                    <div class="mt-4 space-y-4" role="radiogroup" aria-label="Start times" x-show="dayList.length">
+                                        <template x-for="group in slotGroups()" x-bind:key="group.name">
+                                            <div>
+                                                <p class="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-app-text-2" x-text="group.name"></p>
+                                                <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                                                    <template x-for="slot in group.slots" x-bind:key="slot.starts_at">
+                                                        <button type="button" role="radio" x-on:click="pickSlot(slot)" x-bind:aria-checked="(selected === slot.starts_at).toString()"
+                                                            x-bind:aria-label="`${slot.time}, ends ${slot.ends}`"
+                                                            class="flex min-h-14 flex-col items-center justify-center rounded-control px-2 py-2 text-center transition-colors duration-200 focus-ring"
+                                                            x-bind:class="selected === slot.starts_at ? 'bg-brand text-white shadow-sm' : 'bg-neutral-100 hover:bg-neutral-200 dark:bg-white/5 dark:hover:bg-white/10'">
+                                                            <span class="flex items-center gap-1.5 font-mono text-base font-semibold sm:text-sm">
+                                                                <x-ui.icon name="check_circle" :size="16" x-show="selected === slot.starts_at" />
+                                                                <span x-text="slot.time"></span>
+                                                            </span>
+                                                            <span class="text-[11px] opacity-80">ends <span x-text="slot.ends"></span></span>
+                                                        </button>
+                                                    </template>
+                                                </div>
+                                            </div>
                                         </template>
                                     </div>
+                                    <p class="mt-3 text-xs text-app-text-2" x-show="dayList.length">Each choice is one start time; your session runs until the time under it. {{ $notShownText }}</p>
                                 </div>
 
                                 <p class="mt-4 flex items-start gap-1.5 text-sm text-app-text-2"><x-ui.icon name="info" :size="16" class="mt-0.5 shrink-0 text-brand" />The studio checks every request before it confirms the time.</p>
@@ -321,13 +353,14 @@
                                                 @foreach ($daySlots as $slot)
                                                     <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:ring-2 has-checked:ring-brand">
                                                         <input type="radio" name="starts_at" value="{{ $slot->value() }}" class="size-4 shrink-0 accent-brand" @checked(old('starts_at') === $slot->value())>
-                                                        <span class="font-mono">{{ $slot->timeText() }}</span>
+                                                        <span><span class="font-mono font-semibold">{{ \App\Support\LocalTime::format($slot->startsAt, 'g:i A') }}</span> <span class="text-xs text-app-text-2">ends {{ \App\Support\LocalTime::format($slot->endsAt, 'g:i A') }}</span></span>
                                                     </label>
                                                 @endforeach
                                             </div>
                                         </fieldset>
                                     @endforeach
                                 </div>
+                                <p class="mt-3 text-xs text-app-text-2">{{ $notShownText }}</p>
                             @endif
                         </fieldset>
 

@@ -122,24 +122,51 @@ export const walkInOrder = ({ priceUrl, perPage, initial }) => ({
 });
 
 // The walk-in booking: the free start times of the chosen package on the chosen day
-export const walkInBooking = ({ slotsUrl, initial }) => ({
+export const walkInBooking = ({ slotsUrl, initial, people = {} }) => ({
     package: initial.package ?? '',
     date: initial.date ?? '',
     time: initial.time ?? '',
+    groupSize: initial.groupSize ?? 1,
     times: [],
     loading: false,
     checked: false,
+    // Phase 10A: the day already has its daily limit of photoshoots, and why a day has no free time
+    overLimit: false,
+    dayText: '',
 
     init() {
         this.load();
-        this.$watch('package', () => this.load());
+        this.fitPeople();
+        this.$watch('package', () => {
+            this.load();
+            this.fitPeople();
+        });
         this.$watch('date', () => this.load());
+    },
+
+    // Who the chosen package is for (min and max people, and the sentence that says so)
+    get rule() {
+        return people[this.package] ?? null;
+    },
+
+    get fixedPeople() {
+        return this.rule !== null && this.rule.min === this.rule.max;
+    },
+
+    fitPeople() {
+        if (this.rule === null) {
+            return;
+        }
+        const size = Number(this.groupSize) || 0;
+        this.groupSize = Math.min(Math.max(size, this.rule.min), this.rule.max);
     },
 
     async load() {
         this.checked = false;
         if (!this.package || !this.date) {
             this.times = [];
+            this.overLimit = false;
+            this.dayText = '';
 
             return;
         }
@@ -147,6 +174,8 @@ export const walkInBooking = ({ slotsUrl, initial }) => ({
         const data = await getJson(slotsUrl + '?' + new URLSearchParams({ package: this.package, date: this.date })).catch(() => null);
         this.loading = false;
         this.times = data?.times ?? [];
+        this.overLimit = Boolean(data?.over_limit);
+        this.dayText = data?.day_text ?? '';
         this.checked = true;
     },
 });

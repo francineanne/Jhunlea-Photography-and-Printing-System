@@ -145,7 +145,7 @@
                                             </label>
                                             <div class="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 font-mono text-[11px] font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
                                                 <span class="inline-flex items-center gap-1"><x-ui.icon name="schedule" :size="14" />{{ $package->duration_minutes }} mins</span>
-                                                <span class="inline-flex items-center gap-1"><x-ui.icon name="group" :size="14" />Up to {{ $package->max_people }} {{ $package->max_people === 1 ? 'person' : 'people' }}</span>
+                                                <span class="inline-flex items-center gap-1"><x-ui.icon name="group" :size="14" />{{ $package->fitsText() }}</span>
                                             </div>
                                         </div>
                                     </x-slot:image>

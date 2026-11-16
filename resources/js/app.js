@@ -742,6 +742,8 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
     // Calendar: the month on screen, the free times by package and month, and the chosen day and time
     month: { y: 0, m: 0 },
     days: {},
+    // Phase 10A: for every day, why it has no time and its timeline (photoshoot hours, time not available)
+    info: {},
     slotState: 'idle',
     bookableFrom,
     bookableUntil,
@@ -820,6 +822,15 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
         return this.pkg?.max ?? null;
     },
 
+    minPeople() {
+        return this.pkg?.min ?? 1;
+    },
+
+    // A package for exactly one group size (a couple session is for 2): the field is fixed
+    fixedPeople() {
+        return this.pkg !== null && this.pkg !== undefined && this.pkg.min === this.pkg.max;
+    },
+
     groupRule() {
         return this.pkg?.groupRule ?? 'Each package says how many people it fits.';
     },
@@ -832,11 +843,15 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
         this.collect();
     },
 
+    // Keeps the number inside the package's range: it starts at the minimum and never passes the maximum
     clampPeople() {
         const input = this.$refs.people;
         const max = this.maxPeople();
+        const min = this.minPeople();
 
-        if (input && max && parseInt(input.value, 10) > max) input.value = max;
+        if (!input) return;
+        if (max && parseInt(input.value, 10) > max) input.value = max;
+        if (this.pkg && !(parseInt(input.value, 10) >= min)) input.value = min;
     },
 
     // Steps
@@ -882,7 +897,7 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
             1: !this.packageId ? messages.package : '',
             2: !(people >= 1)
                 ? messages.groupSize
-                : this.maxPeople() && people > this.maxPeople()
+                : this.maxPeople() && (people > this.maxPeople() || people < this.minPeople())
                   ? this.groupRule()
                   : !(this.$root.querySelector('#contact_number')?.value ?? '').trim()
                     ? messages.contact
@@ -1015,6 +1030,7 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
             this.bookableFrom = body.bookable_from;
             this.bookableUntil = body.bookable_until;
             this.days[key] = body.days ?? {};
+            this.info[key] = body.info ?? {};
             this.slotState = 'ready';
             this.afterLoad();
         } catch (error) {
@@ -1029,7 +1045,10 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
         this.dayList = this.monthSlots()[this.selectedDate] ?? [];
 
         if (!this.dayList.length) {
+            // The day stays chosen so its reason shows ("Fully booked"); only the time is let go
+            const date = this.selectedDate;
             this.clearSlot();
+            this.selectedDate = this.dayInfo(date) ? date : '';
         } else if (this.selected && !this.dayList.some((slot) => slot.starts_at === this.selected)) {
             this.selected = '';
             this.selectedSlot = null;
@@ -1051,7 +1070,8 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
             const inWindow = date >= this.bookableFrom && date <= this.bookableUntil;
             const state = !inWindow ? 'outside' : this.slotState !== 'ready' ? 'pending' : count > 0 ? 'free' : 'none';
             const name = dayName.format(new Date(Date.UTC(y, m, d)));
-            const label = state === 'free' ? `${name}: ${count} free ${count === 1 ? 'time' : 'times'}` : state === 'outside' ? `${name}: cannot be booked` : `${name}: no free times`;
+            const why = this.dayInfo(date)?.text ?? 'No free times.';
+            const label = state === 'free' ? `${name}: ${count} free ${count === 1 ? 'time' : 'times'}` : state === 'outside' ? `${name}: cannot be booked` : `${name}: ${why}`;
 
             cells.push({ key: date, state, day: d, date, label });
         }
@@ -1063,13 +1083,46 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
         if (cell.state === 'blank') return 'invisible';
         if (cell.date === this.selectedDate && cell.state === 'free') return 'bg-brand font-bold text-white shadow-md ring-2 ring-brand';
         if (cell.state === 'free') return 'bg-app-card font-semibold hover:bg-brand/10 dark:bg-white/10 dark:hover:bg-white/15';
-        if (cell.state === 'none') return 'text-app-muted line-through';
+        if (cell.state === 'none' && cell.date === this.selectedDate) return 'text-app-text-2 line-through ring-2 ring-app-border';
+        if (cell.state === 'none') return 'text-app-muted line-through hover:bg-black/5 dark:hover:bg-white/10';
 
         return 'text-app-muted opacity-50';
     },
 
+    // What the server said about a day of the month on screen: { state, text, timeline }
+    dayInfo(date) {
+        return (this.info[this.monthKey()] ?? {})[date] ?? null;
+    },
+
+    // The reason the chosen day has no time ("Fully booked."), or '' when it has times
+    dayText() {
+        return this.selectedDate && !this.dayList.length ? (this.dayInfo(this.selectedDate)?.text ?? 'No free time on this day.') : '';
+    },
+
+    timeline() {
+        return this.selectedDate ? (this.dayInfo(this.selectedDate)?.timeline ?? null) : null;
+    },
+
+    timelineLabel() {
+        const line = this.timeline();
+
+        if (!line) return '';
+
+        const busy = line.busy.map((part) => `${part.from} to ${part.to}`).join(', ');
+
+        return `Photoshoot hours ${line.from} to ${line.to}. ${busy ? `Not available: ${busy}.` : 'All of it is free.'}`;
+    },
+
+    // The free times of the chosen day in three groups, empty groups left out
+    slotGroups() {
+        return ['Morning', 'Afternoon', 'Evening']
+            .map((name) => ({ name, slots: this.dayList.filter((slot) => (slot.period ?? 'Morning') === name) }))
+            .filter((group) => group.slots.length > 0);
+    },
+
+    // A day without free times can be opened too: it then says why
     pickDay(cell) {
-        if (cell.state !== 'free') return;
+        if (cell.state !== 'free' && cell.state !== 'none') return;
 
         this.selectedDate = cell.date;
         this.dayList = this.monthSlots()[cell.date] ?? [];
@@ -1088,7 +1141,12 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
     },
 
     selectedDateText() {
-        return this.dayList[0]?.date_text ?? this.selectedSlot?.date_text ?? '';
+        if (this.dayList[0]?.date_text ?? this.selectedSlot?.date_text) return this.dayList[0]?.date_text ?? this.selectedSlot?.date_text;
+
+        // A day without times has no slot to read its words from
+        return this.selectedDate
+            ? new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${this.selectedDate}T00:00:00Z`))
+            : '';
     },
 
     pickSlot(slot) {

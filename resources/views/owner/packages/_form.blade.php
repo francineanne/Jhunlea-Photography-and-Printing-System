@@ -55,6 +55,8 @@
                         hint='Customers see "From" the listed price; you confirm the exact amount later.' />
                 </div>
                 <x-ui.input label="Session length (minutes)" name="duration_minutes" type="number" min="1" max="1440" step="1" :value="old('duration_minutes', $package->duration_minutes)" :required="true" />
+                <x-ui.input label="Fewest people in the shoot" name="min_people" type="number" min="1" max="500" step="1" :value="old('min_people', $package->min_people ?? 1)" :required="true"
+                    hint="Same as the most people for a fixed size, for example 2 and 2 for a couple session." />
                 <x-ui.input label="Most people in the shoot" name="max_people" type="number" min="1" max="500" step="1" :value="old('max_people', $package->max_people)" :required="true" />
                 <x-ui.input label="Edited digital photos" name="digital_outputs" type="number" min="0" max="10000" step="1" :value="old('digital_outputs', $package->digital_outputs)" hint="Optional. How many edited photos the customer receives." />
             </div>

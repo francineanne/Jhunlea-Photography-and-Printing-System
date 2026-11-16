@@ -115,7 +115,7 @@
                                     </div>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$request->created_at" format="M j, Y" /><span class="block font-mono text-[11px] text-app-text-2"><x-ui.date :value="$request->created_at" format="g:i A" /></span></td>
-                                <td class="px-4 py-4"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$request->status" live /><x-payment.badge :payable="$request" /></span></td>
+                                <td class="px-4 py-4"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" live /><x-payment.badge :payable="$request" /></span></td>
                                 <td class="whitespace-nowrap px-4 py-4 text-right">
                                     <p class="font-bold tabular-nums">{{ $request->confirmedText() ?? $request->estimateText() }}</p>
                                     <p class="text-[11px] uppercase tracking-wider text-app-text-2">{{ $request->confirmed_price !== null ? 'Confirmed price' : 'Estimate' }}</p>
@@ -134,7 +134,7 @@
                         <a href="{{ $url($request) }}" class="group block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
                                 <span class="flex items-center gap-2"><span class="rounded bg-neutral-100 px-2 py-0.5 font-mono text-xs font-bold dark:bg-white/10">{{ $request->reference_number }}</span><span class="text-[11px] font-semibold uppercase tracking-wider text-app-text-2">{{ $isOrder ? 'Printing' : 'Photography' }}</span></span>
-                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$request->status" live /><x-payment.badge :payable="$request" /></span>
+                                <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" live /><x-payment.badge :payable="$request" /></span>
                             </span>
                             <span class="mt-2 block break-words font-semibold">{{ Str::limit($title($request), 120) }}</span>
                             <span class="mt-2 flex items-end justify-between gap-3 text-sm">

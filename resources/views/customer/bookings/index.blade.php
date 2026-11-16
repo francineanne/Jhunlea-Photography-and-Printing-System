@@ -87,7 +87,7 @@
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="font-mono text-xs font-bold text-brand">{{ $booking->reference_number }}</span>
-                                    <x-ui.status-badge :status="$booking->status" live />
+                                    <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live />
                                     <x-payment.badge :payable="$booking" />
                                 </div>
                                 <h2 class="mt-2 break-words font-display text-xl font-semibold leading-snug">

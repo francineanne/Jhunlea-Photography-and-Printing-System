@@ -48,7 +48,7 @@
                 </div>
                 <div>
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Status</dt>
-                    <dd class="mt-1"><x-ui.status-badge :status="$booking->status" live /></dd>
+                    <dd class="mt-1"><x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live /></dd>
                 </div>
                 <div>
                     <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Requested time (Philippine time)</dt>

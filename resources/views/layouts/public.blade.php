@@ -106,11 +106,15 @@
             </div>
             {{-- Only the details the owner filled in on the Settings page; nothing at all when none is set --}}
             @php($shop ??= [])
-            @if (filled($shop['address'] ?? null) || filled($shop['phone'] ?? null) || filled($shop['email'] ?? null))
+            @if (filled($shop['address'] ?? null) || filled($shop['phone'] ?? null) || filled($shop['email'] ?? null) || filled($shop['opening_hours'] ?? null))
                 <address class="min-w-0 space-y-1 text-sm not-italic text-app-text-2 md:max-w-xs">
                     <p class="text-[11px] font-bold uppercase tracking-wider text-app-text">Visit or contact{{ filled($shop['shop_name'] ?? null) ? ' '.$shop['shop_name'] : '' }}</p>
                     @if (filled($shop['address'] ?? null))
                         <p class="flex items-start gap-1.5 whitespace-pre-line break-words"><x-ui.icon name="location_on" :size="16" class="mt-0.5 shrink-0 text-brand" /><span class="min-w-0">{{ $shop['address'] }}</span></p>
+                    @endif
+                    {{-- Phase 10A: the shop's own opening hours (the owner's text); photoshoot times are in the booking calendar --}}
+                    @if (filled($shop['opening_hours'] ?? null))
+                        <p class="flex items-start gap-1.5 break-words"><x-ui.icon name="schedule" :size="16" class="mt-0.5 shrink-0 text-brand" /><span class="min-w-0"><span class="sr-only">Shop opening hours: </span>{{ $shop['opening_hours'] }}</span></p>
                     @endif
                     @if (filled($shop['phone'] ?? null))
                         <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $shop['phone']) }}" class="inline-flex min-h-11 items-center gap-1.5 rounded hover:text-brand focus-ring"><x-ui.icon name="call" :size="16" class="shrink-0 text-brand" />{{ $shop['phone'] }}</a></p>

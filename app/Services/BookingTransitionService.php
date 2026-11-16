@@ -28,10 +28,19 @@ use Illuminate\Support\Facades\DB;
  * on a locked row inside a transaction and saves its history row with it, so a page that is out of date or a double
  * click can never skip the rules or write twice.
  *
- * Moves that put a booking on the schedule (confirm, accept a proposal) first take the SCHEDULE LOCK: they bump the
- * single booking_settings row, which every such move must also update, so two of them run one after the other even
- * for two different bookings. The conflict check runs after the lock is held, so two overlapping confirms can never
- * both win. (An UPDATE locks the row on MySQL and takes the write lock on SQLite, so this works on both.)
+ * Moves that put a booking on the schedule or give it a hold (confirm, propose, accept a proposal, ask for another
+ * time; and outside this class a new request in BookingService::place() and a walk-in booking) first take the
+ * SCHEDULE LOCK: they bump the single booking_settings row, which every such move must also update, so two of them run
+ * one after the other even for two different bookings. The conflict check runs after the lock is held, so two
+ * overlapping moves can never both win. (An UPDATE locks the row on MySQL and takes the write lock on SQLite.)
+ *
+ * LOCK ORDER (Phase 10A; the same everywhere, so no two of these can deadlock):
+ *   1. the schedule lock (booking_settings row 1), when the move needs it - always FIRST;
+ *   2. the customer's users row (BookingService::place() only, for the open-request limit);
+ *   3. the booking row (locked());
+ *   4. the reference counter row (ReferenceNumberService, a new booking or payment), then the inserts.
+ * Nothing that already holds a booking, customer or counter row ever asks for the schedule lock afterwards.
+ * PaymentService takes only 3 and 4 (booking row, then the PAY counter), never the schedule lock.
  */
 class BookingTransitionService
 {
@@ -64,7 +73,10 @@ class BookingTransitionService
         app(AuditLogger::class)->record(AuditAction::BookingWalkInCreated, $booking, ['price_cents' => AuditLogger::cents($booking->confirmed_price), 'customer' => $booking->customer?->name], actor: $owner);
     }
 
-    /** The schedule lock of confirm(), for WalkInBookingService (held until the surrounding transaction ends). */
+    /**
+     * The schedule lock of confirm(), for BookingService::place() and WalkInBookingService (held until the surrounding
+     * transaction ends). It must be the FIRST lock taken in that transaction (see the lock order above).
+     */
     public function lockSchedule(): void
     {
         $this->takeScheduleLock();
@@ -74,7 +86,9 @@ class BookingTransitionService
      * The studio confirms the time the customer asked for. The price defaults to the estimate and may be changed;
      * a package priced on request has no estimate, so the price is required.
      *
-     * A clash with a confirmed booking always refuses. A time that now breaks one of the schedule rules (for example
+     * A clash with a booking that holds the time (PhotographyBooking::scopeHoldingTime: a confirmed session, or another
+     * request or proposal whose hold has not run out) always refuses; the request's own hold never stands in its way,
+     * and a request whose hold ran out is confirmed like any other when the time is still free. A time that now breaks one of the schedule rules (for example
      * the studio blocked the date after the request came in) is confirmed only when the studio says so with
      * $outsideSchedule, and the history then says which rules were set aside.
      */
@@ -96,6 +110,11 @@ class BookingTransitionService
 
             $reasons = $this->availability->ruleViolations($current->durationMinutes(), $current->starts_at);
 
+            // The daily limit counts the other bookings that hold time on that day; "Confirm anyway" sets it aside too
+            if ($this->availability->dayIsFull($current->starts_at, $current->id)) {
+                $reasons[] = AvailabilityService::dailyLimitReason();
+            }
+
             if ($reasons !== [] && ! $outsideSchedule) {
                 throw BookingTransitionException::outsideSchedule($reasons);
             }
@@ -105,6 +124,7 @@ class BookingTransitionService
             }
 
             $current->confirmed_price = $confirmedPrice;
+            $current->hold_expires_at = null;
             $this->move($current, BookingStatus::Confirmed, $owner, $note);
         }, schedule: true);
     }
@@ -112,6 +132,8 @@ class BookingTransitionService
     /**
      * The studio offers another time. It must be a free slot under the same rules as a new request. For a package
      * priced on request the studio names the price with the offer, and it is saved as the confirmed price.
+     * The proposed time is HELD for the customer (Phase 10A) for the owner's "request hold" hours, under the schedule
+     * lock; the time first asked for is given up.
      */
     public function propose(PhotographyBooking $booking, User $owner, CarbonInterface $startsAt, string $note, ?string $price = null): PhotographyBooking
     {
@@ -130,8 +152,9 @@ class BookingTransitionService
 
             $current->proposed_starts_at = Carbon::instance($startsAt)->utc();
             $current->proposed_note = $note;
+            $current->hold_expires_at = BookingSetting::current()->holdUntil();
             $this->move($current, BookingStatus::Proposed, $owner, $note, BookingEvent::ProposalSent);
-        });
+        }, schedule: true);
     }
 
     /**
@@ -161,11 +184,16 @@ class BookingTransitionService
             $note = 'Moved to '.LocalTime::format($start).'.';
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
+            $current->hold_expires_at = null;
             $this->move($current, BookingStatus::Confirmed, $customer, $note, BookingEvent::ProposalAccepted);
         }, schedule: true);
     }
 
-    /** The customer turns down the proposed time and asks for another one: the booking is a request again. */
+    /**
+     * The customer turns down the proposed time and asks for another one: the booking is a request again, at the time
+     * first asked for. It holds that time again (a fresh hold) only when the time is still ahead and nobody else holds
+     * it now; otherwise it waits without a hold and the studio proposes again.
+     */
     public function askForAnotherTime(PhotographyBooking $booking, User $customer, string $note): PhotographyBooking
     {
         $note = $this->clean($note) ?? throw BookingTransitionException::noteRequired();
@@ -176,8 +204,11 @@ class BookingTransitionService
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
             $current->confirmed_price = null;
+            $current->hold_expires_at = $current->starts_at->gt(Carbon::now('UTC')) && $this->conflicts->isFree($current->starts_at, $current->ends_at, $current->id)
+                ? BookingSetting::current()->holdUntil()
+                : null;
             $this->move($current, BookingStatus::Requested, $customer, $note, BookingEvent::TimeRequestedAgain);
-        });
+        }, schedule: true);
     }
 
     public function reject(PhotographyBooking $booking, User $owner, string $reason): PhotographyBooking
@@ -190,6 +221,7 @@ class BookingTransitionService
             $current->rejection_reason = $reason;
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
+            $current->hold_expires_at = null;
             $this->move($current, BookingStatus::Rejected, $owner, $reason);
         });
     }
@@ -214,6 +246,7 @@ class BookingTransitionService
             $current->cancellation_reason = $reason;
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
+            $current->hold_expires_at = null;
             $this->move($current, BookingStatus::Cancelled, $actor, $reason);
         });
     }

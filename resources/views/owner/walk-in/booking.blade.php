@@ -9,7 +9,7 @@
     optional: the booking is paid on the day of the shoot with the usual "Record payment".
 --}}
 @php
-    $initial = ['package' => old('package', ''), 'date' => old('date', $today), 'time' => old('time', '')];
+    $initial = ['package' => old('package', ''), 'date' => old('date', $today), 'time' => old('time', ''), 'groupSize' => (int) old('group_size', 1)];
 @endphp
 
 @section('main')
@@ -35,7 +35,7 @@
     @endif
 
     <form method="POST" action="{{ route('owner.bookings.walk-in.store') }}" class="mt-6 max-w-3xl space-y-6 pb-24 sm:pb-0"
-        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial) })">
+        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial), people: @js($people) })">
         @csrf
         <input type="hidden" name="counter_token" value="{{ old('counter_token', $token) }}">
 
@@ -48,7 +48,7 @@
                     <x-ui.select label="Package" name="package" :required="true" x-model="package" :error="$errors->first('package')">
                         <option value="">Choose a package</option>
                         @foreach ($packages as $package)
-                            <option value="{{ $package->id }}" @selected((string) old('package') === (string) $package->id)>{{ $package->name }} · {{ $package->duration_minutes }} min · up to {{ $package->max_people }} {{ Str::plural('person', $package->max_people) }}</option>
+                            <option value="{{ $package->id }}" @selected((string) old('package') === (string) $package->id)>{{ $package->name }} · {{ $package->duration_minutes }} min · {{ $package->peopleText() }}</option>
                         @endforeach
                     </x-ui.select>
                 </div>
@@ -74,17 +74,21 @@
                     <x-ui.select label="Start time" name="time" :required="true" x-model="time" :error="$errors->first('time') ?: $errors->first('starts_at')">
                         <option value="">Choose a time</option>
                         <template x-for="slot in times" x-bind:key="slot.value">
-                            <option x-bind:value="slot.value" x-text="slot.label" x-bind:selected="slot.value === time"></option>
+                            <option x-bind:value="slot.value" x-text="slot.label + (slot.ends ? ' (ends ' + slot.ends + ')' : '')" x-bind:selected="slot.value === time"></option>
                         </template>
                     </x-ui.select>
                     <p class="mt-1 text-xs text-app-text-2" aria-live="polite">
                         <span x-show="loading">Looking for free times…</span>
-                        <span x-show="! loading && checked && ! times.length">No free time on this day (closed, blocked or fully booked).</span>
+                        <span x-show="! loading && checked && ! times.length" x-text="dayText || 'No free time on this day.'">No free time on this day.</span>
                         <span x-show="! loading && times.length" x-text="times.length + ' free ' + (times.length === 1 ? 'time' : 'times')"></span>
                     </p>
                     <noscript><x-ui.input label="Start time (HH:MM, 24-hour)" name="time" :value="old('time')" /></noscript>
                 </div>
-                <x-ui.input label="How many people" name="group_size" type="number" min="1" :required="true" :value="old('group_size', 1)" :error="$errors->first('group_size')" />
+                <div>
+                    <x-ui.input label="How many people" name="group_size" type="number" min="1" :required="true" :value="old('group_size', 1)" :error="$errors->first('group_size')"
+                        x-model.number="groupSize" x-bind:min="rule ? rule.min : 1" x-bind:max="rule ? rule.max : null" x-bind:readonly="fixedPeople" />
+                    <p class="mt-1 text-xs text-app-text-2" x-show="rule" x-text="rule ? rule.rule : ''" x-cloak></p>
+                </div>
                 <x-ui.input label="Contact number" name="contact_number" type="tel" :required="true" :value="old('contact_number')" :error="$errors->first('contact_number')" hint="The number the studio can call about this session." />
                 <div class="sm:col-span-2">
                     <x-ui.textarea label="Note (optional)" name="notes" rows="2" maxlength="2000" :error="$errors->first('notes')">{{ old('notes') }}</x-ui.textarea>
@@ -93,8 +97,12 @@
                     hint="Leave empty to set it later. Paid on the day of the shoot." />
             </div>
             <div class="mt-4">
-                <x-ui.checkbox name="outside_schedule" value="1" :checked="(bool) old('outside_schedule')">Confirm anyway if it is outside the opening hours or on a blocked day</x-ui.checkbox>
-                <p class="mt-1 text-xs text-app-text-2">A time that clashes with another session, or has already passed, is never allowed.</p>
+                <x-ui.checkbox name="outside_schedule" value="1" :checked="(bool) old('outside_schedule')">Confirm anyway if it is outside the photoshoot hours or on a blocked day</x-ui.checkbox>
+                <div class="mt-3" x-show="overLimit" x-bind:class="overLimit && 'rounded-lg border border-status-amber/40 bg-status-amber-bg p-3'">
+                    <p class="mb-1 text-sm font-semibold" x-show="overLimit" x-cloak>This day already has its daily limit of photoshoots.</p>
+                    <x-ui.checkbox name="over_daily_limit" value="1" :checked="(bool) old('over_daily_limit')">Over the daily limit, book anyway</x-ui.checkbox>
+                </div>
+                <p class="mt-1 text-xs text-app-text-2">A time that clashes with another booking, or has already passed, is never allowed, with or without these ticks.</p>
             </div>
         </section>
 

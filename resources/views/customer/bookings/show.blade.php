@@ -28,8 +28,15 @@
             <p class="mt-1 text-sm text-app-text-2">Sent on <x-ui.date :value="$booking->created_at" /></p>
             <x-chat.message-studio :record="$booking" type="photography_booking" class="mt-1 inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="forum" :size="18" />Message the studio about this request</x-chat.message-studio>
         </div>
-        <x-ui.status-badge :status="$booking->status" live class="self-start md:self-auto" />
+        <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live class="self-start md:self-auto" />
     </header>
+
+    @if ($booking->isExpired())
+        <x-ui.notice class="mt-6" role="status">
+            <p class="font-semibold">{{ \App\Models\PhotographyBooking::EXPIRED_NOTE }}</p>
+            <p class="mt-1 text-sm">It no longer holds a time and does not count toward your open requests. You can cancel it and send a new request, or message the studio.</p>
+        </x-ui.notice>
+    @endif
 
     {{-- A time the studio offered: the customer accepts it or asks for another (as in the design's banner) --}}
     @if ($booking->status === BookingStatus::Proposed)

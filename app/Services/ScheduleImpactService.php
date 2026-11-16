@@ -10,8 +10,11 @@ use Illuminate\Support\Collection;
 
 /**
  * Which future bookings a schedule change would leave outside the studio's rules, BEFORE it is saved, so the owner can
- * decide. It only reads: no booking is ever cancelled or moved because of a schedule change. Confirmed sessions are
- * what the owner must acknowledge; pending requests and proposals are listed as information only.
+ * decide. It only reads: no booking is ever cancelled or moved because of a schedule change. Bookings that HOLD time
+ * (PhotographyBooking::holdsTime, Phase 10A: confirmed sessions, and requests and proposals whose hold has not run
+ * out) are what the owner must acknowledge (the "confirmed" list, named so since Phase 4D); requests and proposals
+ * that hold nothing are listed as information only. Each booking is looked at where it holds or asks for time:
+ * heldStart() to heldEnd(), the proposed time for a proposal.
  */
 class ScheduleImpactService
 {
@@ -24,7 +27,7 @@ class ScheduleImpactService
     public function forHours(array $hours): array
     {
         return $this->split(function (PhotographyBooking $booking) use ($hours) {
-            $local = LocalTime::in($booking->starts_at);
+            $local = LocalTime::in($booking->heldStart());
             $day = $hours[$local->dayOfWeek] ?? null;
 
             if ($day === null || ! $day['open']) {
@@ -34,7 +37,7 @@ class ScheduleImpactService
             $opens = Carbon::parse($local->format('Y-m-d').' '.$day['opens'], config('app.display_timezone'));
             $closes = Carbon::parse($local->format('Y-m-d').' '.$day['closes'], config('app.display_timezone'));
 
-            return $booking->starts_at->lt($opens) || $booking->ends_at->gt($closes);
+            return $booking->heldStart()->lt($opens) || $booking->heldEnd()->gt($closes);
         });
     }
 
@@ -48,27 +51,24 @@ class ScheduleImpactService
     {
         $days = array_flip($days);
 
-        return $this->split(fn (PhotographyBooking $booking) => isset($days[LocalTime::format($booking->starts_at, 'Y-m-d')]));
+        return $this->split(fn (PhotographyBooking $booking) => isset($days[LocalTime::format($booking->heldStart(), 'Y-m-d')]));
     }
 
     /**
-     * New buffer and sessions at the same time: confirmed sessions that would then overlap more than the studio can run.
-     * Requests never hold time, so only confirmed sessions are checked.
+     * A new buffer or a new daily limit: bookings that hold time and would then overlap another one (the buffer), or
+     * sit on a day with more photoshoots than the new limit allows (null = no limit).
      *
      * @return array{confirmed: Collection<int, PhotographyBooking>, pending: Collection<int, PhotographyBooking>}
      */
-    public function forSettings(int $bufferMinutes, int $concurrentSessions): array
+    public function forSettings(int $bufferMinutes, ?int $dailyLimit = null): array
     {
-        $confirmed = $this->upcoming([BookingStatus::Confirmed]);
+        $holding = $this->upcoming()->filter(fn (PhotographyBooking $booking) => $booking->holdsTime())->values();
+        $perDay = $holding->countBy(fn (PhotographyBooking $booking) => LocalTime::format($booking->heldStart(), 'Y-m-d'));
 
-        $clashing = $confirmed->filter(fn (PhotographyBooking $booking) => ScheduleConflictService::mostAtOnce(
-            $confirmed,
-            $booking->starts_at,
-            $booking->ends_at,
-            $bufferMinutes,
-        ) > $concurrentSessions)->values();
+        $affected = $holding->filter(fn (PhotographyBooking $booking) => ScheduleConflictService::mostAtOnce($holding, $booking->heldStart(), $booking->heldEnd(), $bufferMinutes) > 1
+            || ($dailyLimit !== null && $perDay[LocalTime::format($booking->heldStart(), 'Y-m-d')] > $dailyLimit))->values();
 
-        return ['confirmed' => $clashing, 'pending' => collect()];
+        return ['confirmed' => $affected, 'pending' => collect()];
     }
 
     /**
@@ -77,27 +77,32 @@ class ScheduleImpactService
      */
     private function split(callable $outside): array
     {
-        $affected = $this->upcoming([BookingStatus::Confirmed, BookingStatus::Requested, BookingStatus::Proposed])->filter($outside);
+        $affected = $this->upcoming()->filter($outside);
 
         return [
-            'confirmed' => $affected->filter(fn (PhotographyBooking $booking) => $booking->status === BookingStatus::Confirmed)->values(),
-            'pending' => $affected->reject(fn (PhotographyBooking $booking) => $booking->status === BookingStatus::Confirmed)->values(),
+            'confirmed' => $affected->filter(fn (PhotographyBooking $booking) => $booking->holdsTime())->values(),
+            'pending' => $affected->reject(fn (PhotographyBooking $booking) => $booking->holdsTime())->values(),
         ];
     }
 
     /**
-     * Bookings in these statuses that have not started yet, oldest first, read once.
+     * Confirmed bookings, requests and proposals whose time (the proposed time for a proposal) is still ahead, oldest
+     * first, read once. A request whose time has passed (expired) is never listed.
      *
-     * @param  list<BookingStatus>  $statuses
      * @return Collection<int, PhotographyBooking>
      */
-    private function upcoming(array $statuses): Collection
+    private function upcoming(): Collection
     {
+        $now = Carbon::now('UTC');
+
         return PhotographyBooking::query()
             ->with('customer:id,name')
-            ->whereIn('status', $statuses)
-            ->where('starts_at', '>', Carbon::now('UTC'))
+            ->whereIn('status', [BookingStatus::Confirmed, BookingStatus::Requested, BookingStatus::Proposed])
+            ->where(fn ($query) => $query->where('starts_at', '>', $now)->orWhere('proposed_starts_at', '>', $now))
             ->orderBy('starts_at')
-            ->get();
+            ->get()
+            ->filter(fn (PhotographyBooking $booking) => $booking->heldStart()->gt($now))
+            ->sortBy(fn (PhotographyBooking $booking) => [$booking->heldStart()->getTimestamp(), $booking->id])
+            ->values();
     }
 }

@@ -19,6 +19,8 @@ use App\Models\PrintingService;
 use App\Models\Theme;
 use App\Models\User;
 use App\Services\AvailabilityService;
+use App\Services\BookingService;
+use App\Services\BookingTransitionService;
 use App\Services\ReferenceNumberService;
 use App\Services\WalkIn\CounterRecordAlreadySaved;
 use App\Services\WalkIn\WalkInBookingService;
@@ -134,6 +136,10 @@ class WalkInController extends Controller
         return view('owner.walk-in.booking', [
             'packages' => $packages,
             'today' => LocalTime::format(now(), 'Y-m-d'),
+            // Phase 10A: who each package is for, so the people field starts at the minimum and stays in range
+            'people' => $packages->mapWithKeys(fn (PhotographyPackage $package) => [$package->id => [
+                'min' => $package->minPeople(), 'max' => $package->max_people, 'rule' => BookingService::groupSizeMessage($package),
+            ]]),
             'token' => (string) Str::uuid(),
             'picked' => old('customer_id') ? $this->customers->find((int) old('customer_id')) : null,
         ]);
@@ -146,12 +152,19 @@ class WalkInController extends Controller
         $date = $request->validated('date');
 
         if ($package === null || $date === null) {
-            return response()->json(['times' => []]);
+            return response()->json(['times' => [], 'over_limit' => false, 'day_text' => null]);
         }
 
-        return response()->json(['times' => $availability->slots($package->duration_minutes, $date, $date, atCounter: true)
-            ->map(fn ($slot) => ['value' => LocalTime::format($slot->startsAt, 'H:i'), 'label' => LocalTime::format($slot->startsAt, 'g:i A')])
-            ->values()]);
+        $day = $availability->overview($package->duration_minutes, $date, $date, atCounter: true)->first();
+
+        return response()->json([
+            'times' => collect($day['slots'])
+                ->map(fn ($slot) => ['value' => LocalTime::format($slot->startsAt, 'H:i'), 'label' => LocalTime::format($slot->startsAt, 'g:i A'), 'ends' => LocalTime::format($slot->endsAt, 'g:i A')])
+                ->values(),
+            // Phase 10A: the day already has its daily limit of photoshoots; the form then asks for the explicit tick
+            'over_limit' => $day['overLimit'],
+            'day_text' => $day['slots'] === [] ? AvailabilityService::dayText($day['state']) : null,
+        ]);
     }
 
     public function storeBooking(StoreWalkInBookingRequest $request, WalkInBookingService $bookings): RedirectResponse
@@ -169,6 +182,11 @@ class WalkInController extends Controller
 
         try {
             $booking = DB::transaction(function () use ($request, $bookings, $package, $theme) {
+                // Lock order (Phase 10A): the schedule lock is the FIRST lock of every booking transaction. A new
+                // walk-in customer writes an audit row (the chain head lock), and confirm() takes the schedule lock
+                // before the head, so the schedule lock must be taken before the customer is created
+                app(BookingTransitionService::class)->lockSchedule();
+
                 $result = $bookings->place(
                     $request->user(),
                     $this->customer($request),
@@ -182,6 +200,7 @@ class WalkInController extends Controller
                     $request->validated('confirmed_price'),
                     (bool) $request->validated('outside_schedule'),
                     $request->counterToken(),
+                    (bool) $request->validated('over_daily_limit'),
                 );
 
                 return $result['created'] ? $result['booking'] : throw new CounterRecordAlreadySaved($result['booking']);

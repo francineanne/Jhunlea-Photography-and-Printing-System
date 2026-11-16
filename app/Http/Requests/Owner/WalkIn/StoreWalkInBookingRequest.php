@@ -17,7 +17,7 @@ class StoreWalkInBookingRequest extends WalkInRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['outside_schedule' => $this->boolean('outside_schedule')]);
+        $this->merge(['outside_schedule' => $this->boolean('outside_schedule'), 'over_daily_limit' => $this->boolean('over_daily_limit')]);
     }
 
     /** @return array<string, array<int, mixed>> */
@@ -34,6 +34,7 @@ class StoreWalkInBookingRequest extends WalkInRequest
             'notes' => ['nullable', 'string', 'max:'.BookingService::NOTES_MAX],
             'confirmed_price' => ['nullable', 'string', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
             'outside_schedule' => ['boolean'],
+            'over_daily_limit' => ['boolean'],
         ];
     }
 

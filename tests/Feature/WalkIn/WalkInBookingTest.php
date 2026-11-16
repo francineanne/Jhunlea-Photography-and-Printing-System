@@ -4,6 +4,7 @@ namespace Tests\Feature\WalkIn;
 
 use App\Enums\BookingStatus;
 use App\Enums\RecordSource;
+use App\Exceptions\BookingTransitionException;
 use App\Models\BookingStatusHistory;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
@@ -100,7 +101,7 @@ class WalkInBookingTest extends TestCase
 
         foreach (['10:00', '10:30'] as $time) {
             $this->send($this->payload(['date' => '2026-11-03', 'time' => $time, 'outside_schedule' => '1']))
-                ->assertSessionHasErrors(['starts_at' => 'This time is no longer free: another confirmed session is booked then. Propose another time instead.']);
+                ->assertSessionHasErrors(['starts_at' => BookingTransitionException::conflict()->getMessage()]);
         }
 
         $this->assertSame(1, PhotographyBooking::query()->count());

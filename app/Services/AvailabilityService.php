@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\BookingSetting;
+use App\Models\PhotographyBooking;
 use App\Support\LocalTime;
 use App\Support\Slot;
 use Carbon\CarbonInterface;
@@ -14,15 +15,40 @@ use InvalidArgumentException;
 
 /**
  * The free session times for a package length, worked out from the studio's rules:
- * the weekly opening hours (availability_rules) and blocked dates, read in shop local time (config
- * app.display_timezone); the minimum notice and how far ahead one may book (booking_settings); slots every
- * config booking.slot_step_minutes from opening; a session must fit entirely inside the opening hours; and the
- * bookings that already hold time, with the buffer and concurrent_sessions (ScheduleConflictService).
- * Never returns a time in the past. Requests that are not confirmed never take a slot.
+ * the weekly PHOTOSHOOT hours (availability_rules; the shop's own opening hours are a separate display text since
+ * Phase 10A) and blocked dates, read in shop local time (config app.display_timezone); the minimum notice and how far
+ * ahead one may book (booking_settings); slots every config booking.slot_step_minutes from the first hour; a session
+ * must fit entirely inside the photoshoot hours; the bookings that already hold time, with the buffer
+ * (ScheduleConflictService, PhotographyBooking::scopeHoldingTime); and the most photoshoots on one day, when set.
+ * Never returns a time in the past.
  */
 class AvailabilityService
 {
+    // Why a day offers no time, as the wizard words it (dayText())
+    public const OPEN = 'open';
+
+    public const CLOSED = 'closed';
+
+    public const FULL = 'full';
+
+    public const NO_FIT = 'no_fit';
+
+    public const NONE = 'none';
+
+    public const NOT_SHOWN_TEXT = 'Times that are already requested or booked are not shown.';
+
     public function __construct(private readonly ScheduleConflictService $conflicts) {}
+
+    /** The words for a day without a free time. */
+    public static function dayText(string $state): string
+    {
+        return match ($state) {
+            self::CLOSED => 'No photoshoots on this day.',
+            self::FULL => 'Fully booked.',
+            self::NO_FIT => 'No time long enough for this package on this day.',
+            default => 'No free time on this day.',
+        };
+    }
 
     /**
      * Free slots for a session of this length, from one local calendar day to another (both included).
@@ -34,9 +60,22 @@ class AvailabilityService
      * @throws InvalidArgumentException when the range is backwards or longer than config booking.max_lookup_days
      *
      * $atCounter: the owner's walk-in booking form; still never a time that has passed, a closed or blocked day, or a
-     * time that is not free
+     * time that is not free. A day at its daily limit still lists its free times there (overview() marks it
+     * "overLimit"; WalkInBookingService refuses it without the owner's explicit confirmation).
      */
     public function slots(int $durationMinutes, string $fromDate, string $toDate, ?int $ignoreBookingId = null, bool $atCounter = false): Collection
+    {
+        return $this->overview($durationMinutes, $fromDate, $toDate, $ignoreBookingId, $atCounter)->flatMap(fn (array $day) => $day['slots'])->values();
+    }
+
+    /**
+     * Every day of the range with its free slots and what the wizard needs to explain the day: the state (open,
+     * closed, full, no_fit, none), the photoshoot hours, and the stretches inside them that are not available (held
+     * time with its buffer, and time that is too soon). Never who holds a time.
+     *
+     * @return Collection<string, array{state: string, opens: ?Carbon, closes: ?Carbon, busy: list<array{0: Carbon, 1: Carbon}>, slots: list<Slot>, overLimit: bool}>
+     */
+    public function overview(int $durationMinutes, string $fromDate, string $toDate, ?int $ignoreBookingId = null, bool $atCounter = false): Collection
     {
         $timezone = config('app.display_timezone');
         $from = Carbon::createFromFormat('!Y-m-d', $fromDate, $timezone);
@@ -55,6 +94,8 @@ class AvailabilityService
         }
 
         $step = (int) config('booking.slot_step_minutes');
+        $buffer = $settings->buffer_minutes;
+        $limit = $settings->max_sessions_per_day;
 
         $rules = AvailabilityRule::query()->get()->keyBy('weekday');
         $blocked = BlockedDate::query()
@@ -63,40 +104,132 @@ class AvailabilityService
             ->map(fn ($date) => $date instanceof CarbonInterface ? $date->format('Y-m-d') : (string) $date)
             ->flip();
 
-        // Every booking that could touch these days, read once
+        // Every booking that holds time on these days, read once
         $taken = $this->conflicts->blockingBetween($from->copy()->startOfDay()->utc(), $to->copy()->endOfDay()->utc(), $ignoreBookingId);
+        $perDay = $taken->countBy(fn (PhotographyBooking $booking) => LocalTime::format($booking->heldStart(), 'Y-m-d'));
 
-        $slots = collect();
+        $days = collect();
 
         for ($day = $from->copy(); $day->lte($to); $day->addDay()) {
+            $key = $day->format('Y-m-d');
             $rule = $rules->get($day->dayOfWeek);
+            $info = ['state' => self::CLOSED, 'opens' => null, 'closes' => null, 'busy' => [], 'slots' => [], 'overLimit' => false];
 
-            if ($rule === null || ! $rule->is_open || ! $rule->opens_at || ! $rule->closes_at || $blocked->has($day->format('Y-m-d'))) {
+            if ($rule === null || ! $rule->is_open || ! $rule->opens_at || ! $rule->closes_at || $blocked->has($key)) {
+                $days->put($key, $info);
+
                 continue;
             }
 
-            $opens = Carbon::parse($day->format('Y-m-d').' '.$rule->opens_at, $timezone);
-            $closes = Carbon::parse($day->format('Y-m-d').' '.$rule->closes_at, $timezone);
+            $opens = Carbon::parse($key.' '.$rule->opens_at, $timezone);
+            $closes = Carbon::parse($key.' '.$rule->closes_at, $timezone);
+            $info['opens'] = $opens;
+            $info['closes'] = $closes;
+            $info['overLimit'] = $limit !== null && (int) $perDay->get($key, 0) >= $limit;
+            $info['busy'] = $this->busy($taken, $opens, $closes, $buffer, $earliest);
 
-            for ($cursor = $opens->copy(); $cursor->copy()->addMinutes($durationMinutes)->lte($closes); $cursor->addMinutes($step)) {
+            if ($info['overLimit'] && ! $atCounter) {
+                $days->put($key, ['state' => self::FULL] + $info);
+
+                continue;
+            }
+
+            $gap = false;
+
+            for ($cursor = $opens->copy(); $cursor->lt($closes); $cursor->addMinutes($step)) {
                 $start = $cursor->copy()->utc();
-                $end = $start->copy()->addMinutes($durationMinutes);
 
-                if ($start->lt($earliest)) {
+                if ($start->lt($earliest) || $start->gt($latest)) {
                     continue;
                 }
 
-                if ($start->gt($latest)) {
-                    break 2;
-                }
+                $end = $start->copy()->addMinutes($durationMinutes);
 
-                if (ScheduleConflictService::mostAtOnce($taken, $start, $end, $settings->buffer_minutes) < $settings->concurrent_sessions) {
-                    $slots->push(new Slot($start, $end));
+                if ($end->lte($closes) && ScheduleConflictService::mostAtOnce($taken, $start, $end, $buffer) < $settings->concurrent_sessions) {
+                    $info['slots'][] = new Slot($start, $end);
+                } elseif (! $gap) {
+                    // Is at least the shortest step free here? Then the day has room, only not for this length
+                    $gap = ScheduleConflictService::mostAtOnce($taken, $start, $start->copy()->addMinutes($step), $buffer) < $settings->concurrent_sessions;
                 }
+            }
+
+            $info['state'] = match (true) {
+                $info['slots'] !== [] => self::OPEN,
+                $closes->lte($earliest) || $opens->gt($latest) => self::NONE,
+                $gap => self::NO_FIT,
+                default => self::FULL,
+            };
+
+            $days->put($key, $info);
+        }
+
+        return $days;
+    }
+
+    /**
+     * Whether the day of this moment already has as many photoshoots as the owner's daily limit (bookings that hold
+     * time count; the booking being moved can be left out). Always false when no limit is set.
+     */
+    public function dayIsFull(CarbonInterface $startsAt, ?int $ignoreBookingId = null): bool
+    {
+        $limit = BookingSetting::current()->max_sessions_per_day;
+
+        if ($limit === null) {
+            return false;
+        }
+
+        $day = LocalTime::format($startsAt, 'Y-m-d');
+
+        return $this->conflicts->blockingBetween(LocalTime::dayStartUtc($day), LocalTime::dayEndUtc($day), $ignoreBookingId)
+            ->filter(fn (PhotographyBooking $booking) => LocalTime::format($booking->heldStart(), 'Y-m-d') === $day)
+            ->count() >= $limit;
+    }
+
+    public static function dailyLimitReason(): string
+    {
+        $limit = (int) BookingSetting::current()->max_sessions_per_day;
+
+        return "The day already has {$limit} ".($limit === 1 ? 'photoshoot' : 'photoshoots').' (the daily limit).';
+    }
+
+    /**
+     * The stretches of the photoshoot hours that are not available, merged and in order: time that is too soon (or
+     * already passed) and held time widened by the buffer.
+     *
+     * @param  Collection<int, PhotographyBooking>  $taken
+     * @return list<array{0: Carbon, 1: Carbon}>
+     */
+    private function busy(Collection $taken, Carbon $opens, Carbon $closes, int $buffer, Carbon $earliest): array
+    {
+        $ranges = [];
+
+        if ($earliest->gt($opens)) {
+            $ranges[] = [$opens->getTimestamp(), min($earliest->getTimestamp(), $closes->getTimestamp())];
+        }
+
+        foreach ($taken as $booking) {
+            $start = max($booking->heldStart()->subMinutes($buffer)->getTimestamp(), $opens->getTimestamp());
+            $end = min($booking->heldEnd()->addMinutes($buffer)->getTimestamp(), $closes->getTimestamp());
+
+            if ($start < $end) {
+                $ranges[] = [$start, $end];
             }
         }
 
-        return $slots;
+        sort($ranges);
+        $merged = [];
+
+        foreach ($ranges as [$start, $end]) {
+            $last = array_key_last($merged);
+
+            if ($last !== null && $start <= $merged[$last][1]) {
+                $merged[$last][1] = max($merged[$last][1], $end);
+            } else {
+                $merged[] = [$start, $end];
+            }
+        }
+
+        return array_map(fn (array $range) => [Carbon::createFromTimestampUTC($range[0]), Carbon::createFromTimestampUTC($range[1])], $merged);
     }
 
     /**
@@ -128,7 +261,7 @@ class AvailabilityService
 
     /**
      * The studio's schedule rules a session of this length starting at this moment breaks, in plain words: a closed
-     * weekday, a blocked date, outside the opening hours, inside the minimum notice, beyond how far ahead one may book.
+     * weekday, a blocked date, outside the photoshoot hours, inside the minimum notice, beyond how far ahead one may book.
      * An empty list means it keeps every rule. Other bookings are NOT looked at here: a clash with a confirmed booking
      * is ScheduleConflictService's question, and the studio can never override it.
      *
@@ -149,13 +282,13 @@ class AvailabilityService
         $rule = AvailabilityRule::query()->where('weekday', LocalTime::in($start)->dayOfWeek)->first();
 
         if ($rule === null || ! $rule->is_open || ! $rule->opens_at || ! $rule->closes_at) {
-            $reasons[] = 'The studio is closed on '.LocalTime::format($start, 'l').'s.';
+            $reasons[] = 'There are no photoshoots on '.LocalTime::format($start, 'l').'s.';
         } else {
             $opens = Carbon::parse($day.' '.$rule->opens_at, $timezone);
             $closes = Carbon::parse($day.' '.$rule->closes_at, $timezone);
 
             if ($start->lt($opens) || $end->gt($closes)) {
-                $reasons[] = 'It is outside the opening hours ('.LocalTime::format($opens, 'g:i A').' to '.LocalTime::format($closes, 'g:i A').').';
+                $reasons[] = 'It is outside the photoshoot hours ('.LocalTime::format($opens, 'g:i A').' to '.LocalTime::format($closes, 'g:i A').').';
             }
         }
 

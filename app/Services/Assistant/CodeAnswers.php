@@ -167,6 +167,14 @@ class CodeAnswers
             return null;
         }
 
+        // Phase 10A: with the shop's own hours typed by the owner, they are given as written (no "open now" is worked
+        // out from a text), and the weekly hours are named for what they are: the photoshoot hours
+        if (($shopHours = $this->shop->openingHours()) !== null) {
+            return $filipino
+                ? 'Ang oras ng shop: '.$shopHours.'. Oras ng photoshoot (oras sa Pilipinas): '.$week.'.'
+                : 'Our shop hours: '.$shopHours.'. Photoshoot hours (Philippine time): '.$week.'.';
+        }
+
         return $filipino
             ? $this->live->openTextFilipino().' Ang oras namin (oras sa Pilipinas): '.$week.'.'
             : $this->live->openText().' Our opening hours (Philippine time): '.$week.'.';

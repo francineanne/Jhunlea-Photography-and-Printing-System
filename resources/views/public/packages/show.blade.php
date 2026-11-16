@@ -100,7 +100,7 @@
                         </div>
                         <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5">
                             <dt class="flex items-center gap-1.5 text-app-text-2"><x-ui.icon name="group" :size="16" />Fits</dt>
-                            <dd class="mt-1 font-semibold">Up to {{ $package->max_people }} {{ $people }}</dd>
+                            <dd class="mt-1 font-semibold">{{ $package->fitsText() }}</dd>
                         </div>
                         @if ($package->digital_outputs)
                             <div class="col-span-2 rounded-control bg-neutral-100 p-3 dark:bg-white/5">
@@ -200,7 +200,7 @@
                                     </a>
                                 </x-slot:image>
                                 <h3 class="font-display text-lg font-semibold leading-snug"><a href="{{ route('packages.show', $other->slug) }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">{{ $other->name }}</a></h3>
-                                <p class="mt-1 text-sm text-app-text-2">{{ $other->duration_minutes }} mins · up to {{ $other->max_people }} {{ $other->max_people === 1 ? 'person' : 'people' }}</p>
+                                <p class="mt-1 text-sm text-app-text-2">{{ $other->duration_minutes }} mins · {{ lcfirst($other->fitsText()) }}</p>
                                 <p class="mt-auto pt-3 text-sm font-bold tabular-nums">{{ $other->priceText() }}</p>
                             </x-ui.card>
                         </li>

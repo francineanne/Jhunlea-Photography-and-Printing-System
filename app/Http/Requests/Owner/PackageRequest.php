@@ -30,7 +30,11 @@ class PackageRequest extends FormRequest
             $slug = '';
         }
 
+        // Phase 10A: a form (or an older page) that sends no minimum keeps the package's own, or 1 for a new package
+        $min = $this->input('min_people');
+
         $this->merge([
+            'min_people' => $min === null || $min === '' ? ($this->route('package')?->min_people ?? 1) : $min,
             'slug' => $slug,
             'is_published' => $this->boolean('is_published'),
             'is_featured' => $this->boolean('is_featured'),
@@ -75,6 +79,7 @@ class PackageRequest extends FormRequest
             'price' => ['nullable', 'numeric', 'min:0', 'max:99999999.99', 'decimal:0,2'],
             'price_requires_confirmation' => ['boolean'],
             'duration_minutes' => ['required', 'integer', 'between:1,1440'],
+            'min_people' => ['required', 'integer', 'between:1,500', 'lte:max_people'],
             'max_people' => ['required', 'integer', 'between:1,500'],
             'digital_outputs' => ['nullable', 'integer', 'between:0,10000'],
             'inclusions' => ['array', 'max:'.self::MAX_INCLUSIONS],
@@ -95,6 +100,8 @@ class PackageRequest extends FormRequest
             'slug.not_in' => 'This web address is used by the website itself. Choose another one.',
             'slug.regex' => 'The address can only use lowercase letters, numbers and single dashes.',
             'price.decimal' => 'The price can have at most 2 decimal places.',
+            'min_people.lte' => 'The fewest people cannot be more than the most people.',
+            'min_people.*' => 'Enter the fewest people as a whole number from 1 to 500.',
             'inclusions.max' => 'Add at most '.self::MAX_INCLUSIONS.' inclusions, one per line.',
             'inclusions.*.max' => 'Each inclusion can have at most '.self::MAX_INCLUSION_LENGTH.' characters.',
             'theme_ids.*.exists' => 'One of the chosen themes does not exist any more.',

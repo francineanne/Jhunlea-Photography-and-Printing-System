@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'slug', 'category', 'short_description', 'description', 'price', 'price_requires_confirmation', 'duration_minutes', 'max_people', 'digital_outputs', 'inclusions', 'terms', 'is_published', 'is_featured', 'sort_order'])]
+#[Fillable(['name', 'slug', 'category', 'short_description', 'description', 'price', 'price_requires_confirmation', 'duration_minutes', 'min_people', 'max_people', 'digital_outputs', 'inclusions', 'terms', 'is_published', 'is_featured', 'sort_order'])]
 class PhotographyPackage extends Model
 {
     /** @use HasFactory<PhotographyPackageFactory> */
@@ -31,6 +31,7 @@ class PhotographyPackage extends Model
             'price' => 'decimal:2',
             'price_requires_confirmation' => 'boolean',
             'duration_minutes' => 'integer',
+            'min_people' => 'integer',
             'max_people' => 'integer',
             'digital_outputs' => 'integer',
             'inclusions' => 'array',
@@ -38,6 +39,27 @@ class PhotographyPackage extends Model
             'is_featured' => 'boolean',
             'sort_order' => 'integer',
         ];
+    }
+
+    /** The fewest people the package is for: at least 1, never above max_people. */
+    public function minPeople(): int
+    {
+        return max(1, min((int) ($this->min_people ?? 1), (int) $this->max_people));
+    }
+
+    /** "2 people", "1 person" or "2 to 6 people": who the package is for, in words. */
+    public function peopleText(string $between = ' to '): string
+    {
+        $min = $this->minPeople();
+        $max = (int) $this->max_people;
+
+        return $min === $max ? $max.' '.($max === 1 ? 'person' : 'people') : $min.$between.$max.' people';
+    }
+
+    /** Who the package is for, as the package cards say it: "2 people", "2-6 people", or "Up to 6 people" from 1. */
+    public function fitsText(): string
+    {
+        return $this->minPeople() === 1 && (int) $this->max_people > 1 ? "Up to {$this->max_people} people" : $this->peopleText('-');
     }
 
     /** @return HasMany<PackageImage, $this> */

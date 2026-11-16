@@ -207,7 +207,7 @@ class BookingWizardTest extends TestCase
 
         $this->assertSame(2, $this->openStep($html));
         $this->assertMatchesRegularExpression('/name="package" value="'.$this->package->id.'"[^>]*checked/', $html);
-        $this->assertStringContainsString('This package is for 1 to 3 people.', $html);
+        $this->assertStringContainsString('Graduation Portrait is for 1 to 3 people.', $html);
     }
 
     public function test_an_unknown_or_unpublished_package_address_falls_back_to_step_one(): void
@@ -387,7 +387,7 @@ class BookingWizardTest extends TestCase
     {
         $this->send(['group_size' => 4, 'contact_number' => '12', 'theme' => '', 'custom_theme_text' => ''])
             ->assertSessionHasErrors([
-                'group_size' => 'This package is for 1 to 3 people.',
+                'group_size' => 'Graduation Portrait is for 1 to 3 people.',
                 'contact_number' => BookingService::CONTACT_NUMBER_MESSAGE,
                 'theme' => BookingService::THEME_OR_IDEA_MESSAGE,
             ]);
@@ -464,7 +464,8 @@ class BookingWizardTest extends TestCase
         $this->assertSame(3, $this->openStep($html));
         $this->assertStringContainsString('Keep me', $html);
         $this->assertStringContainsString('value="0918 765 4321"', $html);
-        $this->assertStringContainsString(BookingService::SLOT_TAKEN_MESSAGE, $html);
+        // Phase 10A: a time another booking holds reads "Someone just requested this time."
+        $this->assertStringContainsString(BookingService::SLOT_JUST_TAKEN_MESSAGE, $html);
         $this->assertStringContainsString('Images are not kept when something needs fixing.', $html);
         $this->assertSame(1, PhotographyBooking::count());
     }
@@ -535,6 +536,8 @@ class BookingWizardTest extends TestCase
                 'date' => '2026-11-05',
                 'time' => '9:00 AM',
                 'time_text' => '9:00 AM – 10:00 AM',
+                'ends' => '10:00 AM',
+                'period' => 'Morning',
                 'date_text' => 'Thu, Nov 5, 2026',
             ]);
         // 9:00 to 16:00 every 30 minutes for a 60-minute session

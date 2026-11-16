@@ -552,3 +552,14 @@
         scroll-behavior: auto !important;
     }
 }
+
+/* Phase 10A: time on the booking day timeline that cannot be chosen. Striped, so it differs without colour too */
+.timeline-busy {
+    background-color: #a3a3a3;
+    background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.45) 0 3px, transparent 3px 6px);
+}
+
+.dark .timeline-busy {
+    background-color: #525252;
+    background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.18) 0 3px, transparent 3px 6px);
+}

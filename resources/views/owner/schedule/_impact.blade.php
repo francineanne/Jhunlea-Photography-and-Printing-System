@@ -1,5 +1,5 @@
 {{--
-    The safety net of a schedule change, inside that section's form: the confirmed sessions the change would leave
+    The safety net of a schedule change, inside that section's form: the bookings that hold time (confirmed sessions and held requests) the change would leave
     outside the rules (with links), and pending requests as information. When saving needs the owner's go-ahead, the
     "Save anyway" tick is part of this form. Nothing is ever cancelled or moved by a schedule change.
 --}}
@@ -8,13 +8,13 @@
     <div @class(['mt-4 rounded-card border p-4 text-sm', 'border-status-amber/40 bg-status-amber-bg' => $impact['needsTick'], 'border-app-border bg-neutral-100 dark:bg-white/5' => ! $impact['needsTick']]) role="alert">
         @if ($impact['confirmed'] !== [])
             <p class="flex items-center gap-1.5 font-semibold"><x-ui.icon name="warning" :size="18" class="text-status-amber" />
-                {{ $impact['needsTick'] ? 'These confirmed sessions would fall outside the new schedule:' : 'These confirmed sessions are now outside the schedule. They stay booked; talk to the customers:' }}
+                {{ $impact['needsTick'] ? 'These bookings hold time and would fall outside the new schedule:' : 'These bookings are now outside the schedule. They stay as they are; talk to the customers:' }}
             </p>
             <ul class="mt-2 space-y-1">
                 @foreach ($impact['confirmed'] as $row)
                     <li class="flex flex-wrap items-baseline gap-x-2">
                         <a href="{{ route('owner.bookings.show', $row['id']) }}" class="inline-flex min-h-9 items-center rounded font-mono font-semibold text-brand hover:underline focus-ring">{{ $row['reference'] }}</a>
-                        <span class="break-words">{{ $row['customer'] }} · <x-ui.date :value="$row['starts_at']" /></span>
+                        <span class="break-words">{{ $row['customer'] }} · {{ $row['status'] }} · <x-ui.date :value="$row['starts_at']" /></span>
                     </li>
                 @endforeach
             </ul>

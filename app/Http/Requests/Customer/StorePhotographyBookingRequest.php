@@ -4,7 +4,6 @@ namespace App\Http\Requests\Customer;
 
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
-use App\Services\AvailabilityService;
 use App\Services\BookingImageService;
 use App\Services\BookingService;
 use Illuminate\Foundation\Http\FormRequest;
@@ -91,7 +90,7 @@ class StorePhotographyBookingRequest extends FormRequest
             $errors = $validator->errors();
             $package = $errors->has('package') ? null : $this->package();
 
-            if ($package !== null && ! $errors->has('group_size') && $this->groupSize() > $package->max_people) {
+            if ($package !== null && ! $errors->has('group_size') && ! BookingService::groupSizeFits($package, $this->groupSize())) {
                 $errors->add('group_size', BookingService::groupSizeMessage($package));
             }
 
@@ -111,8 +110,8 @@ class StorePhotographyBookingRequest extends FormRequest
 
             $this->checkImages($validator);
 
-            if ($package !== null && ! $errors->has('starts_at') && ! app(AvailabilityService::class)->isAvailable($package->duration_minutes, $this->startsAt())) {
-                $errors->add('starts_at', BookingService::SLOT_TAKEN_MESSAGE);
+            if ($package !== null && ! $errors->has('starts_at') && ($refusal = app(BookingService::class)->slotRefusal($package, $this->startsAt()))) {
+                $errors->add('starts_at', $refusal);
             }
 
             if ($this->user() !== null && app(BookingService::class)->atRequestLimit($this->user())) {

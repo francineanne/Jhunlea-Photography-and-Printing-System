@@ -137,7 +137,17 @@ class KnowledgeBuilder
             }
         }
 
-        $lines[] = "\nOPENING HOURS (Philippine time)";
+        // Phase 10A: the shop's own opening hours are the owner's text; the weekly rules are the PHOTOSHOOT hours. While
+        // the owner has typed no shop hours, the weekly rules are the only hours known and keep their old heading
+        $shopHours = $this->shop->openingHours();
+
+        if ($shopHours !== null) {
+            $lines[] = "\nSHOP OPENING HOURS (as the owner wrote them; give them as written)";
+            $lines[] = $shopHours;
+            $lines[] = "\nPHOTOSHOOT HOURS (Philippine time; when a photoshoot can be booked, NOT the shop's opening hours)";
+        } else {
+            $lines[] = "\nOPENING HOURS (Philippine time)";
+        }
 
         foreach (AvailabilityRule::week() as $weekday => $rule) {
             $lines[] = self::DAYS[$weekday].': '.($rule->is_open && $rule->opens_at && $rule->closes_at
@@ -151,6 +161,10 @@ class KnowledgeBuilder
         $lines[] = "\nBOOKING RULES";
         $lines[] = '- A booking request is only a request. The owner confirms it; a requested time is not a confirmed appointment.';
         $lines[] = '- '.$settings->windowText();
+        $lines[] = "- A new request holds its time for {$settings->request_hold_hours} hours while the studio decides. After that it still waits for the studio, but another customer may request the same time.";
+        $lines[] = '- The studio holds one photoshoot at a time. Only the booking calendar shows which times are free: never say that a time is free or available.';
+        $lines[] = '- A request whose time passed without being confirmed is Expired: the customer cancels it and sends a new request, or messages the studio.';
+        $lines[] = '- Each package says how many people it is for; a request outside that range is not accepted.';
         $lines[] = "- A customer may cancel a confirmed booking until {$cutoff} hours before it starts; after that they talk to the studio.";
         $lines[] = '- Printing orders are reviewed by the shop; an estimated price is not the confirmed price.';
 
@@ -217,7 +231,7 @@ class KnowledgeBuilder
 
         $facts = array_filter([
             $package->duration_minutes ? "{$package->duration_minutes} minutes" : null,
-            $package->max_people ? "up to {$package->max_people} people" : null,
+            $package->max_people ? ($package->minPeople() > 1 ? 'for '.$package->peopleText().' (no fewer, no more)' : "up to {$package->max_people} people") : null,
             $package->digital_outputs ? "{$package->digital_outputs} digital photos" : null,
         ]);
 

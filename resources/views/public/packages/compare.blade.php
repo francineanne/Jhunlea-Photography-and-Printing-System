@@ -4,7 +4,7 @@
 
 @php
     $slugs = $packages->pluck('slug')->all();
-    $people = fn ($package) => 'Up to '.$package->max_people.' '.($package->max_people === 1 ? 'person' : 'people');
+    $people = fn ($package) => $package->fitsText();
 
     // Each row: a label, what a package shows, and the plain value used to tell whether the packages differ
     $rows = [

@@ -107,7 +107,7 @@ enum AuditAction: string
             self::BookingRejected => 'Booking rejected',
             self::BookingCompleted => 'Booking completed',
             self::WalkInCustomerCreated => 'Walk-in customer added',
-            self::HoursChanged => 'Opening hours changed',
+            self::HoursChanged => 'Photoshoot hours changed',
             self::ScheduleRulesChanged => 'Booking rules changed',
             self::DateBlocked => 'Date blocked',
             self::DateUnblocked => 'Date unblocked',

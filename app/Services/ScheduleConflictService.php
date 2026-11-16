@@ -12,10 +12,12 @@ use Illuminate\Support\Collection;
 /**
  * Which bookings stand in the way of a session time.
  *
- * Only bookings whose status blocks a slot (BookingStatus::blocksSlot: confirmed and completed) take time. Each one
- * keeps the buffer free before and after it. Two sessions that only touch (one ends exactly when the next starts)
- * do not conflict unless the buffer says so. The studio can run concurrent_sessions sessions at the same moment.
- * Requests and proposals never block; they come back separately as competing requests, a warning for the owner.
+ * A booking takes time when PhotographyBooking::scopeHoldingTime() says so (Phase 10A, the ONE holding rule: confirmed
+ * and completed sessions, and requests and proposals whose hold has not run out). The time it takes is
+ * heldStart() to heldEnd() (the proposed time for a proposal), with the buffer kept free before and after. Two sessions
+ * that only touch (one ends exactly when the next starts) do not conflict unless the buffer says so. The shop has one
+ * studio, so one session runs at a time. Requests and proposals that do NOT hold time come back separately as
+ * competing requests, a warning for the owner.
  */
 class ScheduleConflictService
 {
@@ -25,19 +27,21 @@ class ScheduleConflictService
     public function conflictsFor(CarbonInterface $start, CarbonInterface $end, ?int $ignoreBookingId = null): array
     {
         $buffer = $this->settings()->buffer_minutes;
-        $overlapping = fn (array $statuses) => $this->near($start, $end, $buffer, $ignoreBookingId)
-            ->whereIn('status', $statuses)
-            ->get()
-            ->filter(fn (PhotographyBooking $booking) => self::overlaps($start, $end, $booking->starts_at, $booking->ends_at, $buffer))
+        $overlapping = fn (Builder $query) => $query->get()
+            ->filter(fn (PhotographyBooking $booking) => self::overlaps($start, $end, $booking->heldStart(), $booking->heldEnd(), $buffer))
             ->values();
 
+        $blocking = $overlapping($this->near($start, $end, $buffer, $ignoreBookingId)->holdingTime());
+
         return [
-            'blocking' => $overlapping(BookingStatus::blocking()),
-            'competing' => $overlapping([BookingStatus::Requested, BookingStatus::Proposed]),
+            'blocking' => $blocking,
+            'competing' => $overlapping($this->near($start, $end, $buffer, $ignoreBookingId)->waiting())
+                ->reject(fn (PhotographyBooking $booking) => $blocking->contains('id', $booking->id))
+                ->values(),
         ];
     }
 
-    /** Whether one more session fits at this time, given the bookings that already hold time and concurrent_sessions. */
+    /** Whether one more session fits at this time, given the bookings that already hold time. */
     public function isFree(CarbonInterface $start, CarbonInterface $end, ?int $ignoreBookingId = null): bool
     {
         $settings = $this->settings();
@@ -53,9 +57,7 @@ class ScheduleConflictService
      */
     public function blockingBetween(CarbonInterface $from, CarbonInterface $to, ?int $ignoreBookingId = null): Collection
     {
-        return $this->near($from, $to, $this->settings()->buffer_minutes, $ignoreBookingId)
-            ->whereIn('status', BookingStatus::blocking())
-            ->get();
+        return $this->near($from, $to, $this->settings()->buffer_minutes, $ignoreBookingId)->holdingTime()->get();
     }
 
     /** Whether session [aStart, aEnd) overlaps session [bStart, bEnd) once the buffer is kept free around the second. */
@@ -75,12 +77,12 @@ class ScheduleConflictService
         $events = [];
 
         foreach ($bookings as $booking) {
-            if (! self::overlaps($start, $end, $booking->starts_at, $booking->ends_at, $bufferMinutes)) {
+            if (! self::overlaps($start, $end, $booking->heldStart(), $booking->heldEnd(), $bufferMinutes)) {
                 continue;
             }
 
-            $events[] = [$booking->starts_at->copy()->subMinutes($bufferMinutes)->getTimestamp(), 1];
-            $events[] = [$booking->ends_at->copy()->addMinutes($bufferMinutes)->getTimestamp(), -1];
+            $events[] = [$booking->heldStart()->subMinutes($bufferMinutes)->getTimestamp(), 1];
+            $events[] = [$booking->heldEnd()->addMinutes($bufferMinutes)->getTimestamp(), -1];
         }
 
         // At the same moment, an end comes before a start, so back-to-back bookings never count twice
@@ -102,12 +104,24 @@ class ScheduleConflictService
         return BookingSetting::current();
     }
 
-    /** @return Builder<PhotographyBooking> */
-    private function near(CarbonInterface $start, CarbonInterface $end, int $bufferMinutes, ?int $ignoreBookingId)
+    /**
+     * Bookings whose time could touch [start, end] with the buffer: by the session time, or for a proposal by its
+     * proposed start (a day of margin, since the end of a proposal is worked out in PHP; callers filter exactly).
+     *
+     * @return Builder<PhotographyBooking>
+     */
+    private function near(CarbonInterface $start, CarbonInterface $end, int $bufferMinutes, ?int $ignoreBookingId): Builder
     {
+        $before = $end->copy()->utc()->addMinutes($bufferMinutes);
+        $after = $start->copy()->utc()->subMinutes($bufferMinutes);
+
         return PhotographyBooking::query()
-            ->where('starts_at', '<', $end->copy()->utc()->addMinutes($bufferMinutes))
-            ->where('ends_at', '>', $start->copy()->utc()->subMinutes($bufferMinutes))
+            ->where(fn (Builder $time) => $time
+                ->where(fn (Builder $session) => $session
+                    ->where(fn (Builder $which) => $which->where('status', '!=', BookingStatus::Proposed)->orWhereNull('proposed_starts_at'))
+                    ->where('starts_at', '<', $before)->where('ends_at', '>', $after))
+                ->orWhere(fn (Builder $proposal) => $proposal->where('status', BookingStatus::Proposed)
+                    ->where('proposed_starts_at', '<', $before)->where('proposed_starts_at', '>', $after->copy()->subDay())))
             ->when($ignoreBookingId, fn ($query) => $query->whereKeyNot($ignoreBookingId));
     }
 }

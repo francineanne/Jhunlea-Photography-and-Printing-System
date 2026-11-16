@@ -48,12 +48,12 @@ class ConfirmOverrideTest extends TestCase
 
     public function test_each_rule_has_its_own_plain_reason(): void
     {
-        $this->assertSame(['The studio is closed on Sundays.'], $this->rules('2026-11-08 10:00'));
-        $this->assertSame(['It is outside the opening hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 16:30'));
-        $this->assertSame(['It is outside the opening hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 08:00'));
+        $this->assertSame(['There are no photoshoots on Sundays.'], $this->rules('2026-11-08 10:00'));
+        $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 16:30'));
+        $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 08:00'));
         $this->assertSame(['It is less than 24 hours from now (the minimum notice).'], $this->rules('2026-11-02 15:00'));
         // 7:00 this morning: before opening, and already over
-        $this->assertSame(['It is outside the opening hours (9:00 AM to 5:00 PM).', 'The time has already passed.'], $this->rules('2026-11-02 07:00', 30));
+        $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).', 'The time has already passed.'], $this->rules('2026-11-02 07:00', 30));
         $this->assertSame(['It is more than 30 days ahead (how far ahead one may book).'], $this->rules('2026-12-03 10:00'));
 
         BlockedDate::factory()->create(['date' => '2026-11-05', 'reason' => 'Studio repairs']);
@@ -64,7 +64,7 @@ class ConfirmOverrideTest extends TestCase
     {
         $reasons = $this->rules('2026-12-06 18:00');
 
-        $this->assertContains('The studio is closed on Sundays.', $reasons);
+        $this->assertContains('There are no photoshoots on Sundays.', $reasons);
         $this->assertContains('It is more than 30 days ahead (how far ahead one may book).', $reasons);
     }
 

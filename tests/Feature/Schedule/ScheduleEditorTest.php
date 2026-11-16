@@ -43,7 +43,7 @@ class ScheduleEditorTest extends TestCase
 
     private function settingsForm(array $overrides = []): array
     {
-        return array_replace(['buffer_minutes' => 15, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'concurrent_sessions' => 1], $overrides);
+        return array_replace(['buffer_minutes' => 15, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => ''], $overrides);
     }
 
     private function send(string $action, array $data, ?User $as = null)
@@ -83,7 +83,7 @@ class ScheduleEditorTest extends TestCase
         $this->assertTrue(AvailabilityRule::query()->where('weekday', 1)->value('is_open'));
         $this->assertSame(15, BookingSetting::current()->buffer_minutes);
         $this->assertSame(1, BlockedDate::count());
-        $this->actingAs($this->owner)->get(route('owner.schedule.edit'))->assertOk()->assertSee('Weekly opening hours');
+        $this->actingAs($this->owner)->get(route('owner.schedule.edit'))->assertOk()->assertSee('Weekly photoshoot hours');
     }
 
     // Opening hours
@@ -186,11 +186,14 @@ class ScheduleEditorTest extends TestCase
             'notice too long' => [['min_notice_hours' => 721], 'min_notice_hours'],
             'zero days ahead' => [['max_advance_days' => 0], 'max_advance_days'],
             'too many days ahead' => [['max_advance_days' => 366], 'max_advance_days'],
-            'no sessions' => [['concurrent_sessions' => 0], 'concurrent_sessions'],
-            'too many sessions' => [['concurrent_sessions' => 6], 'concurrent_sessions'],
+            // Phase 10A: "sessions at once" is gone (one studio); the request hold and the daily limit took its place
+            'no request hold' => [['request_hold_hours' => 0], 'request_hold_hours'],
+            'request hold too long' => [['request_hold_hours' => 721], 'request_hold_hours'],
+            'daily limit of zero' => [['max_sessions_per_day' => 0], 'max_sessions_per_day'],
+            'daily limit too high' => [['max_sessions_per_day' => 51], 'max_sessions_per_day'],
             'not a whole number' => [['buffer_minutes' => '10.5'], 'buffer_minutes'],
             'text' => [['min_notice_hours' => 'a day'], 'min_notice_hours'],
-            'an array' => [['concurrent_sessions' => [2]], 'concurrent_sessions'],
+            'an array' => [['request_hold_hours' => [2]], 'request_hold_hours'],
             'missing' => [['max_advance_days' => null], 'max_advance_days'],
         ];
     }
@@ -301,27 +304,31 @@ class ScheduleEditorTest extends TestCase
         $this->assertSame(Status::Confirmed, $confirmed->fresh()->status);
     }
 
-    public function test_fewer_sessions_at_once_or_a_longer_buffer_lists_the_overlapping_sessions(): void
+    // Phase 10A: "sessions at once" can no longer be changed (one studio). A longer buffer, or a lower daily limit,
+    // lists the bookings it would affect, and saving changes none of them
+    public function test_a_longer_buffer_or_a_lower_daily_limit_lists_the_affected_sessions(): void
     {
-        $this->settings(buffer: 0, sessions: 2);
+        $this->settings(buffer: 0);
         $first = $this->booking(Status::Confirmed, '2026-11-05 10:00');
-        $second = $this->booking(Status::Confirmed, '2026-11-05 10:30');
         $alone = $this->booking(Status::Confirmed, '2026-11-05 14:00');
-
-        $this->send('settings', $this->settingsForm(['buffer_minutes' => 0, 'concurrent_sessions' => 1]))->assertSessionHas('error')
-            ->assertSessionHas('impact', fn ($impact) => array_column($impact['confirmed'], 'reference') === [$first->reference_number, $second->reference_number]);
-        $this->assertSame(2, BookingSetting::current()->concurrent_sessions);
+        $next = $this->booking(Status::Confirmed, '2026-11-05 15:00');
+        $other = $this->booking(Status::Confirmed, '2026-11-06 10:00');
 
         // Back to back sessions are fine with no buffer, but not with a 30-minute one
-        $next = $this->booking(Status::Confirmed, '2026-11-05 15:00');
-        $this->send('settings', $this->settingsForm(['buffer_minutes' => 30, 'concurrent_sessions' => 2]))->assertSessionHas('status');
-        $this->send('settings', $this->settingsForm(['buffer_minutes' => 30, 'concurrent_sessions' => 1]))
-            ->assertSessionHas('impact', fn ($impact) => in_array($alone->reference_number, array_column($impact['confirmed'], 'reference'), true)
-                && in_array($next->reference_number, array_column($impact['confirmed'], 'reference'), true));
+        $this->send('settings', $this->settingsForm(['buffer_minutes' => 0]))->assertSessionHas('status');
+        $this->send('settings', $this->settingsForm(['buffer_minutes' => 30]))->assertSessionHas('error')
+            ->assertSessionHas('impact', fn ($impact) => array_column($impact['confirmed'], 'reference') === [$alone->reference_number, $next->reference_number]);
+        $this->assertSame(0, BookingSetting::current()->buffer_minutes);
 
-        $this->send('settings', $this->settingsForm(['buffer_minutes' => 30, 'concurrent_sessions' => 1, 'acknowledge' => '1']))->assertSessionHas('status');
-        $this->assertSame(1, BookingSetting::current()->concurrent_sessions);
+        // Three photoshoots on 5 November: a limit of 2 lists that day's bookings, not the next day's
+        $this->send('settings', $this->settingsForm(['buffer_minutes' => 0, 'max_sessions_per_day' => 2]))->assertSessionHas('error')
+            ->assertSessionHas('impact', fn ($impact) => array_column($impact['confirmed'], 'reference') === [$first->reference_number, $alone->reference_number, $next->reference_number]);
+        $this->assertNull(BookingSetting::current()->max_sessions_per_day);
+
+        $this->send('settings', $this->settingsForm(['buffer_minutes' => 30, 'max_sessions_per_day' => 2, 'acknowledge' => '1']))->assertSessionHas('status');
+        $this->assertSame([30, 2, 1], [BookingSetting::current()->buffer_minutes, BookingSetting::current()->max_sessions_per_day, BookingSetting::current()->concurrent_sessions]);
         $this->assertSame(4, PhotographyBooking::query()->where('status', Status::Confirmed)->count());
+        $this->assertSame($other->starts_at->toIso8601String(), $other->fresh()->starts_at->toIso8601String());
     }
 
     public function test_the_editor_shows_the_safety_net_list_with_links_and_the_tick(): void
@@ -330,7 +337,7 @@ class ScheduleEditorTest extends TestCase
 
         $this->send('hours', ['hours' => $this->hours([6 => ['open' => '0']])]);
         $this->actingAs($this->owner)->get(route('owner.schedule.edit'))
-            ->assertSee('These confirmed sessions would fall outside the new schedule')
+            ->assertSee('These bookings hold time and would fall outside the new schedule')
             ->assertSee(route('owner.bookings.show', $confirmed), false)
             ->assertSee('Save anyway');
     }

@@ -5,6 +5,7 @@ namespace App\Services\Assistant;
 use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Services\Chat\OwnerPresence;
+use App\Support\ShopSettings;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,7 +17,7 @@ class LiveFacts
 {
     public const DATE_FORMAT = 'l, F j, Y';
 
-    public function __construct(private readonly OwnerPresence $presence) {}
+    public function __construct(private readonly OwnerPresence $presence, private readonly ShopSettings $shop) {}
 
     public function now(): Carbon
     {
@@ -35,6 +36,13 @@ class LiveFacts
     /** "The shop is open now, until 6:00 PM.", "The shop is closed now; it next opens tomorrow at 9:00 AM." and the like. */
     public function openText(): string
     {
+        // Phase 10A: the weekly rules are the PHOTOSHOOT hours. Once the owner has typed the shop's own opening hours
+        // (a text the system cannot work out "open now" from), the shop hours are given as written and the computed
+        // part speaks about photoshoots only
+        if (($hours = $this->shop->openingHours()) !== null) {
+            return "The shop's opening hours, as the owner wrote them: {$hours}. ".$this->photoshootText();
+        }
+
         if ($this->presence->shopOpenNow()) {
             $closes = $this->closesToday();
 
@@ -45,6 +53,22 @@ class LiveFacts
         $why = $this->closedToday() ? 'The shop is closed today' : 'The shop is closed now';
 
         return $next === null ? "{$why}; no opening is set in the next 7 days." : "{$why}; it next opens {$next}.";
+    }
+
+    /** "It is inside the photoshoot hours now, until 5:00 PM." or when they next start, from the weekly rules. */
+    public function photoshootText(): string
+    {
+        if ($this->presence->shopOpenNow()) {
+            $closes = $this->closesToday();
+
+            return 'It is inside the photoshoot hours now'.($closes === null ? '.' : ", until {$closes}.");
+        }
+
+        $next = $this->presence->nextOpeningText();
+
+        return $next === null
+            ? 'It is outside the photoshoot hours now; none are set in the next 7 days.'
+            : "It is outside the photoshoot hours now; they next start {$next}.";
     }
 
     public function isOpenNow(): bool

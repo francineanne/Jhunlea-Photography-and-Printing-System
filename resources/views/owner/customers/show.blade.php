@@ -91,7 +91,7 @@
                                     @if ($request->trashed())
                                         <x-ui.badge tone="gray">Removed</x-ui.badge>
                                     @endif
-                                    <x-ui.status-badge :status="$request->status" /><x-payment.badge :payable="$request" />
+                                    <x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" /><x-payment.badge :payable="$request" />
                                 </span>
                             </div>
                             <p class="mt-2 break-words font-semibold">{{ Str::limit($title($request), 120) }}</p>

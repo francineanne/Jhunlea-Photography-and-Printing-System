@@ -103,7 +103,7 @@ class CustomerContextBuilder
             id: $record->id,
             reference: $record->reference_number,
             name: $order ? $record->serviceName() : (string) ($record->snapshot['package']['name'] ?? 'Photoshoot'),
-            statusLabel: $record->status->label(),
+            statusLabel: $record instanceof PhotographyBooking ? $record->statusLabel() : $record->status->label(),
             finished: $record->status->isFinal(),
             schedule: $order ? null : $this->schedule($record),
             price: $price,

@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         // The public footer (Phase 6B): the business details the owner filled in (never a placeholder) and the FAQ link
         // only when a question is published. rescue(): this layout also wraps the error pages, which must never throw
         View::composer('layouts.public', function ($view) {
-            $view->with('shop', rescue(fn () => app(ShopSettings::class)->business(), ['shop_name' => null, 'address' => null, 'phone' => null, 'email' => null], false));
+            $view->with('shop', rescue(fn () => app(ShopSettings::class)->business(), ['shop_name' => null, 'address' => null, 'phone' => null, 'email' => null, 'opening_hours' => null], false));
             $view->with('hasFaq', rescue(fn () => Faq::query()->published()->exists(), false, false));
         });
 

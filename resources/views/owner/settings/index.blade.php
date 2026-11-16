@@ -46,7 +46,7 @@
         <div>
             <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span>Settings</p>
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Shop settings and rules</h1>
-            <p class="mt-2 max-w-2xl text-app-text-2">Your business details, the upload limits and the questions customers ask most. Opening hours and booking rules are changed in the Schedule editor.</p>
+            <p class="mt-2 max-w-2xl text-app-text-2">Your business details, the upload limits and the questions customers ask most. Photoshoot hours and booking rules are changed in the Schedule editor.</p>
         </div>
 
         <nav aria-label="Settings sections" class="mt-6 rounded-card border border-app-border bg-app-card p-1.5 dark:shadow-none">
@@ -72,7 +72,7 @@
                     <h2 id="business-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="storefront" :size="22" class="text-brand" />Business info</h2>
                     <p class="mt-1 text-sm text-app-text-2">Shown in the footer of the public site, only for the details you fill in. Leave a field empty to hide it.</p>
 
-                    @if ($errors->hasAny(['shop_name', 'address', 'phone', 'email']))
+                    @if ($errors->hasAny(['shop_name', 'address', 'phone', 'email', 'opening_hours']))
                         <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">Please check the fields marked below. Nothing was saved.</x-ui.notice>
                     @endif
 
@@ -85,6 +85,10 @@
                         </div>
                         <x-ui.input label="Phone" name="phone" type="tel" maxlength="40" autocomplete="off" :value="old('phone', $business['phone'])" hint="For example +63 917 123 4567." />
                         <x-ui.input label="Email" name="email" type="email" maxlength="120" autocomplete="off" :value="old('email', $business['email'])" hint="Up to 120 characters." />
+                        <div class="md:col-span-2">
+                            <x-ui.input label="Shop opening hours" name="opening_hours" maxlength="200" :value="old('opening_hours', $business['opening_hours'])"
+                                hint="When the shop itself is open, as plain text, for example: Mon-Sat 9:00 AM - 5:00 PM; Sun closed. Shown on the public site and told to customers by Lumi. Photoshoot hours are separate: change them in the Schedule editor." />
+                        </div>
                     </div>
                 </div>
                 <div class="flex flex-col gap-3 rounded-b-card border-t border-app-border bg-neutral-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:bg-white/5">
@@ -107,7 +111,7 @@
 
                 <div class="mt-5 grid gap-6 lg:grid-cols-2">
                     <div>
-                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Weekly opening hours</h3>
+                        <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Weekly photoshoot hours</h3>
                         <dl class="mt-2 divide-y divide-app-border rounded-control border border-app-border text-sm">
                             @foreach (SaveHoursRequest::DAYS as $weekday => $name)
                                 @php($rule = $week[$weekday])
@@ -125,7 +129,8 @@
                                 ['Notice needed', $schedule->min_notice_hours.' '.Str::plural('hour', $schedule->min_notice_hours), 'How long before a session a customer must request it.'],
                                 ['Booking calendar opens', $schedule->max_advance_days.' '.Str::plural('day', $schedule->max_advance_days).' ahead', 'How far ahead customers can choose a date.'],
                                 ['Buffer between sessions', $schedule->buffer_minutes.' '.Str::plural('minute', $schedule->buffer_minutes), 'Kept free before and after every confirmed session.'],
-                                ['Sessions at once', (string) $schedule->concurrent_sessions, 'How many sessions the studio can run at the same moment.'],
+                                ['Request hold', $schedule->request_hold_hours.' '.Str::plural('hour', $schedule->request_hold_hours), 'How long a new request, or a time you propose, holds its time.'],
+                                ['Photoshoots per day', $schedule->max_sessions_per_day === null ? 'No limit' : (string) $schedule->max_sessions_per_day, 'A day at the limit shows as fully booked. One studio: one photoshoot at a time.'],
                             ] as [$label, $value, $hint])
                                 <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5">
                                     <dt class="text-xs text-app-text-2">{{ $label }}</dt>

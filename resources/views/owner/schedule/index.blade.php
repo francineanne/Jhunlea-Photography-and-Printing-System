@@ -23,7 +23,7 @@
         </div>
         <div class="flex flex-wrap gap-2">
             <x-ui.button :href="route('owner.bookings.walk-in.create')" variant="outline"><x-ui.icon name="storefront" :size="18" />New walk-in booking</x-ui.button>
-            <x-ui.button :href="route('owner.schedule.edit')"><x-ui.icon name="tune" :size="18" />Hours and booking rules</x-ui.button>
+            <x-ui.button :href="route('owner.schedule.edit')"><x-ui.icon name="tune" :size="18" />Photoshoot hours and rules</x-ui.button>
         </div>
     </div>
 
@@ -161,7 +161,7 @@
         <aside class="space-y-6" aria-label="Schedule rules">
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm dark:shadow-none" aria-labelledby="hours-title">
                 <div class="flex items-center justify-between gap-2">
-                    <h2 id="hours-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="schedule" :size="20" class="text-brand" />Opening hours</h2>
+                    <h2 id="hours-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="schedule" :size="20" class="text-brand" />Photoshoot hours</h2>
                     <a href="{{ route('owner.schedule.edit') }}#hours" class="inline-flex min-h-11 min-w-11 items-center rounded text-xs font-semibold text-brand hover:underline focus-ring sm:min-h-8">Edit</a>
                 </div>
                 <dl class="mt-3 space-y-1 text-sm">
@@ -177,7 +177,8 @@
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Buffer between sessions</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->buffer_minutes }} mins</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Minimum notice</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->min_notice_hours }} hrs</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Book ahead up to</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->max_advance_days }} days</dd></div>
-                    <div class="flex justify-between gap-2"><dt class="text-app-text-2">Sessions at once</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->concurrent_sessions }}</dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-app-text-2">Request hold</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->request_hold_hours }} hrs</dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-app-text-2">Photoshoots per day</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->max_sessions_per_day ?? 'No limit' }}</dd></div>
                 </dl>
             </section>
 

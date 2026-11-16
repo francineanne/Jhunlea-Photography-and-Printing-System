@@ -36,7 +36,7 @@ final class AuditSentence
             AuditAction::OrderCompleted => "Released {$subject} (Completed).",
             AuditAction::BookingCompleted => "Completed {$subject}.",
             AuditAction::WalkInCustomerCreated => "Added walk-in customer {$subject}.",
-            AuditAction::HoursChanged => 'Changed the opening hours.',
+            AuditAction::HoursChanged => 'Changed the photoshoot hours.',
             AuditAction::ScheduleRulesChanged => 'Changed the booking rules ('.implode(', ', array_keys((array) ($meta['changes'] ?? []))).').',
             AuditAction::DateBlocked => 'Blocked '.implode(', ', (array) ($meta['dates'] ?? [$subject])).'.'.$reason,
             AuditAction::DateUnblocked => 'Unblocked '.($meta['date'] ?? $subject).'.',

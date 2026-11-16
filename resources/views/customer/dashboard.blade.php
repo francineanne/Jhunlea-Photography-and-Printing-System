@@ -133,7 +133,7 @@
                                     <span class="block truncate font-semibold group-hover:text-brand">{{ $isOrder ? $request->serviceName() : ($request->snapshot['package']['name'] ?? $request->package?->name ?? 'Photoshoot') }}</span>
                                     <x-ui.date :value="$request->created_at" class="block font-mono text-[11px] text-app-text-2" />
                                 </span>
-                                <span class="flex shrink-0 flex-col items-end gap-1"><x-ui.status-badge :status="$request->status" /><x-payment.badge :payable="$request" /></span>
+                                <span class="flex shrink-0 flex-col items-end gap-1"><x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" /><x-payment.badge :payable="$request" /></span>
                             </a>
                         </li>
                     @endforeach

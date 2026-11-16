@@ -6,14 +6,17 @@ use App\Enums\BookingStatus;
 use App\Enums\RecordSource;
 use App\Models\Concerns\HasPayments;
 use App\Support\Money;
+use Carbon\CarbonInterface;
 use Database\Factories\PhotographyBookingFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 // Only what a customer types is fillable. The owner of the booking, the status, the reference number, every time and
 // every price are set by server code (BookingService, BookingTransitionService), never from a request. The contact
@@ -40,6 +43,7 @@ class PhotographyBooking extends Model
             'ends_at' => 'datetime',
             'requested_starts_at' => 'datetime',
             'proposed_starts_at' => 'datetime',
+            'hold_expires_at' => 'datetime',
             'group_size' => 'integer',
             'wants_prints' => 'boolean',
             'estimated_price' => 'decimal:2',
@@ -89,6 +93,123 @@ class PhotographyBooking extends Model
     public function printingOrders(): HasMany
     {
         return $this->hasMany(PrintingOrder::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | THE HOLDING RULE (Phase 10A): which bookings hold time on the schedule
+    |--------------------------------------------------------------------------
+    | Written once as a query (scopeHoldingTime) and once for a loaded booking (holdsTime); the two must say the same.
+    | A booking holds time when it is
+    |   - Confirmed or Completed (its session time), or
+    |   - Requested, its hold has not run out and its time is still ahead (its requested time), or
+    |   - Proposed, its hold has not run out and the proposed time is still ahead (the PROPOSED time, see heldStart()).
+    | A hold that ran out simply stops holding: nothing is stored or scheduled, the request stays for the studio.
+    | Phase 10B adds its case ("Awaiting downpayment" until downpayment_due_at) to these two methods and nowhere else.
+    */
+
+    /** @param  Builder<PhotographyBooking>  $query */
+    public function scopeHoldingTime(Builder $query, ?CarbonInterface $now = null): void
+    {
+        $now = Carbon::instance($now ?? Carbon::now())->utc();
+
+        $query->where(function (Builder $holding) use ($now) {
+            $holding->whereIn('status', BookingStatus::blocking())
+                ->orWhere(fn (Builder $request) => $request->where('status', BookingStatus::Requested)
+                    ->where('hold_expires_at', '>', $now)->where('starts_at', '>', $now))
+                ->orWhere(fn (Builder $proposal) => $proposal->where('status', BookingStatus::Proposed)
+                    ->where('hold_expires_at', '>', $now)->where('proposed_starts_at', '>', $now));
+        });
+    }
+
+    /** The PHP twin of scopeHoldingTime(), for a booking that is already loaded. */
+    public function holdsTime(?CarbonInterface $now = null): bool
+    {
+        $now = Carbon::instance($now ?? Carbon::now())->utc();
+
+        return match ($this->status) {
+            BookingStatus::Confirmed, BookingStatus::Completed => true,
+            BookingStatus::Requested => $this->hold_expires_at !== null && $this->hold_expires_at->gt($now) && $this->starts_at->gt($now),
+            BookingStatus::Proposed => $this->hold_expires_at !== null && $this->hold_expires_at->gt($now)
+                && $this->proposed_starts_at !== null && $this->proposed_starts_at->gt($now),
+            default => false,
+        };
+    }
+
+    /** Where the time this booking holds (or asks for) starts: the proposed time while a proposal is open. */
+    public function heldStart(): Carbon
+    {
+        return $this->status === BookingStatus::Proposed && $this->proposed_starts_at !== null
+            ? $this->proposed_starts_at->copy()
+            : $this->starts_at->copy();
+    }
+
+    public function heldEnd(): Carbon
+    {
+        return $this->status === BookingStatus::Proposed && $this->proposed_starts_at !== null
+            ? $this->proposed_starts_at->copy()->addMinutes($this->sessionMinutes())
+            : $this->ends_at->copy();
+    }
+
+    /** The session length in minutes as saved on the row (ends_at - starts_at), whatever the package says today. */
+    public function sessionMinutes(): int
+    {
+        return (int) round(($this->ends_at->getTimestamp() - $this->starts_at->getTimestamp()) / 60);
+    }
+
+    /*
+    | EXPIRED (Phase 10A): a Requested or Proposed booking whose time (the proposed time for a proposal) has passed
+    | without being confirmed. Derived, never stored. It holds no time, does not count toward the open-request limit,
+    | and can only be rejected (studio) or cancelled. scopeExpired / scopeNotExpired and isExpired() say the same.
+    */
+
+    public const EXPIRED_LABEL = 'Expired';
+
+    public const EXPIRED_NOTE = 'This request was not confirmed before its time.';
+
+    /** @param  Builder<PhotographyBooking>  $query */
+    public function scopeExpired(Builder $query, ?CarbonInterface $now = null): void
+    {
+        $now = Carbon::instance($now ?? Carbon::now())->utc();
+
+        $query->where(function (Builder $expired) use ($now) {
+            $expired->where(fn (Builder $request) => $request->where('status', BookingStatus::Requested)->where('starts_at', '<=', $now))
+                ->orWhere(fn (Builder $proposal) => $proposal->where('status', BookingStatus::Proposed)->where('proposed_starts_at', '<=', $now));
+        });
+    }
+
+    /**
+     * Requests still waiting for an answer in time: Requested or Proposed and not expired. The open-request limit
+     * counts these.
+     *
+     * @param  Builder<PhotographyBooking>  $query
+     */
+    public function scopeWaiting(Builder $query, ?CarbonInterface $now = null): void
+    {
+        $now = Carbon::instance($now ?? Carbon::now())->utc();
+
+        $query->where(function (Builder $waiting) use ($now) {
+            $waiting->where(fn (Builder $request) => $request->where('status', BookingStatus::Requested)->where('starts_at', '>', $now))
+                ->orWhere(fn (Builder $proposal) => $proposal->where('status', BookingStatus::Proposed)
+                    ->where(fn (Builder $time) => $time->whereNull('proposed_starts_at')->orWhere('proposed_starts_at', '>', $now)));
+        });
+    }
+
+    public function isExpired(?CarbonInterface $now = null): bool
+    {
+        $now = Carbon::instance($now ?? Carbon::now())->utc();
+
+        return match ($this->status) {
+            BookingStatus::Requested => $this->starts_at->lte($now),
+            BookingStatus::Proposed => $this->proposed_starts_at !== null && $this->proposed_starts_at->lte($now),
+            default => false,
+        };
+    }
+
+    /** The status as people read it: "Expired" for an expired request, else the status label. */
+    public function statusLabel(): string
+    {
+        return $this->isExpired() ? self::EXPIRED_LABEL : $this->status->label();
     }
 
     /** The session length the booking was made for, from the snapshot (the package may have changed since). */

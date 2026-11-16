@@ -60,11 +60,11 @@ class PackageFinder
         }
 
         if ($answers->people !== null) {
-            if ($package->max_people >= $answers->people) {
+            if ($package->max_people >= $answers->people && $package->minPeople() <= $answers->people) {
                 $score += self::POINTS['people'];
                 $reasons[] = "Fits {$answers->people} ".($answers->people === 1 ? 'person' : 'people')." (up to {$package->max_people})";
             } else {
-                $misses[] = "Fits up to {$package->max_people} ".($package->max_people === 1 ? 'person' : 'people');
+                $misses[] = $package->minPeople() > 1 ? 'Is for '.$package->peopleText() : "Fits up to {$package->max_people} ".($package->max_people === 1 ? 'person' : 'people');
             }
         }
 

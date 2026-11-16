@@ -87,14 +87,13 @@ class ScheduleConflictServiceTest extends TestCase
         $this->assertTrue($this->service()->isFree($this->manila('2026-11-03 10:00'), $this->manila('2026-11-03 11:00')));
     }
 
-    public function test_concurrent_sessions_count_what_runs_at_the_same_moment(): void
+    // Phase 10A: one studio. The setting is gone, so a time with one booking is never free (it was free with 2)
+    public function test_one_studio_a_time_with_one_booking_is_not_free(): void
     {
         $this->setUpSchedule(sessions: 2);
         $this->booking('2026-11-03 10:00');
 
-        $this->assertTrue($this->service()->isFree($this->manila('2026-11-03 10:00'), $this->manila('2026-11-03 11:00')));
-
-        $this->booking('2026-11-03 10:30');
+        $this->assertFalse($this->service()->isFree($this->manila('2026-11-03 10:00'), $this->manila('2026-11-03 11:00')));
         $this->assertFalse($this->service()->isFree($this->manila('2026-11-03 10:30'), $this->manila('2026-11-03 11:00')));
         $this->assertTrue($this->service()->isFree($this->manila('2026-11-03 11:00'), $this->manila('2026-11-03 11:30')));
     }

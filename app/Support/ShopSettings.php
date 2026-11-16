@@ -29,7 +29,8 @@ class ShopSettings
         'booking_max_total_mb' => ['config' => 'booking.max_total_size_mb', 'cap' => 'total'],
     ];
 
-    public const BUSINESS = ['shop_name', 'address', 'phone', 'email'];
+    // opening_hours (Phase 10A): the shop's own opening hours as display text; the photoshoot hours are availability_rules
+    public const BUSINESS = ['shop_name', 'address', 'phone', 'email', 'opening_hours'];
 
     private ?ShopSetting $row = null;
 
@@ -65,16 +66,22 @@ class ShopSettings
         return $this->text('email');
     }
 
-    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string} */
+    /** The shop's opening hours as the owner typed them ("Mon-Sat 9:00 AM - 5:00 PM; Sun closed"); null when not set. */
+    public function openingHours(): ?string
+    {
+        return $this->text('opening_hours');
+    }
+
+    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string} */
     public function business(): array
     {
-        return ['shop_name' => $this->shopName(), 'address' => $this->address(), 'phone' => $this->phone(), 'email' => $this->email()];
+        return ['shop_name' => $this->shopName(), 'address' => $this->address(), 'phone' => $this->phone(), 'email' => $this->email(), 'opening_hours' => $this->openingHours()];
     }
 
     /** True when the public site has at least one way to reach the shop to show. */
     public function hasContact(): bool
     {
-        return $this->address() !== null || $this->phone() !== null || $this->email() !== null;
+        return $this->address() !== null || $this->phone() !== null || $this->email() !== null || $this->openingHours() !== null;
     }
 
     // Upload limits: always the effective value

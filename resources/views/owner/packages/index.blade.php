@@ -96,7 +96,7 @@
 
                                     <dl class="mb-5 mt-4 space-y-1.5 text-sm text-app-text-2">
                                         <div class="flex items-center gap-2"><x-ui.icon name="schedule" :size="16" /><dt class="sr-only">Duration</dt><dd>{{ $package->duration_minutes }} mins</dd></div>
-                                        <div class="flex items-center gap-2"><x-ui.icon name="group" :size="16" /><dt class="sr-only">Capacity</dt><dd>{{ $package->max_people === 1 ? '1 person' : "Up to {$package->max_people} people" }}</dd></div>
+                                        <div class="flex items-center gap-2"><x-ui.icon name="group" :size="16" /><dt class="sr-only">Capacity</dt><dd>{{ $package->fitsText() }}</dd></div>
                                         @if ($package->digital_outputs)
                                             <div class="flex items-center gap-2"><x-ui.icon name="photo_library" :size="16" /><dt class="sr-only">Digital photos</dt><dd>{{ $package->digital_outputs }} edited digital photos</dd></div>
                                         @endif

@@ -45,7 +45,7 @@ class DashboardService
         $toPayCents = $this->ledger->sumConfirmedCents($unpaidOrders) + $this->ledger->sumConfirmedCents($unpaidBookings);
 
         $needsInfo = $mine(PrintingOrder::query())->whereNotNull('info_request')->where('info_request', '!=', '')->latest()->limit(self::LIST_LIMIT)->get();
-        $proposed = $mine(PhotographyBooking::query())->where('status', BookingStatus::Proposed)->latest()->limit(self::LIST_LIMIT)->get();
+        $proposed = $mine(PhotographyBooking::query())->where('status', BookingStatus::Proposed)->where('proposed_starts_at', '>', Carbon::now('UTC'))->latest()->limit(self::LIST_LIMIT)->get();
         $ready = $mine(PrintingOrder::query())->where('status', PrintingOrderStatus::ReadyForPickup)->with('recordedPayment')->latest()->limit(self::LIST_LIMIT)->get();
         // Ready orders already say what to pay, so the payment list leaves them out
         $toPay = (clone $unpaidOrders)->where('status', '!=', PrintingOrderStatus::ReadyForPickup)->latest()->limit(self::LIST_LIMIT)->get()

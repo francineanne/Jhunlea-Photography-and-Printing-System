@@ -22,8 +22,8 @@ use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 /**
- * The owner's schedule (Phase 4D): the calendar, and the editor of the opening hours, booking settings and blocked
- * dates. A change that would leave confirmed future bookings outside the rules is shown first and saved only after the
+ * The owner's schedule (Phase 4D): the calendar, and the editor of the photoshoot hours, booking settings and blocked
+ * dates. A change that would leave future bookings that hold time outside the rules is shown first and saved only after the
  * owner ticks "save anyway"; no booking is ever cancelled or moved by it.
  */
 class ScheduleController extends Controller
@@ -57,21 +57,21 @@ class ScheduleController extends Controller
         $impact = $this->impacts->forHours($request->hours());
 
         if ($impact['confirmed']->isNotEmpty() && ! $request->acknowledged()) {
-            return $this->needsAcknowledgement('hours', $impact, 'Some confirmed sessions would fall outside the new opening hours.');
+            return $this->needsAcknowledgement('hours', $impact, 'Some bookings would fall outside the new photoshoot hours.');
         }
 
         $this->edits->saveHours($request->hours());
 
-        return $this->saved('hours', $impact, 'Opening hours saved. The booking calendar uses them now.');
+        return $this->saved('hours', $impact, 'Photoshoot hours saved. The booking calendar uses them now.');
     }
 
     public function settings(SaveSettingsRequest $request): RedirectResponse
     {
         $settings = $request->settings();
-        $impact = $this->impacts->forSettings($settings['buffer_minutes'], $settings['concurrent_sessions']);
+        $impact = $this->impacts->forSettings($settings['buffer_minutes'], $settings['max_sessions_per_day']);
 
         if ($impact['confirmed']->isNotEmpty() && ! $request->acknowledged()) {
-            return $this->needsAcknowledgement('settings', $impact, 'Some confirmed sessions would overlap more than the new settings allow.');
+            return $this->needsAcknowledgement('settings', $impact, 'Some bookings would overlap or go over the daily limit with the new rules.');
         }
 
         $this->edits->saveSettings($settings);
@@ -85,7 +85,7 @@ class ScheduleController extends Controller
         $impact = $this->impacts->forBlockedDays($days);
 
         if ($impact['confirmed']->isNotEmpty() && ! $request->acknowledged()) {
-            return $this->needsAcknowledgement('blocked', $impact, 'Some confirmed sessions are on the days you want to block.');
+            return $this->needsAcknowledgement('blocked', $impact, 'Some bookings are on the days you want to block.');
         }
 
         $added = $this->edits->blockDays($days, $request->reason(), $request->user());
@@ -137,8 +137,8 @@ class ScheduleController extends Controller
             'id' => $booking->id,
             'reference' => $booking->reference_number,
             'customer' => $booking->customer?->name ?? 'Deleted account',
-            'status' => $booking->status->label(),
-            'starts_at' => $booking->starts_at->toIso8601ZuluString(),
+            'status' => $booking->statusLabel(),
+            'starts_at' => $booking->heldStart()->toIso8601ZuluString(),
         ];
 
         return ['confirmed' => $impact['confirmed']->map($row)->all(), 'pending' => $impact['pending']->map($row)->all()];

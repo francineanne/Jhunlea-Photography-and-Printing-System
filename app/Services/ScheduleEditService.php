@@ -12,7 +12,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Saves the owner's schedule: the weekly opening hours, the booking settings and blocked dates. Nothing is cached, so
+ * Saves the owner's schedule: the weekly PHOTOSHOOT hours (availability_rules; the shop's own opening hours are a
+ * display text in Settings since Phase 10A), the booking settings and blocked dates. Nothing is cached, so
  * the booking wizard and the slot list use a change at once. It never touches a booking (ScheduleImpactService shows
  * the owner which bookings a change would leave outside the rules first) and never the schedule lock (lock_version).
  */
@@ -52,11 +53,12 @@ class ScheduleEditService
     }
 
     /**
-     * Saves the four settings on the single row (id 1). The row may not exist yet (the config defaults are used until
+     * Saves the settings on the single row (id 1): buffer, notice, how far ahead, request hold and the daily limit
+     * (null = no limit). concurrent_sessions is always written as 1 (one studio, Phase 10A). The row may not exist yet (the config defaults are used until
      * the owner saves): it is created with insertOrIgnore, so two saves at once can never create it twice, and then only
-     * the four settings are updated. lock_version is never written here.
+     * these settings are updated. lock_version is never written here.
      *
-     * @param  array{buffer_minutes: int, min_notice_hours: int, max_advance_days: int, concurrent_sessions: int}  $settings
+     * @param  array{buffer_minutes: int, min_notice_hours: int, max_advance_days: int, request_hold_hours: int, max_sessions_per_day: ?int}  $settings
      */
     public function saveSettings(array $settings): void
     {
@@ -68,10 +70,17 @@ class ScheduleEditService
             $before = (array) DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->first();
             $changes = [];
 
-            foreach (['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'concurrent_sessions'] as $key) {
+            foreach (['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'request_hold_hours'] as $key) {
                 if ((int) ($before[$key] ?? 0) !== (int) $settings[$key]) {
                     $changes[$key] = ['old' => (int) ($before[$key] ?? 0), 'new' => (int) $settings[$key]];
                 }
+            }
+
+            // The daily limit may be empty (no limit), so it is compared as it is
+            $oldLimit = isset($before['max_sessions_per_day']) ? (int) $before['max_sessions_per_day'] : null;
+
+            if ($oldLimit !== $settings['max_sessions_per_day']) {
+                $changes['max_sessions_per_day'] = ['old' => $oldLimit, 'new' => $settings['max_sessions_per_day']];
             }
 
             if ($changes !== []) {
@@ -82,7 +91,9 @@ class ScheduleEditService
                 'buffer_minutes' => $settings['buffer_minutes'],
                 'min_notice_hours' => $settings['min_notice_hours'],
                 'max_advance_days' => $settings['max_advance_days'],
-                'concurrent_sessions' => $settings['concurrent_sessions'],
+                'request_hold_hours' => $settings['request_hold_hours'],
+                'max_sessions_per_day' => $settings['max_sessions_per_day'],
+                'concurrent_sessions' => 1,
                 'updated_at' => now(),
             ]);
         });

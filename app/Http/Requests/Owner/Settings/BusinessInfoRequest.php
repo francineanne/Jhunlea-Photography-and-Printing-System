@@ -34,6 +34,8 @@ class BusinessInfoRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:300', 'not_regex:/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/u'],
             'phone' => ['nullable', 'string', 'max:40', 'regex:'.self::PHONE_PATTERN],
             'email' => ['nullable', 'string', 'max:120', 'email:rfc', $noControl],
+            // Phase 10A: the shop's own opening hours, display text only (the photoshoot hours are in the Schedule editor)
+            'opening_hours' => ['nullable', 'string', 'max:200', $noControl],
         ];
     }
 
@@ -49,14 +51,16 @@ class BusinessInfoRequest extends FormRequest
             'phone.*' => 'Type a phone number with 7 to 15 digits, for example +63 917 123 4567. Use only digits, spaces and + ( ) - . /',
             'email.max' => 'Keep the email address to :max characters.',
             'email.*' => 'Type a valid email address, for example hello@example.com.',
+            'opening_hours.max' => 'Keep the opening hours to :max characters.',
+            'opening_hours.*' => 'Type the opening hours as plain text on one line.',
         ];
     }
 
-    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string} */
+    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string} */
     public function info(): array
     {
         $value = fn (string $field) => is_string($this->validated($field)) && trim($this->validated($field)) !== '' ? trim(str_replace("\r\n", "\n", $this->validated($field))) : null;
 
-        return ['shop_name' => $value('shop_name'), 'address' => $value('address'), 'phone' => $value('phone'), 'email' => $value('email')];
+        return ['shop_name' => $value('shop_name'), 'address' => $value('address'), 'phone' => $value('phone'), 'email' => $value('email'), 'opening_hours' => $value('opening_hours')];
     }
 }

@@ -22,7 +22,7 @@ class ShopSettingsService
 
     public function __construct(private readonly ShopSettings $settings) {}
 
-    /** @param  array{shop_name: ?string, address: ?string, phone: ?string, email: ?string}  $info */
+    /** @param  array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours?: ?string}  $info */
     public function saveBusiness(array $info): void
     {
         $this->write(array_intersect_key($info, array_flip(ShopSettings::BUSINESS)));

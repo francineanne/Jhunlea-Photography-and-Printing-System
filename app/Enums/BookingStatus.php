@@ -75,9 +75,10 @@ enum BookingStatus: string
     }
 
     /**
-     * Whether a booking in this status holds its time on the schedule. Confirmed bookings do. Completed bookings
+     * Whether a booking in this status ALWAYS holds its time on the schedule. Confirmed bookings do. Completed bookings
      * also do, so a shoot that is marked done early still holds the rest of its time and history queries count it.
-     * Requests and proposals never block other customers; the owner sees them as competing requests instead.
+     * Since Phase 10A a Requested or Proposed booking holds time too, but only while its hold lasts: the whole rule is
+     * PhotographyBooking::scopeHoldingTime() / holdsTime(), which use this for the statuses that hold without a hold.
      */
     public function blocksSlot(): bool
     {

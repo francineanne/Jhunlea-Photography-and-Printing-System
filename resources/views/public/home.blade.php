@@ -115,7 +115,7 @@
                             </x-slot:image>
                             <span class="rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">{{ $package->category }}</span>
                             <h3 class="mt-2 font-display text-xl font-semibold leading-snug"><a href="{{ route('packages.show', $package->slug) }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">{{ $package->name }}</a></h3>
-                            <p class="mt-1 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · up to {{ $package->max_people }} {{ $package->max_people === 1 ? 'person' : 'people' }}</p>
+                            <p class="mt-1 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · {{ lcfirst($package->fitsText()) }}</p>
                             <p class="mt-3 text-sm leading-relaxed text-app-text-2">{{ $package->short_description }}</p>
                             <div class="mt-auto pt-5">
                                 <div class="flex items-end justify-between gap-3 border-t border-app-border pt-4">

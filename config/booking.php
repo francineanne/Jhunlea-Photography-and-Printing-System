@@ -2,7 +2,7 @@
 
 /*
 | Rules for photography bookings that the owner does not edit. The schedule rules the owner can change (opening
-| hours, blocked dates, buffer, notice, how far ahead, sessions at once) live in the database; the values below are
+| hours, blocked dates, buffer, notice, how far ahead, request hold, daily limit) live in the database; the values below are
 | only their starting defaults, used until the owner saves their own.
 */
 
@@ -49,7 +49,12 @@ return [
         'buffer_minutes' => 15,
         'min_notice_hours' => 24,
         'max_advance_days' => 30,
+        // Fixed at 1 since Phase 10A: the shop has one studio. Not editable; the column stays
         'concurrent_sessions' => 1,
+        // How long a new request (and a time the studio proposes) holds its time while it waits for an answer
+        'request_hold_hours' => 48,
+        // The most photoshoots on one day (bookings that hold time count); null = no limit
+        'max_sessions_per_day' => null,
     ],
 
     // The ranges the owner may choose in the schedule editor, [lowest, highest]. The one place these limits live
@@ -57,7 +62,8 @@ return [
         'buffer_minutes' => [0, 240],
         'min_notice_hours' => [0, 720],
         'max_advance_days' => [1, 365],
-        'concurrent_sessions' => [1, 5],
+        'request_hold_hours' => [1, 720],
+        'max_sessions_per_day' => [1, 50],
     ],
 
     // The optional reason of a blocked date, shown on the owner's calendar
@@ -67,7 +73,7 @@ return [
     // talk to the studio. Requested and proposed bookings can be cancelled at any time
     'customer_cancel_cutoff_hours' => 24,
 
-    // How many requests (Requested or Proposed) one customer may have waiting at the same time
+    // How many requests (Requested or Proposed, not expired) one customer may have waiting at the same time
     'max_open_requests_per_customer' => 3,
 
     // The most days one availability lookup may cover, so a single request cannot ask for a year of slots

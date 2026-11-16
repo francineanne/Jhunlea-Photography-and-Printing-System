@@ -162,7 +162,7 @@ class AuditTrailTest extends TestCase
         $schedule = app(ScheduleEditService::class);
         $schedule->blockDays(['2026-12-24'], 'Holiday', $this->owner);
         $schedule->blockDays(['2026-12-24'], 'Holiday', $this->owner); // already blocked: nothing new
-        $schedule->saveSettings(['buffer_minutes' => 45, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'concurrent_sessions' => 1]);
+        $schedule->saveSettings(['buffer_minutes' => 45, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => null]);
 
         $settings = app(ShopSettingsService::class);
         $settings->saveBusiness(['shop_name' => 'Jhunlea', 'address' => 'Secret Street 1', 'phone' => '09171112222', 'email' => 'shop@example.test']);

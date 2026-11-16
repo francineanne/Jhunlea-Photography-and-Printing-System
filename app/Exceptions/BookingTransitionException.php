@@ -51,7 +51,7 @@ class BookingTransitionException extends DomainException
 
     public static function conflict(): self
     {
-        return new self('This time is no longer free: another confirmed session is booked then. Propose another time instead.', self::TIME_TAKEN);
+        return new self('This time is no longer free: another booking holds it. Propose another time instead.', self::TIME_TAKEN);
     }
 
     public static function timePassed(): self
@@ -67,7 +67,12 @@ class BookingTransitionException extends DomainException
 
     public static function slotNotAvailable(): self
     {
-        return new self('That time is not open for bookings. Pick a free time within opening hours.', self::TIME_NOT_OPEN);
+        return new self('That time is not open for bookings. Pick a free time within the photoshoot hours.', self::TIME_NOT_OPEN);
+    }
+
+    public static function dailyLimit(string $reason): self
+    {
+        return new self($reason.' Tick "Over the daily limit, book anyway" to book it all the same.');
     }
 
     public static function noProposal(): self

@@ -42,6 +42,7 @@ class PhotographyBookingController extends Controller
         $bookings = PhotographyBooking::query()
             ->with(['customer', 'package', 'recordedPayment'])
             ->when($status, fn (Builder $query) => $query->where('status', $status))
+            ->when($request->expired(), fn (Builder $query) => $query->expired())
             ->when($search !== '', function (Builder $query) use ($search) {
                 // Bound parameters, and % _ \ typed by the owner are matched literally instead of as wildcards
                 $like = '%'.addcslashes($search, '%_\\').'%';
@@ -66,6 +67,8 @@ class PhotographyBookingController extends Controller
         return view('owner.bookings.index', [
             'bookings' => $bookings,
             'status' => $status,
+            'expired' => $request->expired(),
+            'expiredCount' => PhotographyBooking::query()->expired()->count(),
             'search' => $search,
             'package' => $request->package(),
             'from' => $request->from(),

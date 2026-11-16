@@ -30,6 +30,8 @@ class BookingListRequest extends FormRequest
     {
         return [
             'status' => ['nullable', 'string', Rule::in([self::ALL, ...array_column(BookingStatus::cases(), 'value')])],
+            // Phase 10A: only requests whose time passed without being confirmed (derived, PhotographyBooking::scopeExpired)
+            'expired' => ['nullable', 'boolean'],
             'q' => ['nullable', 'string', 'max:60'],
             'source' => ['nullable', 'string', Rule::enum(RecordSource::class)],
             'package' => ['nullable', 'integer', Rule::exists('photography_packages', 'id')],
@@ -43,6 +45,7 @@ class BookingListRequest extends FormRequest
     {
         return [
             'status.*' => 'That status filter does not exist.',
+            'expired.*' => 'That filter does not exist.',
             'q.max' => 'Search with up to :max characters.',
             'source.*' => 'That source filter does not exist.',
             'q.string' => 'Search with plain text.',
@@ -53,10 +56,19 @@ class BookingListRequest extends FormRequest
         ];
     }
 
-    /** The tab: a status, or null for every booking. */
+    public function expired(): bool
+    {
+        return (bool) $this->validated('expired');
+    }
+
+    /** The tab: a status, or null for every booking (the Expired tab looks across statuses). */
     public function status(): ?BookingStatus
     {
         $value = $this->validated('status');
+
+        if ($this->expired()) {
+            return null;
+        }
 
         return $value === self::ALL ? null : (BookingStatus::tryFrom((string) $value) ?? BookingStatus::Requested);
     }

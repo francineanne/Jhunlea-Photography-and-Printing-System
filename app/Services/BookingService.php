@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\BookingStatus;
 use App\Enums\UserRole;
+use App\Models\BookingSetting;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
@@ -19,11 +20,14 @@ use Throwable;
 
 /**
  * Places a booking REQUEST. Nothing is confirmed here: the studio confirms, proposes another time or rejects
- * (BookingTransitionService). A request never blocks the slot for other customers.
+ * (BookingTransitionService). Since Phase 10A a request HOLDS its time for the owner's "request hold" hours
+ * (hold_expires_at; PhotographyBooking::scopeHoldingTime), so two customers can never both hold one time.
  *
- * Everything is checked first (package, theme, group size, every image, and that the time is still a free slot right
- * now), then the reference number, the booking, its images and the first history row are saved in one transaction.
- * If anything fails after an image was written, the transaction rolls back and every written image is deleted.
+ * Everything is checked first (package, theme, group size, every image, and that the time is a free slot right now).
+ * Then, in one transaction: the SCHEDULE LOCK is taken first (the lock order is written in
+ * BookingTransitionService), the time is checked AGAIN inside the lock, and the reference number, the booking with
+ * its hold, its images and the first history row are saved. If anything fails after an image was written, the
+ * transaction rolls back and every written image is deleted.
  */
 class BookingService
 {
@@ -49,6 +53,9 @@ class BookingService
     public const NOTES_MESSAGE = 'Notes can be up to 2,000 characters.';
 
     public const SLOT_TAKEN_MESSAGE = 'That time is no longer free. Please choose another time.';
+
+    // Another request took the time between the customer's choice and the save (checked inside the schedule lock)
+    public const SLOT_JUST_TAKEN_MESSAGE = 'Someone just requested this time. Please choose another.';
 
     public function __construct(
         private readonly ReferenceNumberService $references,
@@ -97,7 +104,7 @@ class BookingService
             $this->fail('theme', self::THEME_OR_IDEA_MESSAGE);
         }
 
-        if ($groupSize < 1 || $groupSize > $package->max_people) {
+        if (! self::groupSizeFits($package, $groupSize)) {
             $this->fail('group_size', self::groupSizeMessage($package));
         }
 
@@ -121,8 +128,8 @@ class BookingService
 
         $start = Carbon::instance($startsAt)->utc();
 
-        if (! $this->availability->isAvailable($package->duration_minutes, $start)) {
-            $this->fail('starts_at', self::SLOT_TAKEN_MESSAGE);
+        if ($refusal = $this->slotRefusal($package, $start)) {
+            $this->fail('starts_at', $refusal);
         }
 
         $written = [];
@@ -130,8 +137,16 @@ class BookingService
 
         try {
             return DB::transaction(function () use ($customer, $package, $theme, $customThemeText, $start, $groupSize, $contactNumber, $notes, $wantsPrints, $uploads, &$written, &$bookingId) {
-                // The customer's own row is locked first, so two requests sent at once are counted one after the other
+                // 1. The schedule lock, always first: every move that takes or checks time runs one after the other
+                $this->transitions->lockSchedule();
+
+                // 2. The customer's own row, so two requests sent at once are counted one after the other
                 User::query()->lockForUpdate()->findOrFail($customer->getKey());
+
+                // The time again, now that nobody else can take it: the loser of a race reads the friendly words
+                if ($refusal = $this->slotRefusal($package, $start)) {
+                    $this->fail('starts_at', $refusal);
+                }
 
                 if ($this->atRequestLimit($customer)) {
                     $this->fail('booking', self::requestLimitMessage());
@@ -154,6 +169,7 @@ class BookingService
                     'ends_at' => $start->copy()->addMinutes($package->duration_minutes),
                     'requested_starts_at' => $start,
                     'status' => BookingStatus::Requested,
+                    'hold_expires_at' => BookingSetting::current()->holdUntil(),
                     'estimated_price' => $this->estimate($package),
                 ])->save();
                 $bookingId = $booking->getKey();
@@ -180,6 +196,23 @@ class BookingService
     }
 
     /**
+     * Why this time cannot be requested right now, or null when it is a free slot: another booking holds it (someone
+     * just requested it), or it is not a time the schedule offers. The wizard's form request asks the same question.
+     */
+    public function slotRefusal(PhotographyPackage $package, CarbonInterface $startsAt): ?string
+    {
+        $start = Carbon::instance($startsAt)->utc();
+
+        if ($this->availability->isAvailable($package->duration_minutes, $start)) {
+            return null;
+        }
+
+        return app(ScheduleConflictService::class)->isFree($start, $start->copy()->addMinutes($package->duration_minutes))
+            ? self::SLOT_TAKEN_MESSAGE
+            : self::SLOT_JUST_TAKEN_MESSAGE;
+    }
+
+    /**
      * The three ways a package is priced, as PhotographyPackage::priceText() words them: a fixed price, a starting
      * price the studio confirms ("from"), or no price ("on request", no estimate).
      */
@@ -193,7 +226,8 @@ class BookingService
     }
 
     /**
-     * Whether the customer already has as many requests waiting (Requested or Proposed) as config
+     * Whether the customer already has as many requests waiting (Requested or Proposed, and not expired: a request
+     * whose time has passed no longer counts, PhotographyBooking::scopeWaiting) as config
      * booking.max_open_requests_per_customer allows. place() asks again inside its transaction, after locking the
      * customer's row; the wizard asks when it opens.
      */
@@ -201,7 +235,7 @@ class BookingService
     {
         $open = PhotographyBooking::query()
             ->where('customer_id', $customer->getKey())
-            ->whereIn('status', [BookingStatus::Requested, BookingStatus::Proposed])
+            ->waiting()
             ->count();
 
         return $open >= (int) config('booking.max_open_requests_per_customer');
@@ -214,9 +248,16 @@ class BookingService
         return "You already have {$max} requests waiting for the studio. Please wait for a reply or cancel one.";
     }
 
+    /** The one group size rule (Phase 10A), for the customer wizard and the walk-in form: min_people to max_people. */
+    public static function groupSizeFits(PhotographyPackage $package, int $groupSize): bool
+    {
+        return $groupSize >= $package->minPeople() && $groupSize <= $package->max_people;
+    }
+
+    /** "Couple Session is for 2 people." or "Family Portrait is for 2 to 6 people." */
     public static function groupSizeMessage(PhotographyPackage $package): string
     {
-        return "This package is for 1 to {$package->max_people} ".($package->max_people === 1 ? 'person.' : 'people.');
+        return $package->name.' is for '.$package->peopleText().'.';
     }
 
     /** A theme can be chosen with a package when it is published, not removed, and linked to that package. */
@@ -251,6 +292,7 @@ class BookingService
                 'name' => $package->name,
                 'category' => $package->category,
                 'duration_minutes' => $package->duration_minutes,
+                'min_people' => $package->minPeople(),
                 'max_people' => $package->max_people,
                 'digital_outputs' => $package->digital_outputs,
                 'price' => $package->price,
