@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordStatus;
 use App\Enums\PrintingOrderStatus;
@@ -53,8 +54,8 @@ class PaymentLedgerService
             ->when($filters['status'], fn (Builder $query, PaymentRecordStatus $status) => $query->where('status', $status))
             ->with(['receiver:id,name', 'voider:id,name'])
             ->with(['payable' => fn (MorphTo $morph) => $morph->morphWith([
-                PrintingOrder::class => ['customer:id,name'],
-                PhotographyBooking::class => ['customer:id,name'],
+                PrintingOrder::class => ['customer:id,name', 'activePayments'],
+                PhotographyBooking::class => ['customer:id,name', 'activePayments'],
             ])]);
     }
 
@@ -132,7 +133,10 @@ class PaymentLedgerService
     }
 
     /**
-     * THE rule for a photoshoot that waits for its payment: confirmed, a confirmed price above zero, no recorded payment.
+     * THE rule for a photoshoot that waits for its payment: confirmed, a confirmed price above zero, and not paid in
+     * full yet (no recorded full payment and no recorded balance; Phase 10B). A booking whose downpayment is recorded
+     * waits for its balance and stays here; sumConfirmedCents() then counts only that balance. A booking still waiting
+     * for its downpayment is awaitingDownpayment() instead.
      *
      * @return Builder<PhotographyBooking>
      */
@@ -141,7 +145,30 @@ class PaymentLedgerService
         return PhotographyBooking::query()
             ->where('status', BookingStatus::Confirmed)
             ->where('confirmed_price', '>', 0)
-            ->whereDoesntHave('recordedPayment');
+            ->whereDoesntHave('activePayments', fn (Builder $paid) => $paid->whereIn('kind', [PaymentKind::Full, PaymentKind::Balance]));
+    }
+
+    /**
+     * Photoshoots confirmed by the studio that wait for their downpayment (Phase 10B), the nearest deadline first.
+     *
+     * @return Builder<PhotographyBooking>
+     */
+    public function awaitingDownpayment(): Builder
+    {
+        return PhotographyBooking::query()->where('status', BookingStatus::AwaitingDownpayment)->orderBy('downpayment_due_at')->orderBy('id');
+    }
+
+    /**
+     * Confirmed photoshoots of one shop day that still have something to pay (a balance, or the full price when the
+     * downpayment was waived or there is none), the earliest first (Phase 10B, the counter's "Shoots today").
+     *
+     * @return Builder<PhotographyBooking>
+     */
+    public function balanceDueOn(string $day): Builder
+    {
+        return $this->awaitingBookings()
+            ->whereBetween('starts_at', [LocalTime::dayStartUtc($day), LocalTime::dayEndUtc($day)])
+            ->orderBy('starts_at');
     }
 
     /**
@@ -155,10 +182,21 @@ class PaymentLedgerService
         return $this->inPeriod($from, $to)->where('status', PaymentRecordStatus::Recorded);
     }
 
-    /** Whole centavos of the confirmed prices a query finds (one query). */
+    /**
+     * Whole centavos still DUE on the orders or bookings a query finds: their confirmed prices minus what is already
+     * recorded on them (Phase 10B: a recorded downpayment leaves only its balance). For an awaiting order nothing is
+     * recorded, so it is its confirmed price. Two queries.
+     */
     public function sumConfirmedCents(Builder $query): int
     {
-        return (int) (clone $query)->toBase()->selectRaw('SUM(ROUND(confirmed_price * 100)) as cents')->value('cents');
+        $model = $query->getModel();
+        $prices = (int) (clone $query)->toBase()->selectRaw('SUM(ROUND(confirmed_price * 100)) as cents')->value('cents');
+        $paid = (int) Payment::query()->where('status', PaymentRecordStatus::Recorded)
+            ->where('payable_type', $model->getMorphClass())
+            ->whereIn('payable_id', (clone $query)->toBase()->select($model->getQualifiedKeyName()))
+            ->toBase()->selectRaw('SUM(ROUND(amount * 100)) as cents')->value('cents');
+
+        return $prices - $paid;
     }
 
     /**

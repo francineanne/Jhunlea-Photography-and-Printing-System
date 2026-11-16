@@ -36,6 +36,8 @@ class PrintingOrder extends Model
             'quantity' => 'integer',
             'estimated_price' => 'decimal:2',
             'confirmed_price' => 'decimal:2',
+            // Phase 10B: set when the shop accepts; never fillable (StatusTransitionService)
+            'requires_prepayment' => 'boolean',
         ];
     }
 

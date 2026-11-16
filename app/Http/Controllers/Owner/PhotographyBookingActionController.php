@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\BookingStatus;
 use App\Exceptions\BookingTransitionException;
+use App\Exceptions\PaymentException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Bookings\CancelBookingRequest;
 use App\Http\Requests\Owner\Bookings\ChangePriceRequest;
 use App\Http\Requests\Owner\Bookings\CompleteBookingRequest;
 use App\Http\Requests\Owner\Bookings\ConfirmBookingRequest;
+use App\Http\Requests\Owner\Bookings\ExtendDeadlineRequest;
 use App\Http\Requests\Owner\Bookings\InternalNotesRequest;
 use App\Http\Requests\Owner\Bookings\ProposeTimeRequest;
 use App\Http\Requests\Owner\Bookings\RejectBookingRequest;
+use App\Http\Requests\Owner\Bookings\WaiveDownpaymentRequest;
 use App\Models\PhotographyBooking;
 use App\Services\BookingTransitionService;
 use App\Support\LocalTime;
@@ -30,7 +34,9 @@ class PhotographyBookingActionController extends Controller
     public function confirm(ConfirmBookingRequest $request, PhotographyBooking $booking): RedirectResponse
     {
         return $this->act($booking, fn () => $this->transitions->confirm($booking, $request->user(), $request->price(), $request->note(), $request->outsideSchedule()),
-            fn () => 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'.');
+            fn () => $booking->status === BookingStatus::AwaitingDownpayment
+                ? 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'. It waits for the downpayment until '.LocalTime::format($booking->downpayment_due_at).'.'
+                : 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'.');
     }
 
     public function propose(ProposeTimeRequest $request, PhotographyBooking $booking): RedirectResponse
@@ -53,8 +59,22 @@ class PhotographyBookingActionController extends Controller
 
     public function cancel(CancelBookingRequest $request, PhotographyBooking $booking): RedirectResponse
     {
-        return $this->act($booking, fn () => $this->transitions->cancel($booking, $request->user(), $request->reason()),
-            fn () => 'Booking cancelled.');
+        return $this->act($booking, fn () => $this->transitions->cancel($booking, $request->user(), $request->reason(), $request->paymentChoice(), $request->refundReason()),
+            fn () => 'Booking cancelled.'.($request->paymentChoice() === BookingTransitionService::REFUND_PAYMENT ? ' The payment was voided as a refund.' : ''));
+    }
+
+    /** Phase 10B: the downpayment is waived; the booking is Confirmed and the full price is due on the day. */
+    public function waive(WaiveDownpaymentRequest $request, PhotographyBooking $booking): RedirectResponse
+    {
+        return $this->act($booking, fn () => $this->transitions->waiveDownpayment($booking, $request->user(), $request->reason()),
+            fn () => 'Downpayment waived. The booking is confirmed; the full price is paid on the day of the shoot.', '#payment');
+    }
+
+    /** Phase 10B: a new downpayment deadline. */
+    public function extend(ExtendDeadlineRequest $request, PhotographyBooking $booking): RedirectResponse
+    {
+        return $this->act($booking, fn () => $this->transitions->extendDeadline($booking, $request->user(), $request->dueAt(), $request->reason()),
+            fn () => 'New downpayment deadline: '.LocalTime::format($booking->downpayment_due_at).'.', '#payment');
     }
 
     public function price(ChangePriceRequest $request, PhotographyBooking $booking): RedirectResponse
@@ -76,7 +96,7 @@ class PhotographyBookingActionController extends Controller
 
         try {
             $action();
-        } catch (BookingTransitionException $e) {
+        } catch (BookingTransitionException|PaymentException $e) {
             return $back->with('error', $e->getMessage());
         }
 

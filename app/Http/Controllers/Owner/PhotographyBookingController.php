@@ -40,7 +40,7 @@ class PhotographyBookingController extends Controller
         $search = $request->search();
 
         $bookings = PhotographyBooking::query()
-            ->with(['customer', 'package', 'recordedPayment'])
+            ->with(['customer', 'package', 'recordedPayment', 'activePayments'])
             ->when($status, fn (Builder $query) => $query->where('status', $status))
             ->when($request->expired(), fn (Builder $query) => $query->expired())
             ->when($search !== '', function (Builder $query) use ($search) {
@@ -95,6 +95,7 @@ class PhotographyBookingController extends Controller
             'payments.receiver',
             'payments.voider',
             'recordedPayment',
+            'activePayments',
         ]);
 
         // Which buttons to show; the service checks the same table again when one is pressed

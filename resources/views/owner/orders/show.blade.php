@@ -11,8 +11,24 @@
         Status::Processing->value => ['route' => 'owner.orders.processing', 'label' => 'Mark processing', 'icon' => 'print'],
         Status::ReadyForPickup->value => ['route' => 'owner.orders.ready', 'label' => 'Mark ready for pickup', 'icon' => 'inventory_2'],
         Status::Completed->value => ['route' => 'owner.orders.complete', 'label' => 'Mark completed', 'icon' => 'task_alt'],
+        Status::Unclaimed->value => ['route' => 'owner.orders.unclaimed', 'label' => 'Mark unclaimed', 'icon' => 'remove_shopping_cart'],
     ];
     $moveValues = $moves->map(fn ($move) => $move->value)->all();
+
+    // Phase 10B: "Mark unclaimed" only when the shop may (unpaid, and waited the owner's number of days since ready)
+    $unclaimedFrom = null;
+    if (in_array(Status::Unclaimed->value, $moveValues, true)) {
+        $readyAt = \App\Services\StatusTransitionService::readyAt($order);
+        $unclaimedFrom = $readyAt?->copy()->addDays(app(\App\Support\ShopSettings::class)->paymentRule('unclaimed_after_days'));
+        if ($order->recordedPayments()->isNotEmpty() || $unclaimedFrom === null || $unclaimedFrom->isFuture()) {
+            $moveValues = array_values(array_diff($moveValues, [Status::Unclaimed->value]));
+            $unclaimedFrom = $order->recordedPayments()->isNotEmpty() ? null : $unclaimedFrom;
+        } else {
+            $unclaimedFrom = null;
+        }
+    }
+    $prepayFlagged = (bool) $order->customer?->prepay_required;
+    $prepayFrom = app(\App\Support\ShopSettings::class)->prepayFrom();
     $openForm = old('_form');
     $snapshot = $order->snapshot ?? [];
     $customer = $order->customer;
@@ -83,6 +99,15 @@
                             value="{{ $openForm === 'accept' ? old('confirmed_price') : ($order->estimated_price ?? '') }}"
                             hint="{{ $order->estimated_price !== null ? 'Filled in with the estimate. Change it if the final price is different.' : 'No estimate: this is a quoted service.' }}" />
                         <x-ui.input id="accept-note" name="note" label="Note for the history (optional)" maxlength="500" value="{{ $openForm === 'accept' ? old('note') : '' }}" />
+                        {{-- Phase 10B: paid before printing. Ticked by itself from the "Pay first from" amount; always for a flagged customer --}}
+                        <div class="sm:col-span-2" x-data="{ manual: null, threshold: {{ (float) $prepayFrom }}, flagged: @js($prepayFlagged), get auto() { return this.flagged || Number(document.getElementById('accept-price')?.value || 0) >= this.threshold } }">
+                            <input type="hidden" name="prepay" x-bind:value="(flagged || (manual ?? auto)) ? 1 : 0" disabled x-bind:disabled="false">
+                            <label class="flex min-h-11 items-start gap-2 text-sm">
+                                <input type="checkbox" class="mt-1 size-4 accent-brand" x-bind:checked="flagged || (manual ?? auto)" x-on:change="manual = $event.target.checked" x-bind:disabled="flagged" @checked($prepayFlagged || (float) ($order->estimated_price ?? 0) >= (float) $prepayFrom)>
+                                <span><span class="font-semibold">Pay before printing</span>
+                                    <span class="block text-xs text-app-text-2">{{ $prepayFlagged ? 'This customer must pay first (an earlier order was unclaimed).' : 'Ticked by itself from '.\App\Support\Money::format($prepayFrom).'. You can change it for this order.' }}</span></span>
+                            </label>
+                        </div>
                         <div class="sm:col-span-2"><x-ui.button type="submit">Accept order</x-ui.button></div>
                     </form>
                 </details>
@@ -129,9 +154,16 @@
                         @csrf
                         <input type="hidden" name="_form" value="cancel">
                         <x-ui.textarea id="cancel-note" name="note" label="Note (optional)" maxlength="500" rows="2" hint="Shown in the order's history, which the customer can read.">{{ $openForm === 'cancel' ? old('note') : '' }}</x-ui.textarea>
+                        <x-payment.cancel-choice :payable="$order" :open-form="$openForm" />
                         <x-ui.button type="submit" variant="danger">Cancel order {{ $order->reference_number }}</x-ui.button>
                     </form>
                 </details>
+            @endif
+            @if ($unclaimedFrom)
+                <p class="flex items-start gap-1.5 text-xs text-app-text-2"><x-ui.icon name="schedule" :size="16" class="mt-px shrink-0" />If it is not paid and collected, it can be marked unclaimed from <x-ui.date :value="$unclaimedFrom" />.</p>
+            @endif
+            @if ($order->requires_prepayment && in_array($order->status, [Status::Accepted], true) && ! $order->paymentStatus()->isSettled())
+                <p class="flex items-start gap-1.5 text-xs font-semibold text-status-amber"><x-ui.icon name="lock" :size="16" class="mt-px shrink-0" />Paid before printing: record the payment before you mark it processing.</p>
             @endif
         </div>
     </section>

@@ -8,7 +8,7 @@
         'blue' => ['awaiting_schedule_confirmation', 'reschedule_proposed', 'partially_paid'],
         'violet' => ['processing'],
         'green' => ['accepted', 'confirmed', 'ready_for_pickup', 'paid'],
-        'gray' => ['completed', 'photoshoot_completed', 'cancelled'],
+        'gray' => ['completed', 'photoshoot_completed', 'cancelled', 'unclaimed'],
         'red' => ['rejected', 'unpaid'],
     ];
 
@@ -17,6 +17,8 @@
     $bookingTones = [
         'requested' => 'amber',
         'proposed' => 'blue',
+        // Phase 10B: confirmed by the studio, waiting for the customer's downpayment
+        'awaiting_downpayment' => 'violet',
         'confirmed' => 'green',
         'rejected' => 'red',
         'cancelled' => 'gray',

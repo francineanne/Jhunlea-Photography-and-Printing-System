@@ -9,7 +9,8 @@
     optional: the booking is paid on the day of the shoot with the usual "Record payment".
 --}}
 @php
-    $initial = ['package' => old('package', ''), 'date' => old('date', $today), 'time' => old('time', ''), 'groupSize' => (int) old('group_size', 1)];
+    $initial = ['package' => old('package', ''), 'date' => old('date', $today), 'time' => old('time', ''), 'groupSize' => (int) old('group_size', 1),
+        'price' => (string) old('confirmed_price', ''), 'waive' => (bool) old('waive')];
 @endphp
 
 @section('main')
@@ -35,7 +36,7 @@
     @endif
 
     <form method="POST" action="{{ route('owner.bookings.walk-in.store') }}" class="mt-6 max-w-3xl space-y-6 pb-24 sm:pb-0"
-        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial), people: @js($people) })">
+        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial), people: @js($people), percent: @js($downpaymentPercent) })">
         @csrf
         <input type="hidden" name="counter_token" value="{{ old('counter_token', $token) }}">
 
@@ -93,8 +94,8 @@
                 <div class="sm:col-span-2">
                     <x-ui.textarea label="Note (optional)" name="notes" rows="2" maxlength="2000" :error="$errors->first('notes')">{{ old('notes') }}</x-ui.textarea>
                 </div>
-                <x-ui.input label="Confirmed price (optional)" name="confirmed_price" inputmode="decimal" :value="old('confirmed_price')" :error="$errors->first('confirmed_price')"
-                    hint="Leave empty to set it later. Paid on the day of the shoot." />
+                <x-ui.input label="Confirmed price" name="confirmed_price" inputmode="decimal" :value="old('confirmed_price')" :error="$errors->first('confirmed_price')"
+                    x-model="price" hint="Needed to record a payment now. Leave empty only when you waive the downpayment." />
             </div>
             <div class="mt-4">
                 <x-ui.checkbox name="outside_schedule" value="1" :checked="(bool) old('outside_schedule')">Confirm anyway if it is outside the photoshoot hours or on a blocked day</x-ui.checkbox>
@@ -105,6 +106,48 @@
                 <p class="mt-1 text-xs text-app-text-2">A time that clashes with another booking, or has already passed, is never allowed, with or without these ticks.</p>
             </div>
         </section>
+
+        {{-- Phase 10B: a walk-in booking is never left waiting for its downpayment: record it (or the full price) now, or waive it --}}
+        @if ($downpaymentPercent > 0)
+            <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="pay-title">
+                <h2 id="pay-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="point_of_sale" :size="20" class="text-brand" />Payment now</h2>
+                @if ($errors->hasAny(['pay_kind', 'pay_method', 'gcash_reference', 'waive_reason']))
+                    <p class="mt-2 text-sm text-status-red" role="alert">{{ $errors->first('pay_kind') ?: ($errors->first('pay_method') ?: ($errors->first('gcash_reference') ?: $errors->first('waive_reason'))) }}</p>
+                @endif
+                <fieldset class="mt-3" x-show="! waive">
+                    <legend class="text-sm font-semibold">What is paid now?</legend>
+                    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                        <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
+                            <input type="radio" name="pay_kind" value="downpayment" class="accent-brand" @checked(old('pay_kind', 'downpayment') === 'downpayment')>
+                            <span>Downpayment ({{ $downpaymentPercent }}%) <span class="font-semibold tabular-nums" x-text="downpaymentText"></span></span>
+                        </label>
+                        <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
+                            <input type="radio" name="pay_kind" value="full" class="accent-brand" @checked(old('pay_kind') === 'full')>
+                            <span>Full price <span class="font-semibold tabular-nums" x-text="fullText"></span></span>
+                        </label>
+                    </div>
+                </fieldset>
+                <fieldset class="mt-3" x-show="! waive" x-data="{ method: @js(old('pay_method', 'cash')) }">
+                    <legend class="text-sm font-semibold">How did the customer pay?</legend>
+                    <div class="mt-2 grid grid-cols-2 gap-2">
+                        @foreach (\App\Enums\PaymentMethod::cases() as $method)
+                            <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
+                                <input type="radio" name="pay_method" value="{{ $method->value }}" x-model="method" class="accent-brand">{{ $method->label() }}
+                            </label>
+                        @endforeach
+                    </div>
+                    <div class="mt-3" x-show="method === 'gcash'">
+                        <x-ui.input label="GCash reference" name="gcash_reference" maxlength="40" :value="old('gcash_reference')" hint="6 to 40 letters, digits or hyphens, from the customer's GCash receipt." />
+                    </div>
+                </fieldset>
+                <div class="mt-4">
+                    <x-ui.checkbox name="waive" value="1" x-model="waive" :checked="(bool) old('waive')">Waive the downpayment (the full price is paid on the day)</x-ui.checkbox>
+                    <div class="mt-2" x-show="waive" x-cloak>
+                        <x-ui.input label="Why is it waived?" name="waive_reason" maxlength="300" :value="old('waive_reason')" hint="Kept in the activity log." />
+                    </div>
+                </div>
+            </section>
+        @endif
 
         <div class="flex flex-wrap justify-end gap-2">
             <x-ui.button :href="route('owner.bookings.index')" variant="outline">Cancel</x-ui.button>

@@ -4,7 +4,7 @@
 
 @php
     // The tab colour dots of the design: waiting for the studio, waiting for the customer, on the schedule, closed
-    $dots = ['requested' => 'bg-status-amber', 'proposed' => 'bg-status-blue', 'confirmed' => 'bg-status-green', 'completed' => 'bg-status-gray', 'rejected' => 'bg-status-red', 'cancelled' => 'bg-status-gray'];
+    $dots = ['requested' => 'bg-status-amber', 'proposed' => 'bg-status-blue', 'awaiting_downpayment' => 'bg-status-violet', 'confirmed' => 'bg-status-green', 'completed' => 'bg-status-gray', 'rejected' => 'bg-status-red', 'cancelled' => 'bg-status-gray'];
     $keep = array_filter(['q' => $search, 'package' => $package, 'from' => $from, 'to' => $to]);
 @endphp
 

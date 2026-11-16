@@ -75,6 +75,31 @@ class BookingTransitionException extends DomainException
         return new self($reason.' Tick "Over the daily limit, book anyway" to book it all the same.');
     }
 
+    public static function noShowTooEarly(): self
+    {
+        return new self('"Did not show up" can be chosen only after the shoot\'s start time.');
+    }
+
+    public static function paymentChoiceRequired(): self
+    {
+        return new self('This booking has a recorded payment. Choose "Keep the payment (not refunded)" or "Refund: void the payment(s)".');
+    }
+
+    public static function refundReasonRequired(): self
+    {
+        return new self('Write the reason for the refund. It is kept with the voided payment.');
+    }
+
+    public static function notAwaitingDownpayment(BookingStatus $status): self
+    {
+        return new self("This booking is {$status->label()}, not awaiting its downpayment. The page may be out of date; please reload it.");
+    }
+
+    public static function deadlineOutOfRange(): self
+    {
+        return new self('Choose a new deadline after now and no later than the start of the shoot.');
+    }
+
     public static function noProposal(): self
     {
         return new self('There is no proposed time to accept.');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Owner\Payments;
 
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
 use Illuminate\Validation\Rule;
@@ -19,6 +20,8 @@ class RecordPaymentRequest extends PaymentActionRequest
             'method' => ['required', 'string', Rule::enum(PaymentMethod::class)],
             'gcash_reference' => ['nullable', 'string', 'required_if:method,'.PaymentMethod::Gcash->value, 'regex:'.Payment::GCASH_REFERENCE_PATTERN],
             'expected_amount' => ['nullable', 'string', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            // Phase 10B: a downpayment, the balance or the full price; empty takes the only one allowed (or the full price)
+            'kind' => ['nullable', 'string', Rule::enum(PaymentKind::class)],
             'confirm' => ['accepted'],
         ];
     }
@@ -33,7 +36,7 @@ class RecordPaymentRequest extends PaymentActionRequest
             'gcash_reference.regex' => 'The GCash reference must be 6 to 40 letters, digits or hyphens.',
             'gcash_reference.string' => 'The GCash reference must be 6 to 40 letters, digits or hyphens.',
             'expected_amount.*' => 'Reload the page and record the payment again.',
-            'confirm.accepted' => 'Tick the box to confirm you received the full amount.',
+            'confirm.accepted' => 'Tick the box to confirm you received the amount.',
         ];
     }
 
@@ -54,5 +57,11 @@ class RecordPaymentRequest extends PaymentActionRequest
         $value = $this->validated('expected_amount');
 
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    /** Phase 10B: what the owner chose to record (null: the only kind allowed, or the full price). */
+    public function paymentKind(): ?PaymentKind
+    {
+        return PaymentKind::tryFrom((string) $this->validated('kind'));
     }
 }

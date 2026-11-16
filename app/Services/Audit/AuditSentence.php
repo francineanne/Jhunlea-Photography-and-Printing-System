@@ -25,8 +25,16 @@ final class AuditSentence
         $status = fn (string $key) => isset($meta[$key]) ? (PrintingOrderStatus::tryFrom((string) $meta[$key])?->label() ?? BookingStatus::tryFrom((string) $meta[$key])?->label() ?? (string) $meta[$key]) : '?';
 
         $text = match ($action) {
-            AuditAction::PaymentRecorded => "Recorded {$subject} (".$money('amount_cents').', '.$method.') for '.($meta['for'] ?? '?').'.',
+            AuditAction::PaymentRecorded => "Recorded {$subject} (".$money('amount_cents').', '.$method.(isset($meta['kind']) && $meta['kind'] !== 'full' ? ', '.$meta['kind'] : '').') for '.($meta['for'] ?? '?').'.',
             AuditAction::PaymentVoided => "Voided {$subject} (".$money('amount_cents').') for '.($meta['for'] ?? '?').'.'.$reason,
+            AuditAction::PaymentRefunded => "Refunded {$subject} (".$money('amount_cents').') when cancelling '.($meta['for'] ?? '?').'.'.$reason,
+            AuditAction::BookingDownpaymentWaived => "Waived the downpayment of {$subject}.".$reason,
+            AuditAction::BookingDeadlineExtended => "Extended the downpayment deadline of {$subject}".(isset($meta['due']) ? ' to '.$meta['due'] : '').'.'.$reason,
+            AuditAction::BookingDownpaymentExpired => "Cancelled {$subject}: the downpayment was not paid by the deadline.",
+            AuditAction::OrderUnclaimed => "Marked {$subject} unclaimed".(isset($meta['days']) ? ' after '.$meta['days'].' days' : '').'.',
+            AuditAction::CustomerPrepaySet => "{$subject} must now pay before printing".(isset($meta['for']) ? ' (unclaimed '.$meta['for'].')' : '').'.',
+            AuditAction::CustomerPrepayCleared => "Cleared the pay-first flag of {$subject}.".$reason,
+            AuditAction::PaymentRulesChanged => 'Changed the payment rules: '.implode(', ', (array) ($meta['keys'] ?? [])).'.',
             AuditAction::ReceiptOpened => "Opened the receipt of {$subject}.",
             AuditAction::OrderWalkInCreated, AuditAction::BookingWalkInCreated => "Made walk-in {$subject}".(isset($meta['customer']) ? ' for '.$meta['customer'] : '').(isset($meta['price_cents']) ? ' ('.$money('price_cents').')' : '').'.',
             AuditAction::OrderStatusChanged, AuditAction::BookingStatusChanged => "Moved {$subject} from ".$status('from').' to '.$status('to').(isset($meta['price_cents']) ? ', confirmed price '.$money('price_cents') : '').'.'.$reason,

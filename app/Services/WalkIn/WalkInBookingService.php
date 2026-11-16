@@ -2,7 +2,10 @@
 
 namespace App\Services\WalkIn;
 
+use App\Enums\AuditAction;
 use App\Enums\BookingStatus;
+use App\Enums\PaymentKind;
+use App\Enums\PaymentMethod;
 use App\Enums\RecordSource;
 use App\Enums\UserRole;
 use App\Exceptions\BookingTransitionException;
@@ -10,12 +13,15 @@ use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
 use App\Models\User;
+use App\Services\Audit\AuditLogger;
 use App\Services\AvailabilityService;
 use App\Services\BookingService;
 use App\Services\BookingTransitionService;
+use App\Services\PaymentService;
 use App\Services\ReferenceNumberService;
 use App\Services\ScheduleConflictService;
 use App\Support\Money;
+use App\Support\ShopSettings;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -30,6 +36,11 @@ use Illuminate\Validation\ValidationException;
  *
  * Phase 10A: a day at the owner's daily limit is booked only with the explicit "over the daily limit" confirmation
  * ($overDailyLimit), which never sets aside a clash or a passed time.
+ *
+ * Phase 10B: a walk-in booking is never left "Awaiting downpayment". In the same transaction the owner records the
+ * downpayment or the full price (cash or GCash, through PaymentService), or ticks "Waive downpayment" with a reason
+ * (audited); a price of ₱0.00 needs neither. Without a price the downpayment must be waived. LOCK ORDER: the caller
+ * (WalkInController) takes the schedule lock, then the PAY counter, before it creates a new walk-in customer.
  *
  * Rules: a clash with a booking that holds the time is NEVER allowed (ScheduleConflictService, the same message as
  * confirm()); a time that has passed is never allowed; the minimum notice and how far ahead one may book do not apply
@@ -68,6 +79,10 @@ class WalkInBookingService
         bool $outsideSchedule,
         string $counterToken,
         bool $overDailyLimit = false,
+        ?PaymentKind $payKind = null,
+        ?PaymentMethod $payMethod = null,
+        ?string $gcashReference = null,
+        ?string $waiveReason = null,
     ): array {
         if ($owner->role !== UserRole::Owner) {
             throw new AuthorizationException('Only the owner makes walk-in bookings.');
@@ -112,11 +127,13 @@ class WalkInBookingService
         }
 
         $price = $this->price($confirmedPrice);
+        $waiveReason = $waiveReason === null || trim($waiveReason) === '' ? null : trim($waiveReason);
+        $this->checkPayment($price, $payKind, $payMethod, $waiveReason);
         $start = Carbon::instance($startsAt)->utc();
         $end = $start->copy()->addMinutes($package->duration_minutes);
 
         try {
-            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $outsideSchedule, $counterToken, $overDailyLimit) {
+            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $outsideSchedule, $counterToken, $overDailyLimit, $payKind, $payMethod, $gcashReference, $waiveReason) {
                 $this->transitions->lockSchedule();
 
                 if (! $this->conflicts->isFree($start, $end)) {
@@ -155,7 +172,9 @@ class WalkInBookingService
                     'starts_at' => $start,
                     'ends_at' => $end,
                     'requested_starts_at' => $start,
-                    'status' => BookingStatus::Confirmed,
+                    // With a payment it starts waiting for it and the payment below confirms it in this transaction
+                    'status' => $payKind !== null ? BookingStatus::AwaitingDownpayment : BookingStatus::Confirmed,
+                    'downpayment_due_at' => $payKind !== null ? $start : null,
                     'source' => RecordSource::WalkIn,
                     'counter_token' => $counterToken,
                     'estimated_price' => $this->bookings->estimate($package),
@@ -165,8 +184,15 @@ class WalkInBookingService
                 $note = 'Created at the counter (walk-in) and confirmed by the studio.'
                     .($price !== null ? ' Price '.Money::format($price).'.' : ' The price is set later.')
                     .($reasons !== [] ? ' Confirmed outside the usual schedule: '.implode(' ', $reasons) : '')
-                    .($overLimit ? ' Booked over the daily limit.' : '');
+                    .($overLimit ? ' Booked over the daily limit.' : '')
+                    .($waiveReason !== null ? ' Downpayment waived: '.$waiveReason : '');
                 $this->transitions->recordCounterBooking($booking, $owner, $note);
+
+                if ($payKind !== null) {
+                    app(PaymentService::class)->record($booking, $owner, $payMethod, $gcashReference, null, $payKind);
+                } elseif ($waiveReason !== null) {
+                    app(AuditLogger::class)->record(AuditAction::BookingDownpaymentWaived, $booking, ['reason' => $waiveReason], actor: $owner);
+                }
 
                 return ['booking' => $booking->refresh(), 'created' => true];
             });
@@ -176,6 +202,37 @@ class WalkInBookingService
             }
 
             throw $e;
+        }
+    }
+
+    /** Phase 10B: a downpayment or the full price with how it was paid, or a waiver with its reason, unless it costs nothing. */
+    private function checkPayment(?string $price, ?PaymentKind $kind, ?PaymentMethod $method, ?string $waiveReason): void
+    {
+        if ($price !== null && Money::toCents($price) === 0) {
+            return;
+        }
+
+        // The owner set no downpayment: the full price is paid on the day, as any confirmed booking
+        if ($kind === null && $waiveReason === null && app(ShopSettings::class)->downpaymentPercent() === 0) {
+            return;
+        }
+
+        if ($kind === null && $waiveReason === null) {
+            $this->fail('pay_kind', $price === null
+                ? 'Without a price, tick "Waive downpayment" and write why, or enter the price and record a payment.'
+                : 'Record the downpayment or the full price now, or tick "Waive downpayment" and write why.');
+        }
+
+        if ($kind !== null && $price === null) {
+            $this->fail('confirmed_price', 'Enter the price to record a payment.');
+        }
+
+        if ($kind === PaymentKind::Balance) {
+            $this->fail('pay_kind', 'Choose the downpayment or the full price.');
+        }
+
+        if ($kind !== null && $method === null) {
+            $this->fail('pay_method', 'Choose how the customer paid: cash or GCash.');
         }
     }
 

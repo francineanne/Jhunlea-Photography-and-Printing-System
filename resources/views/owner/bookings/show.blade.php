@@ -213,6 +213,13 @@
                         @csrf
                         <input type="hidden" name="_form" value="cancel">
                         <x-ui.textarea id="cancel-reason" name="reason" label="Reason (optional)" maxlength="{{ $noteMax }}" rows="2" hint="The customer sees it in the booking.">{{ $openForm === 'cancel' ? old('reason') : '' }}</x-ui.textarea>
+                        {{-- Phase 10B: the preset reason, offered only once the shoot's start time has passed --}}
+                        @if ($booking->starts_at->isPast())
+                            <x-ui.button variant="outline" size="sm" x-on:click="document.getElementById('cancel-reason').value = @js(config('payments.no_show_reason'))">
+                                <x-ui.icon name="person_off" :size="18" />{{ config('payments.no_show_reason') }}
+                            </x-ui.button>
+                        @endif
+                        <x-payment.cancel-choice :payable="$booking" :open-form="$openForm" />
                         <x-ui.button type="submit" variant="danger">Cancel booking {{ $booking->reference_number }}</x-ui.button>
                     </form>
                 </details>

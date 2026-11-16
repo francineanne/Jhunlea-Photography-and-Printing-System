@@ -155,7 +155,9 @@ class PromptPrivacyTest extends TestCase
         $system = $this->fake->lastRequest()->systemInstruction;
         $this->assertStringContainsString("[package #{$match->id}] Maternity Glow", $system);
         $this->assertStringContainsString('PAYMENT RULES', $system);
-        $this->assertStringContainsString('No partial payment and no downpayment', $system);
+        // Phase 10B: the rules from the owner's settings (defaults: 50% downpayment, printing paid first from ₱300.00)
+        $this->assertStringContainsString('A photoshoot is held with a downpayment of 50% of its confirmed price', $system);
+        $this->assertStringContainsString('The system only records payments.', $system);
         $this->assertStringContainsString('Sunday: closed', $system);
         $this->assertLessThan(3200 + 6000, mb_strlen($system), 'The rules plus at most context_max_chars of knowledge');
     }

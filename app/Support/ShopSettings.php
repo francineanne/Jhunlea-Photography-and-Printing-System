@@ -84,6 +84,49 @@ class ShopSettings
         return $this->address() !== null || $this->phone() !== null || $this->email() !== null || $this->openingHours() !== null;
     }
 
+    // Payment rules (Phase 10B): the owner's saved value, else the config default, always inside config payments.limits
+
+    /** The whole-number rules (percent, days, hours); prepay_from is money and read with prepayFrom(). */
+    public const PAYMENT_RULES = ['downpayment_percent', 'downpayment_due_days', 'downpayment_min_hours', 'unclaimed_after_days'];
+
+    public const GCASH = ['gcash_name', 'gcash_number'];
+
+    public function paymentRule(string $field): int
+    {
+        $value = $this->row()?->getAttribute($field);
+        [$min, $max] = config("payments.limits.{$field}");
+
+        return (int) max($min, min($max, $value === null ? (int) config("payments.defaults.{$field}") : (int) $value));
+    }
+
+    public function storedPaymentRule(string $field): int|string|null
+    {
+        return $this->row()?->getAttribute($field);
+    }
+
+    public function downpaymentPercent(): int
+    {
+        return $this->paymentRule('downpayment_percent');
+    }
+
+    /** The confirmed price from which a printing order is paid before printing, as "300.00". */
+    public function prepayFrom(): string
+    {
+        $value = $this->row()?->getAttribute('prepay_from');
+
+        return Money::fromCents(max(0, Money::toCents($value === null ? (string) config('payments.defaults.prepay_from') : (string) $value)));
+    }
+
+    public function gcashName(): ?string
+    {
+        return $this->text('gcash_name');
+    }
+
+    public function gcashNumber(): ?string
+    {
+        return $this->text('gcash_number');
+    }
+
     // Upload limits: always the effective value
 
     public function printingMaxFileMb(): int

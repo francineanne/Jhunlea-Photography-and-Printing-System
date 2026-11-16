@@ -57,6 +57,9 @@ class Briefing extends OwnerTool
             'walk_in_sessions_today_unpaid' => $result->count(PhotographyBooking::query()->where('source', RecordSource::WalkIn)->where('status', BookingStatus::Confirmed)
                 ->whereBetween('starts_at', [LocalTime::dayStartUtc($overview['today']), LocalTime::dayEndUtc($overview['today'])])
                 ->whereDoesntHave('recordedPayment')->count()),
+            // Phase 10B: photoshoots waiting for their downpayment, and today's photoshoots with something left to pay
+            'awaiting_downpayment' => $result->count($overview['downpaymentCount']),
+            'balance_due_today' => $result->count($overview['balanceTodayCount']),
         ];
 
         foreach ($overview['shoots'] as $booking) {
@@ -86,6 +89,9 @@ class Briefing extends OwnerTool
             // Phase 8D: shown only when there is something to do at the counter
             ($d['ready_for_pickup_unpaid'] ?? 0) > 0 ? ['Ready for pickup, not paid yet: '.$d['ready_for_pickup_unpaid'], 'owner.payments.index', ['ready' => 1]] : null,
             ($d['walk_in_sessions_today_unpaid'] ?? 0) > 0 ? ['Walk-in sessions today, not paid yet: '.$d['walk_in_sessions_today_unpaid'], 'owner.bookings.index', ['source' => 'walk_in']] : null,
+            // Phase 10B, only when above zero
+            ($d['awaiting_downpayment'] ?? 0) > 0 ? ['Awaiting downpayment: '.$d['awaiting_downpayment'], 'owner.payments.index'] : null,
+            ($d['balance_due_today'] ?? 0) > 0 ? ['Shoots today with balance due: '.$d['balance_due_today'], 'owner.payments.index'] : null,
             ['Sessions today: '.$d['sessions_today'], 'owner.schedule.index', ['view' => 'day']],
             ['Printing orders to review: '.$d['orders_to_review'], 'owner.orders.index'],
             ['Booking requests to answer: '.$d['booking_requests'], 'owner.bookings.index'],
@@ -102,6 +108,8 @@ class Briefing extends OwnerTool
             "- Awaiting payment: {$d['awaiting_payment']} ({$d['awaiting_payment_count']} order".($d['awaiting_payment_count'] === 1 ? '' : 's').' or booking'.($d['awaiting_payment_count'] === 1 ? '' : 's').').',
             ...(($d['ready_for_pickup_unpaid'] ?? 0) > 0 ? ["- Ready for pickup, not paid yet: {$d['ready_for_pickup_unpaid']}."] : []),
             ...(($d['walk_in_sessions_today_unpaid'] ?? 0) > 0 ? ["- Walk-in sessions today, not paid yet: {$d['walk_in_sessions_today_unpaid']}."] : []),
+            ...(($d['awaiting_downpayment'] ?? 0) > 0 ? ["- Awaiting downpayment: {$d['awaiting_downpayment']}."] : []),
+            ...(($d['balance_due_today'] ?? 0) > 0 ? ["- Shoots today with balance due: {$d['balance_due_today']}."] : []),
             "- Sessions today: {$d['sessions_today']}.",
             "- Printing orders to review: {$d['orders_to_review']}.",
             "- Booking requests to answer: {$d['booking_requests']}.",

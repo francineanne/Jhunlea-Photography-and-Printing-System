@@ -13,18 +13,22 @@ use App\Models\User;
 use App\Services\AvailabilityService;
 use App\Services\BookingTransitionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /** Phase 4C: schedule rules the studio may set aside when it confirms, and conflicts it never may. */
 class ConfirmOverrideTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     private User $owner;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->setUpSchedule();
         $this->owner = User::factory()->owner()->create();

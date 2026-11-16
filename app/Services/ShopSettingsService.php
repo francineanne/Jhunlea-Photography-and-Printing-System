@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 class ShopSettingsService
 {
     /** Settings whose values the audit trail never keeps (only that they changed): the shop's contact details. */
-    public const PRIVATE_KEYS = ['address', 'phone', 'email'];
+    public const PRIVATE_KEYS = ['address', 'phone', 'email', 'gcash_name', 'gcash_number'];
 
     public function __construct(private readonly ShopSettings $settings) {}
 
@@ -34,6 +34,17 @@ class ShopSettingsService
         $this->write(array_map('intval', array_intersect_key($limits, ShopSettings::LIMITS)));
     }
 
+    /**
+     * Phase 10B: the payment rules and the GCash display details, audited as "Payment rules changed" (the GCash name and
+     * number are kept out of the log like the shop's other contact details).
+     *
+     * @param  array<string, int|string|null>  $values
+     */
+    public function savePaymentRules(array $values): void
+    {
+        $this->write(array_intersect_key($values, array_flip([...ShopSettings::PAYMENT_RULES, 'prepay_from', ...ShopSettings::GCASH])), AuditAction::PaymentRulesChanged);
+    }
+
     /** The owner's presence mode of the studio chat (Phase 7B). */
     public function savePresence(OwnerPresenceMode $mode): void
     {
@@ -47,9 +58,9 @@ class ShopSettingsService
     }
 
     /** @param  array<string, mixed>  $values */
-    private function write(array $values): void
+    private function write(array $values, AuditAction $action = AuditAction::SettingsChanged): void
     {
-        DB::transaction(function () use ($values) {
+        DB::transaction(function () use ($values, $action) {
             // Insert only when missing (9B): an INSERT IGNORE on the existing row takes a shared lock before the lock below
             if (! DB::table('shop_settings')->where('id', ShopSetting::ROW_ID)->exists()) {
                 DB::table('shop_settings')->insertOrIgnore(['id' => ShopSetting::ROW_ID, 'created_at' => now(), 'updated_at' => now()]);
@@ -66,7 +77,7 @@ class ShopSettingsService
                     $changes[$key] = ['old' => $before[$key] ?? null, 'new' => $values[$key]];
                 }
 
-                app(AuditLogger::class)->record(AuditAction::SettingsChanged, null, ['keys' => $keys, 'changes' => $changes]);
+                app(AuditLogger::class)->record($action, null, ['keys' => $keys, 'changes' => $changes]);
             }
         });
 

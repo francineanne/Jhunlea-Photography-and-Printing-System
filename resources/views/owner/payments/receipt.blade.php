@@ -83,6 +83,8 @@
             <dt>Date and time</dt><dd>{{ LocalTime::format($payment->received_at, 'M j, Y g:i A') }}</dd>
             <dt>Customer</dt><dd>{{ $payable?->customer?->name ?? 'Deleted account' }}</dd>
             <dt>For</dt><dd><span class="mono">{{ $payable?->reference_number ?? '—' }}</span><br>{{ $what }}</dd>
+            {{-- Phase 10B: a downpayment, a balance or the full price --}}
+            <dt>Payment</dt><dd>{{ $payment->kindText() }}</dd>
             <dt>Method</dt><dd>{{ $payment->method->label() }}</dd>
             @if ($payment->gcash_reference)
                 <dt>GCash reference</dt><dd class="mono">{{ $payment->gcash_reference }}</dd>
@@ -91,6 +93,14 @@
         </dl>
 
         <div class="amount"><span>Amount paid</span><span>{{ Money::format($payment->amount) }}</span></div>
+        @if ($payable && $payable->confirmed_price !== null && ! $voided)
+            {{-- Phase 10B: where the record stands now, from its recorded payments --}}
+            <dl>
+                <dt>Confirmed price</dt><dd>{{ Money::format($payable->confirmed_price) }}</dd>
+                <dt>Paid so far</dt><dd>{{ Money::cents($payable->paidCents()) }}</dd>
+                <dt>Balance</dt><dd>{{ Money::format($payable->amountDue()) }}</dd>
+            </dl>
+        @endif
 
         @if ($voided)
             <div class="void-reason" role="note">

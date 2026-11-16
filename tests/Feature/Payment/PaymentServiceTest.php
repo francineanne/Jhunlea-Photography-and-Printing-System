@@ -24,12 +24,13 @@ use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /** Phase 5A: PaymentService, the derived payment status, the release gate and the price lock. */
 class PaymentServiceTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, SetsPaymentRules;
 
     private User $owner;
 
@@ -38,6 +39,9 @@ class PaymentServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->owner = User::factory()->owner()->create();
         $this->payments = app(PaymentService::class);
@@ -232,7 +236,8 @@ class PaymentServiceTest extends TestCase
     {
         $order = $this->order();
         $payment = $this->payments->record($order, $this->owner, PaymentMethod::Cash);
-        app(StatusTransitionService::class)->transition($order, Status::Cancelled, $this->owner);
+        // Phase 10B: the shop cancelling a paid order says what happens to the money; here it keeps it, then voids by hand
+        app(StatusTransitionService::class)->transition($order, Status::Cancelled, $this->owner, null, null, ['payment_choice' => 'keep']);
 
         $voided = $this->payments->void($order, $payment, $this->owner, 'Order cancelled; money returned at the counter.');
         $this->assertSame(PaymentRecordStatus::Voided, $voided->status);

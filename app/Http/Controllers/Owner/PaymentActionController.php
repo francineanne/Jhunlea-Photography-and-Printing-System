@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\PaymentKind;
 use App\Exceptions\PaymentException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Payments\PaymentActionRequest;
@@ -46,9 +47,9 @@ class PaymentActionController extends Controller
     private function record(RecordPaymentRequest $request): RedirectResponse
     {
         return $this->act($request, function () use ($request) {
-            $payment = $this->payments->record($request->payable(), $request->user(), $request->paymentMethod(), $request->gcashReference(), $request->expectedAmount());
+            $payment = $this->payments->record($request->payable(), $request->user(), $request->paymentMethod(), $request->gcashReference(), $request->expectedAmount(), $request->paymentKind());
 
-            return 'Payment '.$payment->reference_number.' recorded: '.Money::format($payment->amount).' by '.$payment->method->label().'.';
+            return ($payment->kind === PaymentKind::Full ? 'Payment ' : $payment->kind->label().' ').$payment->reference_number.' recorded: '.Money::format($payment->amount).' by '.$payment->method->label().'.';
         });
     }
 
@@ -57,7 +58,7 @@ class PaymentActionController extends Controller
         return $this->act($request, function () use ($request) {
             $payment = $this->payments->void($request->payable(), $request->payment(), $request->user(), $request->reason());
 
-            return 'Payment '.$payment->reference_number.' was voided. It no longer counts, and the payment can be recorded again.';
+            return 'Payment '.$payment->reference_number.' was voided. It no longer counts, and it can be recorded again.';
         });
     }
 

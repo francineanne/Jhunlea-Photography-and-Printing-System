@@ -2,6 +2,7 @@
 
 namespace App\Services\Counter;
 
+use App\Enums\PaymentKind;
 use App\Enums\PaymentStatus;
 use App\Enums\PrintingOrderStatus;
 use App\Models\PhotographyBooking;
@@ -51,11 +52,11 @@ class CounterService
         // Grouped, so the OR stays inside the customer match and never next to the relation's own join condition
         $people = fn (Builder $query) => $query->where(fn (Builder $inner) => $inner->where('name', 'like', $like)->orWhere('phone', 'like', $like));
 
-        $orders = PrintingOrder::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment'])
+        $orders = PrintingOrder::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment', 'activePayments'])
             ->where(fn (Builder $query) => $query->where('reference_number', 'like', $refLike)->orWhereHas('customer', $people))
             ->latest('id')->limit(self::SEARCH_LIMIT)->get();
 
-        $bookings = PhotographyBooking::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment'])
+        $bookings = PhotographyBooking::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment', 'activePayments'])
             ->where(fn (Builder $query) => $query->where('reference_number', 'like', $refLike)->orWhere('contact_number', 'like', $like)->orWhereHas('customer', $people))
             ->latest('id')->limit(self::SEARCH_LIMIT)->get();
 
@@ -71,7 +72,7 @@ class CounterService
             default => null,
         };
 
-        return $query?->with(['customer:id,name,phone,is_walk_in', 'recordedPayment'])->find($id);
+        return $query?->with(['customer:id,name,phone,is_walk_in', 'recordedPayment', 'activePayments'])->find($id);
     }
 
     /**
@@ -85,7 +86,7 @@ class CounterService
 
         return match (true) {
             $record->status->isClosed() => 'This '.$what.' is '.strtolower($record->status->label()).', so there is nothing to pay.',
-            $record->recordedPayment !== null => 'Already paid ('.$record->recordedPayment->reference_number.', '.Money::format($record->recordedPayment->amount).').',
+            $record->paymentStatus() === PaymentStatus::Paid => 'Already paid ('.$record->recordedPayments()->map(fn ($payment) => $payment->reference_number)->implode(', ').', '.Money::cents($record->paidCents()).').',
             $record->confirmed_price === null => 'No confirmed price yet. Confirm the price first; the payment is always the full confirmed price.',
             $record->paymentStatus() === PaymentStatus::NoCharge => 'Nothing to pay: the confirmed price is ₱0.00.',
             ! $record->status->takesPayment() => $isOrder ? 'Accept the order with its price first.' : 'Confirm the booking first.',
@@ -116,7 +117,16 @@ class CounterService
             'status' => $record->status->label(),
             'price' => $record->confirmed_price,
             'price_text' => $record->confirmed_price !== null ? Money::format($record->confirmed_price) : 'No confirmed price',
-            'paid_text' => $record->recordedPayment ? Money::format($record->recordedPayment->amount) : Money::format('0'),
+            'paid_text' => Money::cents($record->paidCents()),
+            // Phase 10B: what may be recorded now (the owner picks one where there are two), and the balance after
+            'balance_text' => $record->confirmed_price !== null ? Money::format((string) $record->amountDue()) : null,
+            'options' => collect($record->paymentOptions())->map(fn (int $cents, string $kind) => [
+                'kind' => $kind,
+                'label' => PaymentKind::from($kind)->short(),
+                'amount' => Money::fromCents($cents),
+                'amount_text' => Money::cents($cents),
+            ])->values()->all(),
+            'due_text' => $record instanceof PhotographyBooking && $record->downpayment_due_at ? LocalTime::format($record->downpayment_due_at) : null,
             'payment' => $record->paymentStatus()->label(),
             'payable' => $blocker === null,
             'blocker' => $blocker,
@@ -158,8 +168,8 @@ class CounterService
             ->paginate(self::PER_PAGE, pageName: 'awaiting')->withQueryString();
 
         $rows = $page->getCollection();
-        $orderRows = PrintingOrder::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment'])->whereKey($rows->where('kind', 'printing_order')->pluck('id')->all())->get()->keyBy('id');
-        $bookingRows = PhotographyBooking::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment'])->whereKey($rows->where('kind', 'photography_booking')->pluck('id')->all())->get()->keyBy('id');
+        $orderRows = PrintingOrder::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment', 'activePayments'])->whereKey($rows->where('kind', 'printing_order')->pluck('id')->all())->get()->keyBy('id');
+        $bookingRows = PhotographyBooking::query()->with(['customer:id,name,phone,is_walk_in', 'recordedPayment', 'activePayments'])->whereKey($rows->where('kind', 'photography_booking')->pluck('id')->all())->get()->keyBy('id');
 
         return $page->setCollection($rows->map(fn ($row) => $row->kind === 'printing_order' ? $orderRows->get($row->id) : $bookingRows->get($row->id))->filter()->values());
     }
@@ -167,6 +177,46 @@ class CounterService
     public function awaitingCount(): int
     {
         return $this->ledger->awaitingOrders()->count() + $this->ledger->awaitingBookings()->count();
+    }
+
+    /**
+     * Phase 10B: photoshoots waiting for their downpayment, the nearest deadline first.
+     *
+     * @return Collection<int, PhotographyBooking>
+     */
+    public function awaitingDownpayment(int $limit = 25): Collection
+    {
+        return $this->ledger->awaitingDownpayment()->with(['customer:id,name,phone,is_walk_in', 'activePayments'])->limit($limit)->get();
+    }
+
+    /**
+     * Phase 10B: today's photoshoots (Manila) that still have a balance (or the full price) to pay, the earliest first.
+     *
+     * @return Collection<int, PhotographyBooking>
+     */
+    public function balanceDueToday(): Collection
+    {
+        return $this->ledger->balanceDueOn(LocalTime::format(Carbon::now('UTC'), 'Y-m-d'))->with(['customer:id,name,phone,is_walk_in', 'activePayments'])->get();
+    }
+
+    /** "2 days 4 hours left", "5 hours left", "less than an hour left", or "past the deadline". */
+    public static function timeLeft(PhotographyBooking $booking): string
+    {
+        $due = $booking->downpayment_due_at;
+
+        if ($due === null || $due->lte(Carbon::now('UTC'))) {
+            return 'Past the deadline';
+        }
+
+        $minutes = (int) Carbon::now('UTC')->diffInMinutes($due);
+        $days = intdiv($minutes, 1440);
+        $hours = intdiv($minutes % 1440, 60);
+
+        return match (true) {
+            $days > 0 => $days.' '.($days === 1 ? 'day' : 'days').($hours > 0 ? ' '.$hours.' '.($hours === 1 ? 'hour' : 'hours') : '').' left',
+            $hours > 0 => $hours.' '.($hours === 1 ? 'hour' : 'hours').' left',
+            default => 'Less than an hour left',
+        };
     }
 
     /** Whole Manila calendar days since the request came in (0 = today). */

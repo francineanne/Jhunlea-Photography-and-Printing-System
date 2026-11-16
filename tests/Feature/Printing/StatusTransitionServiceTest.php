@@ -27,10 +27,12 @@ class StatusTransitionServiceTest extends TestCase
         'accepted>processing', 'accepted>cancelled',
         'processing>ready_for_pickup',
         'ready_for_pickup>completed',
+        // Phase 10B: an unpaid order that waited too long for pickup
+        'ready_for_pickup>unclaimed',
     ];
 
-    /** The only move a customer may make. */
-    private const CUSTOMER_MOVES = ['submitted>cancelled'];
+    /** The only moves a customer may make: cancel, and (Phase 10B) also after seeing the price while nothing is paid. */
+    private const CUSTOMER_MOVES = ['submitted>cancelled', 'accepted>cancelled'];
 
     private function service(): StatusTransitionService
     {
@@ -65,6 +67,11 @@ class StatusTransitionServiceTest extends TestCase
         $order = PrintingOrder::factory()->status($from)->create($to === Status::Completed ? ['confirmed_price' => '0.00'] : []);
         $allowed = in_array("{$from->value}>{$to->value}", self::OWNER_MOVES, true);
 
+        // Phase 10B: Unclaimed needs the order to have waited "Unclaimed after days" (7) since it became ready
+        if ($to === Status::Unclaimed) {
+            OrderStatusHistory::query()->forceCreate(['printing_order_id' => $order->id, 'from_status' => Status::Processing, 'to_status' => Status::ReadyForPickup, 'changed_by' => $owner->id, 'created_at' => now()->subDays(8)]);
+        }
+
         if (! $allowed) {
             $this->expectException(InvalidStatusTransitionException::class);
         }
@@ -73,7 +80,7 @@ class StatusTransitionServiceTest extends TestCase
         $this->service()->transition($order, $to, $owner, 'A reason', '150.00');
 
         $this->assertSame($to, $order->fresh()->status);
-        $this->assertSame(1, OrderStatusHistory::where('printing_order_id', $order->id)->count());
+        $this->assertSame($to === Status::Unclaimed ? 2 : 1, OrderStatusHistory::where('printing_order_id', $order->id)->count());
     }
 
     #[DataProvider('everyPair')]
@@ -214,6 +221,8 @@ class StatusTransitionServiceTest extends TestCase
         $copy = PrintingOrder::find($stale->id);
         $this->service()->transition($copy, Status::UnderReview, $owner);
         $this->service()->transition($copy, Status::Accepted, $owner, null, '150.00');
+        // Phase 10B: a customer may cancel an accepted, unpaid order, so the shop also starts printing it
+        $this->service()->transition($copy, Status::Processing, $owner);
 
         $this->assertSame(Status::Submitted, $stale->status);
 

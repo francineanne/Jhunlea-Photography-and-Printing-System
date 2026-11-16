@@ -165,7 +165,8 @@ class PriceGuardTest extends TestCase
         $this->fake->push(self::reply('answer', 'Yes, ₱1,200 for 100 prints is confirmed by the studio. Delivery is ₱150.'));
         $this->assertSame('Yes, ₱1,200 for 100 prints is confirmed by the studio.', $this->ask('When can I pick up?', AssistantFeature::OwnerAssistSuggest, history: $history)->reply);
 
-        $this->fake->push(self::reply('answer', "- Customer wants 100 prints for ₱1,200\n- Rush fee of ₱300 offered\n- Pickup date still open"));
+        // Phase 10B: ₱300.00 is now a shop fact (the "pay first from" amount in the payment rules), so the invented fee is ₱350
+        $this->fake->push(self::reply('answer', "- Customer wants 100 prints for ₱1,200\n- Rush fee of ₱350 offered\n- Pickup date still open"));
         $this->assertSame("- Customer wants 100 prints for ₱1,200\n- Pickup date still open", $this->ask('When can I pick up?', AssistantFeature::OwnerAssistSummarize, history: $history)->reply);
     }
 

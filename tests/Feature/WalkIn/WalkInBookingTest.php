@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Tests\Feature\Booking\SetsUpSchedule;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /**
@@ -26,7 +27,7 @@ use Tests\TestCase;
  */
 class WalkInBookingTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     private User $owner;
 
@@ -35,6 +36,9 @@ class WalkInBookingTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->setUpSchedule();
         $this->owner = User::factory()->owner()->create();

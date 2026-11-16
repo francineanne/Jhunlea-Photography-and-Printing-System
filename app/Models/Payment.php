@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordStatus;
 use Database\Factories\PaymentFactory;
@@ -13,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * One payment the shop received face to face, for a printing order or a photography booking. Written and voided only
- * by PaymentService; nothing is fillable, and a payment row is never deleted. The amount is the confirmed price at the
- * moment it was recorded.
+ * by PaymentService; nothing is fillable, and a payment row is never deleted. The amount is computed when it is
+ * recorded: the confirmed price (full), the downpayment, or the price minus the downpayment (balance); see PaymentKind.
  */
 class Payment extends Model
 {
@@ -36,6 +37,7 @@ class Payment extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'kind' => PaymentKind::class,
             'method' => PaymentMethod::class,
             'status' => PaymentRecordStatus::class,
             'received_at' => 'datetime',
@@ -73,13 +75,20 @@ class Payment extends Model
     }
 
     /**
-     * The recorded payment of an order or booking, as a query (used inside the locked transactions of the services).
+     * The recorded payments of an order or booking, as a query (used inside the locked transactions of the services).
+     * A photoshoot may have two: a downpayment and its balance (Phase 10B).
      *
      * @return Builder<Payment>
      */
     public static function recordedFor(Model $payable): Builder
     {
         return self::query()->recorded()->where('payable_type', $payable->getMorphClass())->where('payable_id', $payable->getKey());
+    }
+
+    /** "Downpayment", "Balance" or "Full"; older rows (before Phase 10B) are full payments. */
+    public function kindText(): string
+    {
+        return ($this->kind ?? PaymentKind::Full)->short();
     }
 
     public function isRecorded(): bool

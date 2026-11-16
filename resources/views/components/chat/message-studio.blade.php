@@ -1,4 +1,4 @@
-@props(['record' => null, 'type' => null])
+@props(['record' => null, 'type' => null, 'draft' => null])
 
 {{--
     "Message the studio" (7F): opens the chat panel on the Studio tab with a typed draft ("Hi, about PR-000001: "), which
@@ -8,7 +8,8 @@
 --}}
 @php
     $about = $record === null ? null : ['type' => $type, 'id' => $record->id, 'reference' => $record->reference_number];
-    $draft = $about === null ? '' : 'Hi, about '.$about['reference'].': ';
+    // Phase 10B: a page may give its own draft ("Payment for PB-000123, GCash ref: "); the customer still sends it
+    $draft = $draft ?? ($about === null ? '' : 'Hi, about '.$about['reference'].': ');
     $href = route('customer.assistant.page', array_filter(['tab' => 'studio', 'about' => $about ? $about['type'].':'.$about['id'] : null]));
 @endphp
 

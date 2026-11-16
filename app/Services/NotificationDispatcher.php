@@ -31,34 +31,45 @@ use Throwable;
 class NotificationDispatcher
 {
     /** @param  array{payment?: string, amount?: string}  $context */
-    public function orderHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, ?OrderEvent $event, User $actor, array $context = []): void
+    public function orderHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, ?OrderEvent $event, ?User $actor, array $context = []): void
     {
         $kind = match (true) {
             $from === null => NotificationKind::OrderPlaced,
+            $to === PrintingOrderStatus::Unclaimed && $event === null => NotificationKind::OrderUnclaimed,
             $event === OrderEvent::InfoRequested => NotificationKind::OrderInfoRequested,
             $event === OrderEvent::InfoAnswered => NotificationKind::InfoAnswered,
             $event === OrderEvent::PriceChanged => NotificationKind::OrderPriceChanged,
             $event === OrderEvent::PaymentRecorded => NotificationKind::PaymentRecorded,
             $event === OrderEvent::PaymentVoided => NotificationKind::PaymentVoided,
             $event !== null => null,
-            $to === PrintingOrderStatus::Accepted => NotificationKind::OrderAccepted,
+            // Phase 10B: an order paid before printing says so in its one acceptance notice
+            $to === PrintingOrderStatus::Accepted => $order->requires_prepayment ? NotificationKind::OrderPrepayRequired : NotificationKind::OrderAccepted,
             $to === PrintingOrderStatus::Rejected => NotificationKind::OrderRejected,
             $to === PrintingOrderStatus::Processing => NotificationKind::OrderProcessing,
             $to === PrintingOrderStatus::ReadyForPickup => NotificationKind::OrderReady,
             $to === PrintingOrderStatus::Completed => NotificationKind::OrderCompleted,
             // Who cancelled decides who is told: a customer tells the owners, the shop tells the customer
-            $to === PrintingOrderStatus::Cancelled => $actor->role === UserRole::Customer ? NotificationKind::OrderCancelledByCustomer : NotificationKind::OrderCancelledByShop,
+            $to === PrintingOrderStatus::Cancelled => $actor?->role === UserRole::Customer ? NotificationKind::OrderCancelledByCustomer : NotificationKind::OrderCancelledByShop,
             default => null,
         };
 
         $this->send($kind, $order, $actor, $context);
     }
 
-    /** @param  array{payment?: string, amount?: string}  $context */
-    public function bookingHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, ?BookingEvent $event, User $actor, array $context = []): void
+    /** @param  array{payment?: string, amount?: string, kind?: string, due?: string}  $context */
+    public function bookingHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, ?BookingEvent $event, ?User $actor, array $context = []): void
     {
         $kind = match (true) {
             $from === null => NotificationKind::BookingRequested,
+            $event === BookingEvent::DownpaymentExpired => NotificationKind::DownpaymentExpired,
+            $event === BookingEvent::DownpaymentWaived => NotificationKind::DownpaymentWaived,
+            $event === BookingEvent::DeadlineExtended => NotificationKind::DeadlineExtended,
+            $event === BookingEvent::BackToDownpayment => NotificationKind::DownpaymentRequested,
+            $event === BookingEvent::PaymentRecorded && ($context['kind'] ?? null) === 'downpayment' => NotificationKind::DownpaymentRecorded,
+            $event === BookingEvent::PaymentRecorded && ($context['kind'] ?? null) === 'balance' => NotificationKind::BalanceRecorded,
+            // A customer accepting a proposed time that needs a downpayment tells the owners as before
+            $event === BookingEvent::ProposalAccepted => NotificationKind::ProposalAccepted,
+            $to === BookingStatus::AwaitingDownpayment && $event === null => NotificationKind::DownpaymentRequested,
             $event === BookingEvent::ProposalSent => NotificationKind::BookingProposed,
             $event === BookingEvent::ProposalAccepted => NotificationKind::ProposalAccepted,
             $event === BookingEvent::TimeRequestedAgain => NotificationKind::AnotherTimeRequested,
@@ -69,7 +80,7 @@ class NotificationDispatcher
             $to === BookingStatus::Confirmed => NotificationKind::BookingConfirmed,
             $to === BookingStatus::Rejected => NotificationKind::BookingRejected,
             $to === BookingStatus::Completed => NotificationKind::BookingCompleted,
-            $to === BookingStatus::Cancelled => $actor->role === UserRole::Customer ? NotificationKind::BookingCancelledByCustomer : NotificationKind::BookingCancelledByShop,
+            $to === BookingStatus::Cancelled => $actor?->role === UserRole::Customer ? NotificationKind::BookingCancelledByCustomer : NotificationKind::BookingCancelledByShop,
             default => null,
         };
 
@@ -123,11 +134,12 @@ class NotificationDispatcher
         });
     }
 
-    /** @param  array{payment?: string, amount?: string}  $context */
-    private function send(?NotificationKind $kind, PrintingOrder|PhotographyBooking $payable, User $actor, array $context): void
+    /** @param  array{payment?: string, amount?: string, kind?: string, due?: string}  $context */
+    private function send(?NotificationKind $kind, PrintingOrder|PhotographyBooking $payable, ?User $actor, array $context): void
     {
-        // Only the other side is told: a kind for customers needs the shop to have acted, and the reverse
-        if ($kind === null || $kind->audience() === $actor->role) {
+        // Only the other side is told: a kind for customers needs the shop to have acted, and the reverse. A null actor
+        // is the system (Phase 10B: an expired downpayment), which tells the customer
+        if ($kind === null || ($actor !== null && $kind->audience() === $actor->role)) {
             return;
         }
 
@@ -136,12 +148,14 @@ class NotificationDispatcher
             'payable_type' => $payable->getMorphClass(),
             'payable_id' => (int) $payable->getKey(),
             'reference' => (string) $payable->reference_number,
-            'amount' => $context['amount'] ?? (in_array($kind, [NotificationKind::OrderAccepted, NotificationKind::OrderPriceChanged, NotificationKind::BookingPriceChanged], true) ? $payable->confirmed_price : null),
+            'amount' => $context['amount'] ?? (in_array($kind, [NotificationKind::OrderAccepted, NotificationKind::OrderPriceChanged, NotificationKind::BookingPriceChanged, NotificationKind::OrderPrepayRequired], true) ? $payable->confirmed_price : null),
             'payment' => $context['payment'] ?? null,
+            // Phase 10B: the deadline (UTC, ISO) of a downpayment notice
+            'due' => $context['due'] ?? null,
         ], fn ($value) => $value !== null);
 
         $customerId = (int) $payable->customer_id;
-        $actorId = (int) $actor->getKey();
+        $actorId = (int) $actor?->getKey();
 
         DB::afterCommit(function () use ($kind, $data, $customerId, $actorId) {
             try {

@@ -11,6 +11,8 @@ enum AuditAction: string
 {
     case PaymentRecorded = 'payment.recorded';
     case PaymentVoided = 'payment.voided';
+    // Phase 10B: a payment voided as a refund when the shop cancelled the order or booking
+    case PaymentRefunded = 'payment.refunded';
     case ReceiptOpened = 'payment.receipt_opened';
 
     case OrderWalkInCreated = 'order.walk_in_created';
@@ -19,6 +21,7 @@ enum AuditAction: string
     case OrderCancelled = 'order.cancelled';
     case OrderRejected = 'order.rejected';
     case OrderCompleted = 'order.completed';
+    case OrderUnclaimed = 'order.unclaimed';
 
     case BookingWalkInCreated = 'booking.walk_in_created';
     case BookingStatusChanged = 'booking.status_changed';
@@ -26,8 +29,13 @@ enum AuditAction: string
     case BookingCancelled = 'booking.cancelled';
     case BookingRejected = 'booking.rejected';
     case BookingCompleted = 'booking.completed';
+    case BookingDownpaymentWaived = 'booking.downpayment_waived';
+    case BookingDeadlineExtended = 'booking.deadline_extended';
+    case BookingDownpaymentExpired = 'booking.downpayment_expired';
 
     case WalkInCustomerCreated = 'customer.walk_in_created';
+    case CustomerPrepaySet = 'customer.prepay_set';
+    case CustomerPrepayCleared = 'customer.prepay_cleared';
 
     case HoursChanged = 'schedule.hours_changed';
     case ScheduleRulesChanged = 'schedule.rules_changed';
@@ -58,6 +66,7 @@ enum AuditAction: string
     case SessionsSignedOut = 'account.sessions_signed_out';
 
     case SettingsChanged = 'settings.changed';
+    case PaymentRulesChanged = 'settings.payment_rules_changed';
 
     public const GROUPS = [
         'payments' => 'Payments',
@@ -93,6 +102,14 @@ enum AuditAction: string
         return match ($this) {
             self::PaymentRecorded => 'Payment recorded',
             self::PaymentVoided => 'Payment voided',
+            self::PaymentRefunded => 'Payment refunded on cancel',
+            self::BookingDownpaymentWaived => 'Downpayment waived',
+            self::BookingDeadlineExtended => 'Downpayment deadline extended',
+            self::BookingDownpaymentExpired => 'Booking expired (no downpayment)',
+            self::OrderUnclaimed => 'Order marked unclaimed',
+            self::CustomerPrepaySet => 'Customer must pay first',
+            self::CustomerPrepayCleared => 'Pay-first flag cleared',
+            self::PaymentRulesChanged => 'Payment rules changed',
             self::ReceiptOpened => 'Receipt opened',
             self::OrderWalkInCreated => 'Walk-in order made',
             self::OrderStatusChanged => 'Order status changed',
@@ -138,8 +155,9 @@ enum AuditAction: string
     public function metaKeys(): array
     {
         return match ($this->group()) {
-            'payments' => ['amount_cents', 'method', 'for', 'reason', 'date'],
-            'orders', 'bookings' => ['from', 'to', 'price_cents', 'old_cents', 'new_cents', 'reason', 'customer'],
+            'payments' => ['amount_cents', 'method', 'for', 'reason', 'date', 'kind'],
+            'orders', 'bookings' => ['from', 'to', 'price_cents', 'old_cents', 'new_cents', 'reason', 'customer', 'due', 'old_due', 'days'],
+            'customers' => ['reason', 'for'],
             'schedule' => ['hours', 'changes', 'dates', 'date', 'reason'],
             'catalog' => ['kind', 'name'],
             'faq' => ['question'],

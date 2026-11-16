@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Support\LocalTime;
 use App\Support\Money;
+use App\Support\PaymentRules;
 use Carbon\CarbonInterface;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -40,7 +41,14 @@ use Illuminate\Support\Facades\DB;
  *   3. the booking row (locked());
  *   4. the reference counter row (ReferenceNumberService, a new booking or payment), then the inserts.
  * Nothing that already holds a booking, customer or counter row ever asks for the schedule lock afterwards.
- * PaymentService takes only 3 and 4 (booking row, then the PAY counter), never the schedule lock.
+ * PaymentService takes only 3 and 4 (booking row, then the PAY counter), never the schedule lock. The audit chain head
+ * is always the LAST lock (AuditLogger, at the end of each action).
+ *
+ * DOWNPAYMENT (Phase 10B): confirming (or accepting a proposal) needs a downpayment when PaymentRules says so; the
+ * booking then waits as "Awaiting downpayment" until downpayment_due_at and holds its time until then
+ * (PhotographyBooking::scopeHoldingTime). Recording the downpayment or the full price confirms it (PaymentService calls
+ * confirmByPayment() in its own transaction); the owner may also waive it or extend the deadline; expire() cancels it
+ * when the deadline passed (DownpaymentExpiryService runs it, the actor is the system).
  */
 class BookingTransitionService
 {
@@ -55,6 +63,7 @@ class BookingTransitionService
         private readonly ScheduleConflictService $conflicts,
         private readonly AvailabilityService $availability,
         private readonly NotificationDispatcher $notifications,
+        private readonly PaymentRules $rules,
     ) {}
 
     /** Writes the first history row of a new booking. Called by BookingService. */
@@ -69,7 +78,7 @@ class BookingTransitionService
      */
     public function recordCounterBooking(PhotographyBooking $booking, User $owner, string $note): void
     {
-        $this->writeHistory($booking, null, BookingStatus::Confirmed, $owner, $note);
+        $this->writeHistory($booking, null, $booking->status, $owner, $note);
         app(AuditLogger::class)->record(AuditAction::BookingWalkInCreated, $booking, ['price_cents' => AuditLogger::cents($booking->confirmed_price), 'customer' => $booking->customer?->name], actor: $owner);
     }
 
@@ -125,8 +134,29 @@ class BookingTransitionService
 
             $current->confirmed_price = $confirmedPrice;
             $current->hold_expires_at = null;
-            $this->move($current, BookingStatus::Confirmed, $owner, $note);
+            [$to, $note] = $this->booked($current, $note);
+            $this->move($current, $to, $owner, $note);
         }, schedule: true);
+    }
+
+    /**
+     * Where a confirmation lands (Phase 10B): "Awaiting downpayment" with its deadline when the price needs one, else
+     * Confirmed. Returns the status and the history note (the downpayment and its deadline added to it).
+     *
+     * @return array{0: BookingStatus, 1: ?string}
+     */
+    private function booked(PhotographyBooking $current, ?string $note): array
+    {
+        if (! $this->rules->needsDownpayment($current->confirmed_price)) {
+            $current->downpayment_due_at = null;
+
+            return [BookingStatus::Confirmed, $note];
+        }
+
+        $current->downpayment_due_at = $this->rules->dueAt($current->starts_at, Carbon::now('UTC'));
+        $due = 'Downpayment of '.Money::cents($this->rules->downpaymentCents($current->confirmed_price)).' due by '.LocalTime::format($current->downpayment_due_at).'.';
+
+        return [BookingStatus::AwaitingDownpayment, trim($due.' '.($this->clean($note) ?? ''))];
     }
 
     /**
@@ -185,7 +215,8 @@ class BookingTransitionService
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
             $current->hold_expires_at = null;
-            $this->move($current, BookingStatus::Confirmed, $customer, $note, BookingEvent::ProposalAccepted);
+            [$to, $note] = $this->booked($current, $note);
+            $this->move($current, $to, $customer, $note, BookingEvent::ProposalAccepted);
         }, schedule: true);
     }
 
@@ -226,15 +257,25 @@ class BookingTransitionService
         });
     }
 
+    public const KEEP_PAYMENT = 'keep';
+
+    public const REFUND_PAYMENT = 'refund';
+
     /**
      * Either side cancels. A customer may cancel a confirmed booking only until config
-     * booking.customer_cancel_cutoff_hours before it starts; requests and proposals at any time.
+     * booking.customer_cancel_cutoff_hours before it starts; requests, proposals and a booking awaiting its downpayment
+     * at any time. A downpayment the customer paid stays recorded (it is non-refundable, and it stays income).
+     *
+     * Phase 10B: when the SHOP cancels a booking with recorded payments it must say what happens to the money:
+     * KEEP_PAYMENT (not refunded) or REFUND_PAYMENT (every payment is voided as a refund, with $refundReason, in this
+     * transaction). The preset reason "Did not show up" is accepted only after the shoot's start time.
      */
-    public function cancel(PhotographyBooking $booking, User $actor, ?string $reason = null): PhotographyBooking
+    public function cancel(PhotographyBooking $booking, User $actor, ?string $reason = null, ?string $paymentChoice = null, ?string $refundReason = null): PhotographyBooking
     {
         $reason = $this->clean($reason);
+        $refundReason = $this->clean($refundReason);
 
-        return $this->locked($booking, $actor, function (PhotographyBooking $current) use ($actor, $reason) {
+        return $this->locked($booking, $actor, function (PhotographyBooking $current) use ($actor, $reason, $paymentChoice, $refundReason) {
             $this->check($current, BookingStatus::Cancelled, $actor);
 
             $cutoff = (int) config('booking.customer_cancel_cutoff_hours');
@@ -243,12 +284,134 @@ class BookingTransitionService
                 throw BookingTransitionException::tooLateToCancel($cutoff);
             }
 
+            if ($reason !== null && strcasecmp($reason, (string) config('payments.no_show_reason')) === 0 && $current->starts_at->gt(Carbon::now('UTC'))) {
+                throw BookingTransitionException::noShowTooEarly();
+            }
+
+            $paid = $actor->role === UserRole::Owner && Payment::recordedFor($current)->exists();
+
+            if ($paid && ! in_array($paymentChoice, [self::KEEP_PAYMENT, self::REFUND_PAYMENT], true)) {
+                throw BookingTransitionException::paymentChoiceRequired();
+            }
+
+            if ($paid && $paymentChoice === self::REFUND_PAYMENT && $refundReason === null) {
+                throw BookingTransitionException::refundReasonRequired();
+            }
+
             $current->cancellation_reason = $reason;
             $current->proposed_starts_at = null;
             $current->proposed_note = null;
             $current->hold_expires_at = null;
-            $this->move($current, BookingStatus::Cancelled, $actor, $reason);
+            $note = $paid ? trim(($reason ?? '').' '.($paymentChoice === self::REFUND_PAYMENT ? 'The payment was refunded.' : 'The payment is kept (not refunded).')) : $reason;
+            $this->move($current, BookingStatus::Cancelled, $actor, $note);
+
+            if ($paid && $paymentChoice === self::REFUND_PAYMENT) {
+                app(PaymentService::class)->refundAll($current, $actor, $refundReason);
+            }
         });
+    }
+
+    /**
+     * The studio waives the downpayment (Phase 10B): the booking is Confirmed and the full price is due on the day of
+     * the shoot. A reason is required; it is audited.
+     */
+    public function waiveDownpayment(PhotographyBooking $booking, User $owner, string $reason): PhotographyBooking
+    {
+        $reason = $this->clean($reason) ?? throw BookingTransitionException::reasonRequired();
+
+        return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $reason) {
+            $this->ownerOnly($owner);
+
+            if ($current->status !== BookingStatus::AwaitingDownpayment) {
+                throw BookingTransitionException::notAwaitingDownpayment($current->status);
+            }
+
+            $current->downpayment_due_at = null;
+            $this->move($current, BookingStatus::Confirmed, $owner, 'Downpayment waived: '.$reason.' The full price is paid on the day of the shoot.', BookingEvent::DownpaymentWaived);
+            app(AuditLogger::class)->record(AuditAction::BookingDownpaymentWaived, $current, ['reason' => $reason], actor: $owner);
+        });
+    }
+
+    /**
+     * The studio gives the customer more time to pay the downpayment (Phase 10B): a new deadline after now and no later
+     * than the shoot start, with a reason. Under the schedule lock: a deadline that had already passed held nothing, so
+     * the time must still be free.
+     */
+    public function extendDeadline(PhotographyBooking $booking, User $owner, CarbonInterface $dueAt, string $reason): PhotographyBooking
+    {
+        $reason = $this->clean($reason) ?? throw BookingTransitionException::reasonRequired();
+        $due = Carbon::instance($dueAt)->utc()->startOfMinute();
+
+        return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $due, $reason) {
+            $this->ownerOnly($owner);
+
+            if ($current->status !== BookingStatus::AwaitingDownpayment) {
+                throw BookingTransitionException::notAwaitingDownpayment($current->status);
+            }
+
+            if ($due->lte(Carbon::now('UTC')) || $due->gt($current->starts_at)) {
+                throw BookingTransitionException::deadlineOutOfRange();
+            }
+
+            if (! $this->conflicts->isFree($current->starts_at, $current->ends_at, $current->id)) {
+                throw BookingTransitionException::conflict();
+            }
+
+            $old = $current->downpayment_due_at;
+            $current->downpayment_due_at = $due;
+            $current->save();
+
+            $this->writeHistory($current, $current->status, $current->status, $owner, 'New downpayment deadline: '.LocalTime::format($due).'. '.$reason, BookingEvent::DeadlineExtended, ['due' => $due->toIso8601ZuluString()]);
+            app(AuditLogger::class)->record(AuditAction::BookingDeadlineExtended, $current, ['due' => LocalTime::format($due), 'old_due' => $old ? LocalTime::format($old) : null, 'reason' => $reason], actor: $owner);
+        }, schedule: true);
+    }
+
+    /**
+     * Cancels a booking whose downpayment was not paid by its deadline (Phase 10B). The SYSTEM acts: no person, the
+     * history reads "System". Idempotent and safe against a payment at the same moment: the booking row is locked and
+     * read again, and only a booking still "Awaiting downpayment", past its deadline and with no recorded payment is
+     * cancelled. Returns whether it cancelled it.
+     */
+    public function expire(PhotographyBooking $booking): bool
+    {
+        return DB::transaction(function () use ($booking) {
+            $current = PhotographyBooking::query()->lockForUpdate()->find($booking->getKey());
+
+            if ($current === null || $current->status !== BookingStatus::AwaitingDownpayment || $current->downpayment_due_at === null
+                || $current->downpayment_due_at->gt(Carbon::now('UTC')) || Payment::recordedFor($current)->exists()) {
+                return false;
+            }
+
+            $current->cancellation_reason = (string) config('payments.expired_reason');
+            $current->hold_expires_at = null;
+            $this->move($current, BookingStatus::Cancelled, null, $current->cancellation_reason, BookingEvent::DownpaymentExpired);
+            app(AuditLogger::class)->recordAsSystem(AuditAction::BookingDownpaymentExpired, $current);
+
+            $booking->setRawAttributes($current->getAttributes(), true);
+
+            return true;
+        });
+    }
+
+    /**
+     * The downpayment or the full price was recorded on a booking awaiting its downpayment: it is Confirmed now. Called by
+     * PaymentService inside its own locked transaction (the payment's history row tells the customer).
+     */
+    public function confirmByPayment(PhotographyBooking $current, User $owner, Payment $payment): void
+    {
+        $current->downpayment_due_at = null;
+        $this->move($current, BookingStatus::Confirmed, $owner, 'Confirmed: '.strtolower($payment->kind->label()).' '.$payment->reference_number.' recorded.', BookingEvent::ConfirmedByPayment);
+    }
+
+    /**
+     * The downpayment of a Confirmed booking was voided: it waits for a downpayment again, until $dueAt. Called by
+     * PaymentService inside its own locked transaction.
+     */
+    public function backToDownpayment(PhotographyBooking $current, User $owner, CarbonInterface $dueAt): void
+    {
+        $current->downpayment_due_at = Carbon::instance($dueAt)->utc();
+        $note = 'The downpayment was voided. A downpayment of '.Money::cents($this->rules->downpaymentCents((string) $current->confirmed_price)).' is due by '.LocalTime::format($current->downpayment_due_at).'.';
+        $this->move($current, BookingStatus::AwaitingDownpayment, $owner, $note, BookingEvent::BackToDownpayment, ['due' => $current->downpayment_due_at->toIso8601ZuluString()]);
     }
 
     /** The studio marks the photoshoot done, never before its start time. */
@@ -262,7 +425,7 @@ class BookingTransitionService
             }
 
             // The release gate: the photos are released (Completed) only when the shoot is fully paid, or costs nothing
-            if (! PaymentStatus::derive($current->confirmed_price, Payment::recordedFor($current)->exists())->isSettled()) {
+            if (! PaymentStatus::derive($current->confirmed_price, $this->paidCents($current))->isSettled()) {
                 throw BookingTransitionException::notPaid();
             }
 
@@ -298,6 +461,12 @@ class BookingTransitionService
 
             $note = 'Confirmed price changed from '.Money::format($old).' to '.Money::format($new).'.'.($reason ? ' '.$reason : '');
             $this->writeHistory($current, $current->status, $current->status, $owner, $note, BookingEvent::PriceChanged);
+
+            // Phase 10B: a new price that needs no downpayment (for example ₱0.00) confirms a booking waiting for one
+            if ($current->status === BookingStatus::AwaitingDownpayment && ! $this->rules->needsDownpayment($new)) {
+                $current->downpayment_due_at = null;
+                $this->move($current, BookingStatus::Confirmed, $owner, 'No downpayment is due at this price.');
+            }
             app(AuditLogger::class)->record(AuditAction::BookingPriceChanged, $current, ['old_cents' => AuditLogger::cents($old), 'new_cents' => AuditLogger::cents($new), 'reason' => $reason], actor: $owner);
         });
     }
@@ -345,12 +514,25 @@ class BookingTransitionService
         }
     }
 
-    private function move(PhotographyBooking $current, BookingStatus $to, User $actor, ?string $note, ?BookingEvent $event = null): void
+    /** @param  array{due?: string}  $context */
+    private function move(PhotographyBooking $current, BookingStatus $to, ?User $actor, ?string $note, ?BookingEvent $event = null, array $context = []): void
     {
         $from = $current->status;
         $current->status = $to;
         $current->save();
-        $this->writeHistory($current, $from, $to, $actor, $note, $event);
+
+        // The deadline goes with the notice the customer reads when a booking starts waiting for its downpayment
+        if ($to === BookingStatus::AwaitingDownpayment && $current->downpayment_due_at !== null) {
+            $context += ['due' => $current->downpayment_due_at->toIso8601ZuluString(), 'amount' => Money::fromCents($this->rules->downpaymentCents((string) $current->confirmed_price))];
+        }
+
+        $this->writeHistory($current, $from, $to, $actor, $note, $event, $context);
+    }
+
+    /** What the recorded payments add up to, in centavos (read inside the locked transaction). */
+    private function paidCents(PhotographyBooking $current): int
+    {
+        return (int) Payment::recordedFor($current)->get(['amount'])->sum(fn (Payment $payment) => Money::toCents($payment->amount));
     }
 
     /**
@@ -423,9 +605,11 @@ class BookingTransitionService
      * Every history row is written here, and only here the notifications start (NotificationDispatcher decides who is
      * told, after the transaction commits): no history row, no notification.
      *
-     * @param  array{payment?: string, amount?: string}  $context
+     * A null $actor is the system (Phase 10B): the row's changed_by stays empty and reads "System".
+     *
+     * @param  array{payment?: string, amount?: string, kind?: string, due?: string}  $context
      */
-    private function writeHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, User $actor, ?string $note, ?BookingEvent $event = null, array $context = []): void
+    private function writeHistory(PhotographyBooking $booking, ?BookingStatus $from, BookingStatus $to, ?User $actor, ?string $note, ?BookingEvent $event = null, array $context = []): void
     {
         $history = new BookingStatusHistory;
         $history->forceFill([
@@ -433,13 +617,13 @@ class BookingTransitionService
             'from_status' => $from,
             'to_status' => $to,
             'event' => $event,
-            'changed_by' => $actor->getKey(),
+            'changed_by' => $actor?->getKey(),
             'note' => $note,
         ])->save();
 
         // Audit trail (8E): every real status move (a proposal, an acceptance, a new time asked are moves too), in the
         // action's transaction; payments and prices log themselves
-        if ($from !== null && $from !== $to && ! in_array($event, [BookingEvent::PaymentRecorded, BookingEvent::PaymentVoided, BookingEvent::PriceChanged], true)) {
+        if ($actor !== null && $from !== null && $from !== $to && ! in_array($event, [BookingEvent::PaymentRecorded, BookingEvent::PaymentVoided, BookingEvent::PriceChanged, BookingEvent::DownpaymentWaived], true)) {
             app(AuditLogger::class)->record(match ($to) {
                 BookingStatus::Cancelled => AuditAction::BookingCancelled,
                 BookingStatus::Rejected => AuditAction::BookingRejected,

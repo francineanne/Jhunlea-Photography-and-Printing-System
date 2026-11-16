@@ -87,7 +87,7 @@ class CounterPaymentTest extends TestCase
         $this->pay($order, ['method' => 'gcash'])->assertStatus(422)->assertJsonValidationErrors('gcash_reference');
         $this->pay($order, ['method' => 'card'])->assertStatus(422)->assertJsonValidationErrors('method');
         $this->pay($order, ['expected_amount' => '1000.00'])->assertStatus(422);
-        $this->pay($order, ['cash_tendered' => '1849.99'])->assertStatus(422)->assertJsonPath('message', fn ($m) => str_contains($m, 'less than the full amount'));
+        $this->pay($order, ['cash_tendered' => '1849.99'])->assertStatus(422)->assertJsonPath('message', fn ($m) => str_contains($m, 'less than the amount due'));
         $this->assertSame(0, Payment::query()->count());
 
         // Targets that cannot be selected, each with its plain reason

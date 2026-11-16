@@ -44,6 +44,7 @@ class PhotographyBooking extends Model
             'requested_starts_at' => 'datetime',
             'proposed_starts_at' => 'datetime',
             'hold_expires_at' => 'datetime',
+            'downpayment_due_at' => 'datetime',
             'group_size' => 'integer',
             'wants_prints' => 'boolean',
             'estimated_price' => 'decimal:2',
@@ -103,9 +104,11 @@ class PhotographyBooking extends Model
     | A booking holds time when it is
     |   - Confirmed or Completed (its session time), or
     |   - Requested, its hold has not run out and its time is still ahead (its requested time), or
-    |   - Proposed, its hold has not run out and the proposed time is still ahead (the PROPOSED time, see heldStart()).
-    | A hold that ran out simply stops holding: nothing is stored or scheduled, the request stays for the studio.
-    | Phase 10B adds its case ("Awaiting downpayment" until downpayment_due_at) to these two methods and nowhere else.
+    |   - Proposed, its hold has not run out and the proposed time is still ahead (the PROPOSED time, see heldStart()), or
+    |   - Awaiting downpayment (Phase 10B) and its downpayment deadline (downpayment_due_at) has not passed.
+    | A hold that ran out simply stops holding: nothing is stored or scheduled, the request stays for the studio. An
+    | "Awaiting downpayment" booking past its deadline is cancelled by DownpaymentExpiryService; it holds nothing even
+    | before that runs.
     */
 
     /** @param  Builder<PhotographyBooking>  $query */
@@ -118,7 +121,9 @@ class PhotographyBooking extends Model
                 ->orWhere(fn (Builder $request) => $request->where('status', BookingStatus::Requested)
                     ->where('hold_expires_at', '>', $now)->where('starts_at', '>', $now))
                 ->orWhere(fn (Builder $proposal) => $proposal->where('status', BookingStatus::Proposed)
-                    ->where('hold_expires_at', '>', $now)->where('proposed_starts_at', '>', $now));
+                    ->where('hold_expires_at', '>', $now)->where('proposed_starts_at', '>', $now))
+                ->orWhere(fn (Builder $awaiting) => $awaiting->where('status', BookingStatus::AwaitingDownpayment)
+                    ->where('downpayment_due_at', '>', $now));
         });
     }
 
@@ -132,6 +137,7 @@ class PhotographyBooking extends Model
             BookingStatus::Requested => $this->hold_expires_at !== null && $this->hold_expires_at->gt($now) && $this->starts_at->gt($now),
             BookingStatus::Proposed => $this->hold_expires_at !== null && $this->hold_expires_at->gt($now)
                 && $this->proposed_starts_at !== null && $this->proposed_starts_at->gt($now),
+            BookingStatus::AwaitingDownpayment => $this->downpayment_due_at !== null && $this->downpayment_due_at->gt($now),
             default => false,
         };
     }

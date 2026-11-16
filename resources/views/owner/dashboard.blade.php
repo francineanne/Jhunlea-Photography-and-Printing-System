@@ -23,8 +23,11 @@
         ['label' => 'Waiting for review', 'pill' => 'Printing', 'tone' => 'amber', 'value' => $data['reviewCount'], 'text' => 'Orders submitted or under review', 'url' => route('owner.orders.index', ['status' => 'submitted'])],
         ['label' => 'Photoshoot requests', 'pill' => 'To answer', 'tone' => 'blue', 'value' => $data['requestCount'], 'text' => 'Requests waiting for your answer', 'url' => route('owner.bookings.index', ['status' => 'requested'])],
         ['label' => 'Shoots today', 'pill' => 'Confirmed', 'tone' => 'green', 'value' => $data['shootCount'], 'text' => LocalTime::format(Carbon::now('UTC'), 'D, M j'), 'url' => route('owner.schedule.index', ['view' => 'day', 'date' => $data['today']])],
+        // Phase 10B
+        ['label' => 'Awaiting downpayment', 'pill' => 'Deadline', 'tone' => 'violet', 'value' => $data['downpaymentCount'], 'text' => 'Confirmed shoots waiting for their downpayment', 'url' => route('owner.payments.index').'#downpayments'],
+        ['label' => 'Balance due today', 'pill' => 'At the shoot', 'tone' => 'amber', 'value' => $data['balanceTodayCount'], 'text' => 'Shoots today with something left to pay', 'url' => route('owner.payments.index').'#downpayments'],
     ];
-    $pills = ['amber' => 'bg-status-amber-bg text-status-amber', 'blue' => 'bg-status-blue-bg text-status-blue', 'green' => 'bg-status-green-bg text-status-green'];
+    $pills = ['amber' => 'bg-status-amber-bg text-status-amber', 'blue' => 'bg-status-blue-bg text-status-blue', 'green' => 'bg-status-green-bg text-status-green', 'violet' => 'bg-status-violet-bg text-status-violet'];
 @endphp
 
 @section('main')

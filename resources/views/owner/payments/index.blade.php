@@ -56,6 +56,7 @@
     @endif
 
     @include('owner.payments._queues')
+    @include('owner.payments._downpayments')
     @include('owner.payments._counter-modal')
 
     @if ($errors->any())
@@ -194,7 +195,7 @@
                                         @endif
                                     </td>
                                     <td class="max-w-48 px-4 py-4"><p class="truncate font-semibold" title="{{ $payment->payable?->customer?->name }}">{{ $payment->payable?->customer?->name ?? 'Deleted account' }}</p></td>
-                                    <td class="whitespace-nowrap px-4 py-4 text-right font-bold tabular-nums">{{ Money::format($payment->amount) }}</td>
+                                    <td class="whitespace-nowrap px-4 py-4 text-right font-bold tabular-nums">{{ Money::format($payment->amount) }}<span class="block text-[11px] font-semibold text-app-text-2">{{ $payment->kindText() }}</span></td>
                                     <td class="px-4 py-4">
                                         <span class="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold dark:bg-white/10"><x-ui.icon :name="$payment->method->icon()" :size="14" />{{ $payment->method->label() }}</span>
                                         @if ($payment->gcash_reference)
@@ -225,7 +226,7 @@
                             <dl class="mt-3 grid grid-cols-2 gap-3 text-sm">
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Amount</dt>
-                                    <dd class="font-bold tabular-nums">{{ Money::format($payment->amount) }}</dd>
+                                    <dd class="font-bold tabular-nums">{{ Money::format($payment->amount) }} <span class="text-xs font-semibold text-app-text-2">{{ $payment->kindText() }}</span></dd>
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Method</dt>

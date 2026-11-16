@@ -205,9 +205,9 @@ return [
             // Phase 8D: the counter on the Payments page (8B) is the usual place to record a payment
             'record_payment' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
                 'Open Payments and press Record payment.',
-                'Find the order or booking by customer name, phone, or the PR- or PB- number, and choose it. It needs a confirmed price; the amount to collect is always the full confirmed price (no partial payment or downpayment).',
+                'Find the order or booking by customer name, phone, or the PR- or PB- number, and choose it. It needs a confirmed price; the amount is worked out for you: a photoshoot waiting for its downpayment shows Downpayment or Full, one with its downpayment recorded shows Balance, everything else the full confirmed price.',
                 'Choose Cash or GCash. For GCash type the GCash reference number. For cash you may type the cash received: it only works out the change and is not saved.',
-                'Tick "I collected the full amount", press Continue, check the details and press Record payment.',
+                'Tick "I collected the amount", press Continue, check the details and press Record payment. Record a GCash transfer only after you see it in the shop\'s GCash app.',
                 'You get the PAY number; press Print receipt if the customer wants one. You can also record it from the Payment card of the order or booking.']],
             'payment_receipt' => ['page' => 'Payments and counter', 'route' => 'owner.payments.index', 'steps' => [
                 'After recording a payment press Print receipt, or press Print receipt on its row in the Payments ledger or on the order or booking.',

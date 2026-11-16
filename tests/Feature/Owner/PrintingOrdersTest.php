@@ -12,11 +12,12 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 class PrintingOrdersTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, SetsPaymentRules;
 
     private User $owner;
 
@@ -25,6 +26,9 @@ class PrintingOrdersTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->owner = User::factory()->owner()->create(['name' => 'Shop Owner']);
         $this->customer = User::factory()->create(['name' => 'Maria Santos', 'email' => 'maria@example.test', 'phone' => '0917 000 0000']);

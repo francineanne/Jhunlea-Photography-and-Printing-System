@@ -228,8 +228,22 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
   - [ ] Ang calendar ng owner ay hindi pa nagpapakita kung alin sa mga request ang may hawak na oras (nasa booking detail lang)
   - [ ] Ang no-JavaScript na listahan ng oras ay walang timeline (may "ends" at ang paalala lang)
 
-### 10B — Downpayment (hindi pa nasisimulan)
-- [ ] Downpayment na may deadline, status na "Awaiting downpayment", at awtomatikong pag-release ng oras. Idadagdag ang kaso nito sa `scopeHoldingTime()` at `holdsTime()` lang.
+### 10B — Payment rules (branch `phase-10b-payments`) · built, naghihintay ng review
+- [x] Isang migration (`2026_11_20_100000_add_downpayments_and_payment_rules`): `payments.kind` at bagong unique index, `downpayment_due_at`, `requires_prepayment`, `users.prepay_required`, mga payment rule sa `shop_settings`, at `changed_by` na puwedeng walang laman ("System"). Walang kinakansela o binabagong record.
+- [x] Downpayment ng photoshoot: status na "Awaiting downpayment", deadline, hold hanggang deadline (sa iisang holding rule), extend at waive ng owner, at awtomatikong pag-cancel (`bookings:expire-unpaid` tuwing 15 minuto at lazy runner sa mga page)
+- [x] Payment kinds (full, downpayment, balance), paid so far at balance sa card, counter, slip at ledger; balance pagkatapos lang ng downpayment
+- [x] Printing: bayad muna mula ₱300 (setting), puwedeng i-cancel ng customer ang Accepted na wala pang bayad, Unclaimed at ang pay-first flag ng customer
+- [x] Keep o refund kapag kinansela ng shop ang may bayad; "Did not show up" pagkatapos lang ng oras ng shoot; non-refundable na downpayment kapag customer ang nag-cancel
+- [x] How to pay box at GCash name at number (display lang); Payment rules sa Settings na puwedeng i-edit (audited)
+- [x] Walk-in booking: downpayment o full ngayon, o waiver na may dahilan; "Possible match" bago gumawa ng bagong walk-in
+- [x] Notifications, audit actions, counter lists, overview at Briefing; si Lumi ay sumusunod sa settings
+- [x] Tests: `tests/Feature/Payment/DownpaymentTest.php`, `tests/Feature/Printing/PrepaymentTest.php`, at apat na MySQL race (`test_k` hanggang `test_n`)
+- [ ] Bukas pa (10B):
+  - [ ] Hindi bumabalik sa "Awaiting downpayment" ang booking kapag na-void ang FULL payment (downpayment lang ang nasa rule); pag-usapan
+  - [ ] Ang no-JavaScript na Record payment na may dalawang kind ay walang stale-amount check (kinukuwenta ng server ang halaga)
+  - [ ] Live eval ni Lumi (`assistant:eval --live`) pagkatapos ng 10B; ang fake provider ay hindi sumusukat ng sagot
+  - [ ] Ang cron line sa hosting para sa scheduler; walang reminder bago mag-deadline
+  - [ ] Totoong phone check ng How to pay, counter at cancel forms
 
 ---
 

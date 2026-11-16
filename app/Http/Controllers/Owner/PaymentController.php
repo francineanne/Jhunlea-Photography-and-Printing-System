@@ -38,6 +38,9 @@ class PaymentController extends Controller
             'readyCount' => $counter->readyCount(),
             'awaitingQueue' => $counter->awaitingPayment(),
             'awaitingCount' => $counter->awaitingCount(),
+            // Phase 10B: downpayments due and today's balances
+            'awaitingDown' => $counter->awaitingDownpayment(),
+            'balanceToday' => $counter->balanceDueToday(),
             'pay' => $pay,
         ]);
     }

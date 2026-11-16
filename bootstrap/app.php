@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\ExpireUnpaidDownpayments;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,7 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['role' => EnsureRole::class]);
+        // Phase 10B: 'expire.downpayments' cancels overdue unpaid downpayments before booking and payment pages
+        $middleware->alias(['role' => EnsureRole::class, 'expire.downpayments' => ExpireUnpaidDownpayments::class]);
 
         // Trust X-Forwarded-* only from a tunnel on this machine (ngrok), so asset links use https; never '*' (spoofable IPs break rate limits)
         $middleware->trustProxies(at: ['127.0.0.1', '::1']);

@@ -56,15 +56,16 @@ class CounterController extends Controller
         $error = $record === null ? 'That order or booking was not found.' : $this->counter->blocker($record);
         $tendered = $request->validated('cash_tendered');
 
-        // The change calculator only: cash received below the full amount is a mistake, never a partial payment
+        // The change calculator only: cash received below the amount due (the downpayment, the balance or the full price)
+        // is a mistake, never a smaller payment
         if ($error === null && $tendered !== null && $request->paymentMethod() === PaymentMethod::Cash
             && Money::toCents($tendered) < Money::toCents((string) $request->validated('expected_amount'))) {
-            $error = 'The cash received is less than the full amount. Collect the full amount; partial payments are not taken.';
+            $error = 'The cash received is less than the amount due. Collect the whole amount; smaller amounts are not recorded.';
         }
 
         if ($error === null) {
             try {
-                $payment = $payments->record($record, $request->user(), $request->paymentMethod(), $request->gcashReference(), (string) $request->validated('expected_amount'));
+                $payment = $payments->record($record, $request->user(), $request->paymentMethod(), $request->gcashReference(), (string) $request->validated('expected_amount'), $request->paymentKind());
             } catch (PaymentException $e) {
                 $error = $e->getMessage();
             }

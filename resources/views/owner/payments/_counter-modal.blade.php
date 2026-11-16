@@ -71,8 +71,9 @@
                     <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
                         <div class="rounded-control bg-neutral-100 p-2 dark:bg-white/5"><dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Total</dt><dd class="font-semibold tabular-nums" x-text="target.price_text"></dd></div>
                         <div class="rounded-control bg-neutral-100 p-2 dark:bg-white/5"><dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Paid so far</dt><dd class="font-semibold tabular-nums" x-text="target.paid_text"></dd></div>
-                        <div class="rounded-control bg-brand/10 p-2"><dt class="text-[10px] font-bold uppercase tracking-wider text-brand">To collect</dt><dd class="font-bold tabular-nums text-brand" x-text="target.payable ? target.price_text : '—'"></dd></div>
+                        <div class="rounded-control bg-brand/10 p-2"><dt class="text-[10px] font-bold uppercase tracking-wider text-brand">To collect</dt><dd class="font-bold tabular-nums text-brand" x-text="target.payable ? amountText : '—'"></dd></div>
                     </dl>
+                    <p x-show="target.due_text" class="mt-2 text-xs text-app-text-2">Downpayment deadline: <span class="font-semibold" x-text="target.due_text"></span></p>
 
                     <template x-if="! target.payable">
                         <p role="note" class="mt-4 flex items-start gap-2 rounded-control border border-app-border bg-neutral-100 p-3 text-sm dark:bg-white/5">
@@ -81,6 +82,18 @@
                     </template>
 
                     <div x-show="target.payable" class="mt-5 space-y-4">
+                        {{-- Phase 10B: a booking waiting for its downpayment may also be paid in full at once --}}
+                        <fieldset x-show="target.options && target.options.length > 1">
+                            <legend class="text-sm font-semibold">What is paid now?</legend>
+                            <div class="mt-2 grid grid-cols-2 gap-2">
+                                <template x-for="option in target.options" x-bind:key="option.kind">
+                                    <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
+                                        <input type="radio" name="counter_kind" x-bind:value="option.kind" x-model="kind" class="accent-brand">
+                                        <span><span class="font-semibold" x-text="option.label"></span> <span class="tabular-nums" x-text="option.amount_text"></span></span>
+                                    </label>
+                                </template>
+                            </div>
+                        </fieldset>
                         <fieldset>
                             <legend class="text-sm font-semibold">How did the customer pay?</legend>
                             <div class="mt-2 grid grid-cols-2 gap-2">
@@ -119,7 +132,7 @@
 
                         <label class="flex min-h-11 cursor-pointer items-start gap-3 rounded-control border border-app-border p-3 text-sm">
                             <input type="checkbox" x-model="collected" class="mt-0.5 size-5 shrink-0 accent-brand">
-                            <span><strong>I collected the full amount</strong> <span x-text="'(' + target.price_text + ')'"></span> from the customer, face to face.</span>
+                            <span><strong>I collected the amount</strong> <span x-text="'(' + amountText + ')'"></span> from the customer (in person, or a GCash transfer I checked).</span>
                         </label>
                     </div>
                 </div>
@@ -133,7 +146,7 @@
                     <p class="text-sm text-app-text-2">Check the details. A recorded payment marks this as paid.</p>
                     <dl class="mt-4 divide-y divide-app-border rounded-control border border-app-border text-sm">
                         <div class="flex justify-between gap-3 p-3"><dt class="text-app-text-2">For</dt><dd class="text-right"><span class="font-mono font-semibold" x-text="target.reference"></span><span class="block text-xs text-app-text-2" x-text="target.customer + ' · ' + target.what"></span></dd></div>
-                        <div class="flex justify-between gap-3 p-3"><dt class="text-app-text-2">Amount</dt><dd class="text-lg font-bold tabular-nums" x-text="target.price_text"></dd></div>
+                        <div class="flex justify-between gap-3 p-3"><dt class="text-app-text-2">Amount</dt><dd class="text-lg font-bold tabular-nums" x-text="amountText"></dd></div>
                         <div class="flex justify-between gap-3 p-3"><dt class="text-app-text-2">Method</dt><dd class="text-right font-semibold" x-text="method === 'cash' ? 'Cash' : 'GCash · ' + gcash.trim().toUpperCase()"></dd></div>
                         <div x-show="changeText" class="flex justify-between gap-3 p-3"><dt class="text-app-text-2">Change to give</dt><dd class="font-semibold tabular-nums" x-text="changeText"></dd></div>
                     </dl>

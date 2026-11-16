@@ -73,7 +73,7 @@ class AuditTrailTest extends TestCase
         $row = AuditLog::query()->sole();
         $this->assertSame(AuditAction::PaymentRecorded, $row->action);
         $this->assertSame(['payment', $payment->id, $payment->reference_number], [$row->subject_type, $row->subject_id, $row->subject_label]);
-        $this->assertSame(['amount_cents' => 50000, 'for' => $order->reference_number, 'method' => 'gcash'], collect($row->meta)->sortKeys()->all());
+        $this->assertSame(['amount_cents' => 50000, 'for' => $order->reference_number, 'kind' => 'full', 'method' => 'gcash'], collect($row->meta)->sortKeys()->all());
         $this->assertSame(['Jhun Owner', 'owner', $this->owner->id], [$row->actor_name, $row->actor_role, $row->actor_id]);
         $this->assertStringContainsString("Recorded {$payment->reference_number} (₱500.00, GCash) for {$order->reference_number}.", $row->summary);
 

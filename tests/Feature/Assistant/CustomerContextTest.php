@@ -76,7 +76,8 @@ class CustomerContextTest extends TestCase
         $this->assertStringContainsString('Status: Accepted.', $line);
         $this->assertStringContainsString('Price: '.$unpaid->confirmedText().' (confirmed).', $line);
         $this->assertStringContainsString('Unpaid; ₱1,500.00 to pay in full at the shop, in one payment (cash or GCash).', $line);
-        $this->assertStringContainsString('The customer cannot cancel it online now.', $line);
+        // Phase 10B: an accepted order with nothing paid may still be cancelled online
+        $this->assertStringContainsString('The customer can cancel it online now.', $line);
 
         $line = $this->line($system, 'PR-000103');
         $this->assertStringContainsString('Status: Ready for pickup.', $line);
@@ -218,7 +219,9 @@ class CustomerContextTest extends TestCase
             $this->assertStringEndsWith(PromptBuilder::LATEST_ONLY, $system);
 
             foreach (['They are the ONLY source for this customer\'s own orders', 'Never say or imply a status, date, time, amount or payment that the records do not show',
-                'You cannot change, cancel, reschedule or confirm anything, and you cannot record a payment', 'There is no partial payment and no downpayment',
+                'You cannot change, cancel, reschedule or confirm anything, and you cannot record a payment',
+                // Phase 10B: the payment rules come from the settings; the record rules point to them and never promise a refund
+                'follow the PAYMENT RULES above and each record\'s own payment line', 'Never promise a refund, a waiver, a discount or more time to pay',
                 'ask ONE short question that names the options', 'These records belong to this customer only'] as $rule) {
                 $this->assertStringContainsString($rule, $system);
             }

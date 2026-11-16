@@ -11,12 +11,13 @@ use App\Models\PhotographyBooking;
 use App\Models\User;
 use App\Services\BookingTransitionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /** Phase 4C: the customer's own bookings, one booking, cancelling and answering a proposed time. */
 class MyBookingsTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     private User $customer;
 
@@ -25,6 +26,9 @@ class MyBookingsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->setUpSchedule();
         $this->customer = User::factory()->create(['name' => 'Ana Customer']);

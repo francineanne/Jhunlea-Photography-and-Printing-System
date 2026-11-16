@@ -19,6 +19,29 @@ export const walkInCustomer = ({ url, picked = null, mode = 'search' }) => ({
     searching: false,
     picked,
     timer: null,
+    // Phase 10B: existing customers that look like the new walk-in being typed (name or phone)
+    matches: [],
+    matchTimer: null,
+
+    checkNew(term) {
+        clearTimeout(this.matchTimer);
+        term = (term ?? '').trim();
+        if (term.length < 3) {
+            this.matches = [];
+
+            return;
+        }
+        this.matchTimer = setTimeout(async () => {
+            const data = await getJson(url + '?q=' + encodeURIComponent(term)).catch(() => null);
+            this.matches = (data?.customers ?? []).slice(0, 3);
+        }, 300);
+    },
+
+    useMatch(customer) {
+        this.mode = 'search';
+        this.matches = [];
+        this.pick(customer);
+    },
 
     search() {
         clearTimeout(this.timer);
@@ -122,7 +145,27 @@ export const walkInOrder = ({ priceUrl, perPage, initial }) => ({
 });
 
 // The walk-in booking: the free start times of the chosen package on the chosen day
-export const walkInBooking = ({ slotsUrl, initial, people = {} }) => ({
+export const walkInBooking = ({ slotsUrl, initial, people = {}, percent = 0 }) => ({
+    // Phase 10B: the price typed, and the downpayment worked out like the server does (rounded up to the peso)
+    price: initial.price ?? '',
+    waive: initial.waive ?? false,
+
+    get priceCents() {
+        const value = Number(String(this.price).replace(/,/g, ''));
+
+        return Number.isFinite(value) && value > 0 ? Math.round(value * 100) : 0;
+    },
+
+    get downpaymentText() {
+        if (!this.priceCents) return '';
+
+        return pesos(Math.min(this.priceCents, Math.ceil((this.priceCents * percent) / 10000) * 100));
+    },
+
+    get fullText() {
+        return this.priceCents ? pesos(this.priceCents) : '';
+    },
+
     package: initial.package ?? '',
     date: initial.date ?? '',
     time: initial.time ?? '',

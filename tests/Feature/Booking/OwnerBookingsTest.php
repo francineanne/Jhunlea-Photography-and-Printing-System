@@ -15,12 +15,13 @@ use App\Models\User;
 use App\Services\BookingTransitionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /** Phase 4C: the owner's booking list, one booking with its schedule panel, and the studio's actions. */
 class OwnerBookingsTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     private User $owner;
 
@@ -29,6 +30,9 @@ class OwnerBookingsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->setUpSchedule();
         $this->owner = User::factory()->owner()->create(['name' => 'Jhun Owner']);

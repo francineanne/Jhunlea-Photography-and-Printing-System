@@ -28,6 +28,7 @@ use App\Services\WalkIn\WalkInCustomerService;
 use App\Services\WalkIn\WalkInOrderService;
 use App\Support\LocalTime;
 use App\Support\Money;
+use App\Support\ShopSettings;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -136,6 +137,8 @@ class WalkInController extends Controller
         return view('owner.walk-in.booking', [
             'packages' => $packages,
             'today' => LocalTime::format(now(), 'Y-m-d'),
+            // Phase 10B: with a downpayment rule the form takes the downpayment (or the full price) now, or a waiver
+            'downpaymentPercent' => app(ShopSettings::class)->downpaymentPercent(),
             // Phase 10A: who each package is for, so the people field starts at the minimum and stays in range
             'people' => $packages->mapWithKeys(fn (PhotographyPackage $package) => [$package->id => [
                 'min' => $package->minPeople(), 'max' => $package->max_people, 'rule' => BookingService::groupSizeMessage($package),
@@ -186,6 +189,9 @@ class WalkInController extends Controller
                 // walk-in customer writes an audit row (the chain head lock), and confirm() takes the schedule lock
                 // before the head, so the schedule lock must be taken before the customer is created
                 app(BookingTransitionService::class)->lockSchedule();
+                // Phase 10B: a payment may be recorded below, so the PAY counter is locked before the audit head (the
+                // new customer's audit row), the same order as every other payment (docs/MYSQL_TESTING.md)
+                app(ReferenceNumberService::class)->lock(ReferenceNumberService::PAYMENT);
 
                 $result = $bookings->place(
                     $request->user(),
@@ -201,6 +207,10 @@ class WalkInController extends Controller
                     (bool) $request->validated('outside_schedule'),
                     $request->counterToken(),
                     (bool) $request->validated('over_daily_limit'),
+                    $request->payKind(),
+                    $request->payMethod(),
+                    $request->gcashReference(),
+                    $request->waiveReason(),
                 );
 
                 return $result['created'] ? $result['booking'] : throw new CounterRecordAlreadySaved($result['booking']);
@@ -211,6 +221,8 @@ class WalkInController extends Controller
             return $this->refuse(route('owner.bookings.walk-in.create'), $e->errors());
         } catch (BookingTransitionException $e) {
             return $this->refuse(route('owner.bookings.walk-in.create'), ['starts_at' => $e->getMessage()]);
+        } catch (PaymentException $e) {
+            return $this->refuse(route('owner.bookings.walk-in.create'), ['pay_kind' => $e->getMessage()]);
         }
 
         /** @var PhotographyBooking $booking */

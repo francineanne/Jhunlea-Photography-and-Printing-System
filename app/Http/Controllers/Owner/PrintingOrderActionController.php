@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Enums\PrintingOrderStatus;
 use App\Exceptions\InvalidStatusTransitionException;
+use App\Exceptions\PaymentException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Orders\AcceptOrderRequest;
 use App\Http\Requests\Owner\Orders\CancelOrderRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\Owner\Orders\ChangePriceRequest;
 use App\Http\Requests\Owner\Orders\CompleteOrderRequest;
 use App\Http\Requests\Owner\Orders\MarkProcessingRequest;
 use App\Http\Requests\Owner\Orders\MarkReadyRequest;
+use App\Http\Requests\Owner\Orders\MarkUnclaimedRequest;
 use App\Http\Requests\Owner\Orders\OrderActionRequest;
 use App\Http\Requests\Owner\Orders\RejectOrderRequest;
 use App\Http\Requests\Owner\Orders\RequestInfoRequest;
@@ -37,7 +39,7 @@ class PrintingOrderActionController extends Controller
 
     public function accept(AcceptOrderRequest $request, PrintingOrder $order): RedirectResponse
     {
-        return $this->act($order, fn () => $this->transitions->transition($order, PrintingOrderStatus::Accepted, $request->user(), $request->note(), $request->price()),
+        return $this->act($order, fn () => $this->transitions->transition($order, PrintingOrderStatus::Accepted, $request->user(), $request->note(), $request->price(), ['prepay' => $request->prepay()]),
             'Order accepted at '.Money::format($request->price()).'.');
     }
 
@@ -70,7 +72,14 @@ class PrintingOrderActionController extends Controller
 
     public function cancel(CancelOrderRequest $request, PrintingOrder $order): RedirectResponse
     {
-        return $this->move($request, $order, PrintingOrderStatus::Cancelled, 'Order cancelled.');
+        return $this->act($order, fn () => $this->transitions->transition($order, PrintingOrderStatus::Cancelled, $request->user(), $request->note(), null, $request->paymentOptions()),
+            'Order cancelled.'.($request->paymentOptions()['payment_choice'] === StatusTransitionService::REFUND_PAYMENT ? ' The payment was voided as a refund.' : ''));
+    }
+
+    /** Phase 10B: an unpaid order that waited too long for pickup is closed; the customer pays first from now on. */
+    public function unclaimed(MarkUnclaimedRequest $request, PrintingOrder $order): RedirectResponse
+    {
+        return $this->move($request, $order, PrintingOrderStatus::Unclaimed, 'Order marked unclaimed. The customer now pays before printing.');
     }
 
     public function price(ChangePriceRequest $request, PrintingOrder $order): RedirectResponse
@@ -93,7 +102,7 @@ class PrintingOrderActionController extends Controller
 
         try {
             $action();
-        } catch (InvalidStatusTransitionException $e) {
+        } catch (InvalidStatusTransitionException|PaymentException $e) {
             return $back->with('error', $e->getMessage());
         }
 

@@ -160,6 +160,8 @@
                 </x-ui.notice>
             </section>
 
+            <x-payment.how-to-pay :payable="$booking" />
+
             <x-payment.card :payable="$booking" />
 
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="cancel-title">
@@ -176,6 +178,10 @@
                         <form method="POST" action="{{ route('customer.bookings.cancel', $booking) }}" class="mt-4 space-y-3 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
                             @csrf
                             <x-ui.textarea id="cancel-reason" name="reason" label="Reason (optional)" maxlength="{{ $noteMax }}" rows="3" hint="Up to {{ $noteMax }} characters. The studio sees it.">{{ old('reason') }}</x-ui.textarea>
+                            {{-- Phase 10B: a recorded downpayment stays with the studio --}}
+                            @if ($booking->recordedPayments()->isNotEmpty())
+                                <p class="flex items-start gap-2 rounded-control bg-status-amber-bg p-3 text-sm font-semibold text-[#92400e] dark:text-status-amber" role="note"><x-ui.icon name="warning" :size="18" class="mt-0.5 shrink-0" />Your downpayment of {{ \App\Support\Money::cents($booking->paidCents()) }} is non-refundable.</p>
+                            @endif
                             <x-ui.button type="submit" variant="danger">Yes, cancel booking {{ $booking->reference_number }}</x-ui.button>
                         </form>
                     </details>

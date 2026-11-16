@@ -269,16 +269,20 @@ class SettingsPageTest extends TestCase
         $this->assertSame(10, app(ShopSettings::class)->printingMaxFileMb());
     }
 
-    public function test_the_payment_rules_are_fixed_text_without_a_switch(): void
+    // Phase 10B: the payment rules are now the owner's settings (they were fixed text before); the words customers and
+    // Lumi read are shown with them, and there is still no switch for online payment or partial payments
+    public function test_the_payment_rules_are_settings_with_the_sentences_customers_read(): void
     {
         $html = $this->actingAs($this->owner)->get(route('owner.settings.index'))->assertOk()
-            ->assertSee('Payment is made face to face at the studio (cash or GCash). The system only records payments. Nothing is charged online.')
-            ->assertSee('Full payment is required before an order or the photos are released.')
+            ->assertSee('Payment rules')
+            ->assertSee('The system only records payments.')
+            ->assertSee('Orders and photos are released only when fully paid.')
+            ->assertSee('name="downpayment_percent"', false)
+            ->assertSee('name="gcash_number"', false)
             ->getContent();
 
-        $payments = substr($html, strpos($html, 'id="payments"'), 2500);
-        $this->assertStringNotContainsString('<input', $payments);
-        $this->assertStringNotContainsString('role="switch"', $payments);
+        $this->assertStringContainsString(route('owner.settings.payment-rules'), $html);
+        $this->assertStringNotContainsString('role="switch"', substr($html, strpos($html, 'id="payments"'), 6000));
         $this->assertStringNotContainsStringIgnoringCase('partial', $html);
         $this->assertStringNotContainsStringIgnoringCase('deposit', $html);
     }

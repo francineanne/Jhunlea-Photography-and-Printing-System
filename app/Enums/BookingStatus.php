@@ -10,6 +10,9 @@ enum BookingStatus: string
 {
     case Requested = 'requested';
     case Proposed = 'proposed';
+    // Phase 10B: confirmed by the studio, held until the downpayment deadline; the downpayment (or the full price)
+    // makes it Confirmed. Never at the counter
+    case AwaitingDownpayment = 'awaiting_downpayment';
     case Confirmed = 'confirmed';
     case Rejected = 'rejected';
     case Cancelled = 'cancelled';
@@ -20,6 +23,7 @@ enum BookingStatus: string
         return match ($this) {
             self::Requested => 'Requested',
             self::Proposed => 'New time proposed',
+            self::AwaitingDownpayment => 'Awaiting downpayment',
             self::Confirmed => 'Confirmed',
             self::Rejected => 'Rejected',
             self::Cancelled => 'Cancelled',
@@ -35,6 +39,12 @@ enum BookingStatus: string
      * starts, checked by the service), accept a proposed time (proposed to confirmed) and ask for another time
      * (proposed to requested). The customer never moves requested to confirmed.
      *
+     * Phase 10B: confirming (or accepting a proposal) goes to Awaiting downpayment when a downpayment is due. From there
+     * the booking becomes Confirmed when the owner records the downpayment or the full price, or waives the downpayment
+     * (PaymentService and BookingTransitionService make that move for the owner, in the same transaction), and is
+     * Cancelled by either side or by the system when the deadline passes. Voiding the downpayment of a Confirmed booking
+     * sends it back (Confirmed to Awaiting downpayment, owner).
+     *
      * @return array<string, list<UserRole>>
      */
     public function transitions(): array
@@ -45,18 +55,25 @@ enum BookingStatus: string
 
         return match ($this) {
             self::Requested => [
+                self::AwaitingDownpayment->value => $owner,
                 self::Confirmed->value => $owner,
                 self::Proposed->value => $owner,
                 self::Rejected->value => $owner,
                 self::Cancelled->value => $both,
             ],
             self::Proposed => [
+                self::AwaitingDownpayment->value => $customer,
                 self::Confirmed->value => $customer,
                 self::Requested->value => $customer,
                 self::Cancelled->value => $both,
                 self::Rejected->value => $owner,
             ],
+            self::AwaitingDownpayment => [
+                self::Confirmed->value => $owner,
+                self::Cancelled->value => $both,
+            ],
             self::Confirmed => [
+                self::AwaitingDownpayment->value => $owner,
                 self::Completed->value => $owner,
                 self::Cancelled->value => $both,
             ],
@@ -97,16 +114,22 @@ enum BookingStatus: string
         return $this === self::Completed;
     }
 
+    /** Confirmed by the studio and on the schedule (or waiting for its downpayment): a session the shop plans for. */
+    public function isBooked(): bool
+    {
+        return in_array($this, [self::AwaitingDownpayment, self::Confirmed], true);
+    }
+
     /** Reference images can be added while the studio has not fixed the session yet. */
     public function acceptsImages(): bool
     {
         return in_array($this, [self::Requested, self::Proposed], true);
     }
 
-    /** The confirmed price may change only while the session is still ahead. */
+    /** The confirmed price may change only while the session is still ahead (and no payment is recorded). */
     public function allowsPriceChange(): bool
     {
-        return $this === self::Confirmed;
+        return in_array($this, [self::AwaitingDownpayment, self::Confirmed], true);
     }
 
     /**
@@ -115,7 +138,7 @@ enum BookingStatus: string
      */
     public function takesPayment(): bool
     {
-        return in_array($this, [self::Confirmed, self::Completed], true);
+        return in_array($this, [self::AwaitingDownpayment, self::Confirmed, self::Completed], true);
     }
 
     /** Rejected or cancelled: nothing is due, so no payment is recorded. */

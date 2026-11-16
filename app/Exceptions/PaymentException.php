@@ -26,7 +26,7 @@ class PaymentException extends DomainException
 
     public static function bookingNotConfirmed(): self
     {
-        return new self('A photoshoot payment can be recorded once the booking is confirmed.');
+        return new self('A photoshoot payment can be recorded once the studio confirms the booking.');
     }
 
     public static function noCharge(): self
@@ -72,6 +72,26 @@ class PaymentException extends DomainException
     public static function released(string $what): self
     {
         return new self("This {$what} is Completed, so it was released and its payment is final. It cannot be voided.");
+    }
+
+    public static function voidBalanceFirst(): self
+    {
+        return new self('Void the balance first. The downpayment cannot be voided while its balance is recorded.');
+    }
+
+    public static function balanceNeedsDownpayment(): self
+    {
+        return new self('A balance can be recorded only after the downpayment. Record the downpayment or the full price.');
+    }
+
+    public static function recordBalanceInstead(string $balance): self
+    {
+        return new self("The downpayment is already recorded. Record the balance ({$balance}) instead. Nothing new was saved.");
+    }
+
+    public static function noDownpaymentDue(): self
+    {
+        return new self('No downpayment is due here. Record the full price.');
     }
 
     public static function wrongPayable(): self

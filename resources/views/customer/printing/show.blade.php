@@ -140,7 +140,7 @@
                     <x-ui.icon :name="$canCancel ? 'lock_open' : 'lock'" :size="20" class="text-app-text-2" />Cancelling
                 </h2>
                 @if ($canCancel)
-                    <p class="mt-1 text-sm text-app-text-2">You can cancel this order while it is Submitted, before the shop starts reviewing it.</p>
+                    <p class="mt-1 text-sm text-app-text-2">{{ $order->status === \App\Enums\PrintingOrderStatus::Accepted ? 'You can still cancel this order: nothing is paid and printing has not started.' : 'You can cancel this order while it is Submitted, before the shop starts reviewing it.' }}</p>
                     <details class="group mt-4">
                         <summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control border border-status-red/40 px-4 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring [&::-webkit-details-marker]:hidden">
                             <x-ui.icon name="cancel" :size="18" />Cancel this order
@@ -158,7 +158,7 @@
                         @if ($order->status->isFinal())
                             This order is {{ strtolower($order->status->label()) }}.
                         @else
-                            Orders can be cancelled here only while they are Submitted. To change this order now, please talk to the shop.
+                            Orders can be cancelled here while they are Submitted, or Accepted with nothing paid. To change this order now, please talk to the shop.
                         @endif
                     </p>
                 @endif
@@ -184,6 +184,8 @@
             <x-ui.notice variant="payment">
                 <p class="text-app-text-2">Nothing is charged online. The shop confirms the final price before you pay.</p>
             </x-ui.notice>
+
+            <x-payment.how-to-pay :payable="$order" />
 
             <x-payment.card :payable="$order" />
         </aside>

@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
+use App\Support\LocalTime;
 use App\Support\Money;
+use Illuminate\Support\Carbon;
 
 /**
  * Every notification the system sends (Phase 5B), who it is for, and the ONE message map: the sentence is built here
@@ -32,6 +34,15 @@ enum NotificationKind: string
     case PaymentVoided = 'payment_voided';
     case OrderCancelledByShop = 'order_cancelled_by_shop';
     case BookingCancelledByShop = 'booking_cancelled_by_shop';
+    // Phase 10B: downpayments, balances, prepaid printing, unclaimed orders (customer audience)
+    case DownpaymentRequested = 'downpayment_requested';
+    case DownpaymentRecorded = 'downpayment_recorded';
+    case BalanceRecorded = 'balance_recorded';
+    case DeadlineExtended = 'deadline_extended';
+    case DownpaymentWaived = 'downpayment_waived';
+    case DownpaymentExpired = 'downpayment_expired';
+    case OrderPrepayRequired = 'order_prepay_required';
+    case OrderUnclaimed = 'order_unclaimed';
 
     // To the owner, when a customer does it
     case OrderPlaced = 'order_placed';
@@ -84,6 +95,14 @@ enum NotificationKind: string
             self::InfoAnswered => 'Customer added files',
             self::MessageReceived => 'New message',
             self::MessageReplied => 'The studio replied',
+            self::DownpaymentRequested => 'Downpayment needed',
+            self::DownpaymentRecorded => 'Downpayment recorded',
+            self::BalanceRecorded => 'Balance recorded',
+            self::DeadlineExtended => 'Deadline extended',
+            self::DownpaymentWaived => 'Downpayment waived',
+            self::DownpaymentExpired => 'Booking cancelled: no downpayment',
+            self::OrderPrepayRequired => 'Pay before printing',
+            self::OrderUnclaimed => 'Order closed as unclaimed',
         };
     }
 
@@ -98,6 +117,7 @@ enum NotificationKind: string
         $amount = isset($data['amount']) ? Money::format((string) $data['amount']) : null;
         $pay = (string) ($data['payment'] ?? '');
         $place = ($data['payable_type'] ?? '') === 'photography_booking' ? 'studio' : 'shop';
+        $due = isset($data['due']) ? LocalTime::format(Carbon::parse((string) $data['due'], 'UTC')) : null;
 
         return match ($this) {
             self::OrderAccepted => "Your order {$ref} was accepted".($amount ? " at {$amount}" : '').'. You pay the full amount face to face when you pick it up.',
@@ -120,11 +140,19 @@ enum NotificationKind: string
             self::BookingRequested => "A customer requested a photoshoot, {$ref}.",
             self::OrderCancelledByCustomer => "The customer cancelled order {$ref}.",
             self::BookingCancelledByCustomer => "The customer cancelled booking {$ref}.",
-            self::ProposalAccepted => "The customer accepted the proposed time for {$ref}. It is now confirmed.",
+            self::ProposalAccepted => "The customer accepted the proposed time for {$ref}.".($due ? " It now waits for the downpayment (due {$due})." : ' It is now confirmed.'),
             self::AnotherTimeRequested => "The customer asked for another time for {$ref}.",
             self::InfoAnswered => "The customer added files to {$ref} in reply to your request.",
             self::MessageReceived => 'New message from '.((string) ($data['sender_name'] ?? '') ?: 'a customer').'.',
             self::MessageReplied => 'The studio replied to your message.',
+            self::DownpaymentRequested => "The studio confirmed {$ref}. Pay the downpayment".($amount ? " of {$amount}" : '').($due ? " by {$due}" : '').' to keep your time. Open it to see how to pay.',
+            self::DownpaymentRecorded => "Downpayment {$pay} of {$amount} was recorded for {$ref}. Your photoshoot is confirmed; the balance is paid on the day of the shoot.",
+            self::BalanceRecorded => "Balance {$pay} of {$amount} was recorded for {$ref}. Your photoshoot is fully paid.",
+            self::DeadlineExtended => "The studio gave you more time to pay the downpayment of {$ref}".($due ? ": now due by {$due}" : '').'.',
+            self::DownpaymentWaived => "The studio waived the downpayment of {$ref}. Your photoshoot is confirmed; the full price is paid on the day of the shoot.",
+            self::DownpaymentExpired => "Your booking {$ref} was cancelled because the downpayment was not paid by the deadline. You can send a new request.",
+            self::OrderPrepayRequired => "Your order {$ref} was accepted".($amount ? " at {$amount}" : '').'. Please pay the full amount before we print it. Open it to see how to pay.',
+            self::OrderUnclaimed => "Your order {$ref} was not picked up or paid, so the shop closed it as unclaimed. Your next orders are paid before printing.",
         };
     }
 
@@ -144,6 +172,9 @@ enum NotificationKind: string
             self::OrderPlaced => 'receipt_long',
             self::BookingRequested => 'photo_camera',
             self::MessageReceived, self::MessageReplied => 'chat',
+            self::DownpaymentRequested, self::OrderPrepayRequired, self::DeadlineExtended => 'payments',
+            self::DownpaymentRecorded, self::BalanceRecorded, self::DownpaymentWaived => 'point_of_sale',
+            self::DownpaymentExpired, self::OrderUnclaimed => 'cancel',
         };
     }
 
@@ -157,7 +188,8 @@ enum NotificationKind: string
     public function anchor(): string
     {
         return match ($this) {
-            self::PaymentRecorded, self::PaymentVoided, self::OrderPriceChanged, self::BookingPriceChanged => '#payment',
+            self::PaymentRecorded, self::PaymentVoided, self::OrderPriceChanged, self::BookingPriceChanged,
+            self::DownpaymentRequested, self::DownpaymentRecorded, self::BalanceRecorded, self::DeadlineExtended, self::DownpaymentWaived, self::OrderPrepayRequired => '#payment',
             default => '',
         };
     }

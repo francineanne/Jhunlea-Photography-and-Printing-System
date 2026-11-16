@@ -83,11 +83,18 @@ class CustomerContextBuilder
     {
         $order = $record instanceof PrintingOrder;
         $payment = $record->paymentStatus();
-        $paid = $record->recordedPayment?->amount;
-        $where = $order ? 'at the shop' : 'at the studio on the day of the shoot';
+        $paid = Money::fromCents($record->paidCents());
+        $where = $order ? ($record->requires_prepayment && $record->status === PrintingOrderStatus::Accepted ? 'at the shop before printing' : 'at the shop') : 'at the studio on the day of the shoot';
+        $options = $record->paymentOptions();
 
         [$long, $short] = match (true) {
             $payment === PaymentStatus::Paid => ['Paid in full, '.Money::format((string) $paid).' recorded by the shop; nothing left to pay', 'Paid'],
+            // Phase 10B: confirmed by the studio, held until the downpayment deadline
+            ! $order && $record->status === BookingStatus::AwaitingDownpayment && isset($options['downpayment']) => [
+                'Awaiting downpayment; '.Money::cents($options['downpayment']).' downpayment due by '.LocalTime::format($record->downpayment_due_at)
+                    .' to keep the time (or the full '.Money::format((string) $record->confirmed_price).'); if it is not paid by then the booking is cancelled. The balance is paid on the day of the shoot. The downpayment is non-refundable if the customer cancels',
+                Money::cents($options['downpayment']).' downpayment due'],
+            $payment === PaymentStatus::DownpaymentPaid => ['Downpayment of '.Money::format((string) $paid).' recorded by the studio; balance '.Money::format((string) $record->amountDue())." to pay {$where}", Money::format((string) $record->amountDue()).' balance'],
             ! $record->showsPayment() => ['Nothing to pay', 'Nothing to pay'],
             $payment === PaymentStatus::AwaitingPrice => ['Awaiting price; nothing to pay until the shop confirms the price', 'Awaiting price'],
             $payment === PaymentStatus::NoCharge => ['No charge; nothing to pay', 'No charge'],
@@ -137,6 +144,8 @@ class CustomerContextBuilder
         return match ($booking->status) {
             BookingStatus::Requested => 'Requested time (not confirmed yet): '.$at($booking->starts_at),
             BookingStatus::Proposed => 'The studio proposed a new time: '.$at($booking->proposed_starts_at ?? $booking->starts_at).' (the customer has not accepted it yet; requested: '.$at($booking->starts_at).')',
+            // Phase 10B: confirmed by the studio, kept only if the downpayment is paid by its deadline
+            BookingStatus::AwaitingDownpayment => 'Confirmed by the studio, waiting for the downpayment (not booked for good yet): '.$at($booking->starts_at),
             BookingStatus::Confirmed => 'Confirmed session: '.$at($booking->starts_at),
             BookingStatus::Completed => 'Session held: '.$at($booking->starts_at),
             default => 'Session time asked for: '.$at($booking->starts_at),

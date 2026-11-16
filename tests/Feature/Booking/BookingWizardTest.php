@@ -642,6 +642,7 @@ class BookingWizardTest extends TestCase
         $expected = [
             'requested' => ['Requested', 'bg-status-amber-bg'],
             'proposed' => ['New time proposed', 'bg-status-blue-bg'],
+            'awaiting_downpayment' => ['Awaiting downpayment', 'bg-status-violet-bg'],
             'confirmed' => ['Confirmed', 'bg-status-green-bg'],
             'rejected' => ['Rejected', 'bg-status-red-bg'],
             'cancelled' => ['Cancelled', 'bg-status-gray-bg'],

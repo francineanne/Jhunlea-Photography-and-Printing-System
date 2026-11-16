@@ -15,10 +15,11 @@
     @foreach ($rows as $row)
         @php
             $latest = $row->id === $latestId;
-            $byCustomer = $row->changed_by === $customerId;
-            $who = $viewer === 'customer'
+            $byCustomer = $row->changed_by !== null && $row->changed_by === $customerId;
+            // Phase 10B: a step the system took by itself (no person) reads "System"
+            $who = $row->changed_by === null ? 'System' : ($viewer === 'customer'
                 ? ($byCustomer ? 'You' : 'The shop')
-                : ($byCustomer ? 'Customer' : $shop).($row->changedBy ? ' · '.$row->changedBy->name : '');
+                : ($byCustomer ? 'Customer' : $shop).($row->changedBy ? ' · '.$row->changedBy->name : ''));
         @endphp
         <li class="relative flex items-start gap-4" @if ($latest) aria-current="step" @endif>
             <span @class([

@@ -37,6 +37,8 @@ class User extends Authenticatable
             'role' => UserRole::class,
             'theme' => ColorScheme::class,
             'is_walk_in' => 'boolean',
+            // Phase 10B: must pay before printing (set when an order was unclaimed; PrepayFlagService only)
+            'prepay_required' => 'boolean',
         ];
     }
 

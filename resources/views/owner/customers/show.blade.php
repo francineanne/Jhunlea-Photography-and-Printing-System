@@ -39,6 +39,17 @@
                 <dd><x-ui.date :value="$customer->created_at" format="M j, Y" /></dd>
             </div>
         </dl>
+        {{-- Phase 10B: an earlier order of this customer was unclaimed, so new orders are paid before printing --}}
+        @if ($customer->prepay_required)
+            <div id="prepay" class="mt-4 flex flex-col gap-3 rounded-control border border-status-amber/40 bg-status-amber-bg/60 p-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="flex items-start gap-2 text-sm"><x-ui.icon name="warning" :size="18" class="mt-0.5 shrink-0 text-status-amber" /><span><strong>Pays before printing.</strong> An earlier order was not picked up or paid (Unclaimed), so every new order is paid before it is printed.</span></p>
+                <form method="POST" action="{{ route('owner.customers.prepay.clear', $customer) }}" class="flex flex-wrap items-end gap-2">
+                    @csrf
+                    <x-ui.input id="prepay-reason" name="reason" label="Reason (optional)" maxlength="200" class="sm:w-56" />
+                    <x-ui.button type="submit" variant="outline"><x-ui.icon name="lock_open" :size="18" />Clear</x-ui.button>
+                </form>
+            </div>
+        @endif
     </div>
 
     <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

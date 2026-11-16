@@ -65,8 +65,22 @@
     {{-- A new walk-in customer (also the only choice without JavaScript) --}}
     <div x-show="mode === 'new'" class="mt-4 grid gap-4 sm:grid-cols-2">
         <x-ui.input label="Full name" name="new_customer_name" maxlength="80" :value="old('new_customer_name')" x-bind:disabled="mode !== 'new'"
+            x-on:input="checkNew($event.target.value)"
             hint="A walk-in customer has no login. Search first so the same person is not added twice." />
         <x-ui.input label="Phone (optional)" name="new_customer_phone" type="tel" :value="old('new_customer_phone')" x-bind:disabled="mode !== 'new'"
+            x-on:input="checkNew($event.target.value)"
             hint="For example 0917 123 4567." />
+        {{-- Phase 10B: an existing customer with the same name or phone is offered before a second one is created --}}
+        <div x-show="matches.length" x-cloak class="rounded-control border border-status-amber/40 bg-status-amber-bg/60 p-3 sm:col-span-2" role="status">
+            <p class="text-sm font-semibold">Possible match</p>
+            <ul class="mt-1 space-y-1">
+                <template x-for="customer in matches" x-bind:key="customer.id">
+                    <li class="flex flex-wrap items-center justify-between gap-2 text-sm">
+                        <span><span class="font-semibold" x-text="customer.name"></span> <span class="text-app-text-2" x-text="customer.phone ? '· ' + customer.phone : ''"></span></span>
+                        <button type="button" x-on:click="useMatch(customer)" class="inline-flex min-h-11 items-center rounded px-2 font-semibold text-brand hover:underline focus-ring">Use this customer</button>
+                    </li>
+                </template>
+            </ul>
+        </div>
     </div>
 </fieldset>

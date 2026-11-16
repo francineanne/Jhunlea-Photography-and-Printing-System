@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordStatus;
 use App\Models\Payment;
@@ -24,6 +25,7 @@ class PaymentFactory extends Factory
         return [
             'reference_number' => 'PAY-9'.str_pad((string) fake()->unique()->numberBetween(1, 99999), 5, '0', STR_PAD_LEFT),
             'amount' => '100.00',
+            'kind' => PaymentKind::Full,
             'method' => PaymentMethod::Cash,
             'gcash_reference' => null,
             'received_by' => User::factory()->owner(),
@@ -41,6 +43,12 @@ class PaymentFactory extends Factory
             'payable_id' => $payable->getKey(),
             'amount' => $payable->confirmed_price ?? '100.00',
         ]);
+    }
+
+    /** A downpayment or a balance of this amount (Phase 10B). */
+    public function kind(PaymentKind $kind, string $amount): static
+    {
+        return $this->state(['kind' => $kind, 'amount' => $amount]);
     }
 
     public function gcash(string $reference = 'GC-1234567'): static

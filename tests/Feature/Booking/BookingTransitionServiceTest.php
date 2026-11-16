@@ -4,35 +4,44 @@ namespace Tests\Feature\Booking;
 
 use App\Enums\BookingEvent;
 use App\Enums\BookingStatus as Status;
+use App\Enums\PaymentKind;
 use App\Enums\UserRole;
 use App\Exceptions\BookingTransitionException;
 use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\BookingSetting;
 use App\Models\BookingStatusHistory;
+use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\User;
 use App\Services\BookingTransitionService;
+use App\Services\PaymentService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 class BookingTransitionServiceTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     /** Written out by hand, so the test does not just echo the enum. */
     private const OWNER_MOVES = [
         'requested>confirmed', 'requested>proposed', 'requested>rejected', 'requested>cancelled',
         'proposed>rejected', 'proposed>cancelled',
         'confirmed>completed', 'confirmed>cancelled',
+        // Phase 10B: confirming with a downpayment due, recording or waiving it, cancelling while it waits, and voiding
+        // the downpayment of a confirmed booking (it waits for one again)
+        'requested>awaiting_downpayment', 'awaiting_downpayment>confirmed', 'awaiting_downpayment>cancelled', 'confirmed>awaiting_downpayment',
     ];
 
     private const CUSTOMER_MOVES = [
         'requested>cancelled',
         'proposed>confirmed', 'proposed>requested', 'proposed>cancelled',
         'confirmed>cancelled',
+        // Phase 10B: accepting a proposal that needs a downpayment, and cancelling while it waits for one
+        'proposed>awaiting_downpayment', 'awaiting_downpayment>cancelled',
     ];
 
     private User $owner;
@@ -44,6 +53,8 @@ class BookingTransitionServiceTest extends TestCase
         parent::setUp();
 
         $this->setUpSchedule();
+        // Phase 10B: these tests prove the moves and their rules; the downpayment moves get their own branch in attempt()
+        $this->withoutDownpaymentsOrPrepayment();
         $this->owner = User::factory()->owner()->create();
         $this->customer = User::factory()->create();
     }
@@ -65,6 +76,9 @@ class BookingTransitionServiceTest extends TestCase
         $from = $booking->status;
 
         match (true) {
+            // Phase 10B: a confirmation that needs a downpayment, and the owner's ways out of "Awaiting downpayment"
+            $to === Status::AwaitingDownpayment => $this->towardsDownpayment($booking, $actor),
+            $to === Status::Confirmed && $from === Status::AwaitingDownpayment && $actor->role === UserRole::Owner => $service->waiveDownpayment($booking, $actor, 'Regular customer.'),
             $to === Status::Confirmed && $from === Status::Proposed && $actor->role === UserRole::Customer => $service->acceptProposal($booking, $actor),
             $to === Status::Confirmed => $service->confirm($booking, $actor),
             $to === Status::Proposed => $service->propose($booking, $actor, $this->manila('2026-11-06 14:00'), 'Would 2 PM work?'),
@@ -73,6 +87,30 @@ class BookingTransitionServiceTest extends TestCase
             $to === Status::Cancelled => $service->cancel($booking, $actor),
             $to === Status::Completed => $service->complete($booking, $actor),
         };
+    }
+
+    /**
+     * A move to "Awaiting downpayment": confirming (owner) or accepting a proposal (customer) while a downpayment is due,
+     * or voiding the downpayment of a confirmed booking (owner, through PaymentService).
+     */
+    private function towardsDownpayment(PhotographyBooking $booking, User $actor): void
+    {
+        $this->paymentRules(['downpayment_percent' => 50]);
+
+        if ($booking->status === Status::Confirmed && $actor->role === UserRole::Owner) {
+            $booking->forceFill(['confirmed_price' => '1000.00'])->save();
+            $payment = Payment::factory()->paying($booking)->kind(PaymentKind::Downpayment, '500.00')->create(['received_by' => $actor->id]);
+            app(PaymentService::class)->void($booking, $payment, $actor, 'Recorded by mistake.');
+            BookingStatusHistory::query()->where('event', BookingEvent::PaymentVoided)->delete();
+
+            return;
+        }
+
+        $booking->forceFill(['estimated_price' => '1000.00'])->save();
+
+        $booking->status === Status::Proposed && $actor->role === UserRole::Customer
+            ? $this->service()->acceptProposal($booking, $actor)
+            : $this->service()->confirm($booking, $actor);
     }
 
     /** @return array<string, array{Status, Status}> */

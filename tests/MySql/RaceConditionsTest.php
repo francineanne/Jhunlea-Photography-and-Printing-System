@@ -4,6 +4,8 @@ namespace Tests\MySql;
 
 use App\Enums\AuditAction;
 use App\Enums\BookingStatus;
+use App\Enums\PaymentKind;
+use App\Enums\PaymentMethod;
 use App\Enums\PrintingOrderStatus;
 use App\Exceptions\BookingTransitionException;
 use App\Exceptions\InvalidStatusTransitionException;
@@ -23,12 +25,14 @@ use App\Services\Audit\AuditChain;
 use App\Services\Audit\AuditSubject;
 use App\Services\BookingService;
 use App\Services\Chat\ConversationService;
+use App\Services\PaymentService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Tests\MySql\Support\Race;
 use Tests\MySqlTestCase;
+use Tests\Support\SetsPaymentRules;
 
 /**
  * Phase 9B: the money, booking, audit and chat paths under REAL concurrency on MySQL. Each scenario starts 2 to 8 PHP
@@ -38,6 +42,8 @@ use Tests\MySqlTestCase;
  */
 class RaceConditionsTest extends MySqlTestCase
 {
+    use SetsPaymentRules;
+
     private const REPEATS = 5;
 
     private User $owner;
@@ -198,6 +204,8 @@ class RaceConditionsTest extends MySqlTestCase
     public function test_e_two_bookings_confirmed_for_the_same_slot_at_once(): void
     {
         $package = $this->openSchedule();
+        // Written before Phase 10B: no downpayment (the downpayment races are test_k to test_n)
+        $this->withoutDownpaymentsOrPrepayment();
 
         foreach (range(1, self::REPEATS) as $repeat) {
             $start = $this->slot(3 + $repeat);
@@ -273,6 +281,8 @@ class RaceConditionsTest extends MySqlTestCase
     public function test_j_a_customer_request_and_a_walk_in_for_the_same_time_at_once(): void
     {
         $package = $this->openSchedule();
+        // Written before Phase 10B: no downpayment (the downpayment races are test_k to test_n)
+        $this->withoutDownpaymentsOrPrepayment();
 
         foreach (range(1, self::REPEATS) as $repeat) {
             $start = $this->slot(30 + $repeat);
@@ -297,6 +307,143 @@ class RaceConditionsTest extends MySqlTestCase
         // The loser's new walk-in customer was rolled back with its booking, and the audit chain is whole
         $this->assertSame(PhotographyBooking::query()->where('source', 'walk_in')->count(), User::query()->where('is_walk_in', true)->count());
         $this->assertChainIntact();
+    }
+
+    /** Phase 10B: a confirmed photoshoot waiting for its downpayment, ₱1,000.00 (downpayment ₱500.00 at the default 50%). */
+    private function awaitingDownpayment(int $daysAhead, ?Carbon $due = null): PhotographyBooking
+    {
+        return PhotographyBooking::factory()->status(BookingStatus::AwaitingDownpayment)->forCustomer(User::factory()->create())
+            ->at($this->slot($daysAhead))->create(['confirmed_price' => '1000.00', 'downpayment_due_at' => $due ?? $this->slot($daysAhead)->subDays(3)]);
+    }
+
+    /** No order or booking ever has more recorded than its price, nor two active payments of one kind. */
+    private function assertPaymentsConsistent(): void
+    {
+        $over = DB::table('payments')->where('status', 'recorded')->select('payable_type', 'payable_id', DB::raw('SUM(amount) as paid'))->groupBy('payable_type', 'payable_id')->get()
+            ->filter(fn ($row) => (float) $row->paid > (float) DB::table($row->payable_type === 'printing_order' ? 'printing_orders' : 'photography_bookings')->where('id', $row->payable_id)->value('confirmed_price') + 0.001);
+        $this->assertSame([], $over->all(), 'A record has more recorded than its price');
+        $this->assertSame(0, DB::table('payments')->whereNotNull('active')->select('payable_type', 'payable_id', 'kind')->groupBy('payable_type', 'payable_id', 'kind')->havingRaw('COUNT(*) > 1')->count());
+        // A balance never stands without its downpayment
+        $this->assertSame(0, DB::table('payments as b')->where('b.kind', 'balance')->whereNotNull('b.active')
+            ->whereNotExists(fn ($q) => $q->from('payments as d')->whereColumn('d.payable_id', 'b.payable_id')->whereColumn('d.payable_type', 'b.payable_type')->where('d.kind', 'downpayment')->whereNotNull('d.active'))->count());
+    }
+
+    // Phase 10B (a): four owners record the downpayment of the same booking at once: one payment, the booking confirmed
+    public function test_k_four_owners_record_the_same_downpayment_at_once(): void
+    {
+        $this->openSchedule();
+
+        foreach (range(1, self::REPEATS) as $repeat) {
+            $booking = $this->awaitingDownpayment(40 + $repeat);
+            $owners = User::factory()->owner()->count(4)->create();
+
+            $outputs = Race::run('pay_booking', $owners->map(fn (User $owner) => ['booking_id' => $booking->id, 'owner_id' => $owner->id, 'kind' => 'downpayment'])->all());
+            $this->assertStartedTogether($outputs, 'downpayment');
+            $results = Race::results($outputs);
+            $this->assertNoErrors($results, 'downpayment');
+
+            $this->assertCount(1, array_filter($results, fn ($r) => $r['outcome'] === 'ok'), 'Exactly one downpayment');
+            foreach (array_filter($results, fn ($r) => $r['outcome'] === 'refused') as $refused) {
+                $this->assertSame(PaymentException::recordBalanceInstead('₱500.00')->getMessage(), $refused['reason']);
+            }
+            $this->assertSame(1, Payment::query()->where('payable_id', $booking->id)->where('payable_type', 'photography_booking')->count());
+            $this->assertSame(BookingStatus::Confirmed, $booking->fresh()->status);
+        }
+
+        $this->assertPaymentsConsistent();
+        $this->assertChainIntact();
+    }
+
+    // Phase 10B (b): the downpayment and the expiry at the same moment: paid and confirmed, or expired and cancelled with
+    // no payment; never a cancelled booking that holds a payment
+    public function test_l_a_downpayment_and_the_expiry_at_once(): void
+    {
+        $this->openSchedule();
+        $outcomes = [];
+
+        foreach (range(1, self::REPEATS) as $repeat) {
+            $booking = $this->awaitingDownpayment(50 + $repeat, Carbon::now('UTC')->subMinute());
+
+            $outputs = Race::runMixed([
+                ['pay_booking', ['booking_id' => $booking->id, 'owner_id' => $this->owner->id, 'kind' => 'downpayment']],
+                ['expire', ['booking_id' => $booking->id]],
+            ]);
+            $this->assertStartedTogether($outputs, 'pay vs expire');
+            $results = Race::results($outputs);
+            $this->assertNoErrors($results, 'pay vs expire');
+
+            $booking->refresh();
+            $paid = Payment::recordedFor($booking)->exists();
+            $outcomes[] = $booking->status->value;
+            $this->assertTrue(
+                ($booking->status === BookingStatus::Confirmed && $paid) || ($booking->status === BookingStatus::Cancelled && ! $paid),
+                "Inconsistent: {$booking->status->value}, paid: ".($paid ? 'yes' : 'no'),
+            );
+        }
+
+        fwrite(STDERR, '[pay vs expire] '.json_encode(array_count_values($outcomes)).PHP_EOL);
+        $this->assertChainIntact();
+    }
+
+    // Phase 10B (c): the balance and a void of the downpayment at once: either the balance stands with its downpayment
+    // (the void is refused), or the downpayment is voided and the booking waits for one again (the balance is refused)
+    public function test_m_a_balance_and_a_void_of_the_downpayment_at_once(): void
+    {
+        $this->openSchedule();
+
+        foreach (range(1, self::REPEATS) as $repeat) {
+            $booking = $this->awaitingDownpayment(60 + $repeat);
+            app(PaymentService::class)->record($booking, $this->owner, PaymentMethod::Cash, null, null, PaymentKind::Downpayment);
+
+            $outputs = Race::runMixed([
+                ['pay_booking', ['booking_id' => $booking->id, 'owner_id' => $this->owner->id, 'kind' => 'balance']],
+                ['void_booking', ['booking_id' => $booking->id, 'owner_id' => $this->owner->id, 'kind' => 'downpayment']],
+            ]);
+            $this->assertStartedTogether($outputs, 'balance vs void');
+            $results = Race::results($outputs);
+            $this->assertNoErrors($results, 'balance vs void');
+            $this->assertCount(1, array_filter($results, fn ($r) => $r['outcome'] === 'ok'), 'Exactly one of the two');
+
+            $booking->refresh();
+            $kinds = Payment::recordedFor($booking)->pluck('kind')->map->value->sort()->values()->all();
+            $this->assertTrue(
+                ($kinds === ['balance', 'downpayment'] && $booking->status === BookingStatus::Confirmed)
+                || ($kinds === [] && $booking->status === BookingStatus::AwaitingDownpayment),
+                'Inconsistent: '.json_encode($kinds).' '.$booking->status->value,
+            );
+        }
+
+        $this->assertPaymentsConsistent();
+        $this->assertChainIntact();
+    }
+
+    // Phase 10B (d): six workers record and void downpayments, full payments and balances on ten bookings for fifteen
+    // seconds: the chain is whole, nothing is over its price, one active payment of each kind
+    public function test_n_mixed_booking_payments_for_fifteen_seconds(): void
+    {
+        $this->openSchedule();
+        $bookings = collect(range(1, 10))->map(fn ($i) => $this->awaitingDownpayment(70 + $i));
+
+        $outputs = Race::run('booking_mixed', array_map(fn ($i) => [
+            'seed' => 2000 + $i, 'seconds' => 15, 'owner_id' => $this->owner->id, 'booking_ids' => $bookings->pluck('id')->all(),
+        ], range(0, 5)), Race::LEAD_SECONDS, 240);
+        $results = Race::results($outputs);
+
+        $errors = array_values(array_filter($results, fn ($r) => $r['outcome'] === 'error'));
+        $counts = ['actions' => count($results), 'ok' => count(array_filter($results, fn ($r) => $r['outcome'] === 'ok')), 'refused' => count(array_filter($results, fn ($r) => $r['outcome'] === 'refused'))];
+        fwrite(STDERR, '[booking mixed] '.json_encode($counts + ['errors' => array_slice($errors, 0, 3)]).PHP_EOL);
+        $this->assertSame([], $errors);
+        $this->assertGreaterThan(50, $counts['ok']);
+
+        $this->assertPaymentsConsistent();
+        $this->assertChainIntact();
+        foreach ($bookings as $booking) {
+            $booking->refresh();
+            $kinds = Payment::recordedFor($booking)->pluck('kind')->map->value->all();
+            // Any recorded payment means confirmed; without one it waits for the downpayment (or stays confirmed after a
+            // voided full payment, the one way back the rules do not send it to "Awaiting downpayment")
+            $this->assertContains($booking->status, $kinds === [] ? [BookingStatus::AwaitingDownpayment, BookingStatus::Confirmed] : [BookingStatus::Confirmed], $booking->reference_number.' '.json_encode($kinds));
+        }
     }
 
     public function test_g_one_studio_thread_and_one_message_per_client_id(): void

@@ -3,6 +3,7 @@
 namespace Tests\MySql\Support;
 
 use App\Enums\AuditAction;
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentRecordStatus;
 use App\Enums\PrintingOrderStatus;
@@ -80,6 +81,11 @@ class RaceWorkerCommand extends Command
             'confirm' => [$this->attempt('confirm', fn () => app(BookingTransitionService::class)->confirm(PhotographyBooking::query()->findOrFail($payload['booking_id']), $this->owner($payload), outsideSchedule: true)->id)],
             'book' => [$this->attempt('book', fn () => $this->book($payload))],
             'walk_in_book' => [$this->attempt('walk_in_book', fn () => $this->walkInBook($payload))],
+            // Phase 10B: a booking payment of one kind, the downpayment expiry, a void, and a mixed load on bookings
+            'pay_booking' => [$this->attempt('pay_booking', fn () => $this->payBooking($payload, $payload['kind']))],
+            'expire' => [$this->attempt('expire', fn () => app(BookingTransitionService::class)->expire(PhotographyBooking::query()->findOrFail($payload['booking_id'])) ? 'expired' : 'kept')],
+            'void_booking' => [$this->attempt('void_booking', fn () => $this->voidBooking($payload))],
+            'booking_mixed' => $this->bookingMixed($payload),
             'studio' => [$this->attempt('studio', fn () => app(ConversationService::class)->studioFor(User::query()->findOrFail($payload['customer_id']))->id)],
             'send' => [$this->attempt('send', fn () => $this->send($payload))],
             'mixed' => $this->mixed($payload),
@@ -194,6 +200,45 @@ class RaceWorkerCommand extends Command
                 (string) Str::uuid(),
             )['booking']->id;
         });
+    }
+
+    private function payBooking(array $payload, string $kind): int
+    {
+        $booking = PhotographyBooking::query()->findOrFail($payload['booking_id']);
+
+        return app(PaymentService::class)->record($booking, $this->owner($payload), PaymentMethod::Cash, null, null, PaymentKind::from($kind))->id;
+    }
+
+    private function voidBooking(array $payload): int
+    {
+        $booking = PhotographyBooking::query()->findOrFail($payload['booking_id']);
+        $payment = Payment::query()->where('payable_type', 'photography_booking')->where('payable_id', $booking->id)->where('status', PaymentRecordStatus::Recorded)
+            ->where('kind', $payload['kind'])->first() ?? throw PaymentException::notRecorded();
+
+        return app(PaymentService::class)->void($booking, $payment, $this->owner($payload), 'Race test void')->id;
+    }
+
+    /**
+     * Phase 10B: random downpayments, full payments, balances and voids on a pool of bookings for some seconds.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function bookingMixed(array $payload): array
+    {
+        mt_srand((int) $payload['seed']);
+        $until = microtime(true) + (float) $payload['seconds'];
+        $results = [];
+
+        while (microtime(true) < $until) {
+            $id = $payload['booking_ids'][mt_rand(0, count($payload['booking_ids']) - 1)];
+            $op = ['downpayment', 'full', 'balance', 'void_downpayment', 'void_balance', 'void_full'][mt_rand(0, 5)];
+
+            $results[] = $this->attempt($op, str_starts_with($op, 'void_')
+                ? fn () => $this->voidBooking(['booking_id' => $id, 'owner_id' => $payload['owner_id'], 'kind' => substr($op, 5)])
+                : fn () => $this->payBooking(['booking_id' => $id, 'owner_id' => $payload['owner_id']], $op));
+        }
+
+        return $results;
     }
 
     /** @return array{id: int, stored_now: bool} */

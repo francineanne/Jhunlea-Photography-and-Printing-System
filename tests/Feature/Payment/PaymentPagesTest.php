@@ -61,7 +61,7 @@ class PaymentPagesTest extends TestCase
     {
         $order = $this->order();
 
-        $this->record($order, ['confirm' => null])->assertSessionHasErrors(['confirm' => 'Tick the box to confirm you received the full amount.']);
+        $this->record($order, ['confirm' => null])->assertSessionHasErrors(['confirm' => 'Tick the box to confirm you received the amount.']);
         $this->record($order, ['method' => 'card'])->assertSessionHasErrors('method');
         $this->record($order, ['method' => 'gcash'])->assertSessionHasErrors(['gcash_reference' => 'Enter the GCash reference number from the customer’s receipt.']);
         $this->record($order, ['method' => 'gcash', 'gcash_reference' => '<b>12'])->assertSessionHasErrors('gcash_reference');

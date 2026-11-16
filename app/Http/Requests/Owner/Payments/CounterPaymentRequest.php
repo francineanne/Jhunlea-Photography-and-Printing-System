@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Owner\Payments;
 
+use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,6 +34,8 @@ class CounterPaymentRequest extends FormRequest
             'method' => ['required', 'string', Rule::enum(PaymentMethod::class)],
             'gcash_reference' => ['nullable', 'string', 'required_if:method,'.PaymentMethod::Gcash->value, 'regex:'.Payment::GCASH_REFERENCE_PATTERN],
             'expected_amount' => ['required', 'string', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            // Phase 10B: a downpayment, the balance or the full price; empty takes the only one allowed (or the full price)
+            'kind' => ['nullable', 'string', Rule::enum(PaymentKind::class)],
             'cash_tendered' => ['nullable', 'string', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
             'collected' => ['accepted'],
         ];
@@ -61,5 +64,11 @@ class CounterPaymentRequest extends FormRequest
     public function gcashReference(): ?string
     {
         return $this->paymentMethod() === PaymentMethod::Gcash ? (string) $this->validated('gcash_reference') : null;
+    }
+
+    /** Phase 10B: what the owner chose to record (null: the only kind allowed, or the full price). */
+    public function paymentKind(): ?PaymentKind
+    {
+        return PaymentKind::tryFrom((string) $this->validated('kind'));
     }
 }

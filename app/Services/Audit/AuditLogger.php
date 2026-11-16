@@ -32,10 +32,32 @@ class AuditLogger
 
     public function __construct(private readonly Redactor $redactor) {}
 
+    private bool $asSystem = false;
+
+    /**
+     * Phase 10B: the system acted by itself (a booking cancelled because its downpayment deadline passed): the row reads
+     * "System", whoever's request ran it.
+     *
+     * @param  array<string, mixed>  $meta
+     */
+    public function recordAsSystem(AuditAction $action, ?Model $subject = null, array $meta = []): ?AuditLog
+    {
+        $this->asSystem = true;
+
+        try {
+            return $this->record($action, $subject, $meta);
+        } finally {
+            $this->asSystem = false;
+        }
+    }
+
     /** @param array<string, mixed> $meta only the action's whitelisted keys are kept */
     public function record(AuditAction $action, ?Model $subject = null, array $meta = [], ?string $summary = null, ?User $actor = null, ?string $subjectLabel = null): ?AuditLog
     {
-        $actor ??= Auth::user();
+        // Phase 10B: recordAsSystem() writes the row as "System" even inside a signed-in request
+        if (! $this->asSystem) {
+            $actor ??= Auth::user();
+        }
         $meta = $this->clean(array_intersect_key($meta, array_flip($action->metaKeys())));
         $label = $subjectLabel ?? ($subject !== null ? AuditSubject::label($subject) : null);
 

@@ -28,6 +28,8 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
         searched: false,
         loading: false,
         target: null,
+        // Phase 10B: what is paid now (a downpayment, the balance or the full price), from the record's options
+        kind: '',
         method: 'cash',
         gcash: '',
         tendered: '',
@@ -55,7 +57,7 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
         },
 
         reset() {
-            Object.assign(this, { step: 'find', query: '', results: [], searched: false, target: null, method: 'cash', gcash: '', tendered: '', collected: false, error: '', done: null });
+            Object.assign(this, { step: 'find', query: '', results: [], searched: false, target: null, kind: '', method: 'cash', gcash: '', tendered: '', collected: false, error: '', done: null });
         },
 
         onInput() {
@@ -105,6 +107,7 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
 
         choose(result) {
             this.target = result;
+            this.kind = result.options?.[0]?.kind ?? '';
             this.step = 'pay';
             this.error = '';
             this.collected = false;
@@ -122,8 +125,17 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
             }
         },
 
+        // The amount of the chosen kind: what is collected now
+        get option() {
+            return this.target?.options?.find((option) => option.kind === this.kind) ?? null;
+        },
+
+        get amountText() {
+            return this.option?.amount_text ?? this.target?.price_text ?? '';
+        },
+
         get priceCents() {
-            return this.target ? toCents(this.target.price) : null;
+            return this.option ? toCents(this.option.amount) : null;
         },
 
         get tenderedCents() {
@@ -133,7 +145,7 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
         get tenderedProblem() {
             if (this.method !== 'cash' || this.tendered.trim() === '') return '';
             if (this.tenderedCents === null) return 'Type the cash received as a number, for example 500 or 1250.50.';
-            if (this.tenderedCents < this.priceCents) return 'That is less than the full amount. Collect the full amount; partial payments are not taken.';
+            if (this.tenderedCents < this.priceCents) return 'That is less than the amount due. Collect the whole amount; smaller amounts are not recorded.';
             return '';
         },
 
@@ -175,7 +187,8 @@ export default function paymentCounter({ searchUrl, targetUrl, recordUrl, paymen
                         payable_id: this.target.id,
                         method: this.method,
                         gcash_reference: this.method === 'gcash' ? this.gcash.trim() : null,
-                        expected_amount: this.target.price,
+                        kind: this.kind || null,
+                        expected_amount: this.option?.amount ?? this.target.price,
                         cash_tendered: this.method === 'cash' && this.tendered.trim() !== '' ? this.tendered.trim() : null,
                         collected: this.collected ? 1 : 0,
                     }),

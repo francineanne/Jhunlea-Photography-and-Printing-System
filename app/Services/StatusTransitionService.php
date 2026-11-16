@@ -14,8 +14,11 @@ use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
 use App\Support\Money;
+use App\Support\PaymentRules;
+use App\Support\ShopSettings;
 use Closure;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -52,14 +55,30 @@ class StatusTransitionService
      *
      * Accepting needs the confirmed price, which is saved in the same transaction. Rejecting needs a reason.
      *
+     * Phase 10B, in $options:
+     *  - 'prepay' (?bool, on Accepted): whether the order is paid before printing. It is ticked by itself from the
+     *    owner's "Pay first from" amount or when the customer must pay first (users.prepay_required); the owner may tick
+     *    it for any order or untick an amount-based one, never for a customer who must pay first. Null = the automatic
+     *    answer. Accepted -> Processing is then refused until the order is paid.
+     *  - 'payment_choice' and 'refund_reason' (owner cancel of an order with a recorded payment): KEEP_PAYMENT or
+     *    REFUND_PAYMENT, as for bookings; a refund voids the payment in this transaction.
+     * A customer may cancel an Accepted order only while nothing is paid (they saw the price and back out). Unclaimed
+     * (owner) closes an unpaid order that waited at least "Unclaimed after days" since it became ready, and the customer
+     * must pay first from then on.
+     *
      * @throws AuthorizationException when a customer tries to touch an order that is not theirs
      * @throws InvalidStatusTransitionException when the move is not in the table, the role may not make it, or a required reason or price is missing
      */
-    public function transition(PrintingOrder $order, PrintingOrderStatus $to, User $actor, ?string $note = null, ?string $confirmedPrice = null): PrintingOrder
+    public const KEEP_PAYMENT = 'keep';
+
+    public const REFUND_PAYMENT = 'refund';
+
+    /** @param  array{prepay?: ?bool, payment_choice?: ?string, refund_reason?: ?string}  $options */
+    public function transition(PrintingOrder $order, PrintingOrderStatus $to, User $actor, ?string $note = null, ?string $confirmedPrice = null, array $options = []): PrintingOrder
     {
         $note = $this->clean($note);
 
-        return $this->locked($order, $actor, function (PrintingOrder $current) use ($to, $actor, $note, $confirmedPrice) {
+        return $this->locked($order, $actor, function (PrintingOrder $current) use ($to, $actor, $note, $confirmedPrice, $options) {
             $from = $current->status;
 
             if (! array_key_exists($to->value, $from->transitions())) {
@@ -75,12 +94,46 @@ class StatusTransitionService
             }
 
             // The release gate: an order is handed over (Completed) only when it is fully paid, or costs nothing
-            if ($to === PrintingOrderStatus::Completed && ! PaymentStatus::derive($current->confirmed_price, Payment::recordedFor($current)->exists())->isSettled()) {
+            $settled = fn () => PaymentStatus::derive($current->confirmed_price, $this->paidCents($current))->isSettled();
+
+            if ($to === PrintingOrderStatus::Completed && ! $settled()) {
                 throw InvalidStatusTransitionException::notPaid();
+            }
+
+            // Phase 10B: an order paid before printing is printed only once it is paid
+            if ($to === PrintingOrderStatus::Processing && $current->requires_prepayment && ! $settled()) {
+                throw InvalidStatusTransitionException::prepaymentRequired();
+            }
+
+            $paid = Payment::recordedFor($current)->exists();
+
+            if ($to === PrintingOrderStatus::Cancelled && $actor->role === UserRole::Customer && $paid) {
+                throw InvalidStatusTransitionException::customerCannotCancelPaid();
+            }
+
+            if ($to === PrintingOrderStatus::Unclaimed) {
+                $this->checkUnclaimed($current, $paid);
+            }
+
+            $choice = $options['payment_choice'] ?? null;
+            $refundReason = $this->clean($options['refund_reason'] ?? null);
+            $refund = $to === PrintingOrderStatus::Cancelled && $actor->role === UserRole::Owner && $paid;
+
+            if ($refund && ! in_array($choice, [self::KEEP_PAYMENT, self::REFUND_PAYMENT], true)) {
+                throw InvalidStatusTransitionException::paymentChoiceRequired();
+            }
+
+            if ($refund && $choice === self::REFUND_PAYMENT && $refundReason === null) {
+                throw InvalidStatusTransitionException::refundReasonRequired();
             }
 
             if ($to === PrintingOrderStatus::Accepted) {
                 $current->confirmed_price = $this->price($confirmedPrice);
+                $current->requires_prepayment = $this->prepay($current, $options['prepay'] ?? null);
+            }
+
+            if ($refund) {
+                $note = trim(($note ?? '').' '.($choice === self::REFUND_PAYMENT ? 'The payment was refunded.' : 'The payment is kept (not refunded).'));
             }
 
             $current->status = $to;
@@ -92,7 +145,64 @@ class StatusTransitionService
             $this->clearInfoRequest($current);
             $current->save();
             $this->writeHistory($current, $from, $to, $actor, $note);
+
+            if ($refund && $choice === self::REFUND_PAYMENT) {
+                app(PaymentService::class)->refundAll($current, $actor, $refundReason);
+            }
+
+            // Unclaimed: the customer pays before printing from now on (walk-ins too), in this transaction
+            if ($to === PrintingOrderStatus::Unclaimed) {
+                app(PrepayFlagService::class)->set($current, $actor);
+            }
         });
+    }
+
+    /**
+     * Whether an order accepted now is paid before printing: by the owner's "Pay first from" amount, or because the
+     * customer must pay first; the owner's tick wins, except that a flagged customer always pays first.
+     */
+    private function prepay(PrintingOrder $current, ?bool $ticked): bool
+    {
+        $flagged = (bool) User::query()->whereKey($current->customer_id)->value('prepay_required');
+
+        if ($flagged) {
+            return true;
+        }
+
+        return $ticked ?? app(PaymentRules::class)->prepayByPrice($current->confirmed_price);
+    }
+
+    /**
+     * Unclaimed only for an order never paid that waited at least the owner's "Unclaimed after days" since it became
+     * ready for pickup (the newest history row that moved it there). A paid order stays ready for pickup.
+     */
+    private function checkUnclaimed(PrintingOrder $current, bool $paid): void
+    {
+        if ($paid) {
+            throw InvalidStatusTransitionException::unclaimedButPaid();
+        }
+
+        $days = app(ShopSettings::class)->paymentRule('unclaimed_after_days');
+        $readyAt = self::readyAt($current);
+
+        if ($readyAt === null || $readyAt->copy()->addDays($days)->gt(Carbon::now('UTC'))) {
+            throw InvalidStatusTransitionException::unclaimedTooSoon($days, $readyAt?->copy()->addDays($days));
+        }
+    }
+
+    /** When the order last became ready for pickup (UTC), from its history; null when it never did. */
+    public static function readyAt(PrintingOrder $order): ?Carbon
+    {
+        $at = OrderStatusHistory::query()->where('printing_order_id', $order->getKey())
+            ->where('to_status', PrintingOrderStatus::ReadyForPickup)->whereNull('event')->max('created_at');
+
+        return $at === null ? null : Carbon::parse($at, 'UTC');
+    }
+
+    /** What the recorded payments add up to, in centavos (read inside the locked transaction). */
+    private function paidCents(PrintingOrder $current): int
+    {
+        return (int) Payment::recordedFor($current)->get(['amount'])->sum(fn (Payment $payment) => Money::toCents($payment->amount));
     }
 
     /**
@@ -262,7 +372,7 @@ class StatusTransitionService
      *
      * @param  array{payment?: string, amount?: string}  $context
      */
-    private function writeHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, User $actor, ?string $note, ?OrderEvent $event = null, array $context = []): void
+    private function writeHistory(PrintingOrder $order, ?PrintingOrderStatus $from, PrintingOrderStatus $to, ?User $actor, ?string $note, ?OrderEvent $event = null, array $context = []): void
     {
         $history = new OrderStatusHistory;
         $history->forceFill([
@@ -270,7 +380,7 @@ class StatusTransitionService
             'from_status' => $from,
             'to_status' => $to,
             'event' => $event,
-            'changed_by' => $actor->getKey(),
+            'changed_by' => $actor?->getKey(),
             'note' => $note,
         ])->save();
 
@@ -280,6 +390,7 @@ class StatusTransitionService
                 PrintingOrderStatus::Cancelled => AuditAction::OrderCancelled,
                 PrintingOrderStatus::Rejected => AuditAction::OrderRejected,
                 PrintingOrderStatus::Completed => AuditAction::OrderCompleted,
+                PrintingOrderStatus::Unclaimed => AuditAction::OrderUnclaimed,
                 default => AuditAction::OrderStatusChanged,
             }, $order, array_filter(['from' => $from->value, 'to' => $to->value,
                 'price_cents' => $to === PrintingOrderStatus::Accepted ? AuditLogger::cents($order->confirmed_price) : null,

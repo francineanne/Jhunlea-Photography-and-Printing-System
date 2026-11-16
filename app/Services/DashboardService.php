@@ -93,6 +93,9 @@ class DashboardService
             'shootCount' => (clone $shoots)->count(),
             'shoots' => (clone $shoots)->with(['customer:id,name', 'package'])->orderBy('starts_at')->limit(self::LIST_LIMIT * 2)->get(),
             'awaiting' => $this->ledger->awaiting(),
+            // Phase 10B: photoshoots waiting for their downpayment, and today's photoshoots with a balance still due
+            'downpaymentCount' => $this->ledger->awaitingDownpayment()->count(),
+            'balanceTodayCount' => $this->ledger->balanceDueOn($today)->count(),
             'recordedToday' => $this->ledger->totals(['method' => null, 'status' => null, 'search' => '', 'from' => $today, 'to' => $today]),
             'unread' => $this->notifications->unreadCount($owner),
         ];

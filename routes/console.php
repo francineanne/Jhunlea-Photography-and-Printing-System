@@ -2,6 +2,11 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
+
+// Phase 10B: bookings whose downpayment was not paid by the deadline are cancelled. On hosting, the server's cron runs
+// `php artisan schedule:run` every minute; without cron the same work runs lazily when booking pages are opened
+Schedule::command('bookings:expire-unpaid')->everyFifteenMinutes()->withoutOverlapping();
 use Tests\MySql\Support\RaceWorkerCommand;
 
 Artisan::command('inspire', function () {

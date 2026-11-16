@@ -18,12 +18,13 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Tests\Feature\Booking\SetsUpSchedule;
+use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /** Phase 5B: NotificationDispatcher tells the right people, only after a history row, and never leaks private text. */
 class NotificationRulesTest extends TestCase
 {
-    use RefreshDatabase, SetsUpSchedule;
+    use RefreshDatabase, SetsPaymentRules, SetsUpSchedule;
 
     private User $owner;
 
@@ -34,6 +35,9 @@ class NotificationRulesTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Written before Phase 10B: no downpayment, printing paid at pickup (the new rules have their own tests)
+        $this->withoutDownpaymentsOrPrepayment();
 
         $this->setUpSchedule();
         $this->owner = User::factory()->owner()->create();
@@ -257,6 +261,8 @@ class NotificationRulesTest extends TestCase
             }
         }
 
-        $this->assertCount(25, NotificationKind::cases());
+        // Phase 10B added 8: downpayment requested, recorded, balance recorded, deadline extended, waived, expired,
+        // order paid before printing, order unclaimed
+        $this->assertCount(33, NotificationKind::cases());
     }
 }

@@ -94,7 +94,7 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 }
 
 Route::get('/my/dashboard', CustomerDashboardController::class)
-    ->middleware(['auth', 'role:customer', 'throttle:60,1,customer-dashboard'])
+    ->middleware(['auth', 'role:customer', 'expire.downpayments', 'throttle:60,1,customer-dashboard'])
     ->name('customer.dashboard');
 
 // All of the customer's printing orders and bookings in one list (Phase 5C)
@@ -121,7 +121,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/printing')->name('custo
 });
 
 // The customer's photoshoot booking wizard (Phase 4B). The calendar asks /slots for free times; the wizard sends one POST
-Route::middleware(['auth', 'role:customer'])->prefix('my/bookings')->name('customer.bookings.')->group(function () {
+Route::middleware(['auth', 'role:customer', 'expire.downpayments'])->prefix('my/bookings')->name('customer.bookings.')->group(function () {
     Route::get('/new', [PhotographyBookingController::class, 'create'])->middleware('throttle:60,1,booking-new')->name('create');
     Route::get('/slots', BookingSlotsController::class)->middleware('throttle:120,1,booking-slots')->name('slots');
     Route::post('/', [PhotographyBookingController::class, 'store'])->middleware('throttle:10,1,booking-store')->name('store');
@@ -138,7 +138,7 @@ Route::middleware(['auth', 'role:customer'])->prefix('my/bookings')->name('custo
 });
 
 // The owner's photography bookings (Phase 4C). Every action is a POST that goes through BookingTransitionService
-Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner.bookings.')->group(function () {
+Route::middleware(['auth', 'role:owner', 'expire.downpayments'])->prefix('owner/bookings')->name('owner.bookings.')->group(function () {
     Route::get('/', [OwnerPhotographyBookingController::class, 'index'])->middleware('throttle:120,1,owner-booking-list')->name('index');
     Route::get('/{booking}', [OwnerPhotographyBookingController::class, 'show'])->whereNumber('booking')->middleware('throttle:120,1,owner-booking-show')->name('show');
 
@@ -151,6 +151,9 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner
         Route::post('/{booking}/cancel', 'cancel')->middleware('throttle:30,1,owner-booking-cancel')->name('cancel');
         Route::post('/{booking}/price', 'price')->middleware('throttle:30,1,owner-booking-price')->name('price');
         Route::post('/{booking}/notes', 'notes')->middleware('throttle:30,1,owner-booking-notes')->name('notes');
+        // Phase 10B: the downpayment of a booking awaiting it
+        Route::post('/{booking}/waive-downpayment', 'waive')->middleware('throttle:20,1,owner-booking-waive')->name('waive');
+        Route::post('/{booking}/extend-deadline', 'extend')->middleware('throttle:20,1,owner-booking-extend')->name('extend');
     });
 
     // Payments (Phase 5A): a photoshoot is paid on the day, once it is confirmed
@@ -161,7 +164,7 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/bookings')->name('owner
 });
 
 // The owner's schedule (Phase 4D): the calendar, and the editor of opening hours, booking settings and blocked dates
-Route::middleware(['auth', 'role:owner'])->prefix('owner/schedule')->name('owner.schedule.')->controller(ScheduleController::class)->group(function () {
+Route::middleware(['auth', 'role:owner', 'expire.downpayments'])->prefix('owner/schedule')->name('owner.schedule.')->controller(ScheduleController::class)->group(function () {
     Route::get('/', 'index')->middleware('throttle:120,1,owner-schedule-calendar')->name('index');
     Route::get('/edit', 'edit')->middleware('throttle:60,1,owner-schedule-edit')->name('edit');
     Route::post('/hours', 'hours')->middleware('throttle:20,1,owner-schedule-hours')->name('hours');
@@ -185,7 +188,7 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 
 // The owner's payments ledger (Phase 5A): recorded and voided payments, recorded totals and what is still unpaid
 Route::get('/owner/payments', [PaymentController::class, 'index'])
-    ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-payments-ledger'])
+    ->middleware(['auth', 'role:owner', 'expire.downpayments', 'throttle:120,1,owner-payments-ledger'])
     ->name('owner.payments.index');
 
 // The shop counter on the Payments page (Phase 8B): find an order or booking, record its full payment through
@@ -201,12 +204,16 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/payments')->name('owner
 Route::middleware(['auth', 'role:owner'])->prefix('owner/customers')->name('owner.customers.')->controller(CustomerController::class)->group(function () {
     Route::get('/', 'index')->middleware('throttle:120,1,owner-customers')->name('index');
     Route::get('/{customer}', 'show')->whereNumber('customer')->middleware('throttle:120,1,owner-customer-show')->name('show');
+    // Phase 10B: the owner clears the customer's "pay before printing" flag (audited)
+    Route::post('/{customer}/prepay/clear', 'clearPrepay')->whereNumber('customer')->middleware('throttle:20,1,owner-customer-prepay-clear')->name('prepay.clear');
 });
 
 // The owner's Settings (Phase 6B): business info and upload limits are saved here; hours and booking rules are only shown
 Route::middleware(['auth', 'role:owner'])->prefix('owner/settings')->name('owner.settings.')->controller(SettingsController::class)->group(function () {
     Route::get('/', 'index')->middleware('throttle:60,1,owner-settings')->name('index');
     Route::post('/business', 'business')->middleware('throttle:20,1,owner-settings-business')->name('business');
+    // Phase 10B: the payment rules and the GCash name and number customers see (audited)
+    Route::post('/payment-rules', 'paymentRules')->middleware('throttle:20,1,owner-settings-payment-rules')->name('payment-rules');
     Route::post('/uploads', 'uploads')->middleware('throttle:20,1,owner-settings-uploads')->name('uploads');
     Route::post('/uploads/reset', 'resetUploads')->middleware('throttle:10,1,owner-settings-uploads-reset')->name('uploads.reset');
 });
@@ -260,8 +267,8 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('/owner/printing-orders/walk-in/price', PrintingEstimateController::class)->middleware('throttle:120,1,owner-walkin-order-price')->name('owner.orders.walk-in.price');
     Route::post('/owner/printing-orders/walk-in', [WalkInController::class, 'storeOrder'])->middleware('throttle:20,1,owner-walkin-order-store')->name('owner.orders.walk-in.store');
     Route::get('/owner/printing-orders/{order}/walk-in-saved', [WalkInController::class, 'orderDone'])->whereNumber('order')->middleware('throttle:60,1,owner-walkin-order-done')->name('owner.orders.walk-in.done');
-    Route::get('/owner/bookings/walk-in/new', [WalkInController::class, 'createBooking'])->middleware('throttle:60,1,owner-walkin-booking-form')->name('owner.bookings.walk-in.create');
-    Route::get('/owner/bookings/walk-in/slots', [WalkInController::class, 'slots'])->middleware('throttle:120,1,owner-walkin-booking-slots')->name('owner.bookings.walk-in.slots');
+    Route::get('/owner/bookings/walk-in/new', [WalkInController::class, 'createBooking'])->middleware(['expire.downpayments', 'throttle:60,1,owner-walkin-booking-form'])->name('owner.bookings.walk-in.create');
+    Route::get('/owner/bookings/walk-in/slots', [WalkInController::class, 'slots'])->middleware(['expire.downpayments', 'throttle:120,1,owner-walkin-booking-slots'])->name('owner.bookings.walk-in.slots');
     Route::post('/owner/bookings/walk-in', [WalkInController::class, 'storeBooking'])->middleware('throttle:20,1,owner-walkin-booking-store')->name('owner.bookings.walk-in.store');
 });
 
@@ -281,6 +288,8 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/printing-orders')->name
         Route::post('/{order}/complete', 'complete')->middleware('throttle:30,1,owner-order-complete')->name('complete');
         Route::post('/{order}/cancel', 'cancel')->middleware('throttle:30,1,owner-order-cancel')->name('cancel');
         Route::post('/{order}/price', 'price')->middleware('throttle:30,1,owner-order-price')->name('price');
+        // Phase 10B: an unpaid order that waited too long for pickup is closed as unclaimed
+        Route::post('/{order}/unclaimed', 'unclaimed')->middleware('throttle:30,1,owner-order-unclaimed')->name('unclaimed');
     });
 
     // Payments (Phase 5A): recorded and voided only through PaymentService
@@ -297,7 +306,7 @@ Route::get('/files/{file}', OrderFileDownloadController::class)
     ->name('files.download');
 
 Route::get('/owner', OwnerDashboardController::class)
-    ->middleware(['auth', 'role:owner', 'throttle:120,1,owner-dashboard'])
+    ->middleware(['auth', 'role:owner', 'expire.downpayments', 'throttle:120,1,owner-dashboard'])
     ->name('owner.dashboard');
 
 // The owner's catalog. Phase 9A: every route has its own named counter, generous enough that the owner never meets it

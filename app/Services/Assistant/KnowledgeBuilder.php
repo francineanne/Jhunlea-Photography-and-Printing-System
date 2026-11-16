@@ -9,6 +9,7 @@ use App\Models\PhotographyPackage;
 use App\Models\PrintingService;
 use App\Models\Theme;
 use App\Support\Money;
+use App\Support\PaymentRules;
 use App\Support\ShopSettings;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
@@ -168,10 +169,13 @@ class KnowledgeBuilder
         $lines[] = "- A customer may cancel a confirmed booking until {$cutoff} hours before it starts; after that they talk to the studio.";
         $lines[] = '- Printing orders are reviewed by the shop; an estimated price is not the confirmed price.';
 
+        // Phase 10B: the rules are the owner's settings, worded by PaymentRules (the customer's pages read the same words)
         $lines[] = "\nPAYMENT RULES";
         $lines[] = '- Payment is made face-to-face at Jhunlea Photography & Printing, in cash or GCash. There is no online payment.';
-        $lines[] = '- No partial payment and no downpayment: the full confirmed price is paid in one payment (for a photoshoot, on the day of the shoot).';
-        $lines[] = '- Orders and photos are released only when fully paid. The system only records payments.';
+        foreach (app(PaymentRules::class)->sentences() as $sentence) {
+            $lines[] = '- '.$sentence;
+        }
+        $lines[] = '- A payment counts only once the studio records it; never say a payment was received unless the customer\'s records show it.';
 
         // Page names exactly as the menus show them, never an address
         $lines[] = "\nWHERE TO FIND THINGS ON THE WEBSITE (page names)";

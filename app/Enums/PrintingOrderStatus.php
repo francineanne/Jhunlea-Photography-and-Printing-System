@@ -12,6 +12,8 @@ enum PrintingOrderStatus: string
     case ReadyForPickup = 'ready_for_pickup';
     case Completed = 'completed';
     case Cancelled = 'cancelled';
+    // Phase 10B: ready for pickup, never paid and never collected; closed by the shop (never income)
+    case Unclaimed = 'unclaimed';
 
     public function label(): string
     {
@@ -24,13 +26,15 @@ enum PrintingOrderStatus: string
             self::ReadyForPickup => 'Ready for pickup',
             self::Completed => 'Completed',
             self::Cancelled => 'Cancelled',
+            self::Unclaimed => 'Unclaimed',
         };
     }
 
     /**
      * The only table of allowed moves: from this status, to which statuses, and which role may make each move.
-     * StatusTransitionService reads it and nothing else decides. A customer may only cancel, and only while the
-     * order is still Submitted. A status that is missing here is final.
+     * StatusTransitionService reads it and nothing else decides. A customer may only cancel: while the order is
+     * Submitted, and (Phase 10B) while it is Accepted and nothing is paid yet, so they can back out after seeing the
+     * price (StatusTransitionService checks the payment). A status that is missing here is final.
      *
      * @return array<string, list<UserRole>>
      */
@@ -50,15 +54,16 @@ enum PrintingOrderStatus: string
             ],
             self::Accepted => [
                 self::Processing->value => $owner,
-                self::Cancelled->value => $owner,
+                self::Cancelled->value => [UserRole::Owner, UserRole::Customer],
             ],
             self::Processing => [
                 self::ReadyForPickup->value => $owner,
             ],
             self::ReadyForPickup => [
                 self::Completed->value => $owner,
+                self::Unclaimed->value => $owner,
             ],
-            self::Rejected, self::Completed, self::Cancelled => [],
+            self::Rejected, self::Completed, self::Cancelled, self::Unclaimed => [],
         };
     }
 
@@ -96,9 +101,9 @@ enum PrintingOrderStatus: string
         return in_array($this, [self::Accepted, self::Processing, self::ReadyForPickup, self::Completed], true);
     }
 
-    /** Rejected or cancelled: nothing is due, so no payment is recorded. */
+    /** Rejected, cancelled or unclaimed: nothing is due, so no payment is recorded. */
     public function isClosed(): bool
     {
-        return in_array($this, [self::Rejected, self::Cancelled], true);
+        return in_array($this, [self::Rejected, self::Cancelled, self::Unclaimed], true);
     }
 }

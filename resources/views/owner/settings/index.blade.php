@@ -16,7 +16,7 @@
         'business' => ['1. Business info', 'storefront'],
         'booking' => ['2. Booking rules', 'event_available'],
         'uploads' => ['3. Upload rules', 'upload_file'],
-        'payments' => ['4. Payments', 'payments'],
+        'payments' => ['4. Payment rules', 'payments'],
         'faq' => ['5. FAQ', 'quiz'],
         'activity' => ['6. Activity log', 'history'],
     ];
@@ -232,15 +232,53 @@
         </section>
 
         {{-- 4. Payments: fixed shop rules, never switches --}}
+        {{-- 4. Payment rules (Phase 10B): editable, owner only, audited as "Payment rules changed" --}}
         <section id="payments" x-show="tab === 'payments'" x-transition.opacity.duration.200ms class="mt-6 scroll-mt-24" aria-labelledby="payments-title">
-            <div class="rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-shadow hover:shadow-md sm:p-6 dark:shadow-none">
-                <h2 id="payments-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="payments" :size="22" class="text-brand" />Payments</h2>
-                <p class="mt-1 text-sm text-app-text-2">These are the shop's fixed rules. They cannot be changed here.</p>
-                <ul class="mt-4 space-y-3 text-sm">
-                    <li class="flex items-start gap-3 rounded-control bg-neutral-100 p-3 dark:bg-white/5"><x-ui.icon name="storefront" :size="20" class="mt-px shrink-0 text-brand" />Payment is made face to face at the studio (cash or GCash). The system only records payments. Nothing is charged online.</li>
-                    <li class="flex items-start gap-3 rounded-control bg-neutral-100 p-3 dark:bg-white/5"><x-ui.icon name="verified" :size="20" class="mt-px shrink-0 text-brand" />Full payment is required before an order or the photos are released.</li>
-                </ul>
-            </div>
+            <form method="POST" action="{{ route('owner.settings.payment-rules') }}" class="rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md dark:shadow-none">
+                @csrf
+                <div class="p-4 sm:p-6">
+                    <h2 id="payments-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="payments" :size="22" class="text-brand" />Payment rules</h2>
+                    <p class="mt-1 text-sm text-app-text-2">New confirmations and accepted orders use these at once. Bookings and orders already confirmed keep their deadline and rule.</p>
+
+                    @if ($errors->hasAny([...array_keys($paymentRules), 'gcash_name', 'gcash_number']))
+                        <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">
+                            <ul class="space-y-1">@foreach ($errors->only([...array_keys($paymentRules), 'gcash_name', 'gcash_number']) as $message)<li>{{ $message }}</li>@endforeach</ul>
+                        </x-ui.notice>
+                    @endif
+
+                    <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach ($paymentRules as $field => $rule)
+                            @php([$min, $max] = $rule['limits'])
+                            <x-ui.input :id="'rule-'.$field" :name="$field" :label="$rule['label']" type="number" inputmode="decimal" :min="$min" :max="$max" :step="$field === 'prepay_from' ? '0.01' : '1'" :required="true"
+                                :value="old($field, $rule['value'])" :error="$errors->first($field)"
+                                :hint="match ($field) {
+                                    'downpayment_percent' => 'Share of a photoshoot\'s price paid to hold it. 0 = no downpayment.',
+                                    'downpayment_due_days' => 'The downpayment is due this many days before the shoot.',
+                                    'downpayment_min_hours' => 'But the customer always gets at least this many hours after you confirm.',
+                                    'prepay_from' => 'Printing orders from this price (₱) are paid before printing.',
+                                    default => 'An unpaid order ready this long may be marked unclaimed.',
+                                }" />
+                        @endforeach
+                    </div>
+
+                    <h3 class="mt-6 text-[11px] font-bold uppercase tracking-wider text-app-text-2">GCash shown to customers</h3>
+                    <div class="mt-2 grid gap-4 md:grid-cols-2">
+                        <x-ui.input id="gcash-name" name="gcash_name" label="GCash account name" maxlength="80" :value="old('gcash_name', $gcash['name'])" :error="$errors->first('gcash_name')" hint="Display only. Leave empty to hide." />
+                        <x-ui.input id="gcash-number" name="gcash_number" label="GCash number" maxlength="20" inputmode="tel" :value="old('gcash_number', $gcash['number'])" :error="$errors->first('gcash_number')" hint="Customers send GCash here and the reference in Messages; you record it after checking." />
+                    </div>
+
+                    <h3 class="mt-6 text-[11px] font-bold uppercase tracking-wider text-app-text-2">What customers and Lumi are told</h3>
+                    <ul class="mt-2 space-y-2 text-sm">
+                        @foreach ($ruleSentences as $sentence)
+                            <li class="flex items-start gap-3 rounded-control bg-neutral-100 p-3 dark:bg-white/5"><x-ui.icon name="info" :size="18" class="mt-px shrink-0 text-brand" />{{ $sentence }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                <div class="flex flex-col gap-3 rounded-b-card border-t border-app-border bg-neutral-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:bg-white/5">
+                    <p class="flex items-start gap-2 text-xs text-app-text-2"><x-ui.icon name="lock" :size="16" class="mt-px shrink-0 text-brand" />The system only records payments; it never takes one online. Every change is in the activity log.</p>
+                    <x-ui.button type="submit" class="shrink-0"><x-ui.icon name="save" :size="18" />Save payment rules</x-ui.button>
+                </div>
+            </form>
         </section>
 
         {{-- 5. FAQ --}}

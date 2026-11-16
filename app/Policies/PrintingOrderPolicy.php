@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
+use App\Models\Payment;
 use App\Models\PrintingOrder;
 use App\Models\User;
 
@@ -30,10 +31,15 @@ class PrintingOrderPolicy
         return $user->role === UserRole::Customer;
     }
 
-    /** A customer may cancel their own order only while it is still Submitted. */
+    /**
+     * A customer may cancel their own order while it is Submitted, or Accepted with nothing paid (Phase 10B: they saw
+     * the price and back out before printing). StatusTransitionService checks the payment again on the locked row.
+     */
     public function cancel(User $user, PrintingOrder $order): bool
     {
-        return $this->owns($user, $order) && $order->status->canMoveTo(PrintingOrderStatus::Cancelled, UserRole::Customer);
+        return $this->owns($user, $order) && $order->status->canMoveTo(PrintingOrderStatus::Cancelled, UserRole::Customer)
+            && ($order->status !== PrintingOrderStatus::Accepted
+                || ! ($order->relationLoaded('recordedPayment') ? $order->recordedPayment !== null : Payment::recordedFor($order)->exists()));
     }
 
     /** Accept, reject, process, mark ready, complete: the owner's work. Which moves are possible is up to the status table. */
