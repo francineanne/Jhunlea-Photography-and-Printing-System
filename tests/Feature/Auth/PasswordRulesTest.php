@@ -40,7 +40,7 @@ class PasswordRulesTest extends TestCase
 
     public function test_the_register_and_reset_pages_show_the_rules_from_the_single_source(): void
     {
-        foreach (['/register', '/reset-password/some-token?email=a%40b.test'] as $url) {
+        foreach (['/register', '/reset-password?email=a%40b.test'] as $url) {
             $html = $this->get($url)->assertOk()->getContent();
 
             foreach (PasswordRules::all() as $rule) {
@@ -49,7 +49,7 @@ class PasswordRulesTest extends TestCase
         }
 
         $this->get('/register')->assertSee(PasswordRules::summary());
-        $this->get('/reset-password/some-token?email=a%40b.test')->assertSee(PasswordRules::summary());
+        $this->get('/reset-password?email=a%40b.test')->assertSee(PasswordRules::summary());
     }
 
     public function test_every_server_rule_has_a_matching_check_in_the_browser_script(): void

@@ -46,6 +46,8 @@ class CreateOwner extends Command
         $owner->role = UserRole::Owner;
 
         try {
+            // Phase 10C: the owner types their own email here, so it counts as verified
+            $owner->email_verified_at = now();
             $owner->save();
         } catch (UniqueConstraintViolationException) {
             // The email was taken between the check above and the save

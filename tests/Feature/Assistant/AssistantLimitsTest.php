@@ -67,6 +67,9 @@ class AssistantLimitsTest extends TestCase
 
     public function test_the_guest_daily_limit_is_kept_by_a_hash_of_the_ip_only(): void
     {
+        // Phase 10C: a fixed midday in Manila, so the 21 minutes this test moves forward never cross midnight (the daily
+        // limit starts again at midnight; from 23:39 the test used to fail)
+        $this->travelTo(Carbon::parse('2026-11-05 04:00:00', 'UTC'));
         $guest = AssistantActor::guest('203.0.113.50');
 
         // 20 a day since Phase 7E-2a (was 10)

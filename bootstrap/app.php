@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\ExpireUnpaidDownpayments;
 use App\Http\Middleware\SecurityHeaders;
+use Illuminate\Auth\Middleware\EnsureEmailIsVerified;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Check the role before route model binding, so a customer gets 403 (not 404) for an id that does not exist
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureRole::class);
+        // Phase 10C: an unverified customer is sent to "Check your email" before any record in the address is looked up
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: EnsureEmailIsVerified::class);
 
         // Signs out other sessions of a user as soon as their password changes (for example after a reset)
         $middleware->web(append: [AuthenticateSession::class]);

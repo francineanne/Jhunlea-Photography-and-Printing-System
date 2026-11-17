@@ -4,6 +4,7 @@ namespace App\Http\Requests\Account;
 
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Support\PhilippineMobile;
 use Closure;
 use Illuminate\Validation\Rule;
 
@@ -51,7 +52,7 @@ class UpdateProfileRequest extends AccountRequest
                     $fail(self::EMAIL_TAKEN);
                 }
             }],
-            'phone' => ['nullable', 'string', 'regex:'.RegisterRequest::PHONE_PATTERN],
+            'phone' => ['nullable', 'string', new PhilippineMobile],
             'current_password' => ['bail', Rule::requiredIf(fn () => $this->changesEmail()), 'nullable', 'string', 'current_password'],
         ];
     }
@@ -84,7 +85,7 @@ class UpdateProfileRequest extends AccountRequest
         return [
             'name' => (string) $this->validated('name'),
             'email' => (string) $this->validated('email'),
-            'phone' => is_string($phone) && $phone !== '' ? $phone : null,
+            'phone' => is_string($phone) && $phone !== '' ? PhilippineMobile::normalize($phone) : null,
         ];
     }
 }

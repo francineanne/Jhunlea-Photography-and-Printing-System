@@ -31,6 +31,11 @@ class LoginController extends Controller
             app(AuditLogger::class)->record(AuditAction::LoggedIn, null, actor: $request->user());
         }
 
+        // Phase 10C: a customer who has not verified their email yet is told so, and lands on "Check your email"
+        if ($request->user()->role === UserRole::Customer && ! $request->user()->hasVerifiedEmail()) {
+            return redirect()->route('verification.notice')->with('status', 'Welcome back! Please verify your email first: open the link we sent, or send a new one below.');
+        }
+
         return redirect($request->user()->role->afterLogin($request->session()->pull('url.intended')));
     }
 

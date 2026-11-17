@@ -83,6 +83,17 @@ class BookingTransitionService
     }
 
     /**
+     * Phase 10C: the owner waived the downpayment at the counter. Written as the same history event as an online waiver
+     * (DownpaymentWaived), so a later void of a full payment knows not to ask for a downpayment again. Called by
+     * WalkInBookingService in its own transaction, right after the first history row.
+     */
+    public function recordCounterWaiver(PhotographyBooking $booking, User $owner, string $reason): void
+    {
+        $this->writeHistory($booking, $booking->status, $booking->status, $owner, 'Downpayment waived: '.$reason, BookingEvent::DownpaymentWaived);
+        app(AuditLogger::class)->record(AuditAction::BookingDownpaymentWaived, $booking, ['reason' => $reason], actor: $owner);
+    }
+
+    /**
      * The schedule lock of confirm(), for BookingService::place() and WalkInBookingService (held until the surrounding
      * transaction ends). It must be the FIRST lock taken in that transaction (see the lock order above).
      */

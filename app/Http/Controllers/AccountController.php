@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
 use App\Http\Requests\Account\AccountRequest;
+use App\Http\Requests\Account\UpdateAvatarRequest;
 use App\Http\Requests\Account\UpdatePasswordRequest;
 use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Http\Requests\Account\UpdateThemeRequest;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Services\AccountService;
+use App\Services\AvatarService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -70,6 +73,26 @@ class AccountController extends Controller
         }
 
         return $this->back($request, 'appearance', 'Appearance saved: '.$request->theme()->label().'.');
+    }
+
+    /** Phase 10C: a new profile picture replaces the old one (whose file is deleted). */
+    public function avatar(UpdateAvatarRequest $request, AvatarService $avatars): RedirectResponse
+    {
+        try {
+            $avatars->replace($request->user(), $request->file('avatar'));
+        } catch (ValidationException $e) {
+            // The type, contents or size was refused: back to the picture form with its own error bag
+            return redirect()->to(AccountRequest::pageUrl($request->user()->role).'#profile')->withErrors($e->errors(), 'avatar');
+        }
+
+        return $this->back($request, 'profile', 'Profile picture saved.');
+    }
+
+    public function removeAvatar(Request $request, AvatarService $avatars): RedirectResponse
+    {
+        $removed = $avatars->remove($request->user());
+
+        return $this->back($request, 'profile', $removed ? 'Profile picture removed.' : 'You have no profile picture.');
     }
 
     private function back(Request $request, string $section, string $message): RedirectResponse

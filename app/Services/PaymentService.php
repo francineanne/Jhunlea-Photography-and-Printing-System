@@ -12,6 +12,7 @@ use App\Enums\PaymentRecordStatus;
 use App\Enums\PrintingOrderStatus;
 use App\Enums\UserRole;
 use App\Exceptions\PaymentException;
+use App\Models\BookingStatusHistory;
 use App\Models\Payment;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
@@ -125,7 +126,8 @@ class PaymentService
      * The reason stays in the payments table; the customer's history says only that the shop cancelled the record.
      *
      * A downpayment cannot be voided while its balance is recorded (void the balance first). Voiding the downpayment of
-     * a Confirmed booking sends it back to "Awaiting downpayment" with a new deadline (PaymentRules::dueAfterVoid()).
+     * a Confirmed booking sends it back to "Awaiting downpayment" with a new deadline (PaymentRules::dueAfterVoid()); so
+     * does voiding its full payment (Phase 10C) unless the downpayment was waived, the rule is 0% or the price is 0.
      *
      * @throws PaymentException
      */
@@ -170,8 +172,11 @@ class PaymentService
             app(AuditLogger::class)->record($refund ? AuditAction::PaymentRefunded : AuditAction::PaymentVoided, $row,
                 ['amount_cents' => Money::toCents($row->amount), 'method' => $row->method->value, 'kind' => $row->kind?->value, 'for' => $current->reference_number, 'reason' => $reason], actor: $owner);
 
-            // Without its downpayment a Confirmed photoshoot is no longer held for good: it waits for one again
-            if ($current instanceof PhotographyBooking && $current->status === BookingStatus::Confirmed && $row->kind === PaymentKind::Downpayment) {
+            // Without its downpayment (or the full price that stood for it) a Confirmed photoshoot is no longer held for
+            // good: it waits for one again. Phase 10C: a voided FULL payment too, unless no downpayment is due for it
+            // (waived for this booking, a 0% rule or a price of 0)
+            if ($current instanceof PhotographyBooking && $current->status === BookingStatus::Confirmed
+                && ($row->kind === PaymentKind::Downpayment || ($row->kind === PaymentKind::Full && $this->downpaymentStillDue($current)))) {
                 $this->bookings->backToDownpayment($current, $owner, $this->rules->dueAfterVoid($current->starts_at));
                 $payable->setRawAttributes($current->getAttributes(), true);
             }
@@ -181,6 +186,17 @@ class PaymentService
 
             return $payment;
         }, self::ATTEMPTS);
+    }
+
+    /**
+     * Phase 10C: whether a Confirmed booking whose full payment is voided needs a downpayment again: the rule asks for
+     * one at its price, and the studio never waived it for this booking (the waive history event, online or at the
+     * counter).
+     */
+    private function downpaymentStillDue(PhotographyBooking $current): bool
+    {
+        return $this->rules->needsDownpayment($current->confirmed_price)
+            && ! BookingStatusHistory::query()->where('photography_booking_id', $current->id)->where('event', BookingEvent::DownpaymentWaived)->exists();
     }
 
     /**

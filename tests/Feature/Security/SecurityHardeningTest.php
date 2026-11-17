@@ -95,9 +95,9 @@ class SecurityHardeningTest extends TestCase
     public function test_registration_and_the_profile_form_cannot_set_role_or_walk_in(): void
     {
         $this->post('/register', [
-            'name' => 'Maria Cruz', 'email' => 'maria@example.test', 'phone' => '0917 123 4567', 'password' => 'Password1', 'password_confirmation' => 'Password1',
+            'name' => 'Maria Cruz', 'email' => 'maria@example.test', 'phone' => '0917 123 4567', 'password' => 'Password1', 'password_confirmation' => 'Password1', 'terms' => '1',
             'role' => 'owner', 'is_walk_in' => '1', 'theme' => 'dark', 'report_view' => 'monthly',
-        ])->assertRedirect('/my/dashboard');
+        ])->assertRedirect(route('verification.notice')); // Phase 10C: verification comes first
 
         $maria = User::query()->where('email', 'maria@example.test')->sole();
         $this->assertSame(UserRole::Customer, $maria->role);

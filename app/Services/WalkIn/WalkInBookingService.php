@@ -2,7 +2,6 @@
 
 namespace App\Services\WalkIn;
 
-use App\Enums\AuditAction;
 use App\Enums\BookingStatus;
 use App\Enums\PaymentKind;
 use App\Enums\PaymentMethod;
@@ -13,7 +12,6 @@ use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
 use App\Models\User;
-use App\Services\Audit\AuditLogger;
 use App\Services\AvailabilityService;
 use App\Services\BookingService;
 use App\Services\BookingTransitionService;
@@ -21,6 +19,7 @@ use App\Services\PaymentService;
 use App\Services\ReferenceNumberService;
 use App\Services\ScheduleConflictService;
 use App\Support\Money;
+use App\Support\PhilippineMobile;
 use App\Support\ShopSettings;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -114,11 +113,11 @@ class WalkInBookingService
             $this->fail('group_size', BookingService::groupSizeMessage($package));
         }
 
-        $contactNumber = trim($contactNumber);
-
         if (! BookingService::isContactNumber($contactNumber)) {
             $this->fail('contact_number', BookingService::CONTACT_NUMBER_MESSAGE);
         }
+
+        $contactNumber = (string) PhilippineMobile::normalize($contactNumber);
 
         $notes = $notes === null || trim($notes) === '' ? null : trim($notes);
 
@@ -191,7 +190,7 @@ class WalkInBookingService
                 if ($payKind !== null) {
                     app(PaymentService::class)->record($booking, $owner, $payMethod, $gcashReference, null, $payKind);
                 } elseif ($waiveReason !== null) {
-                    app(AuditLogger::class)->record(AuditAction::BookingDownpaymentWaived, $booking, ['reason' => $waiveReason], actor: $owner);
+                    $this->transitions->recordCounterWaiver($booking, $owner, $waiveReason);
                 }
 
                 return ['booking' => $booking->refresh(), 'created' => true];

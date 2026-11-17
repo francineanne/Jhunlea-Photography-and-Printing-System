@@ -14,6 +14,7 @@ use App\Services\BookingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -170,10 +171,15 @@ class BookingWizardTest extends TestCase
         $wizard = route('customer.bookings.create', ['package' => 'graduation-portrait']);
         $this->get($wizard);
 
+        // Phase 10C: they verify their email first; the link then brings them back to the wizard
         $this->post('/register', [
             'name' => 'New Customer', 'email' => 'new@example.test', 'phone' => '09171234567',
-            'password' => 'Secret-Pass-123', 'password_confirmation' => 'Secret-Pass-123',
-        ])->assertRedirect($wizard);
+            'password' => 'Secret-Pass-123', 'password_confirmation' => 'Secret-Pass-123', 'terms' => '1',
+        ])->assertRedirect(route('verification.notice'));
+
+        $user = User::query()->where('email', 'new@example.test')->sole();
+        $link = URL::temporarySignedRoute('verification.verify', now()->addHour(), ['id' => $user->id, 'hash' => sha1($user->email)]);
+        $this->get($link)->assertRedirect($wizard);
     }
 
     // The way in
@@ -287,7 +293,7 @@ class BookingWizardTest extends TestCase
         $this->assertSame($this->customer->id, $booking->customer_id);
         $this->assertSame('2026-11-05 02:00:00', $booking->starts_at->format('Y-m-d H:i:s'));
         $this->assertSame(2, $booking->group_size);
-        $this->assertSame('0917 123 4567', $booking->contact_number);
+        $this->assertSame('09171234567', $booking->contact_number); // Phase 10C: stored as 09XXXXXXXXX
         $this->assertSame('Bringing a toga.', $booking->notes);
         $this->assertSame($this->theme->id, $booking->theme_id);
         $this->assertSame('Lots of flowers.', $booking->custom_theme_text);

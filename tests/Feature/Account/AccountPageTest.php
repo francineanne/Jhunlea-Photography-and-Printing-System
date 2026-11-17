@@ -9,6 +9,7 @@ use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Support\PhilippineMobile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -110,7 +111,8 @@ class AccountPageTest extends TestCase
             ->assertRedirect(route('customer.account.show').'#profile')->assertSessionHas('status', 'Profile saved.')->assertSessionHasNoErrors();
 
         $this->assertSame('Ana María Reyes-Cruz', $this->customer->fresh()->name);
-        $this->assertSame('+63 (917) 000-1111', $this->customer->fresh()->phone);
+        // Phase 10C: the one mobile rule stores 09XXXXXXXXX
+        $this->assertSame('09170001111', $this->customer->fresh()->phone);
 
         $this->profile($this->customer, $this->profileData(['name' => 'Ana María Reyes-Cruz', 'phone' => '']))->assertSessionHasNoErrors();
         $this->assertNull($this->customer->fresh()->phone);
@@ -156,15 +158,16 @@ class AccountPageTest extends TestCase
 
     public function test_the_phone_rule_is_registrations_own(): void
     {
-        foreach (['0917 123 4567', '+63-917-123-4567', '(02) 8123 4567'] as $phone) {
+        // Phase 10C: App\Support\PhilippineMobile is the one rule; a landline is no longer accepted
+        foreach (['0917 123 4567', '+63-917-123-4567', '(0917) 123.4567'] as $phone) {
             $this->profile($this->customer, $this->profileData(['phone' => $phone]))->assertSessionHasNoErrors();
             auth()->logout();
             $this->post('/register', ['phone' => $phone])->assertSessionDoesntHaveErrors('phone');
         }
-        foreach (['abc', '1234', str_repeat('1', 21)] as $phone) {
+        foreach (['abc', '1234', str_repeat('1', 21), '(02) 8123 4567', '+1 415 555 0100'] as $phone) {
             auth()->logout();
-            $this->post('/register', ['phone' => $phone])->assertSessionHasErrors(['phone' => 'Enter a valid phone number, for example 0917 123 4567.']);
-            $this->profile($this->customer, $this->profileData(['phone' => $phone]))->assertSessionHasErrorsIn('profile', ['phone' => 'Enter a valid phone number, for example 0917 123 4567.']);
+            $this->post('/register', ['phone' => $phone])->assertSessionHasErrors(['phone' => PhilippineMobile::MESSAGE]);
+            $this->profile($this->customer, $this->profileData(['phone' => $phone]))->assertSessionHasErrorsIn('profile', ['phone' => PhilippineMobile::MESSAGE]);
         }
     }
 

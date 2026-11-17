@@ -3,6 +3,7 @@
 namespace Tests\Feature\Payment;
 
 use App\Enums\AuditAction;
+use App\Enums\BookingEvent;
 use App\Enums\BookingStatus;
 use App\Enums\NotificationKind;
 use App\Enums\PaymentKind;
@@ -280,6 +281,45 @@ class DownpaymentTest extends TestCase
         $soonDown = $this->pay($soon, PaymentKind::Downpayment);
         $this->payments()->void($soon, $soonDown, $this->owner, 'Wrong booking.');
         $this->assertTrue($soon->fresh()->downpayment_due_at->eq($this->manila('2026-11-02 16:00')));
+    }
+
+    // Phase 10C: a voided FULL payment asks for the downpayment again, unless none is due for this booking
+
+    public function test_voiding_a_full_payment_sends_the_booking_back_unless_no_downpayment_is_due(): void
+    {
+        $booking = $this->confirmed();
+        $full = $this->pay($booking, PaymentKind::Full);
+        $this->payments()->void($booking, $full, $this->owner, 'Wrong booking.');
+        $booking->refresh();
+        $this->assertSame(BookingStatus::AwaitingDownpayment, $booking->status);
+        $this->assertTrue($booking->downpayment_due_at->eq(Carbon::now('UTC')->addHours(24)));
+
+        // Waived for this booking: it stays confirmed, the full price due on the day
+        $waived = $this->confirmed('2026-11-21 10:00');
+        $this->transitions()->waiveDownpayment($waived, $this->owner, 'Regular customer.');
+        $this->payments()->void($waived, $this->pay($waived, PaymentKind::Full), $this->owner, 'Wrong booking.');
+        $this->assertSame(BookingStatus::Confirmed, $waived->fresh()->status);
+
+        // A price of 0 needs nothing; a 0% rule asks for no downpayment
+        $this->paymentRules(['downpayment_percent' => 0]);
+        $plain = $this->confirmed('2026-11-23 10:00');
+        $this->payments()->void($plain, $this->pay($plain, PaymentKind::Full), $this->owner, 'Wrong booking.');
+        $this->assertSame([BookingStatus::Confirmed, null], [$plain->fresh()->status, $plain->fresh()->downpayment_due_at]);
+    }
+
+    public function test_a_downpayment_waived_at_the_counter_also_keeps_a_voided_full_payment_confirmed(): void
+    {
+        $package = PhotographyPackage::factory()->published()->create(['duration_minutes' => 60, 'max_people' => 4, 'price' => '1500.00', 'price_requires_confirmation' => false]);
+        $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), [
+            'counter_token' => (string) Str::uuid(), 'new_customer_name' => 'Lola Walk-in', 'package' => $package->id, 'custom_theme_text' => 'Plain wall',
+            'date' => '2026-11-03', 'time' => '10:00', 'group_size' => 2, 'contact_number' => '0917 555 0101', 'confirmed_price' => '1500',
+            'waive' => '1', 'waive_reason' => 'Regular customer.',
+        ])->assertSessionHasNoErrors();
+        $booking = PhotographyBooking::query()->latest('id')->first();
+        $this->assertSame(1, $booking->statusHistories()->where('event', BookingEvent::DownpaymentWaived)->count());
+
+        $this->payments()->void($booking, $this->pay($booking, PaymentKind::Full), $this->owner, 'Wrong booking.');
+        $this->assertSame(BookingStatus::Confirmed, $booking->fresh()->status);
     }
 
     // Expiry

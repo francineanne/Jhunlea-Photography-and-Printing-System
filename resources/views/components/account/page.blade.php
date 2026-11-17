@@ -13,6 +13,7 @@
     $profileErrors = $errors->profile ?? new \Illuminate\Support\MessageBag;
     $passwordErrors = $errors->password ?? new \Illuminate\Support\MessageBag;
     $themeErrors = $errors->theme ?? new \Illuminate\Support\MessageBag;
+    $avatarErrors = $errors->avatar ?? new \Illuminate\Support\MessageBag;
     $currentTheme = $user->theme ?? ColorScheme::System;
     $chosenTheme = ColorScheme::tryFrom((string) old('theme')) ?? $currentTheme;
     $sections = [
@@ -35,7 +36,7 @@
         {{-- Summary and section links --}}
         <aside class="space-y-4 lg:sticky lg:top-24 lg:col-span-4 xl:col-span-3">
             <div class="rounded-card border border-app-border bg-app-card p-5 text-center shadow-sm transition-shadow hover:shadow-md dark:shadow-none">
-                <span class="mx-auto grid size-20 place-items-center rounded-full bg-brand font-display text-3xl font-semibold text-white ring-4 ring-brand/15" aria-hidden="true">{{ Str::upper(Str::substr($user->name, 0, 1)) }}</span>
+                <x-ui.user-avatar :user="$user" size="xl" class="mx-auto ring-4 ring-brand/15" />
                 <p class="mt-3 break-words font-display text-xl font-semibold">{{ $user->name }}</p>
                 <p class="break-all text-sm text-app-text-2">{{ $user->email }}</p>
                 <p class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-app-text-2 dark:bg-white/10">
@@ -78,7 +79,36 @@
 
         <div class="min-w-0 space-y-6 lg:col-span-8 xl:col-span-9">
             {{-- 01 Profile --}}
-            <section id="profile" class="scroll-mt-24" aria-labelledby="profile-title">
+            <section id="profile" class="scroll-mt-24 space-y-4" aria-labelledby="profile-title">
+                {{-- Phase 10C: the profile picture, its own small form (a file upload) beside the profile form --}}
+                <div class="flex flex-col gap-4 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:flex-row sm:items-center sm:p-6 dark:shadow-none" data-avatar-form>
+                    <x-ui.user-avatar :user="$user" size="xl" />
+                    <div class="min-w-0 flex-1">
+                        <h2 class="font-display text-lg font-semibold">Profile picture</h2>
+                        <p class="mt-1 text-sm text-app-text-2">A JPG, PNG or WEBP picture up to {{ \App\Services\AvatarService::MAX_MB }} MB. It is shown round, cut to a square. Without one, your initials are shown.</p>
+                        @if ($avatarErrors->any())
+                            <p id="avatar-error" class="mt-2 text-sm font-semibold text-status-red dark:text-[#ffb4ac]" role="alert">{{ $avatarErrors->first() }}</p>
+                        @endif
+                        <div class="mt-3 flex flex-wrap items-center gap-2">
+                            <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                                @csrf
+                                <label class="sr-only" for="avatar-file">Choose a picture</label>
+                                <input id="avatar-file" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required
+                                    @if ($avatarErrors->any()) aria-invalid="true" aria-describedby="avatar-error" @endif
+                                    class="block min-h-11 max-w-full text-base text-app-text-2 file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-control file:border file:border-app-border file:bg-app-card file:px-3 file:text-sm file:font-semibold file:text-app-text hover:file:border-brand sm:text-sm">
+                                <x-ui.button type="submit" variant="outline" size="sm"><x-ui.icon name="upload" :size="18" />{{ $user->avatarUrl() ? 'Replace picture' : 'Upload picture' }}</x-ui.button>
+                            </form>
+                            @if ($user->avatarUrl())
+                                <form method="POST" action="{{ route($area.'.account.avatar.remove') }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <x-ui.button type="submit" variant="ghost" size="sm"><x-ui.icon name="delete" :size="18" />Remove</x-ui.button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 <form method="POST" action="{{ route($area.'.account.profile') }}" class="rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md dark:shadow-none">
                     @csrf
                     <div class="p-4 sm:p-6">
@@ -93,8 +123,8 @@
                         <div class="mt-4 grid gap-4 md:grid-cols-2">
                             <x-ui.input label="Full name" name="name" icon="badge" autocomplete="name" maxlength="80" :required="true"
                                 :value="old('name', $user->name)" :error="$profileErrors->first('name')" hint="2 to 80 characters." />
-                            <x-ui.input label="Phone number (optional)" name="phone" type="tel" icon="call" autocomplete="tel"
-                                :value="old('phone', $user->phone)" :error="$profileErrors->first('phone')" hint="So the shop can reach you. For example 0917 123 4567." />
+                            <x-ui.input label="Mobile number (optional)" name="phone" type="tel" icon="call" autocomplete="tel" inputmode="tel" maxlength="{{ \App\Support\PhilippineMobile::MAX_TYPED }}"
+                                :value="old('phone', $user->phone)" :error="$profileErrors->first('phone')" hint="A Philippine mobile number, so the shop can reach you. For example 0917 123 4567." />
                             <div class="md:col-span-2">
                                 <x-ui.input label="Email address" name="email" type="email" icon="mail" autocomplete="email" maxlength="255" :required="true"
                                     :value="old('email', $user->email)" :error="$profileErrors->first('email')" hint="You sign in with this address." />

@@ -65,7 +65,7 @@ class ChatPresenter
      */
     public function messages(Conversation $conversation, User $viewer, Collection $messages): array
     {
-        $messages = (new EloquentCollection($messages->all()))->loadMissing('sender:id,name');
+        $messages = (new EloquentCollection($messages->all()))->loadMissing('sender:id,name,avatar_path,is_walk_in');
         $conversation->loadMissing('customer:id,name');
 
         // Record cards only ever show the conversation's own customer's orders and bookings
@@ -80,6 +80,8 @@ class ChatPresenter
             'id' => $message->id,
             'sender_type' => $message->sender_type->value,
             'sender_label' => $this->label($conversation, $message, $viewer),
+            // Phase 10C: the picture of the person who wrote it (customer or owner), else their initials; never for Lumi
+            'avatar' => $this->avatar($message),
             'body' => $message->body,
             'created_at' => $this->time($message->created_at),
             'mine' => $message->sender_id !== null && $message->sender_id === $viewer->id,
@@ -127,6 +129,16 @@ class ChatPresenter
     public function time(mixed $value): ?array
     {
         return $value === null ? null : ['iso' => LocalTime::iso($value), 'local' => LocalTime::format($value)];
+    }
+
+    /** @return array{url: ?string, initials: string}|null */
+    private function avatar(ChatMessage $message): ?array
+    {
+        if (! in_array($message->sender_type, [MessageSender::Customer, MessageSender::Owner], true) || $message->sender === null) {
+            return null;
+        }
+
+        return ['url' => $message->sender->avatarUrl(), 'initials' => $message->sender->initials()];
     }
 
     private function label(Conversation $conversation, ChatMessage $message, User $viewer): string

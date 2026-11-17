@@ -239,11 +239,24 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Notifications, audit actions, counter lists, overview at Briefing; si Lumi ay sumusunod sa settings
 - [x] Tests: `tests/Feature/Payment/DownpaymentTest.php`, `tests/Feature/Printing/PrepaymentTest.php`, at apat na MySQL race (`test_k` hanggang `test_n`)
 - [ ] Bukas pa (10B):
-  - [ ] Hindi bumabalik sa "Awaiting downpayment" ang booking kapag na-void ang FULL payment (downpayment lang ang nasa rule); pag-usapan
+  - [x] ~~Hindi bumabalik sa "Awaiting downpayment" ang booking kapag na-void ang FULL payment~~ Ayos na sa 10C: bumabalik na, maliban kung na-waive ang downpayment, 0% ang rule o ₱0.00 ang presyo
   - [ ] Ang no-JavaScript na Record payment na may dalawang kind ay walang stale-amount check (kinukuwenta ng server ang halaga)
   - [ ] Live eval ni Lumi (`assistant:eval --live`) pagkatapos ng 10B; ang fake provider ay hindi sumusukat ng sagot
   - [ ] Ang cron line sa hosting para sa scheduler; walang reminder bago mag-deadline
   - [ ] Totoong phone check ng How to pay, counter at cancel forms
+
+### 10C — Accounts (branch `phase-10c-accounts`) · built, naghihintay ng review
+- [x] Isang migration (`2026_11_24_100000_add_accounts_verification_codes_and_avatars`): verified na ang lahat ng dating customer at ang owner, bagong `password_reset_codes`, at `users.avatar_path`
+- [x] Email verification: "Check your email" pagkatapos mag-register (resend 3 bawat 10 minuto, palitan ang email, sign out); lahat ng customer route ay may `verified`, maliban sa account page; ang bagong email ay kailangang i-verify ulit; hindi kailanman ine-email ang walk-in
+- [x] Password reset gamit ang 6-digit code (hash lang ang naka-save, 10 minuto, 5 subok, isang code lang, nabubura pagkagamit); iisang sagot para sa lahat ng email; naka-sign out ang ibang device at may "password changed" na email; ang lumang link ay bumabalik sa Forgot password
+- [x] Register: required na Philippine mobile number (iisang rule para sa register, account page, walk-in at booking contact number; naka-save bilang 09XXXXXXXXX), consent checkbox (RA 10173) at ang Terms and privacy page (`/terms`)
+- [x] Profile picture: JPG, PNG o WEBP hanggang 2 MB, sa top bar, account page, chat at customer pages ng owner; initials kapag wala; walang walk-in avatar
+- [x] Preflight: mail driver at MAIL_FROM; `docs/EMAIL_SETUP.md` (Gmail App Password)
+- [x] Mula 10B: ang pag-void ng FULL payment ay bumabalik na sa Awaiting downpayment; naka-pin ang oras ng guest-limit test; buong MySQL-only suite ay pumasa nang isang takbo
+- [ ] Bukas pa (10C):
+  - [ ] Hindi pa nasusubukan ang totoong Gmail (kailangan ang App Password ng shop sa `.env`)
+  - [ ] Walang "delete my account" button (hinihingi sa studio, ayon sa Terms page)
+  - [ ] Ang dating phone number na hindi Philippine mobile ay hindi binabago; hihingan lang ng tamang format kapag sine-save ulit ang profile
 
 ---
 

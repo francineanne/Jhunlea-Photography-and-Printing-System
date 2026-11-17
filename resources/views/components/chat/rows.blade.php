@@ -36,8 +36,13 @@
                     <template x-if="row.first">
                         <div>
                             <x-chat.avatar who="lumi" x-show="row.message.sender_type === 'assistant'" />
-                            <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner'" />
-                            <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner'" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-neutral-200 text-[16px] text-app-text-2 dark:bg-white/10" aria-hidden="true">person</span>
+                            {{-- Phase 10C: the owner's own picture when set, else the studio mark --}}
+                            <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner' && !row.message.avatar?.url" />
+                            <img x-show="row.message.avatar?.url" x-bind:src="row.message.avatar?.url || ''" alt="" class="size-8 shrink-0 rounded-full object-cover" aria-hidden="true" data-chat-user-avatar>
+                            {{-- A customer without a picture: their initials --}}
+                            <span x-show="row.message.sender_type === 'customer' && !row.message.avatar?.url && row.message.avatar?.initials" x-text="row.message.avatar?.initials"
+                                class="grid size-8 shrink-0 select-none place-items-center rounded-full bg-brand text-xs font-semibold text-white" aria-hidden="true"></span>
+                            <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner' && !row.message.avatar" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-neutral-200 text-[16px] text-app-text-2 dark:bg-white/10" aria-hidden="true">person</span>
                         </div>
                     </template>
                 </div>

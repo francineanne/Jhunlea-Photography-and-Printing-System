@@ -35,6 +35,7 @@ class Preflight extends Command
         $database = $this->database($probe);
         $this->audit($database);
         $this->assistant($probe);
+        $this->mail();
         $this->caches();
 
         foreach ($this->results as [$status, $label, $detail]) {
@@ -190,6 +191,28 @@ class Preflight extends Command
         // Without a CA bundle every call fails with cURL error 60 on Windows hosts (docs/XAMPP_SETUP.md)
         $bundle = collect([$probe->ini('curl.cainfo'), $probe->ini('openssl.cafile')])->first(fn ($path) => is_string($path) && $probe->fileExists($path));
         $this->check($bundle !== null, 'CA bundle (curl.cainfo / openssl.cafile)', 'set and found', 'not set or file not found; AI calls fail with cURL error 60 on Windows hosts (docs/XAMPP_SETUP.md)', 'WARN');
+    }
+
+    /**
+     * Phase 10C: verification links and password codes are sent by email, so production needs a real mailer. Only the
+     * mailer's name and "set" / "missing" are printed: never an address, a host, a user name or a password.
+     */
+    private function mail(): void
+    {
+        $mailer = (string) config('mail.default');
+        $production = config('app.env') === 'production';
+        $real = ! in_array($mailer, ['log', 'array', ''], true);
+
+        $this->check($real || ! $production, 'Mail driver', $mailer,
+            "is \"{$mailer}\": no email would leave the server, so customers could not verify or reset a password; set MAIL_MAILER=smtp (docs/EMAIL_SETUP.md)");
+        $this->check(filled(config('mail.from.address')), 'MAIL_FROM_ADDRESS', 'set', 'missing; set MAIL_FROM_ADDRESS to the shop\'s sending address');
+
+        if ($mailer === 'smtp') {
+            $smtp = (array) config('mail.mailers.smtp');
+            $this->check(filled($smtp['host'] ?? null), 'MAIL_HOST', 'set', 'missing; set MAIL_HOST (smtp.gmail.com for Gmail)');
+            $this->check(filled($smtp['username'] ?? null) && filled($smtp['password'] ?? null), 'MAIL_USERNAME / MAIL_PASSWORD', 'set',
+                'missing; Gmail needs the address and an App Password (docs/EMAIL_SETUP.md)', 'WARN');
+        }
     }
 
     private function caches(): void

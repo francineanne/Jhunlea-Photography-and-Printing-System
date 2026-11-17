@@ -133,4 +133,18 @@ class LoginTest extends TestCase
 
         $this->followingRedirects()->get('/login')->assertSee('someone@example.test')->assertDontSee('secret-value');
     }
+    // ---- Phase 10C
+
+    public function test_remember_me_sets_the_remember_cookie_and_the_page_has_the_helpers(): void
+    {
+        $this->get('/login')->assertOk()->assertSee('name="remember"', false)->assertSee(route('password.request'), false)
+            ->assertSee('autocomplete="current-password"', false)->assertSee('Show password', false);
+
+        $user = User::factory()->create();
+        $response = $this->post('/login', ['email' => $user->email, 'password' => 'password', 'remember' => '1']);
+
+        $response->assertRedirect();
+        $this->assertNotNull($user->fresh()->remember_token);
+        $this->assertTrue(collect($response->headers->getCookies())->contains(fn ($cookie) => str_starts_with($cookie->getName(), 'remember_web_')));
+    }
 }

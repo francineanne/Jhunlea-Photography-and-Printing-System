@@ -48,7 +48,8 @@ class WalkInCustomerTest extends TestCase
         $this->assertGuest();
 
         $this->post('/forgot-password', ['email' => 'odd@example.test']);
-        $this->assertSame(0, DB::table('password_reset_tokens')->count());
+        // Phase 10C: no reset code is ever made for a walk-in
+        $this->assertSame(0, DB::table('password_reset_codes')->count());
 
         // An ordinary customer still signs in
         $online = User::factory()->create(['email' => 'ana@example.test']);
@@ -129,6 +130,16 @@ class WalkInCustomerTest extends TestCase
         $this->assertCount(1, $this->actingAs($this->owner)->getJson(route('owner.walk-in.customers', ['q' => '333']))->json('customers'));
         $this->assertCount(0, $this->actingAs($this->owner)->getJson(route('owner.walk-in.customers', ['q' => '%']))->json('customers'));
         $this->actingAs($this->owner)->getJson(route('owner.walk-in.customers', ['q' => ['x']]))->assertStatus(422);
+    }
+
+    public function test_the_picker_finds_a_stored_mobile_number_however_it_is_typed(): void
+    {
+        // Phase 10C: numbers are stored as 09XXXXXXXXX
+        User::factory()->walkIn()->create(['name' => 'Lito Ramos', 'phone' => '09175556666']);
+
+        foreach (['0917 555 6666', '+63 917 555', '0917-555', '5556666'] as $typed) {
+            $this->assertCount(1, $this->actingAs($this->owner)->getJson(route('owner.walk-in.customers', ['q' => $typed]))->json('customers'), $typed);
+        }
     }
 
     public function test_existing_rows_default_to_online(): void

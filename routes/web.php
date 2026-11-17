@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -51,6 +52,7 @@ use App\Http\Controllers\Public\PackageCompareController as PublicPackageCompare
 use App\Http\Controllers\Public\PackageController as PublicPackageController;
 use App\Http\Controllers\Public\PackageFinderController as PublicPackageFinderController;
 use App\Http\Controllers\Public\ServiceController as PublicServiceController;
+use App\Http\Controllers\Public\TermsController as PublicTermsController;
 use Illuminate\Support\Facades\Route;
 
 // Public pages: readable by anyone, and they only ever read published records. Each page has its own counter
@@ -62,6 +64,8 @@ Route::get('/packages/compare', PublicPackageCompareController::class)->middlewa
 Route::get('/packages/finder', PublicPackageFinderController::class)->middleware('throttle:60,1,public-packages-finder')->name('packages.finder');
 Route::get('/packages/{slug}', [PublicPackageController::class, 'show'])->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')->middleware('throttle:60,1,public-package-show')->name('packages.show');
 Route::get('/faq', PublicFaqController::class)->middleware('throttle:60,1,public-faq')->name('faq');
+// Phase 10C: the Terms and Privacy page the registration checkbox links to
+Route::get('/terms', PublicTermsController::class)->middleware('throttle:60,1,public-terms')->name('terms');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->middleware('throttle:60,1,login-form')->name('login');
@@ -76,11 +80,22 @@ Route::middleware('guest')->group(function () {
         ->middleware('throttle:6,1,password-email')
         ->name('password.email');
 
-    Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->middleware('throttle:60,1,password-reset-form')->name('password.reset');
+    // Phase 10C: a 6-digit code instead of a link. The code and the new password are typed on one page; an old reset link
+    // (from before 10C) leads back to "Forgot password"
+    Route::get('/reset-password', [NewPasswordController::class, 'create'])->middleware('throttle:60,1,password-reset-form')->name('password.reset');
+    Route::get('/reset-password/{token}', [NewPasswordController::class, 'legacy'])->middleware('throttle:60,1,password-reset-legacy')->name('password.reset.legacy');
     Route::post('/reset-password', [NewPasswordController::class, 'store'])->middleware('throttle:6,1,password-reset')->name('password.update');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware(['auth', 'throttle:30,1,logout'])->name('logout');
+
+// Phase 10C: email verification (Laravel's signed link, 60 minutes). "Check your email", the link, and resend (3 per 10
+// minutes). Every customer feature route needs a verified email: see the loop at the end of this file
+Route::middleware('auth')->prefix('email')->name('verification.')->controller(EmailVerificationController::class)->group(function () {
+    Route::get('/verify', 'notice')->middleware('throttle:60,1,verification-notice')->name('notice');
+    Route::get('/verify/{id}/{hash}', 'verify')->middleware(['signed', 'throttle:12,1,verification-verify'])->name('verify');
+    Route::post('/verification-notification', 'send')->middleware('throttle:3,10,verification-send')->name('send');
+});
 
 // The account page (Phase 6C): one controller for both areas, each in its own role group. Viewing is relaxed; the
 // profile, password and appearance forms each have their own, stricter counter
@@ -90,6 +105,9 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
         Route::post('/profile', 'profile')->middleware("throttle:10,1,{$area}-account-profile")->name('profile');
         Route::post('/password', 'password')->middleware("throttle:6,1,{$area}-account-password")->name('password');
         Route::post('/theme', 'theme')->middleware("throttle:30,1,{$area}-account-theme")->name('theme');
+        // Phase 10C: the profile picture (JPG, PNG or WEBP up to 2 MB), replaced or removed
+        Route::post('/avatar', 'avatar')->middleware("throttle:10,1,{$area}-account-avatar")->name('avatar');
+        Route::delete('/avatar', 'removeAvatar')->middleware("throttle:10,1,{$area}-account-avatar-remove")->name('avatar.remove');
     });
 }
 
@@ -422,3 +440,16 @@ Route::get('/ui-kit', function () {
 
 // Runs inside the web middleware group, so error pages know whether the visitor is signed in
 Route::fallback(fn () => abort(404));
+
+/*
+| Phase 10C: a customer must verify their email before using any customer feature. Every route that needs the customer
+| role (printing, bookings, requests, notifications, chat, the dashboard) also needs `verified`, added here in ONE place
+| after all routes exist, so no route can be forgotten and no controller or service checks it itself. Only the account
+| page stays open (to fix a mistyped email); "Check your email" and sign out need just a login. Unverified customers are
+| sent to "Check your email" (Laravel's EnsureEmailIsVerified, route verification.notice).
+*/
+foreach (Route::getRoutes() as $route) {
+    if (in_array('role:customer', $route->middleware(), true) && ! str_starts_with((string) $route->getName(), 'customer.account.')) {
+        $route->middleware('verified');
+    }
+}

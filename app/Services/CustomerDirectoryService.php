@@ -39,7 +39,7 @@ class CustomerDirectoryService
         $search = $filters['search'];
 
         return $this->customersQuery()
-            ->select(['id', 'name', 'email', 'phone', 'is_walk_in', 'created_at'])
+            ->select(['id', 'name', 'email', 'phone', 'is_walk_in', 'avatar_path', 'created_at'])
             ->when($filters['type'] ?? null, fn (Builder $query, string $type) => $query->where('is_walk_in', $type === 'walk_in'))
             ->withCount(['printingOrders', 'photographyBookings'])
             ->withMax('printingOrders', 'created_at')

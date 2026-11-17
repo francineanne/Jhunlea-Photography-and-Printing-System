@@ -101,6 +101,10 @@ class PreflightCommandTest extends TestCase
         return $this->driver;
     }
 
+    private const MAIL_FROM = 'shop-sender@jhunlea.example';
+
+    private const MAIL_PASSWORD = 'test-app-password-not-real';
+
     private function production(): void
     {
         config([
@@ -108,6 +112,8 @@ class PreflightCommandTest extends TestCase
             'session.secure' => true, 'session.http_only' => true,
             'assistant.enabled' => true, 'assistant.provider' => 'anthropic', 'assistant.fallback_provider' => 'gemini',
             'assistant.anthropic.api_key' => self::CLAUDE_KEY, 'assistant.api_key' => self::GEMINI_KEY,
+            'mail.default' => 'smtp', 'mail.from.address' => self::MAIL_FROM,
+            'mail.mailers.smtp.host' => 'smtp.example.test', 'mail.mailers.smtp.username' => self::MAIL_FROM, 'mail.mailers.smtp.password' => self::MAIL_PASSWORD,
         ]);
         TrustProxies::at(['10.0.0.5']);
     }
@@ -118,7 +124,7 @@ class PreflightCommandTest extends TestCase
         $code = Artisan::call('jhunlea:preflight');
         $output = Artisan::output();
 
-        foreach ([self::APP_KEY, substr(self::APP_KEY, 7), self::CLAUDE_KEY, self::GEMINI_KEY, 'secret-db-user', 'secret-db-host'] as $secret) {
+        foreach ([self::APP_KEY, substr(self::APP_KEY, 7), self::CLAUDE_KEY, self::GEMINI_KEY, 'secret-db-user', 'secret-db-host', self::MAIL_FROM, self::MAIL_PASSWORD, 'smtp.example.test'] as $secret) {
             $this->assertStringNotContainsString($secret, $output, 'The preflight printed a secret');
         }
 
@@ -134,7 +140,8 @@ class PreflightCommandTest extends TestCase
         $this->assertStringNotContainsString('FAIL', $output);
         foreach (['PASS  APP_ENV', 'PASS  APP_DEBUG', 'PASS  APP_KEY - set', 'PASS  APP_URL', 'PASS  Session cookie - secure', 'PASS  Trusted proxies',
             'PASS  Database driver - mysql', 'PASS  Database connection', 'PASS  Audit trail - chain intact', 'PASS  Lumi key (anthropic) - set',
-            'PASS  Lumi backup key (gemini) - set', 'PASS  CA bundle', 'PASS  PHP extensions', 'PASS  public/storage link', 'WARN  Scheduler'] as $line) {
+            'PASS  Lumi backup key (gemini) - set', 'PASS  CA bundle', 'PASS  PHP extensions', 'PASS  public/storage link', 'WARN  Scheduler',
+            'PASS  Mail driver - smtp', 'PASS  MAIL_FROM_ADDRESS - set', 'PASS  MAIL_HOST - set', 'PASS  MAIL_USERNAME / MAIL_PASSWORD - set'] as $line) {
             $this->assertStringContainsString($line, $output);
         }
         $this->assertMatchesRegularExpression('/Summary: \d+ passed, \d+ warnings, 0 failed\./', $output);
@@ -184,6 +191,37 @@ class PreflightCommandTest extends TestCase
         $this->assertStringContainsString('FAIL  PHP extensions - missing: fileinfo, gd or imagick', $output);
         $this->assertStringContainsString('PASS  Lumi assistant - switched off', $output);
         $this->assertStringNotContainsString('Lumi key', $output);
+    }
+
+    // Phase 10C: verification links and password codes need a real mailer in production
+    public function test_a_log_mailer_or_a_missing_sender_fails_in_production_and_nothing_is_printed(): void
+    {
+        foreach (['log', 'array'] as $mailer) {
+            $this->production();
+            config(['mail.default' => $mailer, 'mail.from.address' => null]);
+
+            [$code, $output] = $this->preflight();
+
+            $this->assertSame(1, $code);
+            $this->assertStringContainsString('FAIL  Mail driver - is "'.$mailer.'"', $output);
+            $this->assertStringContainsString('FAIL  MAIL_FROM_ADDRESS - missing', $output);
+            $this->assertStringNotContainsString('MAIL_HOST', $output);
+        }
+
+        $this->production();
+        config(['mail.mailers.smtp.password' => null]);
+        [, $output] = $this->preflight();
+        $this->assertStringContainsString('WARN  MAIL_USERNAME / MAIL_PASSWORD - missing', $output);
+    }
+
+    public function test_a_log_mailer_is_fine_outside_production(): void
+    {
+        config(['app.env' => 'local', 'mail.default' => 'log', 'mail.from.address' => 'hello@example.test']);
+
+        [, $output] = $this->preflight();
+
+        $this->assertStringContainsString('PASS  Mail driver - log', $output);
+        $this->assertStringNotContainsString('hello@example.test', $output);
     }
 
     public function test_a_fake_provider_in_production_fails(): void

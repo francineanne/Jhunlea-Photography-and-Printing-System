@@ -38,10 +38,13 @@ class WalkInCustomerService
 
         // Bound parameters; % _ \ typed by the owner are matched literally
         $like = '%'.addcslashes($term, '%_\\').'%';
+        // Phase 10C: phones are stored as 09XXXXXXXXX, so "0917 555" and "+63 917 555" also find them by their digits
+        $digits = (string) preg_replace('/\D/', '', (string) preg_replace('/^\+?63(?=9)/', '0', (string) preg_replace('/[\s\-.()]/', '', $term)));
 
         return User::query()
             ->where('role', UserRole::Customer)
-            ->where(fn (Builder $query) => $query->where('name', 'like', $like)->orWhere('phone', 'like', $like))
+            ->where(fn (Builder $query) => $query->where('name', 'like', $like)->orWhere('phone', 'like', $like)
+                ->when(strlen($digits) >= 3, fn (Builder $phone) => $phone->orWhere('phone', 'like', '%'.$digits.'%')))
             ->latest('id')
             ->limit(self::SEARCH_LIMIT)
             ->get(['id', 'name', 'phone', 'email', 'is_walk_in']);

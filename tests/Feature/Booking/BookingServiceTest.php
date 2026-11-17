@@ -127,7 +127,8 @@ class BookingServiceTest extends TestCase
         $this->assertSame('2026-11-05 03:00:00', $booking->ends_at->format('Y-m-d H:i:s'));
         $this->assertTrue($booking->requested_starts_at->eq($booking->starts_at));
         $this->assertSame(2, $booking->group_size);
-        $this->assertSame('+63 (917) 123-4567', $booking->contact_number);
+        // Phase 10C: the one mobile rule stores 09XXXXXXXXX
+        $this->assertSame('09171234567', $booking->contact_number);
         $this->assertTrue($booking->wants_prints);
         $this->assertSame('Bringing a toga.', $booking->notes);
         $this->assertSame('1850.00', $booking->estimated_price);
@@ -255,14 +256,15 @@ class BookingServiceTest extends TestCase
         $this->assertSame(2000, mb_strlen($this->place(['notes' => str_repeat('a', 2000)])->notes));
     }
 
-    public function test_the_contact_number_must_be_7_to_20_digits(): void
+    // Phase 10C: was "7 to 20 digits"; the contact number now follows the one Philippine mobile rule
+    public function test_the_contact_number_must_be_a_philippine_mobile_number(): void
     {
-        foreach (['', '   ', '123456', '0917-ABC-4567', '0917 123 4567 ext 2', '0917.123.4567', str_repeat('1', 21), '+63 '.str_repeat('(9) ', 7).'1'] as $bad) {
+        foreach (['', '   ', '123456', '1234567', str_repeat('9', 20), '0917-ABC-4567', '0917 123 4567 ext 2', '(02) 8123 4567', '+1 415 555 0100', '0817 123 4567', str_repeat('1', 21), '+63 '.str_repeat('(9) ', 7).'1'] as $bad) {
             $this->assertRefused(['contactNumber' => $bad], 'contact_number');
         }
 
-        $this->assertSame('1234567', $this->place(['contactNumber' => '1234567'])->contact_number);
-        $this->assertSame(str_repeat('9', 20), $this->place(['contactNumber' => str_repeat('9', 20), 'startsAt' => $this->manila('2026-11-05 13:00')])->contact_number);
+        $this->assertSame('09171234567', $this->place(['contactNumber' => '0917.123.4567'])->contact_number);
+        $this->assertSame('09189876543', $this->place(['contactNumber' => '639189876543', 'startsAt' => $this->manila('2026-11-05 13:00')])->contact_number);
     }
 
     public function test_a_customer_with_3_open_requests_cannot_send_another(): void

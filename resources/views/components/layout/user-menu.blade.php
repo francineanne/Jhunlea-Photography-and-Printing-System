@@ -7,7 +7,7 @@
     <button x-ref="button" type="button" aria-haspopup="menu" x-bind:aria-expanded="open" aria-label="Account menu, {{ $user->name }}"
         x-on:click="open = ! open; if (open) $nextTick(() => $refs.menu.querySelector('[role=menuitem]')?.focus())"
         class="flex min-h-11 items-center gap-2 rounded-control border border-app-border bg-app-card py-1 pl-1.5 pr-2.5 focus-ring">
-        <span class="grid size-8 place-items-center rounded-full bg-brand text-sm font-semibold text-white" aria-hidden="true">{{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($user->name, 0, 1)) }}</span>
+        <x-ui.user-avatar :user="$user" />
         <span @class(['hidden max-w-[10rem] truncate text-sm font-semibold sm:inline', 'xl:hidden 2xl:inline' => $tight])>{{ $user->name }}</span>
         {{-- Wrapped because the icon font's own display rule would beat a `hidden` utility put on the icon itself --}}
         <span class="hidden text-app-text-2 sm:inline-flex"><x-ui.icon name="expand_more" :size="18" /></span>

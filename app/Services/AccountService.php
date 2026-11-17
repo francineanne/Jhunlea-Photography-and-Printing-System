@@ -34,8 +34,18 @@ class AccountService
         $emailChanged = $user->isDirty('email');
         $changed = $user->isDirty();
 
+        // Phase 10C: a new email address is verified again (the user stays signed in; a customer is sent to
+        // "Check your email" by the `verified` middleware until they open the new link)
+        if ($emailChanged) {
+            $user->forceFill(['email_verified_at' => null]);
+        }
+
         if ($changed) {
             $user->save();
+        }
+
+        if ($emailChanged) {
+            $user->sendEmailVerificationNotification();
         }
 
         // Audit trail (8E), the owner's account only: that the email changed, never the address itself

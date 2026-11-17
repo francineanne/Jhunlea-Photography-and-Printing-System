@@ -101,6 +101,7 @@
                         @if ($hasFaq ?? false)
                             <li><a href="{{ route('faq') }}" class="inline-flex min-h-11 min-w-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">FAQ</a></li>
                         @endif
+                        <li><a href="{{ route('terms') }}" class="inline-flex min-h-11 min-w-11 items-center rounded text-app-text-2 hover:text-brand focus-ring">Terms and privacy</a></li>
                     </ul>
                 </nav>
             </div>

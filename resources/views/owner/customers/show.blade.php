@@ -24,7 +24,7 @@
 
     <div class="mt-2 rounded-card border border-app-border bg-app-card p-5 shadow-sm sm:p-6 dark:shadow-none">
         <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>Customer</p>
-        <h1 class="mt-2 flex flex-wrap items-center gap-3 break-words font-display text-3xl font-semibold tracking-tight sm:text-4xl">{{ $customer->name }}<x-walk-in.badge :record="$customer" /></h1>
+        <h1 class="mt-2 flex flex-wrap items-center gap-3 break-words font-display text-3xl font-semibold tracking-tight sm:text-4xl"><x-ui.user-avatar :user="$customer" size="md" />{{ $customer->name }}<x-walk-in.badge :record="$customer" /></h1>
         <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-3">
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Email</dt>

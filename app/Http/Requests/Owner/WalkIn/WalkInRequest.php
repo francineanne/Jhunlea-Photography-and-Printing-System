@@ -4,6 +4,7 @@ namespace App\Http\Requests\Owner\WalkIn;
 
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\WalkIn\WalkInCustomerService;
+use App\Support\PhilippineMobile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -25,7 +26,7 @@ abstract class WalkInRequest extends FormRequest
         return [
             'customer_id' => ['nullable', 'integer', 'min:1'],
             'new_customer_name' => ['nullable', 'string', 'max:'.WalkInCustomerService::NAME_MAX, 'not_regex:/[\x00-\x1F\x7F]/u'],
-            'new_customer_phone' => ['nullable', 'string', 'regex:'.RegisterRequest::PHONE_PATTERN],
+            'new_customer_phone' => ['nullable', 'string', new PhilippineMobile],
             'counter_token' => ['required', 'string', 'uuid'],
         ];
     }
@@ -67,7 +68,7 @@ abstract class WalkInRequest extends FormRequest
     {
         $phone = trim((string) $this->validated('new_customer_phone'));
 
-        return $phone === '' ? null : $phone;
+        return $phone === '' ? null : PhilippineMobile::normalize($phone);
     }
 
     public function counterToken(): string

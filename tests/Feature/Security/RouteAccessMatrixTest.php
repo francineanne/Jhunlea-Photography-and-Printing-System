@@ -15,6 +15,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Routing\Route as RouteDefinition;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -54,6 +55,7 @@ class RouteAccessMatrixTest extends TestCase
         // PUBLIC
         'GET /' => self::PUBLIC,
         'GET faq' => self::PUBLIC,
+        'GET terms' => self::PUBLIC,
         'GET packages' => self::PUBLIC,
         'GET packages/compare' => self::PUBLIC,
         'GET packages/finder' => self::PUBLIC,
@@ -74,11 +76,19 @@ class RouteAccessMatrixTest extends TestCase
         'GET booking-images/{image}/download' => self::SIGNED_IN,
         'GET files/{file}' => self::SIGNED_IN,
         'POST logout' => self::SIGNED_IN,
+        // Phase 10C: email verification ("Check your email", the signed link, resend): any signed-in person
+        'GET email/verify' => self::SIGNED_IN,
+        // Phase 10C: the reset code page; an old reset link only redirects to "Forgot password"
+        'GET reset-password' => self::GUEST,
+        'GET email/verify/{id}/{hash}' => self::SIGNED_IN,
+        'POST email/verification-notification' => self::SIGNED_IN,
         // CUSTOMER
         'GET my/account' => self::CUSTOMER,
         'POST my/account/password' => self::CUSTOMER,
         'POST my/account/profile' => self::CUSTOMER,
         'POST my/account/theme' => self::CUSTOMER,
+        'POST my/account/avatar' => self::CUSTOMER,
+        'DELETE my/account/avatar' => self::CUSTOMER,
         'GET my/assistant' => self::CUSTOMER,
         'GET my/assistant/conversations' => self::CUSTOMER,
         'POST my/assistant/conversations' => self::CUSTOMER,
@@ -120,6 +130,8 @@ class RouteAccessMatrixTest extends TestCase
         'POST owner/account/password' => self::OWNER,
         'POST owner/account/profile' => self::OWNER,
         'POST owner/account/theme' => self::OWNER,
+        'POST owner/account/avatar' => self::OWNER,
+        'DELETE owner/account/avatar' => self::OWNER,
         'GET owner/activity' => self::OWNER,
         'GET owner/activity/csv' => self::OWNER,
         'GET owner/assistant' => self::OWNER,
@@ -272,6 +284,12 @@ class RouteAccessMatrixTest extends TestCase
         ['customer.notifications.read', ['notification'], 'POST', 404],
     ];
 
+    /**
+     * Phase 10C: routes that take another person's id but are reached only through a signed link made for that person.
+     * Each one has its own test below.
+     */
+    private const SIGNED_FOR_ONE_PERSON = ['verification.verify'];
+
     /** @return array<string, RouteDefinition> keyed like MATRIX */
     private function routes(): array
     {
@@ -318,6 +336,13 @@ class RouteAccessMatrixTest extends TestCase
                 $this->assertNotContains('role:owner', $middleware, "{$key} is {$class} but owner only");
             }
 
+            // Phase 10C: every customer route needs a verified email, except the account page (to fix a mistyped email)
+            if ($class === self::CUSTOMER) {
+                str_starts_with($route->uri(), 'my/account')
+                    ? $this->assertNotContains('verified', $middleware, "{$key} must stay open to an unverified customer")
+                    : $this->assertContains('verified', $middleware, "{$key} lacks verified");
+            }
+
             // Every route but Laravel's own has its own named counter (ThrottleCountersTest checks the names are unique)
             if ($class !== self::FRAMEWORK) {
                 $throttle = collect($middleware)->first(fn ($m) => is_string($m) && str_starts_with($m, 'throttle:'));
@@ -325,6 +350,32 @@ class RouteAccessMatrixTest extends TestCase
                 $this->assertNotNull(explode(',', $throttle)[2] ?? null, "{$key} has an unnamed throttle");
             }
         }
+    }
+
+    /**
+     * Phase 10C: a signed-in customer who has not verified their email is sent to "Check your email" from every customer
+     * route but the account page, which opens.
+     */
+    public function test_an_unverified_customer_reaches_only_the_account_page(): void
+    {
+        $unverified = User::factory()->unverified()->create();
+
+        foreach ($this->routes() as $key => $route) {
+            if (self::MATRIX[$key] !== self::CUSTOMER) {
+                continue;
+            }
+
+            $response = $this->actingAs($unverified)->call($route->methods()[0], $this->url($route));
+
+            if (str_starts_with($route->uri(), 'my/account')) {
+                $this->assertNotSame(route('verification.notice'), $response->headers->get('Location'), "{$key} must stay open");
+            } else {
+                $this->assertSame(route('verification.notice'), $response->headers->get('Location'), "{$key} must send an unverified customer to verify");
+            }
+        }
+
+        $this->actingAs($unverified)->get(route('customer.account.show'))->assertOk();
+        $this->actingAs($unverified)->get(route('verification.notice'))->assertOk()->assertSee('Check your email');
     }
 
     /** A value for each parameter that passes the route's own pattern; the record need not exist (see below). */
@@ -441,13 +492,25 @@ class RouteAccessMatrixTest extends TestCase
 
     public function test_every_route_that_takes_a_customers_record_is_in_the_cross_user_list(): void
     {
-        $covered = array_column(self::CROSS_USER, 0);
+        $covered = [...array_column(self::CROSS_USER, 0), ...self::SIGNED_FOR_ONE_PERSON];
 
         foreach ($this->routes() as $key => $route) {
             if (in_array(self::MATRIX[$key], [self::CUSTOMER, self::SIGNED_IN], true) && $route->parameterNames() !== []) {
                 $this->assertContains($route->getName(), $covered, "{$key} takes a record: add it to CROSS_USER");
             }
         }
+    }
+
+    /** Phase 10C: Ana's own signed verification link verifies nobody else, and only Ana with it. */
+    public function test_a_verification_link_works_only_for_its_own_account(): void
+    {
+        $ana = User::factory()->unverified()->create();
+        $ben = User::factory()->unverified()->create();
+        $link = URL::temporarySignedRoute('verification.verify', now()->addHour(), ['id' => $ana->id, 'hash' => sha1($ana->email)]);
+
+        $this->actingAs($ben)->get($link)->assertForbidden();
+        $this->assertFalse($ana->fresh()->hasVerifiedEmail());
+        $this->assertFalse($ben->fresh()->hasVerifiedEmail());
     }
 
     /** @return array<string, mixed> */

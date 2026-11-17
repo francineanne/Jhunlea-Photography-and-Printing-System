@@ -9,6 +9,7 @@ use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
 use App\Models\User;
+use App\Support\PhilippineMobile;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\UploadedFile;
@@ -48,7 +49,8 @@ class BookingService
 
     public const CUSTOM_THEME_MESSAGE = 'Describe your own idea in up to '.self::CUSTOM_THEME_MAX.' characters.';
 
-    public const CONTACT_NUMBER_MESSAGE = 'Enter a phone number the studio can call, with 7 to 20 digits (for example 0917 123 4567).';
+    // Phase 10C: the one mobile rule (App\Support\PhilippineMobile), stored as 09XXXXXXXXX
+    public const CONTACT_NUMBER_MESSAGE = 'Enter a mobile number the studio can call, for example 0917 123 4567.';
 
     public const NOTES_MESSAGE = 'Notes can be up to 2,000 characters.';
 
@@ -108,11 +110,11 @@ class BookingService
             $this->fail('group_size', self::groupSizeMessage($package));
         }
 
-        $contactNumber = trim($contactNumber);
-
         if (! self::isContactNumber($contactNumber)) {
             $this->fail('contact_number', self::CONTACT_NUMBER_MESSAGE);
         }
+
+        $contactNumber = (string) PhilippineMobile::normalize($contactNumber);
 
         $notes = $this->clean($notes);
 
@@ -269,13 +271,7 @@ class BookingService
     /** 7 to 20 digits; spaces, +, - and parentheses may sit between them. Nothing else. */
     public static function isContactNumber(string $number): bool
     {
-        if (mb_strlen($number) > self::CONTACT_NUMBER_MAX || preg_match('/^[0-9 +\-()]+$/', $number) !== 1) {
-            return false;
-        }
-
-        $digits = strlen((string) preg_replace('/\D/', '', $number));
-
-        return $digits >= 7 && $digits <= 20;
+        return PhilippineMobile::isValid($number);
     }
 
     public function estimate(PhotographyPackage $package): ?string

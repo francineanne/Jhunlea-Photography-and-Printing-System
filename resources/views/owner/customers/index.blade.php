@@ -100,8 +100,13 @@
                         @foreach ($customers as $customer)
                             <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                 <td class="max-w-60 px-4 py-4">
-                                    <p class="flex min-w-0 items-center gap-1.5"><span class="truncate font-semibold" title="{{ $customer->name }}">{{ $customer->name }}</span><x-walk-in.badge :record="$customer" class="shrink-0" /></p>
-                                    <p class="truncate text-xs text-app-text-2" title="{{ $customer->email }}">@if ($customer->email){{ $customer->email }}@else<span class="italic">Walk-in, no login</span>@endif</p>
+                                    <div class="flex min-w-0 items-center gap-3">
+                                        <x-ui.user-avatar :user="$customer" size="md" />
+                                        <div class="min-w-0">
+                                            <p class="flex min-w-0 items-center gap-1.5"><span class="truncate font-semibold" title="{{ $customer->name }}">{{ $customer->name }}</span><x-walk-in.badge :record="$customer" class="shrink-0" /></p>
+                                            <p class="truncate text-xs text-app-text-2" title="{{ $customer->email }}">@if ($customer->email){{ $customer->email }}@else<span class="italic">Walk-in, no login</span>@endif</p>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-4 font-mono text-xs">{{ $customer->phone ?: '—' }}</td>
                                 <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$customer->created_at" format="M j, Y" /></td>
@@ -124,7 +129,8 @@
                     <li>
                         <a href="{{ route('owner.customers.show', $customer) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex items-start justify-between gap-3">
-                                <span class="min-w-0">
+                                <x-ui.user-avatar :user="$customer" size="md" />
+                                <span class="min-w-0 flex-1">
                                     <span class="flex flex-wrap items-center gap-1.5"><span class="break-words font-semibold">{{ $customer->name }}</span><x-walk-in.badge :record="$customer" /></span>
                                     <span class="block break-all text-xs text-app-text-2">@if ($customer->email){{ $customer->email }}@else<span class="italic">Walk-in, no login</span>@endif</span>
                                 </span>
