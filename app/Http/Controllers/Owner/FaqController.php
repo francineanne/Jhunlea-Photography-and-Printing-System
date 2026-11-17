@@ -10,6 +10,7 @@ use App\Http\Requests\Owner\Faqs\StoreFaqRequest;
 use App\Http\Requests\Owner\Faqs\UpdateFaqRequest;
 use App\Models\Faq;
 use App\Services\FaqService;
+use App\Support\FaqDrafts;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -44,6 +45,16 @@ class FaqController extends Controller
         }
 
         return redirect()->route('owner.faqs.index')->with('status', 'Question added at the end of the list.');
+    }
+
+    /** Phase 10D: about fifteen questions about using the system, worded with the current settings, added hidden. */
+    public function suggested(FaqDrafts $drafts): RedirectResponse
+    {
+        $added = $this->faqs->addSuggested($drafts->all());
+
+        return redirect()->route('owner.faqs.index')->with('status', $added === 0
+            ? 'Nothing was added: the suggested questions are already in your list (or the list is full).'
+            : $added.' suggested '.($added === 1 ? 'question was' : 'questions were').' added as hidden drafts at the end of the list. Read and edit each one, then press Show to publish it.');
     }
 
     public function edit(Faq $faq): View

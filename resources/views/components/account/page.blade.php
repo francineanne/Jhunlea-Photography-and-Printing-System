@@ -90,12 +90,12 @@
                             <p id="avatar-error" class="mt-2 text-sm font-semibold text-status-red dark:text-[#ffb4ac]" role="alert">{{ $avatarErrors->first() }}</p>
                         @endif
                         <div class="mt-3 flex flex-wrap items-center gap-2">
-                            <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                            <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                                 @csrf
                                 <label class="sr-only" for="avatar-file">Choose a picture</label>
                                 <input id="avatar-file" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required
                                     @if ($avatarErrors->any()) aria-invalid="true" aria-describedby="avatar-error" @endif
-                                    class="block min-h-11 max-w-full text-base text-app-text-2 file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-control file:border file:border-app-border file:bg-app-card file:px-3 file:text-sm file:font-semibold file:text-app-text hover:file:border-brand sm:text-sm">
+                                    class="block min-h-11 w-full min-w-0 max-w-full text-base text-app-text-2 sm:w-auto file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-control file:border file:border-app-border file:bg-app-card file:px-3 file:text-sm file:font-semibold file:text-app-text hover:file:border-brand sm:text-sm">
                                 <x-ui.button type="submit" variant="outline" size="sm"><x-ui.icon name="upload" :size="18" />{{ $user->avatarUrl() ? 'Replace picture' : 'Upload picture' }}</x-ui.button>
                             </form>
                             @if ($user->avatarUrl())
@@ -120,13 +120,13 @@
                             <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">Please check the fields marked below. Nothing was saved.</x-ui.notice>
                         @endif
 
-                        <div class="mt-4 grid gap-4 md:grid-cols-2">
+                        <div class="mt-4 form-grid md:grid-cols-2">
                             <x-ui.input label="Full name" name="name" icon="badge" autocomplete="name" maxlength="80" :required="true"
                                 :value="old('name', $user->name)" :error="$profileErrors->first('name')" hint="2 to 80 characters." />
-                            <x-ui.input label="Mobile number (optional)" name="phone" type="tel" icon="call" autocomplete="tel" inputmode="tel" maxlength="{{ \App\Support\PhilippineMobile::MAX_TYPED }}"
+                            <x-ui.input label="Mobile number (optional)" name="phone" type="tel" icon="call" data-live-check="mobile" autocomplete="tel" inputmode="tel" maxlength="{{ \App\Support\PhilippineMobile::MAX_TYPED }}"
                                 :value="old('phone', $user->phone)" :error="$profileErrors->first('phone')" hint="A Philippine mobile number, so the shop can reach you. For example 0917 123 4567." />
                             <div class="md:col-span-2">
-                                <x-ui.input label="Email address" name="email" type="email" icon="mail" autocomplete="email" maxlength="255" :required="true"
+                                <x-ui.input label="Email address" name="email" type="email" icon="mail" data-live-check="email" autocomplete="email" maxlength="255" :required="true"
                                     :value="old('email', $user->email)" :error="$profileErrors->first('email')" hint="You sign in with this address." />
                             </div>
                             <div class="md:col-span-2">
@@ -144,7 +144,7 @@
 
             {{-- 02 Password --}}
             <section id="security" class="scroll-mt-24" aria-labelledby="security-title">
-                <form method="POST" action="{{ route($area.'.account.password') }}" class="rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md dark:shadow-none">
+                <form method="POST" action="{{ route($area.'.account.password') }}" data-confirm="Change your password?" data-confirm-text="Every other device signed in to this account is signed out. This device stays signed in." data-confirm-ok="Change password" class="rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md dark:shadow-none">
                     @csrf
                     <div class="p-4 sm:p-6">
                         <p class="font-mono text-[11px] font-semibold uppercase tracking-wider text-brand">02 / Password</p>

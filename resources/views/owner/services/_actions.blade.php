@@ -4,7 +4,7 @@
         <x-ui.icon name="edit" :size="18" /> Edit<span class="sr-only"> {{ $service->name }}</span>
     </x-ui.button>
 
-    <form method="POST" action="{{ route('owner.services.publish', $service) }}">
+    <form method="POST" action="{{ route('owner.services.publish', $service) }}" @if ($service->is_published) data-confirm="Hide {{ $service->name }} from customers?" data-confirm-text="It leaves the public pages until you publish it again. Orders and bookings already made keep it." data-confirm-ok="Unpublish" @endif>
         @csrf
         <x-ui.button type="submit" variant="ghost" size="sm">
             <x-ui.icon :name="$service->is_published ? 'visibility_off' : 'visibility'" :size="18" />

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicFile;
 use Database\Factories\ThemeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 // image_path is not fillable: it is set only by the upload code, never copied from a request
 #[Fillable(['name', 'description', 'color_swatches', 'is_published'])]
@@ -41,6 +41,6 @@ class Theme extends Model
 
     public function imageUrl(): ?string
     {
-        return $this->image_path ? Storage::disk(PackageImage::DISK)->url($this->image_path) : null;
+        return $this->image_path ? PublicFile::url($this->image_path, PackageImage::DISK) : null;
     }
 }

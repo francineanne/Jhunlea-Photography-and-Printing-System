@@ -62,6 +62,8 @@ return [
     'messages' => [
         'away_notice' => 'The studio is away right now and will be back :opens. Lumi, our AI assistant, can help you in the meantime. Babalikan ka namin agad.',
         'away_notice_open' => 'The studio is open, but the owner is away from messages for a moment and will reply as soon as possible. Lumi, our AI assistant, can help you in the meantime.',
+        // Phase 10D: when the owner typed the shop's opening hours, they are given as written; 'open now' is never worked out from that text
+        'away_notice_hours' => 'The studio is away from messages right now and will reply as soon as possible. Shop hours: :hours. Lumi, our AI assistant, can help you in the meantime.',
         'away_notice_no_time' => 'The studio is away right now. Lumi, our AI assistant, can help you in the meantime. Babalikan ka namin agad.',
         'lumi_intro' => 'Hi! I\'m Lumi, the AI assistant of Jhunlea Photography & Printing. I can help you explore our photography packages, printing services, booking rules and policies. Ano ang maitutulong ko?',
         // The studio thread's notice when Lumi cannot answer: never "when we open" while the shop is open

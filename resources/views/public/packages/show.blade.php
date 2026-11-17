@@ -36,7 +36,7 @@
                     x-on:keydown.arrow-left="go(i - 1)" x-on:keydown.arrow-right="go(i + 1)" @endif>
                 <div class="group relative aspect-[4/3] overflow-hidden rounded-card border border-app-border bg-card">
                     @if ($images->isEmpty())
-                        <x-ui.image-placeholder class="size-full" />
+                        <x-ui.image-placeholder class="size-full" :label="$package->name" :category="$package->category" />
                     @else
                         @foreach ($images as $index => $image)
                             <img src="{{ $image->url() }}" alt="{{ $slides[$index]['alt'] }}" width="1200" height="900"
@@ -46,6 +46,15 @@
                                 class="size-full object-cover transition-[opacity,scale] duration-500 group-hover:scale-[1.02]">
                         @endforeach
                     @endif
+
+                    @foreach ($images as $index => $image)
+                        {{-- Phase 10D: full size in the photo viewer; without scripts the link opens the photo itself --}}
+                        <a href="{{ $image->url() }}" data-lightbox="package" data-alt="{{ $slides[$index]['alt'] }}" data-no-prefetch
+                            @if ($index > 0) hidden @endif @if (count($slides) > 1) x-bind:hidden="i !== {{ $index }}" @endif
+                            class="absolute left-3 top-3 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-black/60 px-3 text-xs font-semibold text-white backdrop-blur-sm transition-colors hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                            <x-ui.icon name="zoom_in" :size="18" />View full size<span class="sr-only">: {{ $slides[$index]['alt'] }}</span>
+                        </a>
+                    @endforeach
 
                     @if (count($slides) > 1)
                         <button type="button" x-cloak x-on:click="go(i - 1)" aria-label="Previous photo"
@@ -86,12 +95,9 @@
                     <p class="mt-3 text-app-text-2">{{ $package->short_description }}</p>
 
                     <div class="mt-6 rounded-card border border-app-border bg-app-card p-5">
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Estimated price</p>
-                        <p class="mt-1 text-2xl font-bold tabular-nums">{{ $package->priceText() }}</p>
+                        <x-ui.price :text="$package->priceText()" size="lg" label="Estimated price" />
                         <p class="mt-2 text-sm text-app-text-2">This is an estimate. The studio confirms the final price after reviewing your request.</p>
                     </div>
-
-                    <x-ui.notice variant="payment" class="mt-4" />
 
                     <dl class="mt-6 grid grid-cols-2 gap-3 text-sm">
                         <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5">
@@ -158,7 +164,10 @@
                             <li class="overflow-hidden rounded-card border border-app-border bg-app-card">
                                 <div class="relative aspect-[16/9] bg-card">
                                     @if ($theme->imageUrl())
-                                        <img src="{{ $theme->imageUrl() }}" alt="" width="640" height="360" loading="lazy" decoding="async" class="size-full object-cover">
+                                        <a href="{{ $theme->imageUrl() }}" data-lightbox="backdrops" data-alt="{{ $theme->name }} backdrop" data-no-prefetch class="group/zoom block size-full focus-ring" aria-label="View the {{ $theme->name }} backdrop full size">
+                                            <img src="{{ $theme->imageUrl() }}" alt="" width="640" height="360" loading="lazy" decoding="async" class="size-full object-cover">
+                                            <span class="absolute bottom-2 right-2 grid size-9 place-items-center rounded-full bg-black/60 text-white" aria-hidden="true"><x-ui.icon name="zoom_in" :size="18" /></span>
+                                        </a>
                                     @else
                                         <x-ui.image-placeholder icon="palette" class="size-full" />
                                     @endif
@@ -189,20 +198,7 @@
                 <ul class="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($related as $other)
                         <li class="flex">
-                            <x-ui.card hover design class="flex w-full flex-col">
-                                <x-slot:image>
-                                    <a href="{{ route('packages.show', $other->slug) }}" tabindex="-1" aria-hidden="true" class="block aspect-[4/3] bg-card">
-                                        @if ($other->coverImage)
-                                            <img src="{{ $other->coverImage->url() }}" alt="" width="800" height="600" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
-                                        @else
-                                            <x-ui.image-placeholder class="size-full" />
-                                        @endif
-                                    </a>
-                                </x-slot:image>
-                                <h3 class="font-display text-lg font-semibold leading-snug"><a href="{{ route('packages.show', $other->slug) }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">{{ $other->name }}</a></h3>
-                                <p class="mt-1 text-sm text-app-text-2">{{ $other->duration_minutes }} mins · {{ lcfirst($other->fitsText()) }}</p>
-                                <p class="mt-auto pt-3 text-sm font-bold tabular-nums">{{ $other->priceText() }}</p>
-                            </x-ui.card>
+                            <x-package.card :package="$other" />
                         </li>
                     @endforeach
                 </ul>

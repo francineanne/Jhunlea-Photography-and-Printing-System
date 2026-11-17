@@ -48,7 +48,7 @@
                     </div>
                 </fieldset>
 
-                <div class="grid gap-6 md:grid-cols-3">
+                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <fieldset>
                         <legend class="font-display text-xl font-semibold">2. How many people?</legend>
                         <div class="mt-3">
@@ -115,7 +115,8 @@
                                             @endif
                                         </div>
 
-                                        <p class="mt-2 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · {{ lcfirst($package->fitsText()) }} · <span class="font-semibold text-app-text tabular-nums">{{ $package->priceText() }}</span></p>
+                                        <x-package.chips :package="$package" class="mt-2" />
+                                        <x-ui.price :text="$package->priceText()" class="mt-3" />
 
                                         @if ($result->reasons)
                                             <div class="mt-4">

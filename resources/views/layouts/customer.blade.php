@@ -22,9 +22,12 @@
 
 @section('content')
     <x-layout.skip-link />
+    <div x-data="liveUpdates(@js(route('customer.live')))" hidden></div>
     <x-ui.toast />
+    <x-ui.confirm />
+    <x-ui.lightbox />
 
-    <header class="sticky top-0 z-40 bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">
+    <header class="site-header sticky top-0 z-40 bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">
         <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-3 px-4 sm:h-20 sm:px-6">
             <div class="flex items-center gap-2 xl:gap-8">
                 <button type="button" x-on:click="$dispatch('open-modal', 'customer-menu')" aria-haspopup="dialog" aria-label="Open menu"
@@ -35,11 +38,11 @@
                     <x-ui.logo mark compact tight />
                 </a>
                 {{-- From 1280px, as in the customer designs (hidden xl:flex): four items and the account menu need the room --}}
-                <x-layout.nav :items="$nav" variant="top" class="hidden xl:block" />
+                <x-layout.nav :items="$nav" variant="top" :icons="false" class="hidden xl:block" />
             </div>
 
             <div class="flex items-center gap-2">
-                <x-notifications.bell :bell="$bell" area="customer" />
+                <span data-live="bell"><x-notifications.bell :bell="$bell" area="customer" /></span>
                 <x-ui.theme-toggle />
                 <x-layout.user-menu :user="auth()->user()" tight />
             </div>
@@ -51,19 +54,20 @@
         <x-layout.nav :items="$menu" label="Menu" />
     </x-layout.drawer>
 
-    <main id="main-content" tabindex="-1" class="mx-auto max-w-[1280px] px-4 py-8 focus:outline-none sm:px-6 sm:py-10">
+    {{-- Phase 10D, live updates: the lists, details and dashboard refresh themselves when the studio changes something
+         (never a wizard or a form page). Without scripts nothing polls and the page is simply as it was loaded --}}
+    <main id="main-content" tabindex="-1" class="mx-auto max-w-[1280px] px-4 py-8 focus:outline-none sm:px-6 sm:py-10"
+        @if (request()->routeIs(...['customer.dashboard', 'customer.printing.index', 'customer.printing.show', 'customer.bookings.index', 'customer.bookings.show', 'customer.requests.index', 'customer.notifications.index'])) data-live="page" @endif>
         @yield('main')
     </main>
 
     <footer @class(['mx-auto max-w-[1280px] px-4 sm:px-6', 'pb-24' => $showChat, 'pb-8' => ! $showChat])>
-        <div class="flex items-center gap-4 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
-            <span class="grid size-10 shrink-0 place-items-center rounded-control bg-app-card text-brand" aria-hidden="true"><x-ui.icon name="storefront" :size="22" /></span>
-            <div class="min-w-0 text-sm">
-                <p class="font-semibold">Studio face-to-face transaction policy</p>
-                <p class="text-app-text-2">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
-            </div>
-        </div>
-        <p class="mt-4 text-xs text-app-text-2">&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing. All rights reserved.</p>
+        {{-- Phase 10D: one quiet line, built from the current payment rules --}}
+        <p class="flex items-start gap-2 border-t border-app-border pt-4 text-xs text-app-text-2">
+            <x-ui.icon name="storefront" :size="16" class="mt-px shrink-0 text-brand" />
+            <span class="min-w-0">{{ $policyLine ?? 'No online payment. Pay at the shop in cash or by GCash.' }} <a href="{{ route('terms') }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">Terms and privacy</a></span>
+        </p>
+        <p class="mt-2 text-xs text-app-text-2">&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing. All rights reserved.</p>
     </footer>
 
     @if ($showChat)

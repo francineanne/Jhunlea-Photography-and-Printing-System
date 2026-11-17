@@ -18,6 +18,7 @@ use App\Http\Controllers\Customer\PhotographyBookingController;
 use App\Http\Controllers\Customer\PrintingEstimateController;
 use App\Http\Controllers\Customer\PrintingOrderController;
 use App\Http\Controllers\Customer\RequestHistoryController;
+use App\Http\Controllers\LiveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderFileDownloadController;
 use App\Http\Controllers\Owner\ActivityLogController;
@@ -114,6 +115,11 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 Route::get('/my/dashboard', CustomerDashboardController::class)
     ->middleware(['auth', 'role:customer', 'expire.downpayments', 'throttle:60,1,customer-dashboard'])
     ->name('customer.dashboard');
+
+// Phase 10D: the version stamp a customer's pages poll for live updates (their own records only; read only)
+Route::get('/my/live', LiveController::class)
+    ->middleware(['auth', 'role:customer', 'throttle:30,1,customer-live'])
+    ->name('customer.live');
 
 // All of the customer's printing orders and bookings in one list (Phase 5C)
 Route::get('/my/requests', RequestHistoryController::class)
@@ -247,6 +253,8 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/faqs')->name('owner.faq
     Route::get('/', 'index')->middleware('throttle:60,1,owner-faqs')->name('index');
     Route::get('/create', 'create')->middleware('throttle:60,1,owner-faq-create')->name('create');
     Route::post('/', 'store')->middleware('throttle:20,1,owner-faq-store')->name('store');
+    // Phase 10D: the suggested questions about using the system, added as hidden drafts (never twice)
+    Route::post('/suggested', 'suggested')->middleware('throttle:6,1,owner-faq-suggested')->name('suggested');
     Route::whereNumber('faq')->group(function () {
         Route::get('/{faq}/edit', 'edit')->middleware('throttle:60,1,owner-faq-edit')->name('edit');
         Route::put('/{faq}', 'update')->middleware('throttle:20,1,owner-faq-update')->name('update');
@@ -326,6 +334,11 @@ Route::get('/files/{file}', OrderFileDownloadController::class)
 Route::get('/owner', OwnerDashboardController::class)
     ->middleware(['auth', 'role:owner', 'expire.downpayments', 'throttle:120,1,owner-dashboard'])
     ->name('owner.dashboard');
+
+// Phase 10D: the version stamp the owner's pages poll for live updates (read only)
+Route::get('/owner/live', LiveController::class)
+    ->middleware(['auth', 'role:owner', 'throttle:30,1,owner-live'])
+    ->name('owner.live');
 
 // The owner's catalog. Phase 9A: every route has its own named counter, generous enough that the owner never meets it
 Route::middleware(['auth', 'role:owner'])->prefix('owner/services')->name('owner.services.')->group(function () {

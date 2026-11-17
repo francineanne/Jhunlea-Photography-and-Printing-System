@@ -29,12 +29,8 @@
         <header class="max-w-2xl">
             <p class="text-xs font-bold uppercase tracking-widest text-brand">Printing</p>
             <h1 class="mt-2 font-display text-3xl font-semibold leading-tight sm:text-5xl">Printing services</h1>
-            <p class="mt-3 text-app-text-2">See what we print, what each service starts from and which files we accept. Prices shown are where a service starts. The final price is confirmed after your request is reviewed.</p>
+            <p class="mt-3 text-app-text-2">See what we print, what each service starts from and which files we accept.<span class="max-sm:hidden"> Prices shown are where a service starts.</span> The shop reviews every request and confirms the final price.</p>
         </header>
-
-        <x-ui.notice variant="payment" class="mt-8">
-            <p class="text-app-text-2">Sending a request is not an accepted order. The owner reviews it first and confirms the price.</p>
-        </x-ui.notice>
 
         @if ($total === 0)
             <x-ui.card class="mt-8">
@@ -43,7 +39,8 @@
                 </x-ui.empty-state>
             </x-ui.card>
         @else
-            <div class="mt-8 rounded-card border border-app-border bg-app-card p-3 sm:p-4">
+            <x-ui.filter-sheet class="mt-6 sm:mt-8" label="Search and filter" :active="($category !== '' ? 1 : 0) + ($search !== '' ? 1 : 0)">
+            <div class="sm:rounded-card sm:border sm:border-app-border sm:bg-app-card sm:p-4">
                 <form method="GET" action="{{ route('services.index') }}" role="search" class="flex flex-col gap-3 sm:flex-row">
                     @if ($category !== '')
                         <input type="hidden" name="category" value="{{ $category }}">
@@ -80,8 +77,9 @@
                     </ul>
                 </nav>
             </div>
+            </x-ui.filter-sheet>
 
-            <p class="mt-6 text-sm text-app-text-2" role="status">
+            <p class="mt-4 text-sm text-app-text-2 sm:mt-6" role="status">
                 @if ($services->total() === 0)
                     No services match{{ $search !== '' ? ' “'.$search.'”' : '' }}{{ $category !== '' ? ' in '.$category : '' }}.
                 @else
@@ -107,11 +105,11 @@
                                     <span class="rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">{{ $service->category }}</span>
                                 </div>
 
-                                <h2 class="mt-4 font-display text-xl font-semibold leading-snug transition-colors group-hover:text-brand">{{ $service->name }}</h2>
+                                <h2 class="mt-4 line-clamp-2 font-display text-xl font-semibold leading-snug transition-colors group-hover:text-brand" title="{{ $service->name }}">{{ $service->name }}</h2>
                                 <p class="mt-0.5 font-mono text-xs uppercase tracking-wide text-brand">{{ $service->pricing_type->label() }}</p>
 
                                 @if ($service->description)
-                                    <p class="mt-3 text-sm leading-relaxed text-app-text-2">{{ $service->description }}</p>
+                                    <p class="mt-3 line-clamp-4 text-sm leading-relaxed text-app-text-2">{{ $service->description }}</p>
                                 @endif
 
                                 @php $groups = $service->options->groupBy(fn ($option) => $option->group->value); @endphp
@@ -137,8 +135,7 @@
 
                                 <div class="mt-auto pt-5">
                                     <div class="border-t border-app-border pt-4">
-                                        <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Estimated price</p>
-                                        <p class="mt-0.5 text-lg font-bold tabular-nums">{{ $service->priceText() }}</p>
+                                        <x-ui.price :text="$service->priceText()" label="Estimated price" />
                                         @if ($service->allowed_file_types)
                                             <p class="mt-2 text-xs text-app-text-2">Files: <span class="font-mono uppercase">{{ implode(', ', $service->allowed_file_types) }}</span> · up to {{ $service->max_file_size_mb }} MB</p>
                                         @endif

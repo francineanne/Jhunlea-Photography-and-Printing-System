@@ -70,21 +70,25 @@
                 @csrf
                 <div class="p-4 sm:p-6">
                     <h2 id="business-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="storefront" :size="22" class="text-brand" />Business info</h2>
-                    <p class="mt-1 text-sm text-app-text-2">Shown in the footer of the public site, only for the details you fill in. Leave a field empty to hide it.</p>
+                    <p class="mt-1 text-sm text-app-text-2">Shown on the landing page (Visit us) and in the footer of the public site, only for the details you fill in. Leave a field empty to hide it.</p>
 
-                    @if ($errors->hasAny(['shop_name', 'address', 'phone', 'email', 'opening_hours']))
+                    @if ($errors->hasAny(['shop_name', 'address', 'phone', 'email', 'opening_hours', 'facebook_url']))
                         <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">Please check the fields marked below. Nothing was saved.</x-ui.notice>
                     @endif
 
-                    <div class="mt-4 grid gap-4 md:grid-cols-2">
+                    <div class="mt-4 form-grid md:grid-cols-2">
                         <div class="md:col-span-2">
                             <x-ui.input label="Shop name" name="shop_name" maxlength="80" :value="old('shop_name', $business['shop_name'])" hint="Up to 80 characters." />
                         </div>
                         <div class="md:col-span-2">
-                            <x-ui.textarea label="Address (where customers visit)" name="address" rows="3" maxlength="300" hint="Up to 300 characters. Line breaks are kept.">{{ old('address', $business['address']) }}</x-ui.textarea>
+                            <x-ui.textarea label="Address (where customers visit)" name="address" rows="3" maxlength="300" hint="Up to 300 characters. Line breaks are kept. The landing page also shows a Google map of this address.">{{ old('address', $business['address']) }}</x-ui.textarea>
                         </div>
                         <x-ui.input label="Phone" name="phone" type="tel" maxlength="40" autocomplete="off" :value="old('phone', $business['phone'])" hint="For example +63 917 123 4567." />
                         <x-ui.input label="Email" name="email" type="email" maxlength="120" autocomplete="off" :value="old('email', $business['email'])" hint="Up to 120 characters." />
+                        <div class="md:col-span-2">
+                            <x-ui.input label="Facebook page" name="facebook_url" type="url" inputmode="url" maxlength="255" autocomplete="off" placeholder="https://www.facebook.com/yourpage" :value="old('facebook_url', $business['facebook_url'])"
+                                hint="The full address of the shop's Facebook page, starting with https://www.facebook.com/. Shown on the landing page and in the footer, and given to customers by Lumi." />
+                        </div>
                         <div class="md:col-span-2">
                             <x-ui.input label="Shop opening hours" name="opening_hours" maxlength="200" :value="old('opening_hours', $business['opening_hours'])"
                                 hint="When the shop itself is open, as plain text, for example: Mon-Sat 9:00 AM - 5:00 PM; Sun closed. Shown on the public site and told to customers by Lumi. Photoshoot hours are separate: change them in the Schedule editor." />
@@ -202,7 +206,7 @@
                         </div>
                     @endforeach
 
-                    <div class="mt-6 grid gap-4 md:grid-cols-2">
+                    <div class="mt-6 form-grid md:grid-cols-2">
                         <div class="rounded-control border border-app-border p-3 text-sm">
                             <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Accepted file types (fixed)</h3>
                             <p class="mt-2"><span class="font-semibold">Printing:</span> <span class="font-mono uppercase">{{ implode(', ', $printingTypes) }}</span></p>
@@ -239,6 +243,8 @@
                 <div class="p-4 sm:p-6">
                     <h2 id="payments-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="payments" :size="22" class="text-brand" />Payment rules</h2>
                     <p class="mt-1 text-sm text-app-text-2">New confirmations and accepted orders use these at once. Bookings and orders already confirmed keep their deadline and rule.</p>
+                    {{-- Phase 10D: a one-time tip --}}
+                    <x-ui.hint name="payment-rules" class="mt-4">These rules are shown to customers on their order and booking pages and in the top bar of the public site, and Lumi uses them in its answers.</x-ui.hint>
 
                     @if ($errors->hasAny([...array_keys($paymentRules), 'gcash_name', 'gcash_number']))
                         <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">
@@ -246,7 +252,7 @@
                         </x-ui.notice>
                     @endif
 
-                    <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div class="mt-4 form-grid md:grid-cols-2 xl:grid-cols-3">
                         @foreach ($paymentRules as $field => $rule)
                             @php([$min, $max] = $rule['limits'])
                             <x-ui.input :id="'rule-'.$field" :name="$field" :label="$rule['label']" type="number" inputmode="decimal" :min="$min" :max="$max" :step="$field === 'prepay_from' ? '0.01' : '1'" :required="true"
@@ -262,7 +268,7 @@
                     </div>
 
                     <h3 class="mt-6 text-[11px] font-bold uppercase tracking-wider text-app-text-2">GCash shown to customers</h3>
-                    <div class="mt-2 grid gap-4 md:grid-cols-2">
+                    <div class="mt-2 form-grid md:grid-cols-2">
                         <x-ui.input id="gcash-name" name="gcash_name" label="GCash account name" maxlength="80" :value="old('gcash_name', $gcash['name'])" :error="$errors->first('gcash_name')" hint="Display only. Leave empty to hide." />
                         <x-ui.input id="gcash-number" name="gcash_number" label="GCash number" maxlength="20" inputmode="tel" :value="old('gcash_number', $gcash['number'])" :error="$errors->first('gcash_number')" hint="Customers send GCash here and the reference in Messages; you record it after checking." />
                     </div>

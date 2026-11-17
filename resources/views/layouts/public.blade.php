@@ -4,9 +4,9 @@
 @php
     // One entry = label, icon, route name (and the route names that keep it highlighted). Only pages that exist.
     $links = [
-        ['label' => 'Printing services', 'icon' => 'print', 'route' => 'services.index'],
-        ['label' => 'Photography packages', 'icon' => 'photo_camera', 'route' => 'packages.index', 'match' => ['packages.index', 'packages.show', 'packages.compare']],
-        ['label' => 'Package finder', 'icon' => 'travel_explore', 'route' => 'packages.finder'],
+        ['label' => 'Printing services', 'short' => 'Printing', 'icon' => 'print', 'route' => 'services.index'],
+        ['label' => 'Photography packages', 'short' => 'Packages', 'icon' => 'photo_camera', 'route' => 'packages.index', 'match' => ['packages.index', 'packages.show', 'packages.compare']],
+        ['label' => 'Package finder', 'short' => 'Finder', 'icon' => 'travel_explore', 'route' => 'packages.finder'],
     ];
 
     // rescue(): this layout also wraps the error pages, which must never throw (session store down, odd role value)
@@ -20,19 +20,25 @@
     <x-layout.skip-link />
     <x-ui.page-loader />
     <x-ui.toast />
+    <x-ui.confirm />
+    <x-ui.lightbox />
 
     <div class="flex min-h-dvh flex-col">
-    {{-- Studio policy strip above the header, as in the landing design --}}
-    <div class="bg-neutral-100 px-4 py-1.5 dark:bg-white/5">
-        <p class="mx-auto flex max-w-[1280px] items-center justify-center gap-1.5 text-center text-[11px] font-bold uppercase leading-4 tracking-wider text-app-text-2">
-            <x-ui.icon name="storefront" :size="15" class="shrink-0 text-brand" />
-            Studio policy: payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.
-        </p>
-    </div>
+    {{-- Phase 10D: ONE short, current payment line (from the payment rules), always one line: it truncates on phones
+         and "Details" opens the FAQ (or the terms when no question is published) --}}
+    @unless ($isErrorPage ?? false)
+        <div class="bg-neutral-100 px-4 dark:bg-white/5" data-policy-bar>
+            <p class="mx-auto flex max-w-[1280px] items-center justify-center gap-1.5 text-xs font-semibold text-app-text-2">
+                <x-ui.icon name="storefront" :size="15" class="shrink-0 text-brand" />
+                <span class="min-w-0 truncate" title="{{ $policyLine ?? '' }}">{{ $policyLine ?? 'No online payment. Pay at the shop in cash or by GCash.' }}</span>
+                <a href="{{ ($hasFaq ?? false) ? route('faq') : route('terms') }}" class="inline-flex min-h-11 shrink-0 items-center rounded px-1 font-bold text-brand underline-offset-2 hover:underline focus-ring sm:min-h-8">Details<span class="sr-only"> about paying</span></a>
+            </p>
+        </div>
+    @endunless
 
-    <header class="sticky top-0 z-40 border-b border-app-border bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
-        <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-3 px-4 sm:h-20 sm:px-6">
-            <a href="{{ url('/') }}" class="group inline-flex min-h-11 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
+    <header class="site-header sticky top-0 z-40 border-b border-app-border bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
+        <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:gap-8">
+            <a href="{{ url('/') }}" class="group inline-flex min-h-11 shrink-0 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
                 <x-ui.logo mark compact />
             </a>
 
@@ -107,7 +113,7 @@
             </div>
             {{-- Only the details the owner filled in on the Settings page; nothing at all when none is set --}}
             @php($shop ??= [])
-            @if (filled($shop['address'] ?? null) || filled($shop['phone'] ?? null) || filled($shop['email'] ?? null) || filled($shop['opening_hours'] ?? null))
+            @if (filled($shop['address'] ?? null) || filled($shop['phone'] ?? null) || filled($shop['email'] ?? null) || filled($shop['opening_hours'] ?? null) || filled($shop['facebook_url'] ?? null))
                 <address class="min-w-0 space-y-1 text-sm not-italic text-app-text-2 md:max-w-xs">
                     <p class="text-[11px] font-bold uppercase tracking-wider text-app-text">Visit or contact{{ filled($shop['shop_name'] ?? null) ? ' '.$shop['shop_name'] : '' }}</p>
                     @if (filled($shop['address'] ?? null))
@@ -120,13 +126,16 @@
                     @if (filled($shop['phone'] ?? null))
                         <p><a href="tel:{{ preg_replace('/[^0-9+]/', '', $shop['phone']) }}" class="inline-flex min-h-11 items-center gap-1.5 rounded hover:text-brand focus-ring"><x-ui.icon name="call" :size="16" class="shrink-0 text-brand" />{{ $shop['phone'] }}</a></p>
                     @endif
+                    @if (filled($shop['facebook_url'] ?? null))
+                        <p><a href="{{ $shop['facebook_url'] }}" target="_blank" rel="noopener noreferrer external" class="inline-flex min-h-11 items-center gap-1.5 rounded hover:text-brand focus-ring"><x-ui.icon name="thumb_up" :size="16" class="shrink-0 text-brand" />Facebook page<span class="sr-only"> (opens in a new tab)</span></a></p>
+                    @endif
                     @if (filled($shop['email'] ?? null))
                         <p class="min-w-0"><a href="mailto:{{ $shop['email'] }}" class="inline-flex min-h-11 min-w-0 max-w-full items-center gap-1.5 break-all rounded hover:text-brand focus-ring"><x-ui.icon name="mail" :size="16" class="shrink-0 text-brand" /><span class="min-w-0">{{ $shop['email'] }}</span></a></p>
                     @endif
                 </address>
             @endif
             <div class="space-y-1 text-sm text-app-text-2 md:text-right">
-                <p>Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
+                <p>Payment is made face-to-face at Jhunlea Photography &amp; Printing.</p>
                 <p>&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing</p>
             </div>
         </div>

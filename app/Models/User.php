@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ColorScheme;
 use App\Enums\UserRole;
 use App\Notifications\VerifyEmailNotification;
+use App\Support\PublicFile;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,7 +14,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 
 // `role`, `theme` and `is_walk_in` are deliberately not fillable: server code sets them (theme only through
 // AccountService, is_walk_in only through WalkInCustomerService). A walk-in customer (Phase 8A) has no email and no
@@ -73,7 +73,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return null;
         }
 
-        return Storage::disk('public')->url($this->avatar_path);
+        return PublicFile::url($this->avatar_path);
     }
 
     /** "MC" for Maria Cruz, "A" for Ana: the fallback when there is no picture. */

@@ -258,6 +258,24 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
   - [ ] Walang "delete my account" button (hinihingi sa studio, ayon sa Terms page)
   - [ ] Ang dating phone number na hindi Philippine mobile ay hindi binabago; hihingan lang ng tamang format kapag sine-save ulit ang profile
 
+### 10D — Final UI at experience polish (branch `phase-10d-ui`) · built, naghihintay ng review
+- [x] Audit muna (`docs/UI_AUDIT.md`): F1 hanggang F12 at ang nakita sa QA site, bawat isa may severity at ayos
+- [x] Navigation na hindi nagra-wrap, isang maikling policy line na galing sa payment rules, splash na 600 ms lang at unang bisita lang, bilog na chat button sa phone, Filters sheet sa packages at services
+- [x] Isang form grid (pantay ang mga input kahit mahaba ang label), time picker na walang scroll wheel, date na buong lapad
+- [x] Isang package card at isang price component, placeholder na may icon at pangalan kapag walang litrato, root-relative na image URLs (may test)
+- [x] Isang confirmation dialog (`data-confirm`) at mas maayos na toasts; pop-up rules sa AGENTS.md
+- [x] Prefetch (Speculation Rules), page transitions, font preload, busy state sa bawat submit
+- [x] Landing: FAQ at Visit us (address, oras, phone, email, Facebook, mapa); Facebook page sa Settings (isang migration `2026_11_26_100000`); lightbox ng mga litrato
+- [x] "What happens next" timeline, countdown ng downpayment deadline, copy buttons, one-time hints
+- [x] Owner: collapsible sidebar, "Held request" sa calendar, away notice na gumagamit ng shop hours text
+- [x] Live updates sa pamamagitan ng polling (`/my/live`, `/owner/live`, may tests)
+- [x] "Add suggested questions" sa FAQ editor (hidden drafts, hindi nadodoble) at `docs/FAQ_DRAFTS.md`
+- [ ] Bukas pa (10D):
+  - [ ] Hindi lahat ng screen ay na-screenshot sa lahat ng lapad at tema; tingnan ang `docs/UI_AUDIT.md` para sa nasuri ng mata at nasuri ng script
+  - [ ] Totoong phone check (iOS Safari at Android Chrome) ng lightbox swipe, filter sheet at time picker
+  - [ ] Mga table sa phone: nananatiling scroll sa loob ng sariling kahon (9C), hindi pa stacked cards
+  - [ ] Collapsible na summary ng booking wizard sa phone
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

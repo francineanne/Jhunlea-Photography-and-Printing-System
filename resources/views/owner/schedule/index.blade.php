@@ -148,12 +148,14 @@
                 <ul class="mt-2 flex flex-wrap gap-x-5 gap-y-2">
                     <li class="flex items-center gap-1.5"><span class="size-3 rounded bg-ink dark:bg-white" aria-hidden="true"></span>Confirmed session</li>
                     <li class="flex items-center gap-1.5"><span class="size-3 rounded bg-neutral-300 dark:bg-white/30" aria-hidden="true"></span>Completed</li>
-                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border border-dashed border-status-amber bg-status-amber-bg" aria-hidden="true"></span>Request waiting for you</li>
-                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border border-dashed border-status-blue bg-status-blue-bg" aria-hidden="true"></span>New time offered</li>
+                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border-2 border-dashed border-status-amber bg-status-amber-bg" aria-hidden="true"></span><x-ui.icon name="lock_clock" :size="14" />Held request (holds its time)</li>
+                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border-2 border-dashed border-status-blue bg-status-blue-bg" aria-hidden="true"></span><x-ui.icon name="lock_clock" :size="14" />Held: new time offered</li>
+                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border-2 border-dotted border-status-violet bg-status-violet-bg" aria-hidden="true"></span><x-ui.icon name="lock_clock" :size="14" />Awaiting downpayment (held until its deadline)</li>
+                    <li class="flex items-center gap-1.5"><span class="size-3 rounded border border-dashed border-status-amber bg-status-amber-bg opacity-80" aria-hidden="true"></span>Request that holds no time (hold ran out or expired)</li>
                     <li class="flex items-center gap-1.5"><span class="size-3 rounded bg-brand" aria-hidden="true"></span>Blocked day</li>
                     <li class="flex items-center gap-1.5"><span class="size-3 rounded bg-neutral-100 ring-1 ring-app-border dark:bg-white/10" aria-hidden="true"></span>Closed day</li>
                 </ul>
-                <p class="mt-2 text-app-text-2">Times are in Philippine time. Only confirmed sessions hold a time.</p>
+                <p class="mt-2 text-app-text-2">Times are in Philippine time. Confirmed and completed sessions always hold their time; a held request, an offered time and a booking awaiting its downpayment hold theirs until the hold or the deadline runs out.</p>
             </div>
         </div>
 

@@ -38,7 +38,7 @@
         @else
             <div class="mt-8 max-w-3xl space-y-3">
                 @foreach ($faqs as $faq)
-                    <details class="group animate-fade-up rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md open:border-brand/40 dark:shadow-none" style="animation-delay: {{ min($loop->index, 10) * 40 }}ms">
+                    <details class="ui-accordion group animate-fade-up rounded-card border border-app-border bg-app-card shadow-sm transition-shadow hover:shadow-md open:border-brand/40 dark:shadow-none" style="animation-delay: {{ min($loop->index, 10) * 40 }}ms">
                         <summary class="flex min-h-14 cursor-pointer list-none items-start justify-between gap-4 rounded-card px-4 py-4 font-semibold focus-ring sm:px-5 [&::-webkit-details-marker]:hidden">
                             <span class="min-w-0 break-words">{{ $faq->question }}</span>
                             <x-ui.icon name="expand_more" :size="22" class="shrink-0 text-brand transition-transform duration-300 group-open:rotate-180" />

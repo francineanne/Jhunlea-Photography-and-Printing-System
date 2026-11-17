@@ -9,8 +9,8 @@
         @csrf
 
         <x-ui.input label="Full name" name="name" icon="person" :value="old('name')" autocomplete="name" required autofocus />
-        <x-ui.input label="Email address" name="email" type="email" icon="mail" :value="old('email')" autocomplete="email" required />
-        <x-ui.input label="Mobile number" name="phone" type="tel" icon="call" :value="old('phone')" autocomplete="tel" inputmode="tel" maxlength="{{ \App\Support\PhilippineMobile::MAX_TYPED }}" required
+        <x-ui.input label="Email address" name="email" type="email" icon="mail" data-live-check="email" :value="old('email')" autocomplete="email" required />
+        <x-ui.input label="Mobile number" name="phone" type="tel" icon="call" data-live-check="mobile" :value="old('phone')" autocomplete="tel" inputmode="tel" maxlength="{{ \App\Support\PhilippineMobile::MAX_TYPED }}" required
             placeholder="0917 123 4567" hint="A Philippine mobile number, so the studio can reach you about your requests." />
 
         <div class="space-y-4" x-data="passwordStrength(@js(\App\Support\PasswordRules::all()))">

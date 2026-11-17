@@ -2,7 +2,7 @@
 
 {{-- A one-click on/off switch that posts to $action (the server flips the value and answers with a toast).
      The visible part is decorative; the screen-reader text says what it is and what pressing does. --}}
-<form method="POST" action="{{ $action }}">
+<form method="POST" action="{{ $action }}" @if ($on && $label === 'Published') data-confirm="Hide {{ $name }} from customers?" data-confirm-text="It leaves the public pages until you publish it again. Orders and bookings already made keep it." data-confirm-ok="Unpublish" @endif>
     @csrf
     <button type="submit" role="switch" aria-checked="{{ $on ? 'true' : 'false' }}"
         class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control focus-ring">

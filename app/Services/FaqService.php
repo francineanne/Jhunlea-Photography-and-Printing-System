@@ -38,6 +38,29 @@ class FaqService
         });
     }
 
+    /**
+     * Phase 10D: adds the suggested questions as UNPUBLISHED drafts. A question that is already in the list (in any
+     * letter case) is skipped, so pressing the button twice never adds one twice; it stops when the list is full.
+     *
+     * @param  list<array{question: string, answer: string}>  $drafts
+     * @return int how many were added
+     */
+    public function addSuggested(array $drafts): int
+    {
+        $added = 0;
+
+        foreach ($drafts as $draft) {
+            try {
+                $this->create(['question' => $draft['question'], 'answer' => $draft['answer'], 'is_published' => false]);
+                $added++;
+            } catch (ValidationException) {
+                // Already in the list, or the list is full: skip it
+            }
+        }
+
+        return $added;
+    }
+
     /** @param  array{question: string, answer: string, is_published: bool}  $data */
     public function update(Faq $faq, array $data): void
     {

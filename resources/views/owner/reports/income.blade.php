@@ -168,7 +168,7 @@
         </x-ui.card>
     @else
         {{-- Income over time, beside the payment methods --}}
-        <div class="mt-6 grid items-start gap-6 lg:grid-cols-12">
+        <div class="mt-6 grid gap-6 lg:grid-cols-12">
             <section class="min-w-0 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 lg:col-span-7 dark:shadow-none" aria-labelledby="over-time-title">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 id="over-time-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="bar_chart" :size="22" class="text-brand" />Income over time</h2>
@@ -193,7 +193,7 @@
         </div>
 
         {{-- Top services and packages, beside where the income came from --}}
-        <div class="mt-6 grid items-start gap-6 lg:grid-cols-12">
+        <div class="mt-6 grid gap-6 lg:grid-cols-12">
             <section class="min-w-0 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 lg:col-span-7 dark:shadow-none" aria-labelledby="items-title">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 id="items-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="military_tech" :size="22" class="text-brand" />Top services and packages</h2>

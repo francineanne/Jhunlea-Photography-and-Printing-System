@@ -30,7 +30,8 @@ class ShopSettings
     ];
 
     // opening_hours (Phase 10A): the shop's own opening hours as display text; the photoshoot hours are availability_rules
-    public const BUSINESS = ['shop_name', 'address', 'phone', 'email', 'opening_hours'];
+    // facebook_url (Phase 10D): the shop's Facebook page, an https address on facebook.com or fb.com
+    public const BUSINESS = ['shop_name', 'address', 'phone', 'email', 'opening_hours', 'facebook_url'];
 
     private ?ShopSetting $row = null;
 
@@ -72,10 +73,35 @@ class ShopSettings
         return $this->text('opening_hours');
     }
 
-    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string} */
+    /** Phase 10D: the shop's Facebook page address; null when not set. */
+    public function facebookUrl(): ?string
+    {
+        return $this->text('facebook_url');
+    }
+
+    /**
+     * Phase 10D: the Google Maps addresses made from the shop's address (no key, no account): the embedded map of the
+     * landing page and the "Open in Google Maps" link. Null when no address is set.
+     *
+     * @return array{embed: string, link: string}|null
+     */
+    public function map(): ?array
+    {
+        $address = $this->address();
+
+        if ($address === null) {
+            return null;
+        }
+
+        $query = rawurlencode(trim((string) preg_replace('/\s+/', ' ', $address)));
+
+        return ['embed' => "https://www.google.com/maps?q={$query}&output=embed", 'link' => "https://www.google.com/maps/search/?api=1&query={$query}"];
+    }
+
+    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string, facebook_url: ?string} */
     public function business(): array
     {
-        return ['shop_name' => $this->shopName(), 'address' => $this->address(), 'phone' => $this->phone(), 'email' => $this->email(), 'opening_hours' => $this->openingHours()];
+        return ['shop_name' => $this->shopName(), 'address' => $this->address(), 'phone' => $this->phone(), 'email' => $this->email(), 'opening_hours' => $this->openingHours(), 'facebook_url' => $this->facebookUrl()];
     }
 
     /** True when the public site has at least one way to reach the shop to show. */

@@ -94,15 +94,8 @@
                 </div>
             </dl>
 
-            <section class="mt-6 rounded-card border border-app-border p-4" aria-labelledby="next-title">
-                <h2 id="next-title" class="font-semibold">What happens next</h2>
-                <ol class="mt-3 space-y-2 text-sm text-app-text-2">
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">1</span><span>The shop reviews your files and details.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">2</span><span>If something is unclear, the shop asks you for more information.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">3</span><span>The shop accepts the order and confirms the final price.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">4</span><span>When your prints are ready, you pick them up at the shop. Payment is made face-to-face there.</span></li>
-                </ol>
-            </section>
+            {{-- Phase 10D: the same timeline as the order page, with the current step marked --}}
+            <x-ui.next-steps :record="$order" class="mt-6" />
 
             <x-ui.notice variant="payment" class="mt-4">
                 <p class="text-app-text-2">Nothing is charged online. The shop confirms the final price before you pay.</p>

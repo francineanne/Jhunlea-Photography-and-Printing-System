@@ -48,7 +48,7 @@
         <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                    <h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1>
+                    <div class="flex items-center gap-1"><h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1><x-ui.copy :text="$order->reference_number" label="Copy reference number" /></div>
                     <x-walk-in.badge :record="$order" />
                     <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
                 </div>
@@ -66,7 +66,7 @@
                 <div class="flex flex-wrap gap-2 xl:max-w-xl xl:justify-end">
                     @foreach ($simple as $value => $action)
                         @if (in_array($value, $moveValues, true))
-                            <form method="POST" action="{{ route($action['route'], $order) }}">
+                            <form method="POST" action="{{ route($action['route'], $order) }}" @if ($action['route'] === 'owner.orders.unclaimed') data-confirm="Mark {{ $order->reference_number }} as unclaimed?" data-confirm-text="The order is closed without payment and this customer pays before printing next time. This cannot be undone." data-confirm-ok="Mark unclaimed" data-confirm-danger @endif>
                                 @csrf
                                 <x-ui.button type="submit"><x-ui.icon :name="$action['icon']" :size="18" />{{ $action['label'] }}</x-ui.button>
                             </form>
@@ -135,7 +135,7 @@
                         <x-ui.icon name="block" :size="18" />Reject
                         <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
                     </summary>
-                    <form method="POST" action="{{ route('owner.orders.reject', $order) }}" class="space-y-3 px-4 pb-4">
+                    <form method="POST" action="{{ route('owner.orders.reject', $order) }}" data-confirm="Reject order {{ $order->reference_number }}?" data-confirm-text="The customer is told and reads your reason. This cannot be undone." data-confirm-ok="Reject order" data-confirm-danger class="space-y-3 px-4 pb-4">
                         @csrf
                         <input type="hidden" name="_form" value="reject">
                         <x-ui.textarea id="reject-reason" name="reason" label="Reason" maxlength="1000" rows="3" :required="true" hint="The customer sees this reason.">{{ $openForm === 'reject' ? old('reason') : '' }}</x-ui.textarea>
@@ -150,7 +150,7 @@
                         <x-ui.icon name="cancel" :size="18" />Cancel order
                         <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
                     </summary>
-                    <form method="POST" action="{{ route('owner.orders.cancel', $order) }}" class="space-y-3 px-4 pb-4">
+                    <form method="POST" action="{{ route('owner.orders.cancel', $order) }}" data-confirm="Cancel order {{ $order->reference_number }}?" data-confirm-text="The customer is told. If a payment is recorded, the choice you ticked (keep or refund) is applied. This cannot be undone." data-confirm-ok="Cancel order" data-confirm-danger class="space-y-3 px-4 pb-4">
                         @csrf
                         <input type="hidden" name="_form" value="cancel">
                         <x-ui.textarea id="cancel-note" name="note" label="Note (optional)" maxlength="500" rows="2" hint="Shown in the order's history, which the customer can read.">{{ $openForm === 'cancel' ? old('note') : '' }}</x-ui.textarea>

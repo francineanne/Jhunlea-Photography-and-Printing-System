@@ -26,6 +26,13 @@
         <div class="flex flex-wrap gap-2">
             <x-ui.button :href="route('faq')" variant="outline" target="_blank" rel="noopener"><x-ui.icon name="open_in_new" :size="18" />View FAQ page</x-ui.button>
             @unless ($full)
+                {{-- Phase 10D: ready-made questions about using the system, added hidden for the owner to review --}}
+                <form method="POST" action="{{ route('owner.faqs.suggested') }}" data-confirm="Add the suggested questions?"
+                    data-confirm-text="About {{ count(app(\App\Support\FaqDrafts::class)->all()) }} questions about using the system (accounts, orders, bookings, downpayment, paying, chat, privacy) are added as HIDDEN drafts, worded with your current settings. Questions already in your list are skipped. Nothing is published until you press Show."
+                    data-confirm-ok="Add as hidden drafts">
+                    @csrf
+                    <x-ui.button type="submit" variant="outline"><x-ui.icon name="playlist_add" :size="18" />Add suggested questions</x-ui.button>
+                </form>
                 <x-ui.button :href="route('owner.faqs.create')"><x-ui.icon name="add" :size="18" />Add a question</x-ui.button>
             @endunless
         </div>
@@ -77,7 +84,7 @@
                                 <button type="submit" @disabled($loop->last) aria-label="Move “{{ Str::limit($faq->question, 40) }}” down"
                                     class="grid size-11 place-items-center rounded-control text-app-text-2 transition-colors hover:bg-neutral-100 hover:text-app-text focus-ring disabled:cursor-not-allowed disabled:opacity-30 dark:hover:bg-white/10"><x-ui.icon name="arrow_downward" :size="20" /></button>
                             </form>
-                            <form method="POST" action="{{ route('owner.faqs.publish', $faq) }}">
+                            <form method="POST" action="{{ route('owner.faqs.publish', $faq) }}" @if ($faq->is_published) data-confirm="Hide this question?" data-confirm-text="It leaves the public FAQ page and Lumi stops using it until you show it again." data-confirm-ok="Hide question" @endif>
                                 @csrf
                                 <input type="hidden" name="published" value="{{ $faq->is_published ? '0' : '1' }}">
                                 <x-ui.button type="submit" variant="ghost" size="sm" class="min-h-11"><x-ui.icon :name="$faq->is_published ? 'visibility_off' : 'visibility'" :size="18" />{{ $faq->is_published ? 'Hide' : 'Show' }}</x-ui.button>

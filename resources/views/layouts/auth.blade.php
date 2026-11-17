@@ -5,6 +5,7 @@
     <x-layout.skip-link />
     <x-ui.page-loader />
     <x-ui.toast />
+    <x-ui.confirm />
 
     {{-- Backdrop: temporary Stitch placeholder photo under a scrim; replace with a real studio photo before going live --}}
     <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-app-bg" aria-hidden="true">

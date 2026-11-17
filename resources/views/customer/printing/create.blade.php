@@ -365,7 +365,7 @@
                             <x-ui.button variant="outline" x-cloak x-on:click="back()">
                                 <x-ui.icon name="arrow_back" :size="18" />Back to files
                             </x-ui.button>
-                            <button type="submit" x-bind:disabled="submitting" x-bind:aria-busy="submitting.toString()"
+                            <button type="submit" x-bind:disabled="submitting" data-confirm="Send this printing order?" data-confirm-text="The shop reviews your files first and confirms the final price. Nothing is charged online." data-confirm-ok="Send order" x-bind:aria-busy="submitting.toString()"
                                 class="btn-sweep inline-flex h-11 items-center justify-center gap-2 rounded-control px-8 text-sm font-semibold text-white shadow-md hover:[transform:scale(1.01)] focus-ring active:[transform:scale(0.98)] disabled:pointer-events-none disabled:opacity-60">
                                 <x-ui.aperture-spinner :size="18" x-cloak x-show="submitting" />
                                 <span x-text="submitting ? 'Sending your order…' : 'Send printing order'">Send printing order</span>

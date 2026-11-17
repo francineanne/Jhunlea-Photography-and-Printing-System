@@ -65,11 +65,13 @@
 
     <div class="mt-3 space-y-2 text-sm">
         @if ($status === PaymentStatus::AwaitingPrice && $payable->showsPayment())
-            <p class="text-app-text-2">{{ $owner ? 'Confirm the price first. The payment is always the full confirmed price.' : 'The '.$place.' will confirm the price first.' }}</p>
+            <p class="text-app-text-2">{{ $owner ? 'Confirm the price first. Every amount is worked out from the confirmed price; none is typed.' : 'The '.$place.' will confirm the price first.' }}</p>
         @elseif ($status === PaymentStatus::NoCharge)
             <p class="text-app-text-2">Nothing to pay: the confirmed price is ₱0.00.</p>
         @elseif ($awaitingDown)
             <p class="text-app-text-2">{{ $owner ? 'Waiting for the downpayment of '.($amountTexts['downpayment'] ?? '').' until ' : 'Pay the downpayment of '.($amountTexts['downpayment'] ?? '').' by ' }}<x-ui.date :value="$payable->downpayment_due_at" />{{ $owner ? '. Past the deadline the booking is cancelled by the system.' : ' to keep your time. The balance is paid on the day of the shoot.' }}</p>
+            {{-- Phase 10D: a live countdown for both sides, red when under 24 hours --}}
+            <p class="mt-2"><x-ui.countdown :until="$payable->downpayment_due_at" /></p>
         @elseif ($status === PaymentStatus::DownpaymentPaid && ! $owner)
             <p class="text-app-text-2">Your downpayment is recorded. Pay the balance of {{ Money::format($payable->amountDue()) }} on the day of your photoshoot. Photos are released once fully paid.</p>
         @elseif ($status === PaymentStatus::Unpaid && ! $owner && $payable->showsPayment())
@@ -272,7 +274,7 @@
                 <x-ui.icon name="undo" :size="18" />Void this payment record
                 <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
             </summary>
-            <form method="POST" action="{{ $routes['void']($paid) }}" class="space-y-3 px-4 pb-4">
+            <form method="POST" action="{{ $routes['void']($paid) }}" data-confirm="Void payment {{ $paid->reference_number }}?" data-confirm-text="It stops counting as income and stays in the records with your reason. The customer reads only that the record was cancelled." data-confirm-detail="{{ \App\Support\Money::format($paid->amount) }}" data-confirm-ok="Void payment" data-confirm-danger class="space-y-3 px-4 pb-4">
                 @csrf
                 <input type="hidden" name="_form" value="void">
                 <x-ui.textarea id="void-reason-{{ $paid->id }}" name="reason" label="Why is it cancelled?" maxlength="500" rows="2" :required="true"
@@ -292,18 +294,18 @@
                 <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
             </summary>
             <div class="grid gap-4 px-4 pb-4 md:grid-cols-2">
-                <form method="POST" action="{{ route('owner.bookings.extend', $payable) }}" class="space-y-3">
+                <form method="POST" action="{{ route('owner.bookings.extend', $payable) }}" data-confirm="Extend the downpayment deadline?" data-confirm-text="The customer gets until the new date and time to pay, and the booking keeps holding its time until then." data-confirm-ok="Extend deadline" class="space-y-3">
                     @csrf
                     <input type="hidden" name="_form" value="extend">
                     <p class="text-sm font-semibold">Extend the deadline</p>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="form-grid grid-cols-2">
                         <x-ui.input id="extend-date-{{ $payable->id }}" name="due_date" type="date" label="New date" :required="true" :value="old('due_date', LocalTime::format($payable->downpayment_due_at, 'Y-m-d'))" />
-                        <x-ui.input id="extend-time-{{ $payable->id }}" name="due_time" type="time" label="Time" :required="true" :value="old('due_time', LocalTime::format($payable->downpayment_due_at, 'H:i'))" />
+                        <x-ui.time-picker id="extend-time-{{ $payable->id }}" name="due_time" label="Time" :required="true" :value="old('due_time', LocalTime::format($payable->downpayment_due_at, 'H:i'))" />
                     </div>
                     <x-ui.input id="extend-reason-{{ $payable->id }}" name="reason" label="Reason" maxlength="500" :required="true" :value="$openForm === 'extend' ? old('reason') : ''" hint="After now, and no later than the shoot starts." />
                     <x-ui.button type="submit" variant="outline"><x-ui.icon name="more_time" :size="18" />Extend the deadline</x-ui.button>
                 </form>
-                <form method="POST" action="{{ route('owner.bookings.waive', $payable) }}" class="space-y-3">
+                <form method="POST" action="{{ route('owner.bookings.waive', $payable) }}" data-confirm="Waive the downpayment?" data-confirm-text="The booking is confirmed now without a downpayment. The full price is paid on the day of the shoot." data-confirm-ok="Waive and confirm" class="space-y-3">
                     @csrf
                     <input type="hidden" name="_form" value="waive">
                     <p class="text-sm font-semibold">Waive the downpayment</p>

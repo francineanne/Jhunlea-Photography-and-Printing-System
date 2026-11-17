@@ -32,6 +32,8 @@
             <p class="mt-2 max-w-2xl text-app-text-2">Record a payment at the counter, see what is ready for pickup or still waiting for payment, and every payment recorded today.</p>
         </div>
         {{-- The counter bar (Phase 8B): record a payment, or start a walk-in (the 8A forms) --}}
+        {{-- Phase 10D: a one-time tip, the first time the owner opens the counter --}}
+        <x-ui.hint name="counter-search" class="order-last w-full">To record a payment, press Record payment and search by the customer's name, phone number or the PR- / PB- reference number.</x-ui.hint>
         <div class="flex flex-wrap gap-2">
             <x-ui.button x-data x-on:click="$dispatch('counter-open')"><x-ui.icon name="add_card" :size="18" />Record payment</x-ui.button>
             <div class="relative" x-data="{ open: false }" x-on:keydown.escape="if (open) { open = false; $refs.button.focus() }" x-on:click.outside="open = false">
@@ -48,7 +50,7 @@
     </div>
 
     <x-ui.notice variant="payment" class="mt-6">
-        <p class="text-app-text-2">The system only records and monitors payments received face to face, in cash or by GCash. It never takes a payment online. Each order or photoshoot is paid in full, once.</p>
+        <p class="text-app-text-2">The system only records and monitors payments received face to face, in cash or by GCash. It never takes a payment online. A printing order is paid in full; a photoshoot is paid in full, or as a downpayment and then its balance.</p>
     </x-ui.notice>
 
     @if (session('receipt_url'))

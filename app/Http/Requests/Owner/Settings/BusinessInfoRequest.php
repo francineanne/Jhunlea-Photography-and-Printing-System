@@ -13,6 +13,9 @@ class BusinessInfoRequest extends FormRequest
     // Digits, spaces and + ( ) - . / only, with 7 to 15 digits in all, for example "+63 917 123 4567" or "(02) 8123 4567"
     public const PHONE_PATTERN = '/^(?=(?:\D*\d){7,15}\D*$)[0-9+()\-.\/ ]+$/';
 
+    // https only, the host facebook.com or fb.com (with www., m. or web.), then a page path; no spaces, quotes or brackets
+    public const FACEBOOK_PATTERN = '/^https:\/\/(?:(?:www|m|web)\.)?(?:facebook|fb)\.com\/[A-Za-z0-9._\-\/?=&%]+$/';
+
     public function authorize(): bool
     {
         return true; // access is enforced by the auth + role:owner route middleware
@@ -36,6 +39,8 @@ class BusinessInfoRequest extends FormRequest
             'email' => ['nullable', 'string', 'max:120', 'email:rfc', $noControl],
             // Phase 10A: the shop's own opening hours, display text only (the photoshoot hours are in the Schedule editor)
             'opening_hours' => ['nullable', 'string', 'max:200', $noControl],
+            // Phase 10D: the shop's Facebook page: an https address on facebook.com or fb.com, nothing else
+            'facebook_url' => ['nullable', 'string', 'max:255', $noControl, 'regex:'.self::FACEBOOK_PATTERN],
         ];
     }
 
@@ -53,14 +58,16 @@ class BusinessInfoRequest extends FormRequest
             'email.*' => 'Type a valid email address, for example hello@example.com.',
             'opening_hours.max' => 'Keep the opening hours to :max characters.',
             'opening_hours.*' => 'Type the opening hours as plain text on one line.',
+            'facebook_url.max' => 'Keep the Facebook address to :max characters.',
+            'facebook_url.*' => 'Paste the address of the shop\'s Facebook page. It must start with https://www.facebook.com/ or https://fb.com/.',
         ];
     }
 
-    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string} */
+    /** @return array{shop_name: ?string, address: ?string, phone: ?string, email: ?string, opening_hours: ?string, facebook_url: ?string} */
     public function info(): array
     {
         $value = fn (string $field) => is_string($this->validated($field)) && trim($this->validated($field)) !== '' ? trim(str_replace("\r\n", "\n", $this->validated($field))) : null;
 
-        return ['shop_name' => $value('shop_name'), 'address' => $value('address'), 'phone' => $value('phone'), 'email' => $value('email'), 'opening_hours' => $value('opening_hours')];
+        return ['shop_name' => $value('shop_name'), 'address' => $value('address'), 'phone' => $value('phone'), 'email' => $value('email'), 'opening_hours' => $value('opening_hours'), 'facebook_url' => $value('facebook_url')];
     }
 }

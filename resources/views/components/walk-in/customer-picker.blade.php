@@ -63,7 +63,7 @@
     </div>
 
     {{-- A new walk-in customer (also the only choice without JavaScript) --}}
-    <div x-show="mode === 'new'" class="mt-4 grid gap-4 sm:grid-cols-2">
+    <div x-show="mode === 'new'" class="mt-4 form-grid sm:grid-cols-2">
         <x-ui.input label="Full name" name="new_customer_name" maxlength="80" :value="old('new_customer_name')" x-bind:disabled="mode !== 'new'"
             x-on:input="checkNew($event.target.value)"
             hint="A walk-in customer has no login. Search first so the same person is not added twice." />

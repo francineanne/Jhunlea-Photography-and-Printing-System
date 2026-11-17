@@ -119,31 +119,18 @@
                             <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
                                 @foreach ($packages as $package)
                                     <div class="flex flex-col">
-                                        <label class="group relative flex flex-1 cursor-pointer flex-col rounded-card border border-app-border bg-neutral-50 p-4 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-neutral-100 has-checked:border-brand has-checked:bg-app-card has-checked:shadow-md has-checked:ring-2 has-checked:ring-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand dark:bg-white/5 dark:hover:bg-white/10 dark:has-checked:bg-white/10">
+                                        <label class="group relative flex flex-1 cursor-pointer flex-col overflow-hidden rounded-card border border-app-border bg-app-card transition-[border-color,box-shadow] duration-300 hover:shadow-md has-checked:border-brand has-checked:shadow-md has-checked:ring-2 has-checked:ring-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand dark:bg-white/5">
                                             <input type="radio" name="package" value="{{ $package->id }}" class="peer sr-only"
                                                 @checked($chosenId === $package->id) @error('package') aria-describedby="package-error" @enderror>
-                                            <span class="absolute -top-2.5 right-3 rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white opacity-0 shadow-sm transition-opacity group-has-checked:opacity-100" aria-hidden="true">Selected</span>
-                                            <span class="flex items-start justify-between gap-2">
-                                                @if ($package->coverImage)
-                                                    <img src="{{ $package->coverImage->url() }}" alt="" width="80" height="60" loading="lazy" decoding="async" class="aspect-[4/3] w-20 rounded-lg object-cover">
-                                                @else
-                                                    <span class="grid size-10 place-items-center rounded-lg bg-neutral-200/70 text-app-text-2 transition-colors group-has-checked:bg-brand/10 group-has-checked:text-brand dark:bg-white/10" aria-hidden="true"><x-ui.icon name="photo_camera" :size="22" /></span>
-                                                @endif
-                                                <span class="grid size-5 shrink-0 place-items-center rounded-full bg-neutral-200 text-white transition-colors group-has-checked:bg-brand dark:bg-white/15" aria-hidden="true">
-                                                    <x-ui.icon name="check" :size="14" class="opacity-0 transition-opacity group-has-checked:opacity-100" />
-                                                </span>
-                                            </span>
-                                            <span class="mt-3 flex flex-wrap items-center gap-2">
-                                                <span class="break-words font-semibold">{{ $package->name }}</span>
-                                                <span class="rounded bg-neutral-200/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">{{ $package->category }}</span>
-                                            </span>
-                                            <span class="mt-2 text-sm font-semibold tabular-nums text-brand">{{ $package->priceText() }}</span>
-                                            <span class="mt-3 space-y-1.5 text-sm text-app-text-2">
-                                                <span class="flex items-center gap-1.5"><x-ui.icon name="schedule" :size="16" class="text-brand" />{{ $package->duration_minutes }} mins</span>
-                                                <span class="flex items-center gap-1.5"><x-ui.icon name="group" :size="16" class="text-brand" />{{ $package->fitsText() }}</span>
-                                                @if ($package->digital_outputs)
-                                                    <span class="flex items-center gap-1.5"><x-ui.icon name="photo_library" :size="16" class="text-brand" />{{ $package->digital_outputs }} edited {{ $package->digital_outputs === 1 ? 'photo' : 'photos' }}</span>
-                                                @endif
+                                            {{-- Phase 10D: the same photo, chips and price as the public package card --}}
+                                            <x-package.media :package="$package" :zoom="false">
+                                                <span class="pointer-events-none absolute left-3 top-3 max-w-[55%] truncate rounded bg-black/65 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">{{ $package->category }}</span>
+                                                <span class="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-white opacity-0 shadow-sm transition-opacity group-has-checked:opacity-100" aria-hidden="true"><x-ui.icon name="check" :size="14" />Selected</span>
+                                            </x-package.media>
+                                            <span class="flex flex-1 flex-col p-4">
+                                                <span class="line-clamp-2 break-words font-display text-lg font-semibold leading-snug" title="{{ $package->name }}">{{ $package->name }}</span>
+                                                <x-package.chips :package="$package" class="mb-4 mt-2" />
+                                                <x-ui.price :text="$package->priceText()" label="Estimated price" class="mt-auto border-t border-app-border pt-3" />
                                             </span>
                                         </label>
                                         {{-- Without scripts the calendar and backdrops cannot follow the choice, so the page reloads with it --}}
@@ -212,6 +199,8 @@
                         @if ($startStep !== 3) data-js-hidden x-bind:data-js-hidden="false" @endif
                         class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-3 shadow-sm sm:p-6 dark:shadow-none">
                         @include('customer.printing._step-header', ['number' => 3, 'total' => 6, 'title' => 'Date and time', 'text' => 'Pick a free time. It stays a request until the studio confirms it.', 'pill' => 'Philippine time'])
+                        {{-- Phase 10D: a one-time tip, the first time the time step is opened --}}
+                        <x-ui.hint name="booking-times" class="mb-4">Times that are already requested or booked are hidden, so every time you see is free to ask for. A day without times can be opened to read why.</x-ui.hint>
 
                         <p class="mb-4 inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">
                             <span class="size-2 rounded-full bg-brand" aria-hidden="true"></span>Requested, not yet confirmed by the studio
@@ -398,6 +387,11 @@
                                                 @else
                                                     <x-ui.image-placeholder icon="palette" class="size-full" />
                                                 @endif
+                                                @if ($theme->imageUrl())
+                                                    <a href="{{ $theme->imageUrl() }}" data-lightbox="backdrops-{{ $package->id }}" data-alt="{{ $theme->name }} backdrop" data-no-prefetch target="_blank" rel="noopener"
+                                                        class="absolute bottom-1 left-1 grid size-11 place-items-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                                                        aria-label="View the {{ $theme->name }} backdrop full size"><x-ui.icon name="zoom_in" :size="18" /></a>
+                                                @endif
                                                 <span class="absolute right-2 top-2 grid size-6 place-items-center rounded-full bg-brand text-white opacity-0 shadow transition-opacity group-has-checked:opacity-100" aria-hidden="true"><x-ui.icon name="check" :size="16" /></span>
                                             </span>
                                             <span class="block p-3">
@@ -512,7 +506,7 @@
 
                         <fieldset>
                             <legend class="sr-only">Prints</legend>
-                            <div class="grid gap-3 md:grid-cols-2">
+                            <div class="form-grid md:grid-cols-2">
                                 @foreach (['digital' => ['Digital only', 'cloud_download', 'You receive your edited photos as digital files.'], 'maybe' => ['I may want prints', 'photo_library', 'The studio knows you may order prints after the shoot.']] as $value => [$title, $icon, $text])
                                     <label class="group flex cursor-pointer flex-col rounded-card border border-app-border bg-neutral-50 p-4 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-neutral-100 has-checked:border-brand has-checked:bg-app-card has-checked:shadow-md has-checked:ring-2 has-checked:ring-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand dark:bg-white/5 dark:hover:bg-white/10 dark:has-checked:bg-white/10">
                                         <input type="radio" name="prints" value="{{ $value }}" class="sr-only" data-name="{{ $title }}" @checked(old('prints', 'digital') === $value)>
@@ -597,7 +591,7 @@
                             <x-ui.button variant="outline" x-cloak x-on:click="back()">
                                 <x-ui.icon name="arrow_back" :size="18" />Back to prints
                             </x-ui.button>
-                            <button type="submit" @disabled($atLimit) x-bind:disabled="submitting || atLimit" x-bind:aria-busy="submitting.toString()"
+                            <button type="submit" @disabled($atLimit) x-bind:disabled="submitting || atLimit" data-confirm="Send this booking request?" data-confirm-text="The studio reviews it first: a request is not a confirmed booking. Your time is held for {{ \App\Models\BookingSetting::current()->request_hold_hours }} hours while you wait for the answer." data-confirm-ok="Send request" x-bind:aria-busy="submitting.toString()"
                                 @if ($atLimit) aria-describedby="limit-notice" @endif
                                 class="btn-sweep inline-flex h-11 items-center justify-center gap-2 rounded-control px-8 text-sm font-semibold text-white shadow-md hover:[transform:scale(1.01)] focus-ring active:[transform:scale(0.98)] disabled:pointer-events-none disabled:opacity-60">
                                 <x-ui.aperture-spinner :size="18" x-cloak x-show="submitting" />

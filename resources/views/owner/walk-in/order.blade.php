@@ -53,7 +53,7 @@
 
         <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="print-title">
             <h2 id="print-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="print" :size="20" class="text-brand" />What to print</h2>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="mt-4 form-grid sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <x-ui.select label="Printing service" name="service" :required="true" x-model="service" :error="$errors->first('service')">
                         <option value="">Choose a service</option>
@@ -107,7 +107,7 @@
                     <input type="radio" name="price_choice" value="custom" x-model="priceChoice" class="mt-1 accent-[#C62828]" @checked(old('price_choice') === 'custom')>
                     <span class="block font-semibold">Type a price</span>
                 </label>
-                <div x-show="priceChoice === 'custom'" class="grid gap-4 sm:grid-cols-2">
+                <div x-show="priceChoice === 'custom'" class="form-grid sm:grid-cols-2">
                     <x-ui.input label="Price (₱)" name="custom_price" inputmode="decimal" x-model="customPrice" :value="old('custom_price')" :error="$errors->first('custom_price')" hint="For example 150 or 150.50." />
                     <x-ui.input label="Why it differs (optional)" name="price_note" maxlength="200" :value="old('price_note')" :error="$errors->first('price_note')" hint="Kept in the order history with your name." />
                 </div>
@@ -126,7 +126,7 @@
                     </label>
                 @endforeach
             </div>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="mt-4 form-grid sm:grid-cols-2">
                 <div x-show="method === 'gcash'">
                     <x-ui.input label="GCash reference" name="gcash_reference" maxlength="40" autocomplete="off" :value="old('gcash_reference')" :error="$errors->first('gcash_reference')" hint="From the customer’s GCash receipt." />
                 </div>

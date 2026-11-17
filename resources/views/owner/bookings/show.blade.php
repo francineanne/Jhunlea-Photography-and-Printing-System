@@ -18,6 +18,12 @@
 @endphp
 
 @section('main')
+    @php
+        // Phase 10D: what the confirmation dialog tells the owner before a booking is confirmed (the saved values are
+        // worked out by the server when it is confirmed; this only words the same rule)
+        $downPercent = app(\App\Support\ShopSettings::class)->downpaymentPercent();
+        $downDue = \App\Support\LocalTime::format(app(\App\Support\PaymentRules::class)->dueAt($booking->starts_at, now()));
+    @endphp
     <nav aria-label="Breadcrumb" class="mb-4 text-xs font-semibold uppercase tracking-wider text-app-text-2">
         <ol class="flex flex-wrap items-center gap-1.5">
             <li><a href="{{ route('owner.bookings.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Photography bookings</a></li>
@@ -31,7 +37,7 @@
         <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
-                    <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $booking->reference_number }}</span>
+                    <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $booking->reference_number }}</span><x-ui.copy :text="$booking->reference_number" label="Copy reference number" />
                     <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live />
                     <x-walk-in.badge :record="$booking" />
                 </div>
@@ -97,7 +103,7 @@
                     @elseif ($blocked)
                         <p class="mx-4 mb-4 flex items-start gap-1.5 rounded-control bg-status-red-bg p-3 text-sm text-status-red"><x-ui.icon name="block" :size="18" class="mt-0.5 shrink-0" />This time clashes with a confirmed booking (see the schedule below), so it cannot be confirmed. Offer another time instead.</p>
                     @else
-                        <form method="POST" action="{{ route('owner.bookings.confirm', $booking) }}" class="grid gap-3 px-4 pb-4 sm:grid-cols-2">
+                        <form method="POST" action="{{ route('owner.bookings.confirm', $booking) }}" data-confirm="Confirm booking {{ $booking->reference_number }}?" data-confirm-text="The customer is told and this time is kept for them.{{ $downPercent > 0 ? ' A '.$downPercent.'% downpayment of the confirmed price is asked for, due by '.$downDue.'.' : ' No downpayment is asked for: the full price is paid on the day.' }}" data-confirm-detail="{{ \App\Support\LocalTime::format($booking->starts_at) }}" data-confirm-ok="Confirm booking" class="grid gap-3 px-4 pb-4 sm:grid-cols-2">
                             @csrf
                             <input type="hidden" name="_form" value="confirm">
                             <x-ui.input id="confirm-price" name="confirmed_price" label="Confirmed price (₱)" inputmode="decimal" :required="$onRequest"
@@ -158,7 +164,7 @@
                                         @endforeach
                                     </div>
                                 </fieldset>
-                                <div class="grid gap-3 sm:grid-cols-2">
+                                <div class="form-grid sm:grid-cols-2">
                                     <x-ui.textarea id="propose-note" name="note" label="Note for the customer" maxlength="{{ $noteMax }}" rows="3" :required="true"
                                         hint="Up to {{ $noteMax }} characters. Say why you offer this time.">{{ $openForm === 'propose' ? old('note') : '' }}</x-ui.textarea>
                                     @if ($onRequest)
@@ -194,7 +200,7 @@
                         <x-ui.icon name="block" :size="18" />Reject with a reason
                         <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
                     </summary>
-                    <form method="POST" action="{{ route('owner.bookings.reject', $booking) }}" class="space-y-3 px-4 pb-4">
+                    <form method="POST" action="{{ route('owner.bookings.reject', $booking) }}" data-confirm="Reject booking {{ $booking->reference_number }}?" data-confirm-text="The customer is told and reads your reason. This cannot be undone." data-confirm-ok="Reject booking" data-confirm-danger class="space-y-3 px-4 pb-4">
                         @csrf
                         <input type="hidden" name="_form" value="reject">
                         <x-ui.textarea id="reject-reason" name="reason" label="Reason" maxlength="{{ $reasonMax }}" rows="3" :required="true" hint="The customer sees this reason. Up to {{ number_format($reasonMax) }} characters.">{{ $openForm === 'reject' ? old('reason') : '' }}</x-ui.textarea>
@@ -209,7 +215,7 @@
                         <x-ui.icon name="cancel" :size="18" />Cancel booking
                         <x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" />
                     </summary>
-                    <form method="POST" action="{{ route('owner.bookings.cancel', $booking) }}" class="space-y-3 px-4 pb-4">
+                    <form method="POST" action="{{ route('owner.bookings.cancel', $booking) }}" data-confirm="Cancel booking {{ $booking->reference_number }}?" data-confirm-text="The customer is told and the time is free again. If a payment is recorded, the choice you ticked (keep or refund) is applied. This cannot be undone." data-confirm-ok="Cancel booking" data-confirm-danger class="space-y-3 px-4 pb-4">
                         @csrf
                         <input type="hidden" name="_form" value="cancel">
                         <x-ui.textarea id="cancel-reason" name="reason" label="Reason (optional)" maxlength="{{ $noteMax }}" rows="2" hint="The customer sees it in the booking.">{{ $openForm === 'cancel' ? old('reason') : '' }}</x-ui.textarea>

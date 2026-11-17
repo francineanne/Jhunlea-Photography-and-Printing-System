@@ -9,6 +9,7 @@ use App\Models\PhotographyPackage;
 use App\Models\PrintingOrder;
 use App\Models\PrintingService;
 use App\Models\User;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -149,6 +150,9 @@ class RequestHistoryTest extends TestCase
     public function test_the_queries_are_fixed_however_many_rows(): void
     {
         $count = function (): int {
+            // Phase 10D: the footer's payment line reads the shop settings once per page. The settings object lives for
+            // the whole test, so it is emptied here; otherwise only the first page would count that one read
+            app(ShopSettings::class)->forget();
             DB::flushQueryLog();
             DB::enableQueryLog();
             $this->list()->assertOk();

@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\DashboardService;
 use App\Services\PaymentLedgerService;
 use App\Support\Money;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Carbon;
@@ -164,6 +165,9 @@ class CustomerDashboardTest extends TestCase
     public function test_the_queries_are_fixed_however_much_data_exists(): void
     {
         $count = function (): int {
+            // Phase 10D: the footer's payment line reads the shop settings once per page. The settings object lives for
+            // the whole test, so it is emptied here; otherwise only the first page would count that one read
+            app(ShopSettings::class)->forget();
             DB::flushQueryLog();
             DB::enableQueryLog();
             $this->actingAs($this->ana)->get(route('customer.dashboard'))->assertOk();

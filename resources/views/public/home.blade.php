@@ -22,7 +22,6 @@
                 <x-ui.button :href="route('packages.index')">Browse packages<x-ui.icon name="arrow_forward" :size="20" /></x-ui.button>
                 <x-ui.button :href="route('services.index')" variant="outline">See printing services</x-ui.button>
             </div>
-            <x-ui.notice variant="payment" class="mt-8 max-w-lg" />
         </div>
 
         <div class="relative">
@@ -30,14 +29,14 @@
                 @if ($heroCover)
                     <img src="{{ $heroCover->url() }}" alt="" width="960" height="1200" loading="eager" fetchpriority="high" decoding="async" class="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105">
                 @else
-                    <x-ui.image-placeholder class="size-full" />
+                    <x-ui.image-placeholder class="size-full" :category="$featured->first()?->category" />
                 @endif
             </div>
             @if ($featured->isNotEmpty())
                 <a href="{{ route('packages.show', $featured->first()->slug) }}" class="absolute bottom-4 left-4 right-4 rounded-card border border-white/40 bg-white/85 p-4 text-ink shadow-lg backdrop-blur-md focus-ring sm:right-auto sm:max-w-xs dark:bg-neutral-900/85 dark:text-white">
                     <span class="text-[11px] font-bold uppercase tracking-wider text-brand">Featured package</span>
                     <span class="mt-0.5 block font-display text-lg font-semibold leading-snug">{{ $featured->first()->name }}</span>
-                    <span class="mt-0.5 block text-sm tabular-nums opacity-80">{{ $featured->first()->priceText() }}</span>
+                    <span class="mt-0.5 block text-sm font-semibold tabular-nums opacity-80">{{ explode(' — ', $featured->first()->priceText())[0] }}</span>
                 </a>
             @endif
         </div>
@@ -103,33 +102,78 @@
             <ul class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($featured as $package)
                     <li class="flex">
-                        <x-ui.card hover design class="flex w-full flex-col">
-                            <x-slot:image>
-                                <a href="{{ route('packages.show', $package->slug) }}" tabindex="-1" aria-hidden="true" class="block aspect-[4/3] bg-card">
-                                    @if ($package->coverImage)
-                                        <img src="{{ $package->coverImage->url() }}" alt="" width="800" height="600" loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
-                                    @else
-                                        <x-ui.image-placeholder class="size-full" />
-                                    @endif
-                                </a>
-                            </x-slot:image>
-                            <span class="rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-app-text-2 dark:bg-white/10">{{ $package->category }}</span>
-                            <h3 class="mt-2 font-display text-xl font-semibold leading-snug"><a href="{{ route('packages.show', $package->slug) }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">{{ $package->name }}</a></h3>
-                            <p class="mt-1 text-sm text-app-text-2">{{ $package->duration_minutes }} mins · {{ lcfirst($package->fitsText()) }}</p>
-                            <p class="mt-3 text-sm leading-relaxed text-app-text-2">{{ $package->short_description }}</p>
-                            <div class="mt-auto pt-5">
-                                <div class="flex items-end justify-between gap-3 border-t border-app-border pt-4">
-                                    <p class="font-bold tabular-nums">{{ $package->priceText() }}</p>
-                                    <div class="flex shrink-0 gap-2">
-                                        <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" size="sm">Details</x-ui.button>
-                                        <x-package.book-button :package="$package" size="sm" />
-                                    </div>
-                                </div>
-                            </div>
-                        </x-ui.card>
+                        <x-package.card :package="$package" />
                     </li>
                 @endforeach
             </ul>
+        </section>
+    @endif
+
+    {{-- Phase 10D: the first published questions; each is a native <details>, so it works without scripts --}}
+    @if ($faqs->isNotEmpty())
+        <section class="border-t border-app-border bg-neutral-50 py-14 dark:bg-white/[0.02] sm:py-20" aria-labelledby="faq-heading">
+            <div class="mx-auto grid max-w-[1280px] gap-8 px-4 sm:px-6 lg:grid-cols-12">
+                <div class="lg:col-span-4">
+                    <p class="text-xs font-bold uppercase tracking-widest text-brand">Help</p>
+                    <h2 id="faq-heading" class="mt-2 font-display text-3xl font-semibold sm:text-4xl">Questions customers ask</h2>
+                    <p class="mt-2 text-app-text-2">Quick answers about printing, photoshoots and paying.</p>
+                    @if ($moreFaqs)
+                        <x-ui.button :href="route('faq')" variant="outline" class="mt-5">See all questions<x-ui.icon name="arrow_forward" :size="18" /></x-ui.button>
+                    @else
+                        <a href="{{ route('faq') }}" class="mt-4 inline-flex min-h-11 items-center gap-1 rounded text-sm font-semibold text-brand focus-ring">Open the FAQ page<x-ui.icon name="arrow_forward" :size="18" /></a>
+                    @endif
+                </div>
+                <div class="space-y-3 lg:col-span-8">
+                    @foreach ($faqs as $faq)
+                        <details class="ui-accordion group rounded-card border border-app-border bg-app-card shadow-sm open:border-brand/40 dark:shadow-none">
+                            <summary class="flex min-h-14 cursor-pointer list-none items-start justify-between gap-4 rounded-card px-4 py-4 font-semibold focus-ring sm:px-5 [&::-webkit-details-marker]:hidden">
+                                <span class="min-w-0 break-words">{{ $faq->question }}</span>
+                                <x-ui.icon name="expand_more" :size="22" class="shrink-0 text-brand transition-transform duration-300 group-open:rotate-180" />
+                            </summary>
+                            <div class="whitespace-pre-line break-words border-t border-app-border px-4 py-4 text-app-text-2 sm:px-5">{{ $faq->answer }}</div>
+                        </details>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- Phase 10D: where the shop is and how to reach it. Only what the owner filled in on the Settings page --}}
+    @php($visit = array_filter([$shop['address'] ?? null, $shop['phone'] ?? null, $shop['email'] ?? null, $shop['opening_hours'] ?? null, $shop['facebook_url'] ?? null]))
+    @if ($visit !== [])
+        <section class="mx-auto max-w-[1280px] px-4 py-14 sm:px-6 sm:py-20" aria-labelledby="visit-heading">
+            <p class="text-xs font-bold uppercase tracking-widest text-brand">Find us</p>
+            <h2 id="visit-heading" class="mt-2 font-display text-3xl font-semibold sm:text-4xl">Visit us</h2>
+            <div @class(['mt-8 grid gap-5', 'lg:grid-cols-2' => $map !== null])>
+                <x-ui.card class="flex flex-col">
+                    <address class="space-y-4 not-italic">
+                        @if (filled($shop['address'] ?? null))
+                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="location_on" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Address</span><span class="block whitespace-pre-line break-words font-semibold">{{ $shop['address'] }}</span></span></p>
+                        @endif
+                        @if (filled($shop['opening_hours'] ?? null))
+                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="schedule" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Shop opening hours</span><span class="block break-words font-semibold">{{ $shop['opening_hours'] }}</span><span class="block text-sm text-app-text-2">Photoshoot times are in the booking calendar.</span></span></p>
+                        @endif
+                        @if (filled($shop['phone'] ?? null))
+                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="call" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Phone</span><a href="tel:{{ preg_replace('/[^0-9+]/', '', $shop['phone']) }}" class="inline-flex min-h-11 items-center rounded font-semibold hover:text-brand focus-ring">{{ $shop['phone'] }}</a></span></p>
+                        @endif
+                        @if (filled($shop['email'] ?? null))
+                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="mail" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Email</span><a href="mailto:{{ $shop['email'] }}" class="inline-flex min-h-11 items-center break-all rounded font-semibold hover:text-brand focus-ring">{{ $shop['email'] }}</a></span></p>
+                        @endif
+                        @if (filled($shop['facebook_url'] ?? null))
+                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="thumb_up" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Facebook</span><a href="{{ $shop['facebook_url'] }}" target="_blank" rel="noopener noreferrer external" class="inline-flex min-h-11 items-center gap-1 rounded font-semibold hover:text-brand focus-ring">Our Facebook page<x-ui.icon name="open_in_new" :size="16" /><span class="sr-only"> (opens in a new tab)</span></a></span></p>
+                        @endif
+                    </address>
+                    @if ($map !== null)
+                        <div class="mt-auto pt-5"><x-ui.button :href="$map['link']" variant="outline" target="_blank" rel="noopener noreferrer external"><x-ui.icon name="map" :size="18" />Open in Google Maps<span class="sr-only"> (opens in a new tab)</span></x-ui.button></div>
+                    @endif
+                </x-ui.card>
+                @if ($map !== null)
+                    {{-- Loaded only when it scrolls near the screen; the space is kept, so nothing shifts --}}
+                    <div class="aspect-[4/3] overflow-hidden rounded-card border border-app-border bg-card lg:aspect-auto lg:min-h-[22rem]">
+                        <iframe src="{{ $map['embed'] }}" title="Map showing where {{ $shop['shop_name'] ?: config('app.name') }} is" loading="lazy" referrerpolicy="no-referrer" class="size-full border-0" allowfullscreen></iframe>
+                    </div>
+                @endif
+            </div>
         </section>
     @endif
 

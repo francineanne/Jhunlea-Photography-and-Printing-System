@@ -132,7 +132,8 @@ class KnowledgeBuilder
         $lines = ['SHOP'];
         $lines[] = 'Name: '.($this->shop->shopName() ?? config('app.name'));
 
-        foreach (['Address' => $this->shop->address(), 'Phone' => $this->shop->phone(), 'Email' => $this->shop->email()] as $label => $value) {
+        // Phase 10D: the Facebook page is one more way to reach the shop
+        foreach (['Address' => $this->shop->address(), 'Phone' => $this->shop->phone(), 'Email' => $this->shop->email(), 'Facebook page' => $this->shop->facebookUrl()] as $label => $value) {
             if ($value !== null) {
                 $lines[] = "{$label}: {$value}";
             }

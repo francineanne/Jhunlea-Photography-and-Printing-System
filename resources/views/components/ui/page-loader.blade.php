@@ -1,4 +1,5 @@
 {{-- Full-screen dark loader from design/login/aperture_page_loader (always dark, in both themes). --}}
+{{-- Phase 10D: only on the first page of a browser session, at most 600 ms, never with reduced motion; it takes no clicks. --}}
 {{-- Visible from first paint; the script below runs before it is painted and hides it when already seen this session. --}}
 {{-- The fade is plain CSS, so a throttled background tab can never leave the overlay stuck on screen. --}}
 <noscript><style>.page-loader { display: none !important; }</style></noscript>
@@ -8,7 +9,7 @@
 
 <div x-data="uiPageLoader" x-on:replay-loader.window="replay()" x-bind:aria-hidden="!show" x-bind:inert="!show"
     x-bind:class="show || 'pointer-events-none invisible opacity-0'"
-    class="page-loader fixed inset-0 z-[100] overflow-y-auto bg-[#171717] text-neutral-100 transition-[opacity,visibility] duration-[280ms] ease-brand"
+    class="page-loader pointer-events-none fixed inset-0 z-[100] overflow-hidden bg-[#171717] text-neutral-100 transition-[opacity,visibility] duration-[280ms] ease-brand"
     role="status" aria-label="Loading page">
     <span class="sr-only">Loading page</span>
     {{-- Studio vignette with a soft red lens glow --}}
@@ -49,10 +50,6 @@
                         x-bind:style="{ width: pct + '%' }"></div>
                 </div>
 
-                <div class="mt-6 flex items-center gap-2.5 rounded-full bg-[#1b1c1c]/60 px-4 py-2 text-neutral-300">
-                    <x-ui.icon name="storefront" :size="16" class="shrink-0 text-brand" />
-                    <span class="text-left font-mono text-[13px]">Payment is made face-to-face at Jhunlea Photography & Printing.</span>
-                </div>
             </div>
         </div>
     </div>

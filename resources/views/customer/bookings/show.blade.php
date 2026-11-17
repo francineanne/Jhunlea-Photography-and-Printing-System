@@ -23,7 +23,7 @@
 
     <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="min-w-0">
-            <p class="font-mono text-xs font-bold uppercase tracking-wider text-brand">Booking {{ $booking->reference_number }}</p>
+            <p class="flex items-center gap-1 font-mono text-xs font-bold uppercase tracking-wider text-brand">Booking {{ $booking->reference_number }}<x-ui.copy :text="$booking->reference_number" label="Copy reference number" /></p>
             <h1 class="mt-1 break-words font-display text-3xl font-semibold leading-tight sm:text-4xl">{{ $packageName }}</h1>
             <p class="mt-1 text-sm text-app-text-2">Sent on <x-ui.date :value="$booking->created_at" /></p>
             <x-chat.message-studio :record="$booking" type="photography_booking" class="mt-1 inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="forum" :size="18" />Message the studio about this request</x-chat.message-studio>
@@ -161,6 +161,8 @@
             </section>
 
             <x-payment.how-to-pay :payable="$booking" />
+            {{-- Phase 10D: where this booking stands, driven by its real status --}}
+            <x-ui.next-steps :record="$booking" title="Where your booking stands" class="mt-6" />
 
             <x-payment.card :payable="$booking" />
 
@@ -175,7 +177,7 @@
                         <summary class="flex min-h-11 cursor-pointer list-none items-center justify-center gap-2 rounded-control border border-status-red/30 px-4 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring [&::-webkit-details-marker]:hidden">
                             <x-ui.icon name="cancel" :size="18" />Cancel this booking
                         </summary>
-                        <form method="POST" action="{{ route('customer.bookings.cancel', $booking) }}" class="mt-4 space-y-3 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
+                        <form method="POST" action="{{ route('customer.bookings.cancel', $booking) }}" data-confirm="Cancel booking {{ $booking->reference_number }}?" data-confirm-text="The studio is told and your time is given up.{{ $booking->recordedPayments()->isNotEmpty() ? ' Your downpayment is not refunded.' : '' }} This cannot be undone." data-confirm-ok="Yes, cancel booking" data-confirm-cancel="Keep my booking" data-confirm-danger class="mt-4 space-y-3 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
                             @csrf
                             <x-ui.textarea id="cancel-reason" name="reason" label="Reason (optional)" maxlength="{{ $noteMax }}" rows="3" hint="Up to {{ $noteMax }} characters. The studio sees it.">{{ old('reason') }}</x-ui.textarea>
                             {{-- Phase 10B: a recorded downpayment stays with the studio --}}

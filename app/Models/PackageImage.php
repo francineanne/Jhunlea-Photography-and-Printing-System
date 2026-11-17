@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Support\PublicFile;
 use Database\Factories\PackageImageFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 // Only the alt text comes from a form. The package comes from the route; path, cover flag and order are set by the server.
 #[Fillable(['alt_text'])]
@@ -45,6 +45,7 @@ class PackageImage extends Model
 
     public function url(): string
     {
-        return Storage::disk(self::DISK)->url($this->path);
+        // Phase 10D: root-relative, so the photo loads under any host
+        return PublicFile::url($this->path, self::DISK);
     }
 }

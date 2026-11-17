@@ -7,6 +7,7 @@ use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\ShopSetting;
 use App\Services\ShopSettingsService;
+use App\Support\ShopSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -176,6 +177,14 @@ class OwnerPresence
     {
         if (! config('assistant.enabled')) {
             return config('chat.messages.owner_unavailable_ai_off');
+        }
+
+        // Phase 10D (carried from 10A): the shop's own opening hours are the owner's text. When it is set the notice gives
+        // it as written and never works out "open now" (the weekly rules are the PHOTOSHOOT hours, not the shop's)
+        $hours = app(ShopSettings::class)->openingHours();
+
+        if ($hours !== null) {
+            return str_replace(':hours', rtrim($hours, '. '), config('chat.messages.away_notice_hours'));
         }
 
         if ($this->shopOpenNow()) {

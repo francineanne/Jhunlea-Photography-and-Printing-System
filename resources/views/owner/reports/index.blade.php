@@ -74,7 +74,7 @@
     <p class="mt-1 text-xs text-app-text-2">Requests are counted on the day they were sent. Payments are counted on the day they were received.</p>
 
     {{-- Requests by status: every status, zeros included --}}
-    <div class="mt-6 grid items-start gap-6 xl:grid-cols-2">
+    <div class="mt-6 grid gap-6 xl:grid-cols-2">
         @foreach ($statusBlocks as $block)
             <section class="min-w-0 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="{{ $block['id'] }}-title">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
@@ -104,7 +104,7 @@
     </div>
 
     {{-- Most requested: the name each request was sent with (its snapshot) --}}
-    <div class="mt-6 grid items-start gap-6 xl:grid-cols-2">
+    <div class="mt-6 grid gap-6 xl:grid-cols-2">
         @foreach ($topBlocks as $block)
             @php($max = (int) collect($block['rows'])->max('count'))
             <section class="min-w-0 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="{{ $block['id'] }}-title">
@@ -134,7 +134,7 @@
     </div>
 
     {{-- Money: recorded payments in the period, and awaiting payment right now (never added together) --}}
-    <div class="mt-6 grid items-start gap-6 xl:grid-cols-2">
+    <div class="mt-6 grid gap-6 xl:grid-cols-2">
         <section class="min-w-0 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="recorded-title">
             <div class="flex flex-wrap items-baseline justify-between gap-2">
                 <h2 id="recorded-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="account_balance_wallet" :size="22" class="text-brand" />Recorded payments</h2>

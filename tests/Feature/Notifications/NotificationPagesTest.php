@@ -6,6 +6,7 @@ use App\Enums\PrintingOrderStatus as Status;
 use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Notifications\ActivityNotification;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Carbon;
@@ -78,6 +79,9 @@ class NotificationPagesTest extends TestCase
     public function test_the_bell_costs_the_same_queries_however_many_notifications(): void
     {
         $count = function (): int {
+            // Phase 10D: the footer's payment line reads the shop settings once per page. The settings object lives for
+            // the whole test, so it is emptied here; otherwise only the first page would count that one read
+            app(ShopSettings::class)->forget();
             DB::flushQueryLog();
             DB::enableQueryLog();
             // A page without dashboard numbers, so only the bell reads notifications
@@ -115,6 +119,9 @@ class NotificationPagesTest extends TestCase
     public function test_the_page_uses_a_fixed_number_of_queries(): void
     {
         $count = function (): int {
+            // Phase 10D: the footer's payment line reads the shop settings once per page. The settings object lives for
+            // the whole test, so it is emptied here; otherwise only the first page would count that one read
+            app(ShopSettings::class)->forget();
             DB::flushQueryLog();
             DB::enableQueryLog();
             $this->actingAs($this->customer)->get(route('customer.notifications.index'))->assertOk();

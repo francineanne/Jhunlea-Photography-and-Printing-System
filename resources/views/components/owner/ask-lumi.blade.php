@@ -33,12 +33,12 @@
         <button type="button" x-ref="launcher" x-show="!open" x-on:click="show()" data-owner-ask-launcher x-cloak title="Ask {{ $name }}"
             @class([
                 'fixed right-4 z-30 flex min-h-11 items-center gap-2.5 rounded-full border border-app-border bg-app-card p-1.5 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.18),0_4px_8px_-2px_rgba(23,23,23,0.08)] transition-transform duration-[280ms] ease-brand hover:scale-[1.02] focus-ring motion-reduce:transition-none motion-reduce:hover:scale-100 sm:right-6',
-                'bottom-[max(1.5rem,env(safe-area-inset-bottom))] pr-4' => ! $inThread,
+                'bottom-[max(1.5rem,env(safe-area-inset-bottom))] sm:pr-4' => ! $inThread,
                 'bottom-24 sm:right-9' => $inThread,
             ])
             aria-label="Open Ask {{ $name }}, the AI assistant for your shop's records">
             <x-chat.avatar who="lumi" size="md" decorative />
-            <span @class(['text-left leading-tight', 'hidden' => $inThread]) aria-hidden="true">
+            <span @class(['launcher-text text-left leading-tight', 'hidden' => $inThread]) aria-hidden="true">
                 <span class="block text-sm font-semibold">Ask {{ $name }}</span>
                 <span class="block text-[10px] font-bold uppercase tracking-wider text-brand dark:text-[#ffb4ac]">Your shop's records</span>
             </span>

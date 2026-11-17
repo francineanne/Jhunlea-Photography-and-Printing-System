@@ -59,14 +59,14 @@
                             $opens = $hasOld ? old("hours.{$weekday}.opens") : ($rule->opens_at ? substr($rule->opens_at, 0, 5) : '');
                             $closes = $hasOld ? old("hours.{$weekday}.closes") : ($rule->closes_at ? substr($rule->closes_at, 0, 5) : '');
                         @endphp
-                        <fieldset @class(['grid gap-3 p-3 sm:grid-cols-[9rem_minmax(0,1fr)_minmax(0,1fr)] sm:items-center', 'bg-status-red-bg/40' => $errors->has("hours.{$weekday}")])>
+                        <fieldset @class(['grid gap-3 p-3 sm:grid-cols-[10rem_minmax(0,1fr)_minmax(0,1fr)] sm:items-end', 'bg-status-red-bg/40' => $errors->has("hours.{$weekday}")])>
                             <legend class="sr-only">{{ $name }}</legend>
-                            <div>
+                            <div class="sm:pb-1">
                                 <input type="hidden" name="hours[{{ $weekday }}][open]" value="0">
                                 <x-ui.checkbox id="open-{{ $weekday }}" name="hours[{{ $weekday }}][open]" value="1" :checked="$open"><span class="font-semibold">{{ $name }}</span> <span class="text-app-text-2">photoshoots</span></x-ui.checkbox>
                             </div>
-                            <x-ui.input id="opens-{{ $weekday }}" name="hours[{{ $weekday }}][opens]" type="time" step="{{ $step * 60 }}" label="From" value="{{ $opens }}" :error="$errors->first('hours.'.$weekday)" />
-                            <x-ui.input id="closes-{{ $weekday }}" name="hours[{{ $weekday }}][closes]" type="time" step="{{ $step * 60 }}" label="Until" value="{{ $closes }}" :error="false" />
+                            <x-ui.time-picker id="opens-{{ $weekday }}" name="hours[{{ $weekday }}][opens]" :step="$step" label="From" :value="$opens" :error="$errors->first('hours.'.$weekday)" />
+                            <x-ui.time-picker id="closes-{{ $weekday }}" name="hours[{{ $weekday }}][closes]" :step="$step" label="Until" :value="$closes" :error="false" />
                         </fieldset>
                     @endforeach
                 </div>
@@ -82,7 +82,7 @@
                 <h2 id="settings-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="tune" :size="22" class="text-brand" />Booking rules</h2>
                 <form method="POST" action="{{ route('owner.schedule.settings') }}" class="mt-4">
                     @csrf
-                    <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="form-grid sm:grid-cols-2">
                         @foreach (SaveSettingsRequest::FIELDS as $field => $label)
                             @php [$min, $max] = config("booking.limits.{$field}"); @endphp
                             <x-ui.input id="setting-{{ $field }}" name="{{ $field }}" type="number" inputmode="numeric" min="{{ $min }}" max="{{ $max }}" step="1" :required="true"

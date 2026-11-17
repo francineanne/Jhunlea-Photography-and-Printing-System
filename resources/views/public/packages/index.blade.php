@@ -28,13 +28,13 @@
             <div class="max-w-2xl">
                 <p class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand"><span class="size-2 rounded-full bg-brand" aria-hidden="true"></span>Photography</p>
                 <h1 class="mt-2 font-display text-3xl font-semibold leading-tight sm:text-5xl">Photography packages</h1>
-                <p class="mt-3 text-app-text-2">Pick the session that fits your occasion. Tick up to three packages to compare them side by side, or let the finder suggest where to start.</p>
+                <p class="mt-3 text-app-text-2">Pick the session that fits your occasion.<span class="max-sm:hidden"> Tick up to three packages to compare them side by side, or let the finder suggest where to start.</span></p>
                 <x-ui.button :href="route('packages.finder')" variant="outline" class="mt-4">
                     <x-ui.icon name="travel_explore" :size="20" /> Help me choose
                 </x-ui.button>
             </div>
             @if ($total > 0)
-                <div class="flex items-center gap-4 self-start rounded-card border border-app-border bg-app-card p-4 shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04)] md:self-end">
+                <div class="hidden items-center gap-4 self-start rounded-card border border-app-border bg-app-card p-4 shadow-[0_2px_8px_-2px_rgba(23,23,23,0.04)] md:flex md:self-end">
                     <span class="grid size-10 shrink-0 place-items-center rounded-control bg-card text-brand dark:bg-white/10" aria-hidden="true"><x-ui.icon name="compare_arrows" :size="22" /></span>
                     <p class="text-sm"><span class="block font-semibold">Compare packages</span><span class="text-app-text-2"><span class="tabular-nums">{{ $total }}</span> {{ Str::plural('package', $total) }} to choose from</span></p>
                 </div>
@@ -48,7 +48,9 @@
                 </x-ui.empty-state>
             </x-ui.card>
         @else
-            <div class="mt-8 rounded-card border border-app-border bg-app-card p-3 sm:p-4">
+            @php $activeFilters = count(array_filter([$filters->category, $filters->people, $filters->minutes, $query['budget'] ?? null, $filters->theme])) + ($filters->sort !== 'featured' ? 1 : 0); @endphp
+            <x-ui.filter-sheet class="mt-6 sm:mt-8" :active="$activeFilters">
+            <div class="sm:rounded-card sm:border sm:border-app-border sm:bg-app-card sm:p-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                 <nav aria-label="Package categories">
                     <ul class="flex flex-wrap gap-2">
@@ -72,14 +74,14 @@
                         @endforeach
                     </ul>
                 </nav>
-                <p class="flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-xs text-app-text-2 dark:bg-white/5"><x-ui.icon name="info" :size="16" class="shrink-0 text-brand" />Tick Compare on up to 3 packages to see them side by side.</p>
+                <p class="flex items-center gap-2 rounded-full bg-neutral-100 px-4 py-2 text-xs text-app-text-2 max-sm:hidden dark:bg-white/5"><x-ui.icon name="info" :size="16" class="shrink-0 text-brand" />Tick Compare on up to 3 packages to see them side by side.</p>
                 </div>
 
                 <form method="GET" action="{{ route('packages.index') }}" class="mt-4 border-t border-app-border pt-4">
                     @if ($filters->category !== null)
                         <input type="hidden" name="category" value="{{ $filters->category }}">
                     @endif
-                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                    <div class="form-grid sm:grid-cols-2 lg:grid-cols-5">
                         <x-ui.input label="Number of people" name="people" type="number" min="1" max="500" step="1" inputmode="numeric" :value="$filters->people" />
                         <x-ui.input label="Longest session (minutes)" name="minutes" type="number" min="1" max="1440" step="1" inputmode="numeric" :value="$filters->minutes" />
                         <x-ui.input label="Budget (₱)" name="budget" type="number" min="0" max="99999999" step="0.01" inputmode="decimal" :value="$query['budget'] ?? null" />
@@ -104,8 +106,9 @@
                     </div>
                 </form>
             </div>
+            </x-ui.filter-sheet>
 
-            <p class="mt-6 text-sm text-app-text-2" role="status">
+            <p class="mt-4 text-sm text-app-text-2 sm:mt-6" role="status">
                 @if ($packages->total() === 0)
                     No packages match your choices.
                 @else
@@ -124,63 +127,8 @@
                     x-data="packageCompare(3)" x-on:change="count()" x-on:pageshow.window="count()">
                     <ul class="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                         @foreach ($packages as $package)
-                            @php $cover = $package->coverImage; @endphp
                             <li class="flex">
-                                <x-ui.card hover design class="flex w-full flex-col">
-                                    <x-slot:image>
-                                        <div class="relative aspect-[16/10] bg-card">
-                                            <a href="{{ route('packages.show', $package->slug) }}" tabindex="-1" aria-hidden="true" class="block size-full">
-                                                @if ($cover)
-                                                    <img src="{{ $cover->url() }}" alt="" width="800" height="500" loading="{{ $loop->index < 3 ? 'eager' : 'lazy' }}" decoding="async" class="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
-                                                @else
-                                                    <x-ui.image-placeholder class="size-full" />
-                                                @endif
-                                            </a>
-                                            <span class="pointer-events-none absolute left-3 top-3 max-w-[55%] truncate rounded bg-black/65 px-2 py-1 text-[11px] font-bold uppercase tracking-wide text-white backdrop-blur-sm">{{ $package->category }}</span>
-                                            <label class="absolute right-3 top-3 inline-flex min-h-11 cursor-pointer select-none items-center gap-2 rounded-full bg-white/95 px-3 text-[11px] font-bold uppercase tracking-wide text-ink shadow-sm backdrop-blur-md has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand sm:min-h-8 dark:bg-neutral-900/90 dark:text-white">
-                                                <input type="checkbox" name="packages[]" value="{{ $package->slug }}" data-name="{{ $package->name }}" data-cover="{{ $cover?->url() }}"
-                                                    x-bind:disabled="picked >= max && !$el.checked"
-                                                    class="size-4 rounded accent-brand">
-                                                Compare<span class="sr-only"> {{ $package->name }}</span>
-                                            </label>
-                                            <div class="pointer-events-none absolute inset-x-3 bottom-3 flex items-center justify-between gap-2 font-mono text-[11px] font-medium text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
-                                                <span class="inline-flex items-center gap-1"><x-ui.icon name="schedule" :size="14" />{{ $package->duration_minutes }} mins</span>
-                                                <span class="inline-flex items-center gap-1"><x-ui.icon name="group" :size="14" />{{ $package->fitsText() }}</span>
-                                            </div>
-                                        </div>
-                                    </x-slot:image>
-
-                                    <h2 class="font-display text-xl font-semibold leading-snug">
-                                        <a href="{{ route('packages.show', $package->slug) }}" class="inline-flex min-h-11 items-center rounded transition-colors hover:text-brand focus-ring">{{ $package->name }}</a>
-                                    </h2>
-
-                                    <p class="mt-1 text-sm leading-relaxed text-app-text-2">{{ $package->short_description }}</p>
-
-                                    @if (! empty($package->inclusions))
-                                        <div class="mt-4 rounded-control bg-neutral-100 p-3 dark:bg-white/5">
-                                            <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Inclusions</p>
-                                            <ul class="mt-2 space-y-1.5 text-sm">
-                                                @foreach (array_slice($package->inclusions, 0, 3) as $item)
-                                                    <li class="flex gap-2"><x-ui.icon name="check_circle" :size="18" class="mt-0.5 shrink-0 text-status-green" /><span>{{ $item }}</span></li>
-                                                @endforeach
-                                            </ul>
-                                            @if (count($package->inclusions) > 3)
-                                                <p class="mt-2 text-xs text-app-text-2">and {{ count($package->inclusions) - 3 }} more on the details page</p>
-                                            @endif
-                                        </div>
-                                    @endif
-
-                                    <div class="mt-auto pt-5">
-                                        <div class="rounded-control bg-neutral-100 px-3 py-3 dark:bg-white/5">
-                                            <p class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Estimated price</p>
-                                            <p class="mt-0.5 font-display text-lg font-bold tabular-nums">{{ $package->priceText() }}</p>
-                                        </div>
-                                        <div class="mt-3 grid grid-cols-2 gap-2">
-                                            <x-ui.button :href="route('packages.show', $package->slug)" variant="outline" class="w-full">Details</x-ui.button>
-                                            <x-package.book-button :package="$package" class="w-full" />
-                                        </div>
-                                    </div>
-                                </x-ui.card>
+                                <x-package.card :package="$package" :level="2" compare inclusions :eager="$loop->index < 3" />
                             </li>
                         @endforeach
                     </ul>
@@ -222,9 +170,8 @@
                 @endif
             @endif
 
-            <x-ui.notice variant="payment" class="mt-12">
-                <p class="text-app-text-2">Choosing a package does not book it. The studio confirms your schedule and the final price after reviewing your request.</p>
-            </x-ui.notice>
+            {{-- Phase 10D: one short sentence; the payment line is in the top bar --}}
+            <p class="mt-10 flex items-start gap-2 text-sm text-app-text-2"><x-ui.icon name="info" :size="18" class="mt-px shrink-0 text-brand" />Choosing a package does not book it. The studio confirms your schedule and the final price after reviewing your request.</p>
         @endif
     </section>
 @endsection

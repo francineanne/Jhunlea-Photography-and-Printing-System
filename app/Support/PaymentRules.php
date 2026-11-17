@@ -142,4 +142,16 @@ class PaymentRules
             'Orders and photos are released only when fully paid.',
         ];
     }
+
+    /**
+     * Phase 10D: the one short policy line of the public top bar and the customer footer, from the current settings.
+     */
+    public function shortLine(): string
+    {
+        $percent = $this->settings->downpaymentPercent();
+
+        return $percent > 0
+            ? "No online payment. Pay at the shop or by GCash; photoshoots need a {$percent}% downpayment."
+            : 'No online payment. Pay at the shop in cash or by GCash.';
+    }
 }

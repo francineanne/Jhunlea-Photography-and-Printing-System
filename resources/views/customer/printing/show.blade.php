@@ -23,7 +23,7 @@
     <section class="flex flex-col gap-4 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 md:flex-row md:items-center md:justify-between dark:shadow-none">
         <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-                <span class="rounded bg-neutral-100 px-2 py-1 font-mono text-xs font-semibold uppercase dark:bg-white/10">Order {{ $order->reference_number }}</span>
+                <span class="rounded bg-neutral-100 px-2 py-1 font-mono text-xs font-semibold uppercase dark:bg-white/10">Order {{ $order->reference_number }}</span><x-ui.copy :text="$order->reference_number" label="Copy reference number" />
                 <x-ui.status-badge :status="$order->status" live />
                 @if ($order->needsInfo())
                     <x-ui.badge tone="red" pulse="ping">The shop needs information</x-ui.badge>
@@ -145,7 +145,7 @@
                         <summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-control border border-status-red/40 px-4 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring [&::-webkit-details-marker]:hidden">
                             <x-ui.icon name="cancel" :size="18" />Cancel this order
                         </summary>
-                        <form method="POST" action="{{ route('customer.printing.cancel', $order) }}" class="mt-4 space-y-3 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
+                        <form method="POST" action="{{ route('customer.printing.cancel', $order) }}" data-confirm="Cancel order {{ $order->reference_number }}?" data-confirm-text="The shop is told. This cannot be undone, but you can always send a new request." data-confirm-ok="Yes, cancel order" data-confirm-cancel="Keep my order" data-confirm-danger class="mt-4 space-y-3 rounded-card bg-neutral-100 p-4 dark:bg-white/5">
                             @csrf
                             <x-ui.textarea id="cancel-reason" name="reason" label="Reason (optional)" maxlength="500" rows="3" hint="Up to 500 characters. The shop sees it.">{{ old('reason') }}</x-ui.textarea>
                             <div class="flex flex-wrap gap-2">
@@ -186,6 +186,8 @@
             </x-ui.notice>
 
             <x-payment.how-to-pay :payable="$order" />
+            {{-- Phase 10D: where this order stands, driven by its real status --}}
+            <x-ui.next-steps :record="$order" title="Where your order stands" class="mt-6" />
 
             <x-payment.card :payable="$order" />
         </aside>

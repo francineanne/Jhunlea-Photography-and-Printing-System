@@ -47,6 +47,7 @@
                 <div class="rounded-control bg-app-card p-3 dark:bg-white/5">
                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Pay by</dt>
                     <dd class="mt-1 font-semibold"><x-ui.date :value="$deadline" /></dd>
+                    <dd class="mt-1"><x-ui.countdown :until="$deadline" /></dd>
                     <dd class="text-xs text-app-text-2">If it is not paid by then, the booking is cancelled and the time is freed.</dd>
                 </div>
             @endif
@@ -54,6 +55,9 @@
         <p class="mt-3 text-sm">
             Pay at the {{ $isOrder ? 'shop' : 'studio' }} (cash or GCash){!! $gcash !== '' ? ', or send GCash to <strong class="font-semibold">'.e($gcash).'</strong>' : '' !!} and send the reference number in Messages. The studio records your payment after checking it.
         </p>
+        @if (filled($shop->gcashNumber()))
+            <p class="mt-2 flex items-center gap-1 text-sm"><span class="text-app-text-2">GCash number:</span> <span class="font-mono font-semibold tabular-nums">{{ $shop->gcashNumber() }}</span><x-ui.copy :text="$shop->gcashNumber()" label="Copy the GCash number" /></p>
+        @endif
         @if ($awaiting)
             <p class="mt-2 text-xs text-app-text-2">The balance is paid on the day of the shoot. The downpayment is non-refundable if you cancel.</p>
         @endif

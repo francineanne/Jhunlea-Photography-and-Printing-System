@@ -10,6 +10,7 @@ use App\Services\Assistant\GuardStats;
 use App\Services\Chat\StudioInbox;
 use App\Services\NotificationFeed;
 use App\Support\PasswordRules;
+use App\Support\PaymentRules;
 use App\Support\ShopSettings;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\View;
@@ -47,9 +48,13 @@ class AppServiceProvider extends ServiceProvider
         // The public footer (Phase 6B): the business details the owner filled in (never a placeholder) and the FAQ link
         // only when a question is published. rescue(): this layout also wraps the error pages, which must never throw
         View::composer('layouts.public', function ($view) {
-            $view->with('shop', rescue(fn () => app(ShopSettings::class)->business(), ['shop_name' => null, 'address' => null, 'phone' => null, 'email' => null, 'opening_hours' => null], false));
-            $view->with('hasFaq', rescue(fn () => Faq::query()->published()->exists(), false, false));
+            $view->with('shop', rescue(fn () => app(ShopSettings::class)->business(), ['shop_name' => null, 'address' => null, 'phone' => null, 'email' => null, 'opening_hours' => null, 'facebook_url' => null], false));
+            // Phase 10D: a page that already read the published questions (the landing page) shares the answer
+            $view->with('hasFaq', view()->shared('hasFaqKnown') ?? rescue(fn () => Faq::query()->published()->exists(), false, false));
         });
+
+        // Phase 10D: the one short, current payment line (top bar of the public pages, footer of the customer pages)
+        View::composer(['layouts.public', 'layouts.customer'], fn ($view) => $view->with('policyLine', rescue(fn () => app(PaymentRules::class)->shortLine(), 'No online payment. Pay at the shop in cash or by GCash.', false)));
 
         // Error pages stay as simple as possible: the public layout leaves the floating chat out of them (Phase 7C)
         View::composer(['errors.*', 'errors::*'], fn ($view) => $view->with('isErrorPage', true));

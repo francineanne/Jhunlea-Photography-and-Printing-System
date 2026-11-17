@@ -89,15 +89,8 @@
                 </div>
             </dl>
 
-            <section class="mt-6 rounded-card border border-app-border p-4" aria-labelledby="next-title">
-                <h2 id="next-title" class="font-semibold">What happens next</h2>
-                <ol class="mt-3 space-y-2 text-sm text-app-text-2">
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">1</span><span>The studio reviews your request and the time you asked for.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">2</span><span>The studio confirms the time, or offers another time for you to accept.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">3</span><span>You come to the studio for your shoot and pay face to face there.</span></li>
-                    <li class="flex gap-3"><span class="grid size-6 shrink-0 place-items-center rounded-full bg-brand/10 text-xs font-bold text-brand">4</span><span>After the shoot, you can order prints separately if you want them.</span></li>
-                </ol>
-            </section>
+            {{-- Phase 10D: the same timeline as the booking page, with the current step marked --}}
+            <x-ui.next-steps :record="$booking" class="mt-6" />
 
             <x-ui.notice variant="payment" class="mt-4">
                 <p class="text-app-text-2">Nothing is charged online. The studio confirms the final price before you pay.</p>

@@ -28,7 +28,8 @@ class PackageDetailPageTest extends TestCase
 
         $this->get('/packages/detail')->assertOk()
             ->assertSee('Family Day')->assertSee('A relaxed family session.')->assertSee('Long text about the day.')
-            ->assertSee('From ₱3,500.00 — final price confirmed after review')
+            // Phase 10D: the price component shows the amount and the note on two lines
+            ->assertSee('From ₱3,500.00')->assertSee('Final price confirmed after review')
             ->assertSee('90 mins')->assertSee('Up to 6 people')->assertSee('15 edited photos')
             ->assertSee('Printed frame')->assertSee('Online gallery')->assertSee('Arrive ten minutes early.')
             ->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false);

@@ -1,7 +1,7 @@
 @props(['id', 'label' => null, 'hint' => null, 'error' => null, 'required' => false])
 
 {{-- Shared label / hint / error wrapper for input, select, textarea and checkbox --}}
-<div class="w-full">
+<div class="ui-field w-full">
     @if ($label)
         <label for="{{ $id }}" class="mb-1.5 block text-sm font-semibold">
             {{ $label }}@if ($required)<span class="text-brand" aria-hidden="true"> *</span>@endif

@@ -4,6 +4,7 @@ import { ownerHeartbeat, ownerInbox } from './owner-chat';
 import ownerAsk, { ownerBriefing } from './owner-ask';
 import { walkInBooking, walkInCustomer, walkInOrder } from './walk-in';
 import paymentCounter from './counter';
+import registerPolish from './polish';
 
 window.Alpine = Alpine;
 
@@ -122,16 +123,24 @@ Alpine.data('uiToasts', (initial = []) => ({
         initial.forEach((toast) => this.add(toast));
     },
 
-    add({ message, variant = 'info', timeout = 5000 }) {
-        const id = ++this.nextId;
+    // Phase 10D: at most three at once (the oldest gives way), an error stays until it is closed, and a toast may
+    // carry one link to a page of this site
+    add({ message, variant = 'info', timeout = 5000, link = null }) {
+        if (!message) return;
 
-        this.items.push({ id, message, variant, open: false });
+        const id = ++this.nextId;
+        const safeLink = link && typeof link.url === 'string' && typeof link.label === 'string' && (link.url.startsWith('/') || link.url.startsWith(window.location.origin + '/')) && !link.url.startsWith('//') ? link : null;
+
+        this.items.push({ id, message, variant, link: safeLink, open: false });
+        this.items.filter((item) => item.open).slice(0, -2).forEach((item) => this.dismiss(item.id));
         // Flip to open on the next tick so the enter transition runs
         this.$nextTick(() => {
             const toast = this.items.find((item) => item.id === id);
             if (toast) toast.open = true;
         });
-        setTimeout(() => this.dismiss(id), timeout);
+        if (variant !== 'error') {
+            setTimeout(() => this.dismiss(id), timeout);
+        }
     },
 
     dismiss(id) {
@@ -420,13 +429,13 @@ Alpine.data('uiPageLoader', () => ({
         this.pct = 0;
         clearInterval(this.ticker);
         clearTimeout(this.hider);
-        this.ticker = setInterval(() => (this.pct += (90 - this.pct) * 0.1), 80);
+        this.ticker = setInterval(() => (this.pct += (90 - this.pct) * 0.3), 60);
 
-        // A stalled font or image must not keep the page covered: stop waiting after 4s
-        Promise.race([loaded, new Promise((done) => setTimeout(done, 4000))]).then(() => {
+        // Phase 10D: the splash never stays longer than 600 ms in all, loaded or not
+        Promise.race([loaded, new Promise((done) => setTimeout(done, 350))]).then(() => {
             clearInterval(this.ticker);
             this.pct = 100;
-            this.hider = setTimeout(() => (this.show = false), 600);
+            this.hider = setTimeout(() => (this.show = false), 250);
         });
     },
 
@@ -1282,5 +1291,6 @@ Alpine.data('walkInOrder', walkInOrder);
 Alpine.data('walkInBooking', walkInBooking);
 Alpine.data('ownerBriefing', ownerBriefing);
 Alpine.data('paymentCounter', paymentCounter);
+registerPolish(Alpine);
 
 Alpine.start();

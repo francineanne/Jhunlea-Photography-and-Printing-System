@@ -19,7 +19,8 @@ class PackagesPageTest extends TestCase
 
         $this->get('/packages')->assertOk()
             ->assertSee('₱1,500.00')
-            ->assertSee('From ₱2,500.00 — final price confirmed after review')
+            // Phase 10D: the price component shows the amount and the note on two lines
+            ->assertSee('From ₱2,500.00')->assertSee('Final price confirmed after review')
             ->assertSee('Price on request')
             ->assertSee('One backdrop')
             ->assertSee(route('packages.show', 'fixed'), false);
@@ -34,7 +35,10 @@ class PackagesPageTest extends TestCase
         $html = $this->get('/packages')->assertOk()->getContent();
 
         $this->assertStringContainsString('packages/cover-test.jpg', $html);
-        $this->assertStringContainsString('width="800" height="500"', $html);
+        // Phase 10D: every package card shows its photo at 4:3
+        $this->assertStringContainsString('width="800" height="600"', $html);
+        // and the package without a photo gets the designed placeholder, never an empty box
+        $this->assertStringContainsString('data-image-placeholder', $html);
     }
 
     public function test_it_offers_a_compare_checkbox_and_a_book_link_per_card(): void

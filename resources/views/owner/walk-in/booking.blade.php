@@ -44,7 +44,7 @@
 
         <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="session-title">
             <h2 id="session-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="photo_camera" :size="20" class="text-brand" />Session</h2>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div class="mt-4 form-grid sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <x-ui.select label="Package" name="package" :required="true" x-model="package" :error="$errors->first('package')">
                         <option value="">Choose a package</option>

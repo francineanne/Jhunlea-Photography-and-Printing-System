@@ -54,10 +54,10 @@
 <div x-data="chatWindow(@js($config))" @if (! $full) x-on:keydown.escape.window="close()" @endif {{ $attributes->class($full ? 'h-full' : '') }} data-chat-window="{{ $mode }}">
     @unless ($full)
         <button type="button" x-ref="launcher" x-show="!open" x-on:click="show()" data-chat-launcher
-            class="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-4 z-30 flex min-h-11 items-center gap-2.5 rounded-full border border-app-border bg-app-card py-1.5 pl-1.5 pr-4 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.18),0_4px_8px_-2px_rgba(23,23,23,0.08)] transition-transform duration-[280ms] ease-brand hover:scale-[1.02] focus-ring sm:right-6 {{ request()->routeIs('packages.index') ? 'max-md:bottom-40 md:bottom-28' : '' }}"
+            class="fixed bottom-[max(1.5rem,env(safe-area-inset-bottom))] right-4 z-30 flex min-h-11 items-center gap-2.5 rounded-full border border-app-border bg-app-card p-1.5 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.18),0_4px_8px_-2px_rgba(23,23,23,0.08)] transition-transform duration-[280ms] ease-brand hover:scale-[1.02] focus-ring sm:right-6 sm:pr-4"
             aria-label="Chat with {{ $name }} or the studio">
             <x-ui.logo-mark class="shadow-sm" />
-            <span class="text-left leading-tight" aria-hidden="true">
+            <span class="launcher-text text-left leading-tight" aria-hidden="true">
                 <span class="block text-sm font-semibold">Chat</span>
                 <span class="block text-[10px] font-bold uppercase tracking-wider text-brand dark:text-[#ffb4ac]">{{ $name }} AI or the studio</span>
             </span>

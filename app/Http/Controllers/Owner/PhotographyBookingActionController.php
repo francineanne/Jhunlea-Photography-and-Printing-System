@@ -19,6 +19,7 @@ use App\Models\PhotographyBooking;
 use App\Services\BookingTransitionService;
 use App\Support\LocalTime;
 use App\Support\Money;
+use App\Support\PaymentRules;
 use Closure;
 use Illuminate\Http\RedirectResponse;
 
@@ -35,7 +36,7 @@ class PhotographyBookingActionController extends Controller
     {
         return $this->act($booking, fn () => $this->transitions->confirm($booking, $request->user(), $request->price(), $request->note(), $request->outsideSchedule()),
             fn () => $booking->status === BookingStatus::AwaitingDownpayment
-                ? 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'. It waits for the downpayment until '.LocalTime::format($booking->downpayment_due_at).'.'
+                ? 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'. It waits for the downpayment until '.LocalTime::format($booking->downpayment_due_at).' ('.Money::cents(app(PaymentRules::class)->downpaymentCents((string) $booking->confirmed_price)).').'
                 : 'Booking confirmed for '.LocalTime::format($booking->starts_at).' at '.Money::format($booking->confirmed_price).'.');
     }
 
