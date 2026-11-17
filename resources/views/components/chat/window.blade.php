@@ -230,7 +230,7 @@
         @endif
 
         {{-- The conversation --}}
-        <div x-show="!choosing && !signInNeeded" x-ref="log" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:p-4">
+        <div x-show="!choosing && !signInNeeded" x-ref="log" x-on:scroll.passive="onLogScroll()" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:p-4">
             {{-- Bottom anchor (7H.1): takes the free space above, so a short conversation (or the greeting and its chips)
                  rests on the message box; a long one scrolls as usual --}}
             <div class="mt-auto" aria-hidden="true"></div>
@@ -243,6 +243,11 @@
             <p x-show="thread.loading" x-cloak class="m-auto flex items-center gap-2 text-sm text-app-text-2"><x-ui.aperture-spinner :size="20" />Loading the conversation</p>
 
             <x-chat.rows />
+                {{-- Phase 10E: new messages arrived while the reader was scrolled up --}}
+                <button type="button" x-show="newBelow > 0" x-cloak x-on:click="jumpToNew()" data-chat-new-pill
+                    class="sticky bottom-2 z-10 mx-auto mt-2 inline-flex min-h-11 items-center gap-1 self-center rounded-full bg-brand px-4 text-sm font-semibold text-white shadow-lg focus-ring sm:min-h-9">
+                    <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_downward</span><span x-text="newBelow === 1 ? '1 new message' : newBelow + ' new messages'"></span>
+                </button>
 
             {{-- Suggestions for a conversation nobody has written in yet --}}
             <x-chat.prompts :prompts="config($guest ? 'chat.suggested_prompts_guest' : 'chat.suggested_prompts')" click="drafts.ask = %s; submit()" marker="data-chat-prompt"

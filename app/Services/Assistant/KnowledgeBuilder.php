@@ -172,7 +172,7 @@ class KnowledgeBuilder
 
         // Phase 10B: the rules are the owner's settings, worded by PaymentRules (the customer's pages read the same words)
         $lines[] = "\nPAYMENT RULES";
-        $lines[] = '- Payment is made face-to-face at Jhunlea Photography & Printing, in cash or GCash. There is no online payment.';
+        $lines[] = '- Payment is made at Jhunlea Photography & Printing in cash or GCash, or by GCash sent to the shop with the reference number in Messages. There is no online checkout.';
         foreach (app(PaymentRules::class)->sentences() as $sentence) {
             $lines[] = '- '.$sentence;
         }

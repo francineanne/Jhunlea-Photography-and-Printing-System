@@ -160,7 +160,9 @@ class ChatReview7DTest extends TestCase
     {
         $page = $this->actingAs($this->customer())->get(route('customer.assistant.page'))->assertOk();
 
-        $page->assertSee('retryMessage(row.message)', false)->assertSee('discardMessage(row.message)', false)->assertSee('Discard');
+        $page->assertSee('retryMessage(row.message)', false)->assertSee('discardMessage(row.message)', false)
+            // Phase 10E: the buttons read "Tap to retry" and "Delete", like a chat app
+            ->assertSee('Tap to retry')->assertSee('Delete');
         $this->assertStringContainsString('discardMessage(local)', file_get_contents(resource_path('js/chat.js')));
     }
 

@@ -307,10 +307,12 @@
                 </dl>
                 <div class="mt-3 flex flex-wrap gap-2">
                     <x-ui.button :href="'tel:'.preg_replace('/[^0-9+]/', '', $booking->contact_number)" variant="outline" size="sm"><x-ui.icon name="call" :size="16" />Call</x-ui.button>
-                    @if ($customer)
+                    @if ($customer && filled($customer->email))
                         <x-ui.button :href="'mailto:'.$customer->email" variant="outline" size="sm"><x-ui.icon name="mail" :size="16" />Email</x-ui.button>
                     @endif
                 </div>
+                {{-- Phase 10E --}}
+                <x-chat.message-customer :customer="$customer" :record="$booking" type="photography_booking" class="mt-2 block" />
             </section>
 
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="details-title">
@@ -361,7 +363,7 @@
                     </details>
                 @endif
                 <x-ui.notice variant="payment" class="mt-4">
-                    <p class="text-app-text-2">The system records payments received at the studio (cash or GCash, on the day of the shoot); it never takes payment online.</p>
+                    <p class="text-app-text-2">The system only records payments the studio received: cash, or GCash it checked. A downpayment may be due before the shoot; the balance is paid on the day.</p>
                 </x-ui.notice>
             </section>
 

@@ -47,15 +47,44 @@ export const apiRequest = async (url, method = 'GET', body = null) => {
     return { ok: response.ok && data !== null, status: response.status, data };
 };
 
+// Phase 10E: a message body as safe HTML. Everything is escaped first; only https:// addresses then become links that open
+// in a new tab with rel="noopener noreferrer nofollow". No other markup ever comes from a message.
+const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const escapeHtml = (text) => String(text ?? '').replace(/[&<>"']/g, (char) => ESCAPES[char]);
+
+export const linkify = (text) => escapeHtml(text).replace(/https:\/\/[^\s<>"']+/g, (url) => {
+    // Punctuation that ends a sentence is not part of the address
+    const trail = url.match(/[.,;:!?)\]]+$/)?.[0] ?? '';
+    const href = trail ? url.slice(0, -trail.length) : url;
+
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer nofollow" class="font-semibold underline underline-offset-2">${href}</a>${trail}`;
+});
+
+// Phase 10E: on a phone (touch, no hover) the Enter key makes a new line and the button sends
+export const enterSends = () => !(window.matchMedia?.('(hover: none) and (pointer: coarse)').matches ?? false);
+
+// Phase 10E: the date line says "Today", "Yesterday" or "Nov 15" (the year only when it is not this year), in Manila time
+const manilaDay = (offsetDays = 0) => new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', year: 'numeric' })
+    .format(new Date(Date.now() - offsetDays * 86400000));
+
+const dayLabel = (date) => {
+    if (date === manilaDay(0)) return 'Today';
+    if (date === manilaDay(1)) return 'Yesterday';
+
+    return date.endsWith(`, ${manilaDay(0).slice(-4)}`) ? date.replace(/, \d{4}$/, '') : date;
+};
+
 // Bubbles of one sender closer together than this form one group: the avatar, name and time show once, at its start
 const GROUP_WITHIN_MS = 5 * 60 * 1000;
 
 // The list as it is drawn: a date line whenever the day changes (in the shop's time, from the server), then each message.
 // `first` marks the start of a group of bubbles from the same sender, so the avatar and name are drawn once per group
-export const buildRows = (messages) => {
+export const buildRows = (messages, seenUpTo = 0) => {
     const rows = [];
     let day = null;
     let previous = null;
+    // Phase 10E: "Seen" sits under the viewer's newest own message once the other PERSON has read it (Lumi never counts)
+    const lastMine = [...messages].reverse().find((message) => message.mine && message.id)?.id ?? null;
 
     messages.forEach((message) => {
         const local = message.created_at?.local ?? null;
@@ -64,7 +93,7 @@ export const buildRows = (messages) => {
         if (date && date !== day) {
             day = date;
             previous = null;
-            rows.push({ key: `date-${date}`, type: 'date', text: date });
+            rows.push({ key: `date-${date}`, type: 'date', text: dayLabel(date) });
         }
 
         const type = message.sender_type === 'system' ? 'notice' : 'bubble';
@@ -80,6 +109,8 @@ export const buildRows = (messages) => {
             type,
             first: !continues,
             time: local && date ? local.slice(date.length).trim() : null,
+            lastMine: lastMine !== null && message.id === lastMine,
+            seen: lastMine !== null && message.id === lastMine && seenUpTo >= lastMine,
             message,
         });
 

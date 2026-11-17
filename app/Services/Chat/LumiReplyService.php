@@ -15,6 +15,8 @@ use App\Services\Assistant\AssistantEngine;
 use App\Services\Assistant\AssistantInput;
 use App\Services\Assistant\AssistantResult;
 use App\Services\Assistant\ThreadMessage;
+use App\Support\Lumi;
+use App\Support\ShopSettings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -95,6 +97,7 @@ class LumiReplyService
             $question->body,
             $this->history($conversation, $question),
             $aiReplies,
+            is_array($question->meta['about'] ?? null) ? $question->meta['about'] : null,
         ));
 
         return DB::transaction(function () use ($conversation, $question, $result) {
@@ -102,6 +105,13 @@ class LumiReplyService
 
             if ($this->repliesAfter($locked, $question) !== [] || ! $this->mayAnswer($locked)) {
                 return new LumiReply(LumiReply::DISCARDED);
+            }
+
+            // Phase 10E: Lumi is off or down while the owner is away: the thread says so ONCE per stretch; later messages
+            // add nothing (they still reach the owner, unread, as always)
+            if ($locked->isStudio() && ! $result->fromAssistant() && $result->outcome !== AssistantOutcome::AwayCapReached
+                && $this->lastNonCustomer($locked)?->systemKind() === SystemMessageKind::AiUnavailable) {
+                return new LumiReply(LumiReply::NOT_ALLOWED);
             }
 
             $stored = [];
@@ -152,7 +162,15 @@ class LumiReplyService
             return $result->reply;
         }
 
-        return config($this->presence->shopOpenNow() ? 'chat.messages.studio_fallback_open' : 'chat.messages.studio_fallback_closed');
+        // Phase 10E: with the shop's own opening hours set, the line gives them as written (never "open now" worked out
+        // from that text); when Lumi is DOWN (not switched off) the owner's own fallback text follows
+        $hours = app(ShopSettings::class)->openingHours();
+        $line = $hours === null
+            ? config($this->presence->shopOpenNow() ? 'chat.messages.studio_fallback_open' : 'chat.messages.studio_fallback_closed')
+            : str_replace(':hours', rtrim($hours, '. '), config('chat.messages.studio_fallback_hours'));
+        $own = app(ShopSettings::class)->lumiFallbackText();
+
+        return $result->outcome !== AssistantOutcome::FallbackDisabled && $own !== null ? $line.' '.$own : $line;
     }
 
     private function mayAnswer(Conversation $conversation): bool
@@ -215,9 +233,15 @@ class LumiReplyService
     public function isActive(Conversation $conversation): bool
     {
         return $conversation->isStudio()
-            && config('assistant.enabled')
+            && Lumi::on()
             && $this->mayAnswer($conversation)
             && $this->aiRepliesSinceOwner($conversation) < (int) config('assistant.limits.studio_away_max_consecutive');
+    }
+
+    /** Phase 10E: how many of Lumi's answers the owner has not answered yet (the line at the top of the owner's thread). */
+    public function answeredSinceOwner(Conversation $conversation): int
+    {
+        return $conversation->isStudio() ? $this->aiRepliesSinceOwner($conversation) : 0;
     }
 
     /** True when the thread already shows that the owner is away: Lumi or one of its notices spoke since the owner. */

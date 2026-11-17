@@ -10,6 +10,7 @@ use App\Http\Requests\Chat\SendMessageRequest;
 use App\Http\Requests\Chat\ThreadRequest;
 use App\Models\Conversation;
 use App\Services\Chat\ChatPresenter;
+use App\Services\Chat\ChatRecords;
 use App\Services\Chat\MessageService;
 use App\Services\Chat\OwnerPresence;
 use App\Services\Chat\StudioInbox;
@@ -87,7 +88,7 @@ class MessageController extends Controller
     {
         Gate::authorize('send', $conversation);
 
-        [$message, $created] = $this->messages->sendFromOwner($conversation, $request->user(), $request->body(), $request->clientId());
+        [$message, $created] = $this->messages->sendFromOwner($conversation, $request->user(), $request->body(), $request->clientId(), $request->about());
 
         return response()->json([
             'message' => $this->presenter->messages($conversation, $request->user(), collect([$message]))[0],
@@ -138,7 +139,14 @@ class MessageController extends Controller
     {
         $this->presence->touch();
 
+        // Phase 10E: the customer's orders and bookings for the side panel, and the one to attach (?about=type:id)
+        $records = $conversation === null ? [] : app(ChatRecords::class)->for($conversation->customer()->firstOrFail(), true);
+        $wanted = (string) $request->query('about', '');
+        $about = collect($records)->first(fn (array $record) => $wanted === $record['type'].':'.$record['id']);
+
         return view('owner.messages.index', [
+            'records' => $records,
+            'about' => $about,
             'conversation' => $conversation?->loadMissing('customer:id,name'),
             'filter' => $request instanceof InboxRequest ? ($request->filter() ?? 'all') : 'all',
             'search' => $request instanceof InboxRequest ? $request->search() : null,

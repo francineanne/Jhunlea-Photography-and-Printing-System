@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Support\Lumi;
+
 /**
  * Who the assistant is answering and why (Phase 7). ask_lumi talks to a customer, studio_away answers inside the
  * customer's thread with the studio while the owner is away, and the two owner_assist modes only write DRAFTS for the
@@ -54,7 +56,8 @@ enum AssistantFeature: string
     public function fallbackMessage(): string
     {
         return match ($this) {
-            self::AskLumi => config('assistant.messages.unavailable'),
+            // Phase 10E: the owner may write this text (Settings, Lumi assistant)
+            self::AskLumi => Lumi::fallbackText(),
             self::StudioAway => config('assistant.messages.studio_away'),
             self::OwnerAssistSuggest, self::OwnerAssistSummarize => config('assistant.messages.owner_assist'),
             self::OwnerAsk => config('assistant.messages.owner_ask'),

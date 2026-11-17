@@ -1,7 +1,7 @@
 // The owner's studio inbox (Phase 7D): the list of studio threads, the open thread with its composer, Suggest reply and
 // Summarize (drafts only), and the presence control. Everything shown comes from the server and is drawn with x-text.
 
-import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
+import { apiRequest, buildRows, clientId, enterSends, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
 
 const LIST_POLL_MS = 30000;
 const PRESENCE_POLL_MS = 60000;
@@ -10,8 +10,10 @@ const COUNTER_FROM = 800;
 const OPEN_FOR_MS = 2 * 60 * 1000;
 const IDLE_FOR_MS = 10 * 60 * 1000;
 
-export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, texts }) => ({
+export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, texts, records = [], about = null }) => ({
     conversationId,
+    records,
+    about,
     maxChars,
     // <x-chat.rows> reads these; the customer-only actions never show for the owner
     tab: 'studio',
@@ -26,6 +28,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     localKey: 0,
     timers: { list: null, thread: null, presence: null, search: null },
     polling: false,
+    newBelow: 0,
 
     init() {
         this.loadList();
@@ -49,7 +52,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     // ---- What the template reads ----
 
     get rows() {
-        return buildRows(this.thread.messages);
+        return buildRows(this.thread.messages, this.thread.state?.seen_up_to ?? 0);
     },
 
     get canSend() {
@@ -287,7 +290,23 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
         const near = this.isNearBottom();
 
         this.thread.messages.push(...fresh);
+        if (!near) this.newBelow += fresh.filter((message) => !message.mine).length;
         this.$nextTick(() => this.scrollDown(near));
+    },
+
+    jumpToNew() {
+        this.newBelow = 0;
+        this.scrollDown(true);
+    },
+
+    // Phase 10E: one of the customer's orders or bookings goes with the next reply
+    attach(record) {
+        this.about = record;
+        this.$nextTick(() => this.$refs.input?.focus());
+    },
+
+    onLogScroll() {
+        if (this.newBelow > 0 && this.isNearBottom()) this.newBelow = 0;
     },
 
     async loadEarlier() {
@@ -339,7 +358,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     onKeydown(event) {
         this.lastActivity = Date.now();
 
-        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && enterSends()) {
             event.preventDefault();
             this.submit();
         }
@@ -374,8 +393,10 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
             body,
             cards: [],
             created_at: null,
-            payload: { body, client_id: clientId() },
+            payload: { body, client_id: clientId(), ...(this.about ? { about: { type: this.about.type, id: this.about.id } } : {}) },
         });
+        // The reference goes with one message only
+        this.about = null;
         this.$nextTick(() => this.scrollDown(true));
 
         return this.deliver(this.thread.messages[this.thread.messages.length - 1]);

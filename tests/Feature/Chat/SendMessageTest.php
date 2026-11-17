@@ -94,7 +94,10 @@ class SendMessageTest extends TestCase
         $foreign = PrintingOrder::factory()->forCustomer($other)->create();
 
         $this->actingAs($customer)->postJson(route('customer.messages.store', $studio), ['body' => 'About my order', 'about' => ['type' => 'printing_order', 'id' => $order->id]])
-            ->assertCreated()->assertJsonPath('message.about', ['type' => 'printing_order', 'id' => $order->id, 'reference' => 'PR-000777', 'url' => route('customer.printing.show', $order)]);
+            ->assertCreated()->assertJsonPath('message.about.type', 'printing_order')->assertJsonPath('message.about.id', $order->id)
+            ->assertJsonPath('message.about.reference', 'PR-000777')->assertJsonPath('message.about.url', route('customer.printing.show', $order))
+            // Phase 10E: the card also says what the record is (title, status, date or amount due)
+            ->assertJsonPath('message.about.status', 'Submitted');
         $this->actingAs($customer)->postJson(route('customer.messages.store', $studio), ['body' => 'About my shoot', 'about' => ['type' => 'photography_booking', 'id' => $booking->id]])->assertCreated();
 
         foreach ([['type' => 'printing_order', 'id' => $foreign->id], ['type' => 'printing_order', 'id' => 999999], ['type' => 'user', 'id' => $customer->id]] as $about) {

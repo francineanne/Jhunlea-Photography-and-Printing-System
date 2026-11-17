@@ -45,7 +45,7 @@
     </nav>
 
     <form method="GET" action="{{ route('owner.orders.index') }}" role="search"
-        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] lg:items-end dark:shadow-none">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end dark:shadow-none">
         @if ($status)
             <input type="hidden" name="status" value="{{ $status->value }}">
         @endif
@@ -58,7 +58,7 @@
         </x-ui.select>
         <x-ui.input label="From" name="from" type="date" :value="$from" />
         <x-ui.input label="To" name="to" type="date" :value="$to" />
-        <div class="flex gap-2 sm:col-span-2 lg:col-span-1">
+        <div class="flex gap-2 sm:col-span-2 xl:col-span-1">
             <x-ui.button type="submit">Filter</x-ui.button>
             @if ($hasFilters)
                 <x-ui.button :href="route('owner.orders.index')" variant="ghost">Clear</x-ui.button>

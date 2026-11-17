@@ -120,7 +120,7 @@ enum NotificationKind: string
         $due = isset($data['due']) ? LocalTime::format(Carbon::parse((string) $data['due'], 'UTC')) : null;
 
         return match ($this) {
-            self::OrderAccepted => "Your order {$ref} was accepted".($amount ? " at {$amount}" : '').'. You pay the full amount face to face when you pick it up.',
+            self::OrderAccepted => "Your order {$ref} was accepted".($amount ? " at {$amount}" : '').'. Open it to see when to pay and how.',
             self::OrderRejected => "Your order {$ref} was rejected. Open it to read the shop’s reason.",
             self::OrderInfoRequested => "The shop needs more information about your order {$ref}. Open it to see what is needed.",
             self::OrderProcessing => "Your order {$ref} is being printed.",

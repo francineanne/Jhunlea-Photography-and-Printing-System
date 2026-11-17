@@ -8,6 +8,8 @@ use App\Enums\SystemMessageKind;
 use App\Exceptions\ChatException;
 use App\Models\ChatMessage;
 use App\Models\Conversation;
+use App\Models\PhotographyBooking;
+use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Support\LocalTime;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -69,10 +71,19 @@ class ConversationService
     /** Keeps the list columns of a conversation current after a new message. */
     public static function touchLast(Conversation $conversation, ChatMessage $message): void
     {
+        // Phase 10E: a message about an order or booking starts its preview with the reference ("PB-000123 - Is my ...")
+        $about = is_array($message->meta['about'] ?? null) ? $message->meta['about'] : null;
+        $reference = null;
+        if ($about !== null) {
+            $model = ($about['type'] ?? '') === 'printing_order' ? PrintingOrder::class : PhotographyBooking::class;
+            $reference = $model::query()->whereKey((int) ($about['id'] ?? 0))->value('reference_number');
+        }
+        $text = preg_replace('/\s+/u', ' ', $message->body) ?? '';
+
         $conversation->forceFill([
             'last_message_at' => $message->created_at,
             'last_sender_type' => $message->sender_type,
-            'last_message_preview' => Str::limit(preg_replace('/\s+/u', ' ', $message->body) ?? '', (int) config('chat.preview_chars') - 3),
+            'last_message_preview' => Str::limit(($reference ? $reference.' - ' : '').$text, (int) config('chat.preview_chars') - 3),
         ])->save();
     }
 

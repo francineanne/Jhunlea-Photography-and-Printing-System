@@ -66,8 +66,11 @@ class MessageService
         }, fn (ChatMessage $message) => $conversation->isStudio() ? $this->notifications->messageReceived($conversation, $customer) : null);
     }
 
-    /** @return array{0: ChatMessage, 1: bool} */
-    public function sendFromOwner(Conversation $conversation, User $owner, string $body, ?string $clientId = null): array
+    /**
+     * @param  array{type?: mixed, id?: mixed}|null  $about  Phase 10E: one of THIS thread's customer's orders or bookings
+     * @return array{0: ChatMessage, 1: bool}
+     */
+    public function sendFromOwner(Conversation $conversation, User $owner, string $body, ?string $clientId = null, ?array $about = null): array
     {
         $body = $this->normalize($body);
         $this->presence->touch();
@@ -76,7 +79,9 @@ class MessageService
             return [$repeat, false];
         }
 
-        return $this->store($conversation, $clientId, function (Conversation $locked) use ($owner, $body, $clientId) {
+        $meta = $about === null ? null : ['about' => $this->about($conversation->customer()->firstOrFail(), $about)];
+
+        return $this->store($conversation, $clientId, function (Conversation $locked) use ($owner, $body, $clientId, $meta) {
             // Lumi was answering for the away owner: say clearly that a person has taken over
             $lastReply = $locked->messages()->whereIn('sender_type', [MessageSender::Owner, MessageSender::Assistant])->latest('id')->first();
 
@@ -84,7 +89,7 @@ class MessageService
                 $this->insert($locked, MessageSender::System, null, config('chat.messages.handoff_to_owner'), ['system_kind' => SystemMessageKind::OwnerJoined->value]);
             }
 
-            $message = $this->insert($locked, MessageSender::Owner, $owner->id, $body, null, $clientId);
+            $message = $this->insert($locked, MessageSender::Owner, $owner->id, $body, $meta, $clientId);
             $locked->forceFill(['needs_owner' => false, 'needs_owner_at' => null, 'owner_last_read_message_id' => $message->id])->save();
 
             return $message;

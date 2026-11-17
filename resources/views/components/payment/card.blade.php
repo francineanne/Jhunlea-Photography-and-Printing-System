@@ -128,7 +128,7 @@
     @endforeach
 
     <p class="mt-3 flex items-start gap-2 text-xs text-app-text-2"><x-ui.icon name="storefront" :size="16" class="mt-px shrink-0 text-brand" />
-        <span>Payment is made face to face at the {{ $place }} (cash or GCash). Nothing is charged online. {{ $paid ? 'This is a payment record, not an official receipt.' : '' }}</span>
+        <span>Pay at the {{ $place }} in cash or GCash, or send GCash and its reference number in Messages. Nothing is charged online. {{ $paid ? 'This is a payment record, not an official receipt.' : '' }}</span>
     </p>
 
     @if ($formErrors)

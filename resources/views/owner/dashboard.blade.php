@@ -43,31 +43,32 @@
         </div>
     </div>
 
-    <x-ui.notice variant="payment" class="mt-6">
-        <p class="text-app-text-2">The system records payments received at the counter (cash or GCash); it never takes payment online.</p>
-    </x-ui.notice>
+    {{-- Phase 10E: the one current payment line (PaymentRules::shortLine()), not the old Phase 5 callout --}}
+    <p class="mt-6 flex items-start gap-2 text-sm text-app-text-2"><x-ui.icon name="storefront" :size="18" class="mt-px shrink-0 text-brand" /><span class="min-w-0">{{ $policyLine ?? '' }} <a href="{{ route('owner.settings.index') }}#payments" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">Payment rules</a></span></p>
 
-    <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+    {{-- Phase 10E: the tiles follow the width of this area (container query), so the sidebar open or folded never squeezes them --}}
+    <div class="@container mt-6">
+    <div class="grid gap-4 @lg:grid-cols-2 @3xl:grid-cols-3 @6xl:grid-cols-4">
         @foreach ($tiles as $i => $tile)
             <a href="{{ $tile['url'] }}" class="group focus-ring rounded-card">
                 <x-ui.stat-tile :label="$tile['label']" :delay="$i * 60" class="h-full transition-[border-color,box-shadow] duration-200 group-hover:border-brand group-hover:shadow-md">
-                    <x-slot:aside><span class="rounded-full px-2 py-0.5 text-[11px] font-bold {{ $pills[$tile['tone']] }}">{{ $tile['pill'] }}</span></x-slot:aside>
-                    <p class="mt-4 text-3xl font-bold tabular-nums">{{ $tile['value'] }}</p>
+                    <x-slot:aside><span class="whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-bold {{ $pills[$tile['tone']] }}">{{ $tile['pill'] }}</span></x-slot:aside>
+                    <p class="mt-4 whitespace-nowrap text-3xl font-bold tabular-nums">{{ $tile['value'] }}</p>
                     <p class="mt-1 flex items-center justify-between gap-2 text-xs text-app-text-2">{{ $tile['text'] }}<x-ui.icon name="arrow_forward" :size="16" class="shrink-0 text-brand transition-transform group-hover:translate-x-0.5" /></p>
                 </x-ui.stat-tile>
             </a>
         @endforeach
         <a href="{{ route('owner.payments.index') }}" class="group focus-ring rounded-card">
             <x-ui.stat-tile label="Awaiting payment" :delay="180" class="h-full transition-[border-color,box-shadow] duration-200 group-hover:border-brand group-hover:shadow-md">
-                <x-slot:aside><span class="rounded-full bg-status-red-bg px-2 py-0.5 text-[11px] font-bold text-status-red">{{ $data['awaiting']['count'] }} to pay</span></x-slot:aside>
-                <p @class(['mt-4 text-2xl font-bold tabular-nums', 'text-status-red' => $data['awaiting']['count'] > 0])>{{ $peso($data['awaiting']['cents']) }}</p>
+                <x-slot:aside><span class="whitespace-nowrap rounded-full bg-status-red-bg px-2 py-0.5 text-[11px] font-bold text-status-red">{{ $data['awaiting']['count'] }} to pay</span></x-slot:aside>
+                <p @class(['mt-4 whitespace-nowrap text-2xl font-bold tabular-nums', 'text-status-red' => $data['awaiting']['count'] > 0])>{{ $peso($data['awaiting']['cents']) }}</p>
                 <p class="mt-1 flex items-center justify-between gap-2 text-xs text-app-text-2">Confirmed prices not yet paid<x-ui.icon name="arrow_forward" :size="16" class="shrink-0 text-brand transition-transform group-hover:translate-x-0.5" /></p>
             </x-ui.stat-tile>
         </a>
         <a href="{{ route('owner.payments.index', ['from' => $data['today'], 'to' => $data['today']]) }}" class="group focus-ring rounded-card">
             <x-ui.stat-tile label="Recorded payments today" :delay="240" glow class="h-full transition-[border-color,box-shadow] duration-200 group-hover:border-brand group-hover:shadow-md">
                 <x-slot:aside><x-ui.icon name="point_of_sale" :size="20" class="text-brand" /></x-slot:aside>
-                <p class="mt-4 text-2xl font-bold tabular-nums">{{ $peso($recorded['cents']) }}</p>
+                <p class="mt-4 whitespace-nowrap text-2xl font-bold tabular-nums">{{ $peso($recorded['cents']) }}</p>
                 <p class="mt-1 text-xs text-app-text-2">Cash {{ $peso($recorded['methods'][PaymentMethod::Cash->value]['cents']) }} · GCash {{ $peso($recorded['methods'][PaymentMethod::Gcash->value]['cents']) }}</p>
             </x-ui.stat-tile>
         </a>
@@ -78,6 +79,7 @@
                 <p class="mt-1 flex items-center justify-between gap-2 text-xs text-app-text-2">What customers did<x-ui.icon name="arrow_forward" :size="16" class="shrink-0 text-brand transition-transform group-hover:translate-x-0.5" /></p>
             </x-ui.stat-tile>
         </a>
+    </div>
     </div>
 
     <div class="mt-8 grid items-start gap-6 xl:grid-cols-12">

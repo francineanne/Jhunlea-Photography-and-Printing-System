@@ -54,7 +54,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Phase 10D: the one short, current payment line (top bar of the public pages, footer of the customer pages)
-        View::composer(['layouts.public', 'layouts.customer'], fn ($view) => $view->with('policyLine', rescue(fn () => app(PaymentRules::class)->shortLine(), 'No online payment. Pay at the shop in cash or by GCash.', false)));
+        View::composer(['layouts.public', 'layouts.customer', 'owner.dashboard'], fn ($view) => $view->with('policyLine', rescue(fn () => app(PaymentRules::class)->shortLine(), 'No online payment. Pay at the shop in cash or by GCash.', false)));
 
         // Error pages stay as simple as possible: the public layout leaves the floating chat out of them (Phase 7C)
         View::composer(['errors.*', 'errors::*'], fn ($view) => $view->with('isErrorPage', true));

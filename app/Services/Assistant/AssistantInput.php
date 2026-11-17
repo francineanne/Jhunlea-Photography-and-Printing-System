@@ -19,5 +19,7 @@ final class AssistantInput
         public readonly string $message,
         public readonly array $history = [],
         public readonly int $consecutiveAiReplies = 0,
+        // Phase 10E: the order or booking the customer's latest message is about ({type, id}), already checked to be theirs
+        public readonly ?array $about = null,
     ) {}
 }

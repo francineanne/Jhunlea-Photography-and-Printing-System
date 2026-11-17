@@ -7,6 +7,7 @@ use App\Models\AvailabilityRule;
 use App\Models\BlockedDate;
 use App\Models\ShopSetting;
 use App\Services\ShopSettingsService;
+use App\Support\Lumi;
 use App\Support\ShopSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -175,7 +176,7 @@ class OwnerPresence
      */
     public function awayNotice(): string
     {
-        if (! config('assistant.enabled')) {
+        if (! Lumi::on()) {
             return config('chat.messages.owner_unavailable_ai_off');
         }
 

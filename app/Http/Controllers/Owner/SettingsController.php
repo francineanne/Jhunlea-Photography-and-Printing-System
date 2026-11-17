@@ -10,6 +10,7 @@ use App\Http\Requests\Owner\Settings\UploadLimitsRequest;
 use App\Models\AvailabilityRule;
 use App\Models\BookingSetting;
 use App\Models\Faq;
+use App\Services\Assistant\LumiStatus;
 use App\Services\ShopSettingsService;
 use App\Support\PaymentRules;
 use App\Support\ShopSettings;
@@ -58,6 +59,10 @@ class SettingsController extends Controller
             ])->all(),
             'gcash' => ['name' => $settings->gcashName(), 'number' => $settings->gcashNumber()],
             'ruleSentences' => app(PaymentRules::class)->sentences(),
+            // Phase 10E: Lumi assistant
+            'lumi' => app(LumiStatus::class)->summary(),
+            'lumiFallback' => $settings->lumiFallbackText(),
+            'lumiDefault' => (string) config('assistant.messages.unavailable'),
             'faqCount' => Faq::query()->count(),
             'faqPublished' => Faq::query()->published()->count(),
         ]);

@@ -49,10 +49,11 @@ class CustomerContextBuilder
             return CustomerRecords::none();
         }
 
-        return $this->build($customer);
+        return $this->build($customer, $input->about);
     }
 
-    public function build(User $customer): CustomerRecords
+    /** @param  array{type?: mixed, id?: mixed}|null  $about  Phase 10E: the record the latest message is about, put first */
+    public function build(User $customer, ?array $about = null): CustomerRecords
     {
         $orderFinal = [PrintingOrderStatus::Rejected, PrintingOrderStatus::Completed, PrintingOrderStatus::Cancelled];
         $bookingFinal = [BookingStatus::Rejected, BookingStatus::Completed, BookingStatus::Cancelled];
@@ -70,7 +71,21 @@ class CustomerContextBuilder
             ...$bookings()->whereIn('status', $bookingFinal)->latest('updated_at')->latest('id')->limit(self::FINISHED)->get(),
         ])->sortByDesc(fn ($record) => $record->updated_at->getTimestamp())->take(self::FINISHED);
 
-        $records = [...$active->map(fn ($record) => $this->describe($record, $customer))->values(), ...$finished->map(fn ($record) => $this->describe($record, $customer))->values()];
+        // Phase 10E: the order or booking the customer is asking about leads the list (still only their own: the query
+        // below is limited to this customer, so a foreign id simply finds nothing), and is never listed twice
+        $first = null;
+        if (is_array($about) && in_array($about['type'] ?? null, ['printing_order', 'photography_booking'], true) && is_int($about['id'] ?? null)) {
+            $first = ($about['type'] === 'printing_order' ? $orders() : $bookings())->whereKey($about['id'])->first();
+        }
+        $same = fn ($record) => $first !== null && $record::class === $first::class && $record->getKey() === $first->getKey();
+        $active = $active->reject($same);
+        $finished = $finished->reject($same);
+
+        $records = [
+            ...($first === null ? [] : [$this->describe($first, $customer)]),
+            ...$active->map(fn ($record) => $this->describe($record, $customer))->values(),
+            ...$finished->map(fn ($record) => $this->describe($record, $customer))->values(),
+        ];
 
         return CustomerRecords::forCustomer($customer->id, ...$this->capped($records));
     }

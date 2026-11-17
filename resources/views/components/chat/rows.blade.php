@@ -59,24 +59,27 @@
                         <span class="font-mono text-[11px] text-app-text-2" x-show="row.time" x-text="row.time"></span>
                     </p>
 
-                    <a x-show="row.message.about" x-bind:href="row.message.about?.url" class="inline-flex min-h-11 items-center gap-1 rounded-full border border-app-border px-2 py-0.5 font-mono text-[11px] text-app-text-2 hover:text-brand focus-ring sm:min-h-8">
-                        <x-ui.icon name="receipt_long" :size="14" /><span x-text="'About ' + row.message.about?.reference"></span>
+                    <a x-show="row.message.about" x-bind:href="row.message.about?.url" data-chat-about-card class="inline-flex min-h-11 items-center gap-1 rounded-full border border-app-border px-2 py-0.5 font-mono text-[11px] text-app-text-2 hover:text-brand focus-ring sm:min-h-8">
+                        <x-ui.icon name="receipt_long" :size="14" /><span class="min-w-0"><span class="font-semibold" x-text="row.message.about?.reference"></span><span x-show="row.message.about?.title" class="font-sans" x-text="' · ' + (row.message.about?.title ?? '')"></span><span x-show="row.message.about?.status" class="ml-1 rounded-full bg-neutral-100 px-1.5 font-sans text-[10px] font-semibold dark:bg-white/10" x-text="row.message.about?.status"></span><span x-show="row.message.about?.when || row.message.about?.due" class="ml-1 font-sans" x-text="row.message.about?.due ?? row.message.about?.when"></span></span>
                     </a>
 
                     <div class="whitespace-pre-wrap rounded-card px-3.5 py-2.5 text-sm leading-relaxed [overflow-wrap:anywhere]"
                         x-bind:class="(row.message.mine ? 'bg-brand-deep text-white ' + (row.first ? 'rounded-tr-md' : '') : 'bg-neutral-100 text-app-text dark:bg-white/10 ' + (row.first ? 'rounded-tl-md' : ''))"
-                        x-text="row.message.body"></div>
+                        x-html="$linkify(row.message.body)"></div>
 
                     <button type="button" x-show="tab === 'ask' && row.message.sender_type === 'assistant' && row.message.intent === 'handoff'" x-on:click="contactOwner()" data-chat-handoff
                         class="inline-flex min-h-11 items-center gap-1.5 rounded-control border border-app-border bg-app-card px-3 text-sm font-semibold text-app-text hover:border-brand hover:text-brand focus-ring dark:hover:text-[#ffb4ac]">
                         <x-ui.icon name="support_agent" :size="18" />Contact the owner
                     </button>
                     <p x-show="row.message.via_lumi" class="text-[11px] text-app-text-2">Sent from your Ask Lumi chat</p>
-                    <p x-show="row.message.status === 'sending'" class="text-[11px] text-app-text-2">Sending</p>
+                    {{-- Phase 10E: sending (clock), sent (check), seen by the other person --}}
+                    <p x-show="row.message.status === 'sending'" class="inline-flex items-center gap-1 text-[11px] text-app-text-2" data-chat-sending><span class="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>Sending</p>
+                    <p x-show="row.lastMine && !row.seen" class="inline-flex items-center gap-1 text-[11px] text-app-text-2" data-chat-sent><span class="material-symbols-outlined text-[14px]" aria-hidden="true">check</span>Sent</p>
+                    <p x-show="row.seen" class="inline-flex items-center gap-1 text-[11px] font-semibold text-app-text-2" data-chat-seen><span class="material-symbols-outlined text-[14px]" aria-hidden="true">done_all</span>Seen</p>
                     <p x-show="row.message.status === 'failed'" class="flex flex-wrap items-center justify-end gap-x-1 text-xs" data-chat-failed>
                         <span class="inline-flex items-center gap-1 font-semibold text-status-red dark:text-[#ffb4ac]"><x-ui.icon name="error" :size="16" />Not sent.</span>
-                        <button type="button" x-on:click="retryMessage(row.message)" class="min-h-11 rounded px-2 font-semibold text-status-red underline focus-ring dark:text-[#ffb4ac]">Retry</button>
-                        <button type="button" x-on:click="discardMessage(row.message)" class="min-h-11 rounded px-2 font-semibold text-app-text-2 underline focus-ring">Discard</button>
+                        <button type="button" x-on:click="retryMessage(row.message)" class="min-h-11 rounded px-2 font-semibold text-status-red underline focus-ring dark:text-[#ffb4ac]">Tap to retry</button>
+                        <button type="button" x-on:click="discardMessage(row.message)" class="min-h-11 rounded px-2 font-semibold text-app-text-2 underline focus-ring">Delete</button>
                     </p>
 
                     {{-- Recommendation cards: only what the server built from the catalog --}}

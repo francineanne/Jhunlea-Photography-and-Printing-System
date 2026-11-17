@@ -27,6 +27,7 @@ use App\Http\Controllers\Owner\CustomerController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Http\Controllers\Owner\FaqController as OwnerFaqController;
 use App\Http\Controllers\Owner\IncomeReportController;
+use App\Http\Controllers\Owner\LumiSettingsController;
 use App\Http\Controllers\Owner\MessageController as OwnerMessageController;
 use App\Http\Controllers\Owner\OwnerAskController;
 use App\Http\Controllers\Owner\OwnerAssistController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Owner\ScheduleController;
 use App\Http\Controllers\Owner\ServiceController;
 use App\Http\Controllers\Owner\ServiceOptionController;
 use App\Http\Controllers\Owner\SettingsController;
+use App\Http\Controllers\Owner\StartConversationController;
 use App\Http\Controllers\Owner\ThemeController;
 use App\Http\Controllers\Owner\WalkInController;
 use App\Http\Controllers\Public\FaqController as PublicFaqController;
@@ -94,8 +96,15 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware(['auth',
 // minutes). Every customer feature route needs a verified email: see the loop at the end of this file
 Route::middleware('auth')->prefix('email')->name('verification.')->controller(EmailVerificationController::class)->group(function () {
     Route::get('/verify', 'notice')->middleware('throttle:60,1,verification-notice')->name('notice');
-    Route::get('/verify/{id}/{hash}', 'verify')->middleware(['signed', 'throttle:12,1,verification-verify'])->name('verify');
+    // Phase 10E: "Check your email" asks this every few seconds; only {verified: bool} of the signed-in account
+    Route::get('/verify/status', 'status')->middleware('throttle:30,1,verification-status')->name('status');
     Route::post('/verification-notification', 'send')->middleware('throttle:3,10,verification-send')->name('send');
+});
+
+// Phase 10E: the link works on any device, signed in or not. The signature, the user id and the email hash are checked
+// in the controller (so a bad link gets a friendly page); see EmailVerificationController::verify()
+Route::prefix('email')->name('verification.')->controller(EmailVerificationController::class)->group(function () {
+    Route::get('/verify/{id}/{hash}', 'verify')->middleware('throttle:12,1,verification-verify')->name('verify');
 });
 
 // The account page (Phase 6C): one controller for both areas, each in its own role group. Viewing is relaxed; the
@@ -240,6 +249,9 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/settings')->name('owner
     Route::post('/payment-rules', 'paymentRules')->middleware('throttle:20,1,owner-settings-payment-rules')->name('payment-rules');
     Route::post('/uploads', 'uploads')->middleware('throttle:20,1,owner-settings-uploads')->name('uploads');
     Route::post('/uploads/reset', 'resetUploads')->middleware('throttle:10,1,owner-settings-uploads-reset')->name('uploads.reset');
+    // Phase 10E: Lumi assistant: the switch and fallback text, and "Test Lumi" (3 every 10 minutes: it uses the budget)
+    Route::post('/lumi', [LumiSettingsController::class, 'update'])->middleware('throttle:20,1,owner-settings-lumi')->name('lumi');
+    Route::post('/lumi/test', [LumiSettingsController::class, 'test'])->middleware('throttle:3,10,owner-settings-lumi-test')->name('lumi.test');
 });
 
 // The owner's Activity log (Phase 8E): the audit trail, read only, reached from Settings. No route edits or deletes a row
@@ -431,6 +443,10 @@ Route::middleware(['auth', 'role:owner'])->prefix('owner/messages')->name('owner
         Route::post('/{conversation}/assist/suggest', 'suggest')->middleware('throttle:6,1,owner-chat-suggest')->name('assist.suggest');
         Route::post('/{conversation}/assist/summarize', 'summarize')->middleware('throttle:6,1,owner-chat-summarize')->name('assist.summarize');
     });
+
+    // Phase 10E: the owner writes first: find a customer with an account, then open or create their Studio thread
+    Route::get('/new', [StartConversationController::class, 'create'])->middleware('throttle:60,1,owner-chat-new')->name('new');
+    Route::post('/start', [StartConversationController::class, 'store'])->middleware('throttle:20,1,owner-chat-start')->name('start');
 
     Route::controller(OwnerMessageController::class)->group(function () {
         Route::get('/', 'index')->middleware('throttle:60,1,owner-chat-inbox')->name('index');

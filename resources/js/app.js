@@ -424,19 +424,36 @@ Alpine.data('uiPageLoader', () => ({
         this.run(document.readyState === 'complete' ? Promise.resolve() : new Promise((done) => window.addEventListener('load', done, { once: true })));
     },
 
-    // The bar eases toward 90% while the page loads, jumps to 100% when it has loaded, then the loader fades out
+    // Phase 10E (decided by the lead developer): the first page of a visit shows the splash for 2 seconds, so its
+    // shutter animation plays once in full; a click, a tap or any key skips it; it never stays past 2.5 seconds even
+    // when the page is slow. The bar fills over those 2 seconds.
     run(loaded) {
+        const SHOW_MS = 2000;
+        const CAP_MS = 2500;
+        const started = Date.now();
+
         this.pct = 0;
         clearInterval(this.ticker);
         clearTimeout(this.hider);
-        this.ticker = setInterval(() => (this.pct += (90 - this.pct) * 0.3), 60);
+        this.ticker = setInterval(() => (this.pct = Math.min(100, ((Date.now() - started) / SHOW_MS) * 100)), 50);
 
-        // Phase 10D: the splash never stays longer than 600 ms in all, loaded or not
-        Promise.race([loaded, new Promise((done) => setTimeout(done, 350))]).then(() => {
-            clearInterval(this.ticker);
-            this.pct = 100;
-            this.hider = setTimeout(() => (this.show = false), 250);
-        });
+        const skip = () => this.hide();
+        ['pointerdown', 'keydown'].forEach((name) => window.addEventListener(name, skip, { once: true, capture: true }));
+        this.cleanup = () => ['pointerdown', 'keydown'].forEach((name) => window.removeEventListener(name, skip, { capture: true }));
+
+        // At least the full animation, then as soon as the page has loaded; never longer than the cap
+        Promise.race([
+            Promise.all([loaded, new Promise((done) => setTimeout(done, SHOW_MS))]),
+            new Promise((done) => setTimeout(done, CAP_MS)),
+        ]).then(() => this.hide());
+    },
+
+    hide() {
+        if (!this.show) return;
+        clearInterval(this.ticker);
+        this.cleanup?.();
+        this.pct = 100;
+        this.hider = setTimeout(() => (this.show = false), 120);
     },
 
     replay() {

@@ -11,6 +11,9 @@
     $thread = 999999999;
     $config = [
         'conversationId' => $conversation?->id,
+        // Phase 10E: the customer's orders and bookings (side panel, attach) and the one a "Message customer about this" opened with
+        'records' => $records ?? [],
+        'about' => $about ?? null,
         'filter' => $filter,
         'search' => $search,
         'maxChars' => (int) config('chat.message_max_chars'),
@@ -52,14 +55,17 @@
             <div class="min-w-0">
                 <h1 class="font-display text-2xl font-semibold leading-tight sm:text-3xl">Messages</h1>
                 <p class="mt-0.5 text-sm text-app-text-2 lg:truncate">Customer messages from the studio chat. {{ $name }}, the AI assistant, answers only while you are away.</p>
+                {{-- Phase 10E: the owner can write first --}}
+                <x-ui.button :href="route('owner.messages.new')" size="sm" class="mt-2"><x-ui.icon name="edit_square" :size="18" />New message</x-ui.button>
             </div>
 
             <section aria-labelledby="presence-title" class="flex shrink-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-3" data-presence>
                 <h2 id="presence-title" class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Your availability</h2>
                 <div class="flex flex-col gap-1">
                     <div class="grid grid-cols-3 gap-1 rounded-control border border-app-border bg-app-card p-1 dark:bg-white/5" role="radiogroup" aria-labelledby="presence-title">
+                        {{-- Phase 10E: each mode says what it does (tooltip, and the line below for the chosen one) --}}
                         @foreach (['available' => 'Available', 'auto' => 'Auto', 'away' => 'Away'] as $mode => $label)
-                            <button type="button" role="radio" x-bind:aria-checked="presence.mode === '{{ $mode }}'" x-on:click="setPresence('{{ $mode }}')" x-bind:disabled="presence.saving"
+                            <button type="button" role="radio" title="{{ ['available' => 'You answer; Lumi stays quiet in the studio chat.', 'auto' => 'Away after a while without activity on the owner pages; Lumi answers while you are away.', 'away' => 'Lumi answers customers in the studio chat until you reply.'][$mode] }}" x-bind:aria-checked="presence.mode === '{{ $mode }}'" x-on:click="setPresence('{{ $mode }}')" x-bind:disabled="presence.saving"
                                 x-bind:class="presence.mode === '{{ $mode }}' ? 'bg-neutral-100 text-app-text dark:bg-white/15' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"
                                 class="min-h-11 rounded-control px-3 text-sm font-semibold transition-colors duration-150 focus-ring disabled:opacity-60 sm:min-h-9">{{ $label }}</button>
                         @endforeach
@@ -155,7 +161,7 @@
                                     <span class="truncate">{{ $conversation->customer->name }}</span>
                                     <span x-show="thread.conversation?.resolved" x-cloak class="shrink-0 rounded-full bg-status-gray-bg px-2 py-px text-[11px] font-semibold text-status-gray">Resolved</span>
                                 </h2>
-                                <p class="flex min-w-0 items-center gap-x-3 overflow-hidden whitespace-nowrap text-xs">
+                                <p class="flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
                                     <a href="{{ route('owner.customers.show', $conversation->customer_id) }}" class="inline-flex min-h-11 shrink-0 items-center gap-1 font-semibold text-brand hover:underline focus-ring sm:min-h-6 dark:text-[#ffb4ac]"><x-ui.icon name="person" :size="14" />Customer page</a>
                                     <template x-for="about in aboutLinks" x-bind:key="about.url">
                                         <a x-bind:href="about.url" class="inline-flex min-h-11 shrink-0 items-center gap-1 font-mono text-app-text-2 hover:text-brand focus-ring sm:min-h-6"><x-ui.icon name="receipt_long" :size="14" /><span x-text="about.reference"></span></a>
@@ -179,6 +185,7 @@
                         <p class="flex items-center gap-1.5 border-b px-3 py-1 text-xs sm:px-4" data-lumi-status
                             x-bind:class="thread.state?.studio?.lumi_active ? 'border-status-violet/20 bg-status-violet-bg/70 text-status-violet dark:bg-white/5 dark:text-[#c4b5fd]' : 'border-app-border text-app-text-2'">
                             <x-ui.icon name="camera" :size="14" />
+                            <span x-show="thread.state?.studio?.lumi_answered > 0" x-cloak class="font-semibold" data-lumi-answered x-text="'{{ $name }} answered ' + thread.state?.studio?.lumi_answered + (thread.state?.studio?.lumi_answered === 1 ? ' message' : ' messages') + ' while you were away.'"></span>
                             <span x-show="thread.state?.studio?.lumi_active">{{ $name }} is answering in this thread while you are away. Your next reply stops it.</span>
                             <span x-show="!thread.state?.studio?.lumi_active">{{ $name }} is not answering in this thread.</span>
                         </p>
@@ -199,18 +206,46 @@
                         </div>
 
                         {{-- pb-16: the last bubble clears the floating Ask Lumi button when the list is scrolled to its end --}}
-                        <div x-ref="log" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-16 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:px-4">
+                        <div x-ref="log" x-on:scroll.passive="onLogScroll()" role="log" aria-live="polite" aria-label="Messages" tabindex="0" class="chat-scroll flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-16 pt-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/40 sm:px-4">
                             <button type="button" x-show="thread.state?.has_more_before" x-cloak x-on:click="loadEarlier()" x-bind:disabled="thread.earlier"
                                 class="mx-auto inline-flex min-h-11 items-center gap-1.5 rounded-full border border-app-border px-4 text-sm font-semibold text-app-text-2 hover:bg-black/5 disabled:opacity-60 focus-ring dark:hover:bg-white/5">
                                 <x-ui.icon name="expand_less" :size="18" />Load earlier
                             </button>
                             <p x-show="thread.loading" class="m-auto flex items-center gap-2 text-sm text-app-text-2"><x-ui.aperture-spinner :size="20" />Loading the conversation</p>
                             <x-chat.rows />
+                            {{-- Phase 10E: new messages arrived while the reader was scrolled up --}}
+                            <button type="button" x-show="newBelow > 0" x-cloak x-on:click="jumpToNew()" data-chat-new-pill
+                                class="sticky bottom-2 z-10 mx-auto mt-2 inline-flex min-h-11 items-center gap-1 self-center rounded-full bg-brand px-4 text-sm font-semibold text-white shadow-lg focus-ring sm:min-h-9">
+                                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_downward</span><span x-text="newBelow === 1 ? '1 new message' : newBelow + ' new messages'"></span>
+                            </button>
                         </div>
 
                         <x-chat.banner />
 
                         <form x-on:submit.prevent="submit()" class="border-t border-app-border px-2 pb-1.5 pt-2 sm:px-3">
+                            {{-- Phase 10E: the order or booking this reply is about (like an order card in a shop chat) --}}
+                            <div class="mb-1.5 flex flex-wrap items-center gap-2">
+                                <p x-show="about" x-cloak class="inline-flex min-w-0 max-w-full items-center gap-1 rounded-full border border-app-border bg-app-card px-2 py-1 text-[11px]" data-chat-about>
+                                    <x-ui.icon name="receipt_long" :size="14" /><span class="truncate" x-text="'About ' + about?.reference + ' - ' + about?.title + (about?.when ? ', ' + about.when : '')"></span>
+                                    <button type="button" x-on:click="about = null" aria-label="Remove this reference" class="-my-3 grid size-11 shrink-0 place-items-center rounded-full focus-ring"><x-ui.icon name="close" :size="14" /></button>
+                                </p>
+                                <details x-show="records.length > 0" class="group relative" data-chat-records>
+                                    <summary class="inline-flex min-h-11 cursor-pointer list-none items-center gap-1 rounded-control px-2 text-xs font-semibold text-app-text-2 hover:text-app-text focus-ring sm:min-h-8 [&::-webkit-details-marker]:hidden">
+                                        <x-ui.icon name="attach_file" :size="16" />Orders and bookings <span class="font-mono" x-text="'(' + records.length + ')'"></span>
+                                    </summary>
+                                    <ul class="thin-scroll absolute bottom-full left-0 z-20 mb-1 max-h-72 w-[min(22rem,80vw)] overflow-y-auto rounded-card border border-app-border bg-app-card p-1 shadow-lg">
+                                        <template x-for="record in records" x-bind:key="record.type + record.id">
+                                            <li class="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-black/5 dark:hover:bg-white/5" x-bind:class="record.active ? '' : 'opacity-70'">
+                                                <a x-bind:href="record.url" class="min-w-0 flex-1 rounded focus-ring">
+                                                    <span class="block truncate font-mono text-xs font-semibold" x-text="record.reference + ' · ' + record.status"></span>
+                                                    <span class="block truncate text-xs text-app-text-2" x-text="record.title + (record.when ? ', ' + record.when : '') + (record.due ? ' · ' + record.due : '')"></span>
+                                                </a>
+                                                <button type="button" x-on:click="attach(record); $el.closest('details').open = false" class="inline-flex min-h-11 shrink-0 items-center rounded-control px-2 text-xs font-semibold text-brand hover:underline focus-ring sm:min-h-8 dark:text-[#ffb4ac]">Attach<span class="sr-only" x-text="' ' + record.reference"></span></button>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </details>
+                            </div>
                             <x-chat.composer-box :label="'Your reply to '.$conversation->customer->name" send-label="Send reply" placeholder="Write your reply" icon="send" />
                             <div class="mt-0.5 flex min-h-6 items-center justify-between gap-2 px-1 text-[11px] text-app-text-2">
                                 <span class="hidden sm:inline">Enter sends, Shift + Enter adds a new line</span>

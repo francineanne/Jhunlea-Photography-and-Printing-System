@@ -19,6 +19,7 @@ use App\Services\Assistant\Redactor;
 use App\Services\Assistant\ReplyCleanup;
 use App\Services\Assistant\ResponseValidator;
 use App\Services\Assistant\ThreadMessage;
+use App\Support\Lumi;
 use App\Support\MessageLanguage;
 use App\Support\PlainText;
 use Illuminate\Support\Facades\Log;
@@ -127,6 +128,8 @@ class OwnerAskService
             $message === '' => new OwnerAskResult(config('assistant.messages.empty'), AssistantOutcome::RejectedInput),
             mb_strlen($message) > $max => new OwnerAskResult(str_replace(':max', (string) $max, config('assistant.messages.too_long')), AssistantOutcome::RejectedInput),
             ! config('assistant.enabled') => new OwnerAskResult($this->text('owner_ask'), AssistantOutcome::FallbackDisabled),
+            // Phase 10E: the owner turned Lumi off; say so plainly
+            Lumi::offInSettings() => new OwnerAskResult('Lumi is turned off in Settings.', AssistantOutcome::FallbackDisabled),
             ($limited = $this->limits->check(self::FEATURE, $actor)) !== null => $this->limited($limited),
             default => null,
         };

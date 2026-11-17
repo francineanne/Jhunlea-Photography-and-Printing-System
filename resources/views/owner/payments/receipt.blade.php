@@ -109,7 +109,7 @@
             </div>
         @endif
 
-        <p class="foot">Payment is made face-to-face at {{ $shopName }}. Full payment, cash or GCash. This is not an official receipt.</p>
+        <p class="foot">Payment received by {{ $shopName }}, in cash or GCash. This is not an official receipt.</p>
     </main>
 </body>
 </html>

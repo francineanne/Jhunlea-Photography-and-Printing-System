@@ -276,6 +276,24 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
   - [ ] Mga table sa phone: nananatiling scroll sa loob ng sariling kahon (9C), hindi pa stacked cards
   - [ ] Collapsible na summary ng booking wizard sa phone
 
+### 10E — Fixes mula sa live system (branch `phase-10e-fixes`) · built, naghihintay ng review
+- [x] Isang migration (`2026_11_28_100000_add_lumi_settings_to_shop_settings`): `lumi_enabled` at `lumi_fallback_text`
+- [x] Verification link: gumagana sa kahit anong device (naka-sign in o hindi); ang "Check your email" page ay lumilipat na mag-isa
+- [x] Walang lumalabas sa frame: form grid na sumusunod sa lapad ng card (container queries); overview tiles na hindi nagbabanggaan ang label at badge
+- [x] Lumang payment wording (overview callout, receipt, notifications, wizard) inayos ayon sa 10B
+- [x] Chat: Sent / Seen, "New messages" pill, clickable https links, Today / Yesterday, Enter sa phone ay bagong linya
+- [x] Ang owner ay puwedeng mag-message muna ("New message", "Message" sa customer page, "Message customer about this" sa order at booking)
+- [x] Message tungkol sa isang order o booking (chip at card); inuuna ito ni Lumi sa facts
+- [x] Settings > Lumi assistant: on/off, status, Test Lumi, sariling fallback text
+- [x] Isang away line lang kapag naka-off o down si Lumi habang away ang owner
+- [x] Splash: 2 segundo, puwedeng i-skip
+- [ ] Bukas pa (10E):
+  - [ ] Owner notification kapag 5 beses pumalya si Lumi sa 30 minuto (5f)
+  - [ ] Isang bell notification lang bawat sunod-sunod na message (7h)
+  - [ ] Notification link ng owner message na may reference papunta mismo sa order o booking (9f)
+  - [ ] "Attach order/booking" menu sa composer ng customer (nandiyan na ang chip mula sa order at booking pages)
+  - [ ] Totoong dalawang-browser na mabilis na palitan ng message sa loob ng isang minuto
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

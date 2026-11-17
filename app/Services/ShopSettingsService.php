@@ -45,6 +45,12 @@ class ShopSettingsService
         $this->write(array_intersect_key($values, array_flip([...ShopSettings::PAYMENT_RULES, 'prepay_from', ...ShopSettings::GCASH])), AuditAction::PaymentRulesChanged);
     }
 
+    /** Phase 10E: the owner's Lumi switch and the text customers read when Lumi cannot answer (null = the starting text). */
+    public function saveLumi(bool $enabled, ?string $fallbackText): void
+    {
+        $this->write(['lumi_enabled' => $enabled, 'lumi_fallback_text' => $fallbackText]);
+    }
+
     /** The owner's presence mode of the studio chat (Phase 7B). */
     public function savePresence(OwnerPresenceMode $mode): void
     {

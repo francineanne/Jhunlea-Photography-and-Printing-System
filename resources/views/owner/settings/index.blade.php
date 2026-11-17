@@ -19,6 +19,7 @@
         'payments' => ['4. Payment rules', 'payments'],
         'faq' => ['5. FAQ', 'quiz'],
         'activity' => ['6. Activity log', 'history'],
+        'lumi' => ['7. '.config('assistant.name').' assistant', 'camera'],
     ];
     $hourText = fn (?string $time) => $time ? \Illuminate\Support\Carbon::createFromFormat('H:i:s', $time)->format('g:i A') : '';
     $unit = fn (int $value, string $unit) => $value.' '.($unit === 'files' ? Str::plural('file', $value) : $unit);
@@ -299,6 +300,58 @@
         </section>
 
         {{-- 6. Activity log (Phase 8E) --}}
+        {{-- 7. Lumi assistant (Phase 10E): the switch, how it is doing, a test, and what customers read when it cannot answer --}}
+        <section id="lumi" x-show="tab === 'lumi'" x-transition.opacity.duration.200ms class="mt-6 scroll-mt-24 space-y-6" aria-labelledby="lumi-title">
+            @php($badge = ['working' => 'bg-status-green-bg text-status-green', 'backup' => 'bg-status-amber-bg text-status-amber', 'down' => 'bg-status-red-bg text-status-red', 'off' => 'bg-status-gray-bg text-status-gray'][$lumi['state']])
+            <div class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <h2 id="lumi-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="camera" :size="22" class="text-brand" />{{ config('assistant.name') }} assistant</h2>
+                        <p class="mt-1 text-sm text-app-text-2">{{ config('assistant.name') }} answers customers in Ask {{ config('assistant.name') }}, and in the studio chat only while you are away (<a href="{{ route('owner.messages.index') }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">your availability is set in Messages</a>).</p>
+                    </div>
+                    <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold {{ $badge }}" data-lumi-state="{{ $lumi['state'] }}"><span class="size-2 rounded-full bg-current" aria-hidden="true"></span>{{ \App\Services\Assistant\LumiStatus::label($lumi['state']) }}</span>
+                </div>
+
+                <dl class="@container mt-5 grid gap-3 text-sm [grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))]">
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Last answer</dt><dd class="mt-1 font-semibold">{{ $lumi['last_answer_ago'] ?? 'None yet' }}</dd><dd class="text-xs text-app-text-2">{{ $lumi['last_answer_by'] ?? '' }}</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Answers today</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['answers_today'] }}</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Fallbacks today</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['fallbacks_today'] }}</dd><dd class="text-xs text-app-text-2">Customers saw the fallback message</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Errors, last hour</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['errors_last_hour'] }}</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Handoffs today</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['handoffs_today'] }}</dd><dd class="text-xs text-app-text-2">Passed to you</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Today's budget</dt><dd class="mt-1 font-semibold tabular-nums">{{ $lumi['calls_today'] }} of {{ $lumi['budget'] }} calls</dd>
+                        <dd class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-app-border" role="img" aria-label="{{ $lumi['budget_percent'] }}% of today's budget used"><span class="block h-full rounded-full bg-brand" style="width: {{ $lumi['budget_percent'] }}%"></span></dd></div>
+                </dl>
+                @if ($lumi['off_on_server'])
+                    <p class="mt-4 text-sm text-app-text-2">{{ config('assistant.name') }} is switched off on the server (AI_ENABLED), so it stays off whatever is chosen below.</p>
+                @endif
+
+                <form method="POST" action="{{ route('owner.settings.lumi.test') }}" class="mt-5 flex flex-wrap items-center gap-3">
+                    @csrf
+                    <x-ui.button type="submit" variant="outline"><x-ui.icon name="science" :size="18" />Test {{ config('assistant.name') }}</x-ui.button>
+                    <p class="text-xs text-app-text-2">Sends one short question through the real AI and tells you who answered and how fast. It counts as one question of today's budget; at most 3 tests every 10 minutes.</p>
+                </form>
+            </div>
+
+            <form method="POST" action="{{ route('owner.settings.lumi') }}" class="rounded-card border border-app-border bg-app-card shadow-sm dark:shadow-none"
+                data-confirm="Save the {{ config('assistant.name') }} settings?" data-confirm-text="Turning {{ config('assistant.name') }} off means customers get your message instead of an answer, in Ask {{ config('assistant.name') }} and in the studio chat while you are away." data-confirm-ok="Save">
+                @csrf
+                <div class="space-y-5 p-4 sm:p-6">
+                    <input type="hidden" name="enabled" value="0">
+                    <x-ui.checkbox id="lumi-enabled" name="enabled" value="1" :checked="! $lumi['off_in_settings']"><span class="font-semibold">{{ config('assistant.name') }} answers customers</span> <span class="text-app-text-2">(turn off to stop every AI answer)</span></x-ui.checkbox>
+
+                    <x-ui.textarea id="lumi-fallback" name="fallback_text" label="What customers read when {{ config('assistant.name') }} cannot answer" rows="2" maxlength="{{ \App\Http\Controllers\Owner\LumiSettingsController::FALLBACK_MAX }}"
+                        hint="Up to 300 characters, plain text. Leave it empty to use the starting text shown below." placeholder="For example: {{ config('assistant.name') }} is resting. Message the studio and we will reply soon.">{{ old('fallback_text', $lumiFallback) }}</x-ui.textarea>
+                    <p class="-mt-3 text-xs text-app-text-2">The starting text: <q>{{ $lumiDefault }}</q></p>
+                    @if ($lumiFallback !== null)
+                        <x-ui.checkbox id="lumi-reset" name="reset_fallback" value="1"><span>Reset to the starting text</span></x-ui.checkbox>
+                    @endif
+                </div>
+                <div class="flex flex-col gap-3 rounded-b-card border-t border-app-border bg-neutral-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:bg-white/5">
+                    <p class="flex items-start gap-2 text-xs text-app-text-2"><x-ui.icon name="info" :size="16" class="mt-px shrink-0 text-brand" />No API key is ever shown here. Keys live only on the server.</p>
+                    <x-ui.button type="submit" class="shrink-0"><x-ui.icon name="save" :size="18" />Save {{ config('assistant.name') }} settings</x-ui.button>
+                </div>
+            </form>
+        </section>
         <section id="activity" x-show="tab === 'activity'" x-transition.opacity.duration.200ms class="mt-6 scroll-mt-24" aria-labelledby="activity-title">
             <div class="flex flex-col gap-4 rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between sm:p-6 dark:shadow-none">
                 <div>

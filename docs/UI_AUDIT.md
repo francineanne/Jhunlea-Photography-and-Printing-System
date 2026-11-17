@@ -87,3 +87,17 @@ Severity: **A** ugly or broken, **B** uneven, **C** nice to have.
 
 The customer run was repeated after the account-page fix; the owner run was done after the form-grid and time-picker
 changes. "No issue" means none of the measured problems; it is not a claim about taste.
+
+## Phase 10E: fixes from the live system
+
+| # | Screen | Problem | Sev. | Fix |
+|---|---|---|---|---|
+| E1 | Schedule editor, Blocked days (2 columns, sidebar open) | "First day" and "Last day" overlapped and left the card | A | The form grid follows its card's width (container query), not the screen; date inputs give up their intrinsic width |
+| E2 | Owner overview tiles | Uppercase labels collided with their badges and wrapped badly | A | `.eyebrow` labels (balanced wrap), the badge drops below the label when the tile is narrow, numbers never wrap, tiles sized by container |
+| E3 | Owner overview | The Phase 5 callout ("never takes payment online") was out of date | A | The one current payment line with a link to Payment rules |
+| E4 | Receipt, booking page, order page, wizard, dashboard, notification | Said "full payment", "on the day of the shoot", "pay the full amount when you pick it up" | B | Reworded to the 10B rules |
+| E5 | Verification | A link opened on a phone did not verify the desktop session | A | Works on any device; the waiting page notices within 5 seconds |
+| E6 | Chat | No Seen, no pill for new messages, links not clickable | B | Sent / Seen marks, "New messages" pill, safe https links |
+| E7 | Splash | Too quick to see | C | 2 seconds, skippable |
+
+Checked by script (frame check): every control inside its card and form grid, no two controls overlapping, no date input under 120 px, no text cut without an ellipsis, no label colliding with its badge, at 360, 768, 1024, 1280, 1440 and 1700 px, owner pages with the sidebar open and folded.

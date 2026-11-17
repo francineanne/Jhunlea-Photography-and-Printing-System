@@ -1,3 +1,4 @@
+import { linkify } from './chat-common';
 // Phase 10D: the small interface helpers added in the final polish pass. Everything here is an enhancement: with
 // JavaScript off every page still shows all its content and every form still posts.
 
@@ -559,7 +560,47 @@ const uiHint = (name) => ({
     },
 });
 
+// Phase 10E: "Check your email" asks every 5 seconds (only while the tab is visible) whether the account was verified
+// on another device, and moves on to the dashboard when it was. Errors simply wait longer.
+const verifyWatch = (statusUrl, nextUrl) => ({
+    timer: null,
+    wait: 5000,
+
+    init() {
+        this.schedule();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') this.check();
+        });
+    },
+
+    schedule() {
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this.check(), this.wait);
+    },
+
+    async check() {
+        if (document.visibilityState !== 'visible') {
+            this.schedule();
+            return;
+        }
+        try {
+            const response = await fetch(statusUrl, { headers: { Accept: 'application/json' }, credentials: 'same-origin', cache: 'no-store' });
+            if (!response.ok) throw new Error(String(response.status));
+            const data = await response.json();
+            if (data.verified === true) {
+                window.location.assign(nextUrl);
+                return;
+            }
+            this.wait = 5000;
+        } catch (error) {
+            this.wait = Math.min(this.wait * 2, 60000);
+        }
+        this.schedule();
+    },
+});
+
 export default function registerPolish(Alpine) {
+    Alpine.magic('linkify', () => linkify);
     Alpine.data('uiTimePicker', uiTimePicker);
     Alpine.data('uiFilterSheet', uiFilterSheet);
     Alpine.data('uiConfirm', uiConfirm);
@@ -568,6 +609,7 @@ export default function registerPolish(Alpine) {
     Alpine.data('sidebarToggle', sidebarToggle);
     Alpine.data('liveUpdates', liveUpdates);
     Alpine.data('uiHint', uiHint);
+    Alpine.data('verifyWatch', verifyWatch);
 }
 
 export { csrf, reduced, root, store, toast };

@@ -6,6 +6,7 @@ use App\Enums\AssistantFeature;
 use App\Enums\AssistantIntent;
 use App\Enums\AssistantOutcome;
 use App\Services\Assistant\Exceptions\ProviderBadResponse;
+use App\Support\Lumi;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -89,7 +90,8 @@ class AssistantEngine
             return new AssistantResult(str_replace(':max', (string) $max, config('assistant.messages.too_long')), AssistantOutcome::RejectedInput);
         }
 
-        if (! config('assistant.enabled')) {
+        // Phase 10E: the server switch (.env) and the owner's switch (Settings) must both allow it
+        if (! Lumi::on()) {
             return $this->fallback($input->feature, AssistantOutcome::FallbackDisabled);
         }
 
@@ -107,7 +109,7 @@ class AssistantEngine
             return $this->fallback($input->feature, $limited);
         }
 
-        $input = new AssistantInput($input->feature, $input->actor, $message, $input->history, $input->consecutiveAiReplies);
+        $input = new AssistantInput($input->feature, $input->actor, $message, $input->history, $input->consecutiveAiReplies, $input->about);
         $records = null;
 
         $this->call = $this->chain->call($input->feature, $input->actor, function () use ($input, &$records) {

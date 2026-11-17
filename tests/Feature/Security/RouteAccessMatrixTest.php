@@ -80,7 +80,9 @@ class RouteAccessMatrixTest extends TestCase
         'GET email/verify' => self::SIGNED_IN,
         // Phase 10C: the reset code page; an old reset link only redirects to "Forgot password"
         'GET reset-password' => self::GUEST,
-        'GET email/verify/{id}/{hash}' => self::SIGNED_IN,
+        // Phase 10E: the link verifies on any device, signed in or not (the signature and the email hash are the check)
+        'GET email/verify/{id}/{hash}' => self::PUBLIC,
+        'GET email/verify/status' => self::SIGNED_IN,
         'POST email/verification-notification' => self::SIGNED_IN,
         // CUSTOMER
         'GET my/account' => self::CUSTOMER,
@@ -141,6 +143,10 @@ class RouteAccessMatrixTest extends TestCase
         'GET owner/assistant/history' => self::OWNER,
         'GET owner/bookings' => self::OWNER,
         'GET owner/live' => self::OWNER,
+        'GET owner/messages/new' => self::OWNER,
+        'POST owner/settings/lumi' => self::OWNER,
+        'POST owner/settings/lumi/test' => self::OWNER,
+        'POST owner/messages/start' => self::OWNER,
         'POST owner/bookings/walk-in' => self::OWNER,
         'GET owner/bookings/walk-in/new' => self::OWNER,
         'GET owner/bookings/walk-in/slots' => self::OWNER,
@@ -504,16 +510,26 @@ class RouteAccessMatrixTest extends TestCase
         }
     }
 
-    /** Phase 10C: Ana's own signed verification link verifies nobody else, and only Ana with it. */
+    /**
+     * Phase 10C: Ana's own signed verification link verifies nobody else. Phase 10E (decided by the lead developer): it
+     * verifies Ana even when Ben is signed in on that device, but Ben stays signed in as Ben and is never verified by it.
+     */
     public function test_a_verification_link_works_only_for_its_own_account(): void
     {
         $ana = User::factory()->unverified()->create();
         $ben = User::factory()->unverified()->create();
         $link = URL::temporarySignedRoute('verification.verify', now()->addHour(), ['id' => $ana->id, 'hash' => sha1($ana->email)]);
 
-        $this->actingAs($ben)->get($link)->assertForbidden();
-        $this->assertFalse($ana->fresh()->hasVerifiedEmail());
+        $this->actingAs($ben)->get($link)->assertOk()->assertSee('Sign in with that account to continue.');
+        $this->assertAuthenticatedAs($ben);
+        $this->assertTrue($ana->fresh()->hasVerifiedEmail());
         $this->assertFalse($ben->fresh()->hasVerifiedEmail());
+
+        // A link carrying Ana's id with Ben's email hash verifies nobody
+        $carol = User::factory()->unverified()->create();
+        $forged = URL::temporarySignedRoute('verification.verify', now()->addHour(), ['id' => $carol->id, 'hash' => sha1($ben->email)]);
+        $this->actingAs($ben)->get($forged)->assertForbidden();
+        $this->assertFalse($carol->fresh()->hasVerifiedEmail());
     }
 
     /** @return array<string, mixed> */

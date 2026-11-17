@@ -873,3 +873,107 @@ a[class*='rounded-control']:active {
         transform: none;
     }
 }
+
+
+/*
+ * Phase 10E: nothing outside its frame, and text that reads well.
+ *
+ * The form grid follows the width of its CARD, not the screen: its parent is a size container, and the grid
+ * drops to one column when that parent is narrow (the schedule editor's cards beside each other, the calendar's side
+ * panel, a card next to the open sidebar). The column classes written on the grid (sm:grid-cols-2, md:grid-cols-2,
+ * xl:grid-cols-3, lg:grid-cols-5, grid-cols-2) now only say how many columns it may grow to. These rules are not in a
+ * layer, so they win over the Tailwind utilities on purpose.
+ */
+:where(*):has(> .form-grid) {
+    container-type: inline-size;
+}
+
+.form-grid {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* One column: every field takes the whole row, whatever span it asks for */
+.form-grid > * {
+    grid-column: 1 / -1;
+}
+
+@container (min-width: 28rem) {
+    .form-grid:is([class*='grid-cols-2'], [class*='grid-cols-3'], [class*='grid-cols-5']) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid:is([class*='grid-cols-2'], [class*='grid-cols-3'], [class*='grid-cols-5']) > * {
+        grid-column: auto;
+    }
+
+    .form-grid > [class*='col-span-2'],
+    .form-grid > [class*='col-span-full'] {
+        grid-column: 1 / -1;
+    }
+}
+
+@container (min-width: 46rem) {
+    .form-grid:is([class*='grid-cols-3'], [class*='grid-cols-5']) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* A field that spans two of two columns keeps spanning them; in three columns it takes two */
+    .form-grid:is([class*='grid-cols-3'], [class*='grid-cols-5']) > [class*='col-span-2'] {
+        grid-column: span 2;
+    }
+}
+
+@container (min-width: 62rem) {
+    .form-grid[class*='grid-cols-5'] {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+
+/* Every control fills its column and may shrink with it; Chromium gives a date input an intrinsic minimum width,
+   which the inner editing box is told to give up */
+.ui-field,
+.ui-field > * {
+    min-width: 0;
+}
+
+:is(input:not([type='checkbox'], [type='radio'], [type='file']), select, textarea) {
+    max-width: 100%;
+}
+
+input[type='date']::-webkit-datetime-edit,
+input[type='time']::-webkit-datetime-edit {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+input[type='date']::-webkit-date-and-time-value,
+input[type='time']::-webkit-date-and-time-value {
+    min-width: 0;
+}
+
+/* Labels and help text wrap at word boundaries; they never push their field out of the card */
+.ui-field label,
+.ui-field [id$='-hint'],
+.ui-field [id$='-error'] {
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+}
+
+/* The small uppercase label above a number (tiles, cards): smaller, spaced, and balanced over two lines */
+.eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    overflow-wrap: normal;
+    word-break: normal;
+    hyphens: none;
+}
+
+/* References and emails may break anywhere; ordinary words never break mid-word */
+.break-ref {
+    overflow-wrap: anywhere;
+}

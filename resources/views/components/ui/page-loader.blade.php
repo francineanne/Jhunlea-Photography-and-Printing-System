@@ -1,5 +1,5 @@
 {{-- Full-screen dark loader from design/login/aperture_page_loader (always dark, in both themes). --}}
-{{-- Phase 10D: only on the first page of a browser session, at most 600 ms, never with reduced motion; it takes no clicks. --}}
+{{-- Phase 10E: only on the first page of a browser session, 2 seconds (at most 2.5), skipped by a click, a tap or any key; never with reduced motion or without JavaScript. --}}
 {{-- Visible from first paint; the script below runs before it is painted and hides it when already seen this session. --}}
 {{-- The fade is plain CSS, so a throttled background tab can never leave the overlay stuck on screen. --}}
 <noscript><style>.page-loader { display: none !important; }</style></noscript>
@@ -8,8 +8,8 @@
 </script>
 
 <div x-data="uiPageLoader" x-on:replay-loader.window="replay()" x-bind:aria-hidden="!show" x-bind:inert="!show"
-    x-bind:class="show || 'pointer-events-none invisible opacity-0'"
-    class="page-loader pointer-events-none fixed inset-0 z-[100] overflow-hidden bg-[#171717] text-neutral-100 transition-[opacity,visibility] duration-[280ms] ease-brand"
+    x-bind:class="show ? 'cursor-pointer' : 'pointer-events-none invisible opacity-0'"
+    class="page-loader fixed inset-0 z-[100] overflow-hidden bg-[#171717] text-neutral-100 transition-[opacity,visibility] duration-[280ms] ease-brand"
     role="status" aria-label="Loading page">
     <span class="sr-only">Loading page</span>
     {{-- Studio vignette with a soft red lens glow --}}
@@ -52,5 +52,6 @@
 
             </div>
         </div>
+        <p class="pb-2 text-center font-mono text-[11px] uppercase tracking-[0.2em] text-neutral-400" data-loader-skip>Tap to skip</p>
     </div>
 </div>

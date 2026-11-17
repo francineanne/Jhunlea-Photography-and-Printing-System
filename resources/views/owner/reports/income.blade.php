@@ -183,7 +183,7 @@
                     <h2 id="methods-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="account_balance" :size="22" class="text-brand" />Payment methods</h2>
                     <p class="text-right"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Income</span><span class="text-xl font-bold tabular-nums text-brand">{{ Money::cents($r['cents']) }}</span></p>
                 </div>
-                <p class="mt-1 text-xs text-app-text-2">Paid face to face at the shop, in cash or by GCash.</p>
+                <p class="mt-1 text-xs text-app-text-2">Recorded by the shop, in cash or by GCash.</p>
                 <x-report.split class="mt-5" caption="Income by payment method" :parts="[
                     ['label' => 'Cash', 'icon' => 'payments', 'cents' => $r['methods']['cash']['cents'], 'count' => $r['methods']['cash']['count']],
                     ['label' => 'GCash', 'icon' => 'qr_code_2', 'cents' => $r['methods']['gcash']['cents'], 'count' => $r['methods']['gcash']['count']],

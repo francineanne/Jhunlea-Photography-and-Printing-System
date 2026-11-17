@@ -64,7 +64,7 @@
     </nav>
 
     <form method="GET" action="{{ route('owner.bookings.index') }}" role="search"
-        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
         <input type="hidden" name="status" value="{{ $status?->value ?? 'all' }}">
         @if ($expired)<input type="hidden" name="expired" value="1">@endif
         <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="PB-000001, customer name or contact number" />
@@ -82,7 +82,7 @@
         </x-ui.select>
         <x-ui.input label="Session from" name="from" type="date" :value="$from" />
         <x-ui.input label="Session to" name="to" type="date" :value="$to" />
-        <div class="flex gap-2 sm:col-span-2 xl:col-span-1">
+        <div class="flex gap-2 sm:col-span-2 xl:col-span-3 2xl:col-span-1">
             <x-ui.button type="submit">Filter</x-ui.button>
             @if ($hasFilters)
                 <x-ui.button :href="route('owner.bookings.index', ['status' => $status?->value ?? 'all'])" variant="ghost">Clear</x-ui.button>

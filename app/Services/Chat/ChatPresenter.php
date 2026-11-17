@@ -114,11 +114,19 @@ class ChatPresenter
                 'waiting_for_studio' => $conversation->last_sender_type === MessageSender::Customer && ($away || $conversation->needs_owner),
                 'needs_owner' => $conversation->needs_owner,
             ];
+
+            // Phase 10E: the owner's thread says how many of Lumi's answers came while they were away (owner only)
+            if ($viewer->role === UserRole::Owner) {
+                $studio['lumi_answered'] = $this->lumi->answeredSinceOwner($conversation);
+            }
         }
 
         return [
             'studio' => $studio,
             'unread_count' => $this->messages->unreadCount($conversation, $viewer),
+            // Phase 10E: how far the OTHER person has read, for "Seen". Only a person's own read marker counts; Lumi
+            // reading or answering never moves the studio's marker
+            'seen_up_to' => (int) ($viewer->role === UserRole::Owner ? $conversation->customer_last_read_message_id : $conversation->owner_last_read_message_id),
             'poll' => config('chat.poll'),
             'has_more_before' => $hasMoreBefore,
             'has_more_after' => $hasMoreAfter,
@@ -187,11 +195,12 @@ class ChatPresenter
         $about = $messages->filter(fn (ChatMessage $message) => is_array($message->meta['about'] ?? null))
             ->mapWithKeys(fn (ChatMessage $message) => [$message->id => $message->meta['about']]);
 
-        $numbers = [];
+        $found = [];
 
+        // Phase 10E: the card says what the record is (one query per type for the whole page, as before)
         foreach (['printing_order' => PrintingOrder::class, 'photography_booking' => PhotographyBooking::class] as $type => $model) {
             $ids = $about->where('type', $type)->pluck('id')->unique()->values()->all();
-            $numbers[$type] = $ids === [] ? [] : $model::query()->whereKey($ids)->pluck('reference_number', 'id')->all();
+            $found[$type] = $ids === [] ? [] : $model::query()->whereKey($ids)->with('payments')->get()->keyBy('id')->all();
         }
 
         $owner = $viewer->role === UserRole::Owner;
@@ -200,8 +209,11 @@ class ChatPresenter
             default => $owner ? 'owner.bookings.show' : 'customer.bookings.show',
         };
 
-        return $about->map(fn (array $item) => isset($numbers[$item['type']][$item['id']])
-            ? ['type' => $item['type'], 'id' => (int) $item['id'], 'reference' => (string) $numbers[$item['type']][$item['id']], 'url' => route($route($item['type']), (int) $item['id'])]
-            : null)->filter()->all();
+        return $about->map(function (array $item) use ($found, $route) {
+            $record = $found[$item['type']][$item['id']] ?? null;
+
+            return $record === null ? null : ['type' => $item['type'], 'id' => (int) $item['id'], 'url' => route($route($item['type']), (int) $item['id'])]
+                + ChatRecords::card($record);
+        })->filter()->all();
     }
 }

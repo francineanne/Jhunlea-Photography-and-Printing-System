@@ -25,7 +25,7 @@
         </div>
         <p class="flex items-center gap-2 rounded-card border border-app-border bg-app-card px-3 py-2 text-xs shadow-sm dark:shadow-none">
             <x-ui.icon name="storefront" :size="18" class="text-brand" />
-            <span><span class="block font-bold uppercase tracking-wider text-app-text-2">Payment reminder</span>Paid face to face at the shop: cash or GCash.</span>
+            <span><span class="block font-bold uppercase tracking-wider text-app-text-2">Payment reminder</span>At the shop in cash or GCash, or GCash with the reference sent in Messages.</span>
         </p>
     </div>
 

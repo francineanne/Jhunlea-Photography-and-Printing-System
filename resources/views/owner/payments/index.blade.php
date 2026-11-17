@@ -111,12 +111,12 @@
     </nav>
 
     <form method="GET" action="{{ route('owner.payments.index') }}" role="search"
-        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-6 lg:items-end dark:shadow-none">
+        class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end xl:grid-cols-6 dark:shadow-none">
         {{-- Never "today": a search from the default view must still find every day (PaymentLedgerRequest::range()) --}}
         @if (in_array($range, ['yesterday', 'all'], true))
             <input type="hidden" name="range" value="{{ $range }}">
         @endif
-        <div class="sm:col-span-2 lg:col-span-2">
+        <div class="sm:col-span-2 lg:col-span-4 xl:col-span-2">
             <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="PAY, PR, PB, customer or GCash ref." />
         </div>
         <x-ui.select label="Method" name="method">
@@ -133,7 +133,7 @@
         </x-ui.select>
         <x-ui.input label="From" name="from" type="date" :value="$range === 'custom' ? $filters['from'] : null" />
         <x-ui.input label="To" name="to" type="date" :value="$range === 'custom' ? $filters['to'] : null" />
-        <div class="flex gap-2 sm:col-span-2 lg:col-span-6">
+        <div class="flex gap-2 sm:col-span-2 lg:col-span-4 xl:col-span-6">
             <x-ui.button type="submit">Filter</x-ui.button>
             @if ($hasFilters)
                 <x-ui.button :href="route('owner.payments.index')" variant="ghost">Clear</x-ui.button>

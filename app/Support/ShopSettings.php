@@ -73,6 +73,20 @@ class ShopSettings
         return $this->text('opening_hours');
     }
 
+    /** Phase 10E: the owner's Lumi switch (Settings, Lumi assistant); not set means on. */
+    public function lumiEnabled(): bool
+    {
+        $value = $this->row()?->getAttribute('lumi_enabled');
+
+        return $value === null || (bool) $value;
+    }
+
+    /** Phase 10E: what customers read in Ask Lumi when Lumi cannot answer; null means the starting text. */
+    public function lumiFallbackText(): ?string
+    {
+        return $this->text('lumi_fallback_text');
+    }
+
     /** Phase 10D: the shop's Facebook page address; null when not set. */
     public function facebookUrl(): ?string
     {

@@ -1,7 +1,7 @@
 // The customer chat (Phase 7C): one component for the floating panel ("compact") and the full page ("full"), with the
 // tabs Ask Lumi and Studio. Everything shown comes from the server; messages are only ever rendered with x-text.
 
-import { apiRequest, buildRows, clientId, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
+import { apiRequest, buildRows, clientId, enterSends, MAX_REFRESH_PAGES, NEAR_BOTTOM_PX, scrollToEnd } from './chat-common';
 
 const LUMI_RETRIES = 5;
 const LUMI_RETRY_MS = 2000;
@@ -110,6 +110,7 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     unread: 0,
     lastActivity: Date.now(),
     pollTimer: null,
+    newBelow: 0,
     polling: false,
     localKey: 0,
 
@@ -178,7 +179,7 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     },
 
     get rows() {
-        return buildRows(this.thread.messages);
+        return buildRows(this.thread.messages, this.thread.state?.seen_up_to ?? 0);
     },
 
     // <x-chat.rows> shows a "Customer" tag only to the owner
@@ -556,7 +557,7 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
     onKeydown(event) {
         this.lastActivity = Date.now();
 
-        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing && enterSends()) {
             event.preventDefault();
             this.submit();
         }
@@ -941,7 +942,19 @@ export default ({ mode, guest, tab, chosen, about, draft, name, pageUrl, intro, 
         const near = this.isNearBottom();
 
         thread.messages.push(...fresh);
+        // Phase 10E: a reader who scrolled up is not moved; a pill says new messages are below
+        if (!near) this.newBelow += fresh.filter((message) => !message.mine).length;
         this.$nextTick(() => this.scrollDown(near));
+    },
+
+    // Phase 10E: the "New messages" pill, and the log telling us the reader is back at the bottom
+    jumpToNew() {
+        this.newBelow = 0;
+        this.scrollDown(true);
+    },
+
+    onLogScroll() {
+        if (this.newBelow > 0 && this.isNearBottom()) this.newBelow = 0;
     },
 
     async markRead() {

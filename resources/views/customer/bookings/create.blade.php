@@ -584,7 +584,7 @@
                         </dl>
 
                         <x-ui.notice variant="payment" class="mt-4">
-                            <p class="text-app-text-2">Payment is made face to face at the studio. Nothing is charged online. Sending a request does not confirm the booking: the studio confirms the time after reviewing it.</p>
+                            <p class="text-app-text-2">Nothing is charged online. Once the studio confirms your time it may ask for a downpayment; you pay at the studio or by GCash. Sending a request does not confirm the booking: the studio confirms the time after reviewing it.</p>
                         </x-ui.notice>
 
                         <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -653,7 +653,7 @@
 
                         <div class="mt-4 rounded-control bg-neutral-100 p-3 text-sm text-app-text-2 dark:bg-white/5">
                             <p class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand"><x-ui.icon name="payments" :size="16" />Pay at the studio</p>
-                            <p class="mt-1">Nothing is charged online. You pay face to face at Jhunlea Photography &amp; Printing.</p>
+                            <p class="mt-1">Nothing is charged online. Pay at the studio in cash or GCash, or send GCash and its reference in Messages.</p>
                         </div>
                     </div>
                 </aside>

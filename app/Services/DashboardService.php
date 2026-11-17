@@ -57,7 +57,7 @@ class DashboardService
             ->concat($ready->map(fn (PrintingOrder $order) => $this->item('inventory_2', 'green', $order->reference_number, 'Ready for pickup',
                 $order->recordedPayment || $order->confirmed_price === null || Money::toCents($order->confirmed_price) === 0 ? 'Collect it at the shop.' : 'Pay '.Money::format($order->confirmed_price).' at the shop when you collect it.', route('customer.printing.show', $order))))
             ->concat($toPay->map(fn (PrintingOrder|PhotographyBooking $payable) => $this->item('point_of_sale', 'red', $payable->reference_number, 'Amount to pay at the '.($payable instanceof PrintingOrder ? 'shop' : 'studio'),
-                Money::format($payable->confirmed_price).($payable instanceof PrintingOrder ? ', paid face to face when you pick it up.' : ', paid face to face on the day of the shoot.'),
+                Money::format($payable->confirmed_price).'. Open it to see what is due now and how to pay.',
                 ($payable instanceof PrintingOrder ? route('customer.printing.show', $payable) : route('customer.bookings.show', $payable)).'#payment')));
 
         $counts = $this->history->counts($customer);

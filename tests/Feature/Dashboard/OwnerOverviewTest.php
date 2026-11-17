@@ -10,6 +10,7 @@ use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Services\DashboardService;
 use App\Services\PaymentLedgerService;
+use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -105,6 +106,9 @@ class OwnerOverviewTest extends TestCase
     public function test_the_queries_are_fixed_however_much_data_exists(): void
     {
         $count = function (): int {
+            // Phase 10E: the overview's payment line reads the shop settings once per page. The settings object lives for
+            // the whole test, so it is emptied here; otherwise only the first page would count that one read
+            app(ShopSettings::class)->forget();
             DB::flushQueryLog();
             DB::enableQueryLog();
             $this->actingAs($this->owner)->get(route('owner.dashboard'))->assertOk();

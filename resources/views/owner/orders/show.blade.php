@@ -169,7 +169,7 @@
     </section>
 
     <x-ui.notice variant="payment" class="mt-6">
-        <p class="text-app-text-2">The system records payments received at the shop (cash or GCash); it never takes payment online.</p>
+        <p class="text-app-text-2">The system only records payments the shop received: cash, or GCash it checked. Larger orders are paid before printing (Payment rules).</p>
     </x-ui.notice>
 
     <div class="mt-6 grid items-start gap-6 xl:grid-cols-12">
@@ -198,8 +198,12 @@
                         @if ($customer->phone)
                             <x-ui.button :href="'tel:'.preg_replace('/[^0-9+]/', '', $customer->phone)" variant="outline" size="sm"><x-ui.icon name="call" :size="16" />Call</x-ui.button>
                         @endif
-                        <x-ui.button :href="'mailto:'.$customer->email" variant="outline" size="sm"><x-ui.icon name="mail" :size="16" />Email</x-ui.button>
+                        @if (filled($customer->email))
+                            <x-ui.button :href="'mailto:'.$customer->email" variant="outline" size="sm"><x-ui.icon name="mail" :size="16" />Email</x-ui.button>
+                        @endif
                     </div>
+                    {{-- Phase 10E --}}
+                    <x-chat.message-customer :customer="$customer" :record="$order" type="printing_order" class="mt-2 block" />
                 @endif
             </section>
 

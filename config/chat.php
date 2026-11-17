@@ -72,6 +72,8 @@ return [
         // The studio thread's notice when Lumi cannot answer: never "when we open" while the shop is open
         'studio_fallback_open' => 'The studio received your message and will reply as soon as possible.',
         'studio_fallback_closed' => 'The studio received your message and will reply when we open.',
+        // Phase 10E: the one line of the studio thread when Lumi is off or down and the shop's hours text is set
+        'studio_fallback_hours' => 'The studio is away right now and will reply when back. Shop hours: :hours.',
         'handoff_to_owner' => 'The studio is now with you.',
         'waiting_for_studio' => 'You have sent several messages in a row. Please wait for the studio to reply before sending more. Salamat sa pasensya!',
         'conversation_full' => 'This conversation is full. Please start a new conversation with Lumi.',
