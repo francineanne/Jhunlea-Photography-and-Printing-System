@@ -424,12 +424,12 @@ Alpine.data('uiPageLoader', () => ({
         this.run(document.readyState === 'complete' ? Promise.resolve() : new Promise((done) => window.addEventListener('load', done, { once: true })));
     },
 
-    // Phase 10E (decided by the lead developer): the first page of a visit shows the splash for 2 seconds, so its
-    // shutter animation plays once in full; a click, a tap or any key skips it; it never stays past 2.5 seconds even
-    // when the page is slow. The bar fills over those 2 seconds.
+    // Phase 10F (decided by the lead developer; 2 seconds in 10E): the first page of a visit shows the splash for 3
+    // seconds, so its shutter animation plays once in full; a click, a tap or any key skips it; it never stays past 3.5
+    // seconds even when the page is slow. The bar fills over those 3 seconds.
     run(loaded) {
-        const SHOW_MS = 2000;
-        const CAP_MS = 2500;
+        const SHOW_MS = 3000;
+        const CAP_MS = 3500;
         const started = Date.now();
 
         this.pct = 0;
@@ -456,10 +456,17 @@ Alpine.data('uiPageLoader', () => ({
         this.hider = setTimeout(() => (this.show = false), 120);
     },
 
+    // Phase 10F: the header logo on the landing page plays the splash once more, without leaving the page (never with
+    // reduced motion: then the click only goes back to the top)
     replay() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            window.scrollTo({ top: 0 });
+
+            return;
+        }
         root.classList.remove('loader-seen');
         this.show = true;
-        this.run(new Promise((done) => setTimeout(done, 1200)));
+        this.run(Promise.resolve());
     },
 }));
 

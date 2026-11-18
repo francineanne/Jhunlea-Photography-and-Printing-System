@@ -48,7 +48,7 @@
 
     <form method="GET" action="{{ route('owner.customers.index') }}" role="search"
         class="mt-6 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-[1fr_auto_auto] sm:items-end dark:shadow-none">
-        <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="Name, email or phone" />
+        <x-ui.typeahead :url="route('owner.suggest')" scope="customers" label="Search" :value="$filters['search']" placeholder="Name, email or phone" />
         <x-ui.checkbox name="awaiting" value="1" :checked="$filters['awaiting']">Only with something awaiting payment</x-ui.checkbox>
         <x-ui.select id="filter-type" name="type" label="Customers">
             <option value="">Online and walk-in</option>

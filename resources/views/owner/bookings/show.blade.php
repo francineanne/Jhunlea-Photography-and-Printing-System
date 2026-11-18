@@ -33,17 +33,21 @@
     </nav>
 
     {{-- Header and actions --}}
-    <section id="actions" class="scroll-mt-24 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="booking-title">
-        <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <div class="min-w-0">
+    <section id="actions" class="@container scroll-mt-24 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="booking-title">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between" data-page-header>
+            <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $booking->reference_number }}</span><x-ui.copy :text="$booking->reference_number" label="Copy reference number" />
                     <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live />
                     <x-walk-in.badge :record="$booking" />
                 </div>
-                <h1 id="booking-title" class="mt-2 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
-                    {{ $packageName }} <span class="font-normal italic text-app-text-2">— {{ $customer?->name ?? 'Deleted account' }}</span>
-                </h1>
+                {{-- Phase 10F: the header's action slot beside the title, like the customer page; a full-width row below it when narrow --}}
+                <div class="mt-2 flex flex-col gap-3 @xl:flex-row @xl:items-center @xl:justify-between">
+                    <h1 id="booking-title" class="min-w-0 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
+                        {{ $packageName }} <span class="font-normal italic text-app-text-2">— {{ $customer?->name ?? 'Deleted account' }}</span>
+                    </h1>
+                    <div class="flex shrink-0 flex-wrap gap-2" data-header-actions><x-chat.message-customer :customer="$customer" :record="$booking" type="photography_booking" class="w-full @xl:w-auto" /></div>
+                </div>
                 <p class="mt-1 font-mono text-xs text-app-text-2">Sent: <x-ui.date :value="$booking->created_at" /></p>
             </div>
             <dl class="grid shrink-0 grid-cols-2 gap-2 text-sm">
@@ -311,8 +315,7 @@
                         <x-ui.button :href="'mailto:'.$customer->email" variant="outline" size="sm"><x-ui.icon name="mail" :size="16" />Email</x-ui.button>
                     @endif
                 </div>
-                {{-- Phase 10E --}}
-                <x-chat.message-customer :customer="$customer" :record="$booking" type="photography_booking" class="mt-2 block" />
+
             </section>
 
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="details-title">

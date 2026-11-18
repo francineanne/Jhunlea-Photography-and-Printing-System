@@ -384,11 +384,13 @@ class OwnerInboxTest extends TestCase
         $this->assertStringStartsWith('Auto: active', $this->actingAs($owner)->getJson(route('owner.messages.presence'))->json('reason'));
 
         $this->travel(16)->minutes();
-        $this->assertStringStartsWith('Auto: away, last active', $this->actingAs($owner)->getJson(route('owner.messages.presence'))->json('reason'));
+        // Phase 10F: the moment it turned away, in Manila time (was "Auto: away, last active ...")
+        $this->assertStringStartsWith('Auto: away since', $this->actingAs($owner)->getJson(route('owner.messages.presence'))->json('reason'));
 
         $this->actingAs($owner)->postJson(route('owner.messages.presence.update'), ['mode' => 'available'])->assertOk()->assertJson(['mode' => 'available', 'away' => false]);
         $this->actingAs($owner)->postJson(route('owner.messages.presence.update'), ['mode' => 'away'])->assertOk()->assertJson(['mode' => 'away', 'away' => true]);
-        $this->assertStringStartsWith('Away: set by you', app(OwnerPresence::class)->reason());
+        // Phase 10F: the shorter wording (was "Away: set by you, ...")
+        $this->assertSame('Away (set by you)', app(OwnerPresence::class)->reason());
 
         $this->presence(OwnerPresenceMode::Auto);
     }

@@ -45,11 +45,9 @@
                     @if ($category !== '')
                         <input type="hidden" name="category" value="{{ $category }}">
                     @endif
-                    <label for="service-search" class="sr-only">Search printing services</label>
-                    <div class="relative flex-1">
-                        <x-ui.icon name="search" :size="20" class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-app-muted" />
-                        <input id="service-search" type="search" name="q" value="{{ $search }}" maxlength="60" placeholder="Search by service name"
-                            class="h-11 w-full rounded-control border border-app-border bg-app-bg pl-11 pr-4 text-base focus-ring sm:text-sm" autocomplete="off">
+                    {{-- Phase 10F: suggestions from the published services as you type --}}
+                    <div class="flex-1">
+                        <x-ui.typeahead :url="route('public.suggest')" scope="services" id="service-search" label="Search printing services" hide-label :value="$search" placeholder="Search by service name" />
                     </div>
                     <x-ui.button type="submit">Search</x-ui.button>
                 </form>

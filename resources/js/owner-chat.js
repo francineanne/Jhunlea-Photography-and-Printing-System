@@ -9,8 +9,25 @@ const SEARCH_DELAY_MS = 300;
 const COUNTER_FROM = 800;
 const OPEN_FOR_MS = 2 * 60 * 1000;
 const IDLE_FOR_MS = 10 * 60 * 1000;
+// Phase 10F: the Away prompt is answered once per browser session, until the mode changes again
+const AWAY_PROMPT_KEY = 'owner-away-prompt-answered';
+const awayAnswered = () => {
+    try {
+        return window.sessionStorage.getItem(AWAY_PROMPT_KEY) === '1';
+    } catch (error) {
+        return false;
+    }
+};
+const setAwayAnswered = (value) => {
+    try {
+        if (value) window.sessionStorage.setItem(AWAY_PROMPT_KEY, '1');
+        else window.sessionStorage.removeItem(AWAY_PROMPT_KEY);
+    } catch (error) {
+        // A convenience only
+    }
+};
 
-export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, texts, records = [], about = null }) => ({
+export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, texts, records = [], about = null, started = false }) => ({
     conversationId,
     records,
     about,
@@ -24,6 +41,8 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     banner: null,
     assist: { busy: null, notice: null, summary: [], viaBackup: false },
     presence: { mode: null, away: false, reason: '', saving: false },
+    awayPrompt: false,
+    askAwayOnLoad: started,
     lastActivity: Date.now(),
     localKey: 0,
     timers: { list: null, thread: null, presence: null, search: null },
@@ -424,6 +443,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
                 : this.thread.messages.map((message) => (message === local ? stored : message));
             this.thread.state = { ...this.thread.state, ...response.data.state };
             this.loadList(true);
+            this.maybeAskAway();
         } catch (error) {
             local.status = 'failed';
             this.failOffline(() => this.retryMessage(local));
@@ -462,6 +482,7 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
             this.thread.conversation = response.data.conversation;
             this.thread.state = { ...this.thread.state, ...response.data.state };
             this.loadList(true);
+            this.maybeAskAway();
         } catch (error) {
             this.failOffline(() => this.setResolved(resolved));
         }
@@ -553,9 +574,32 @@ export const ownerInbox = ({ conversationId, filter, search, maxChars, urls, tex
     },
 
     applyPresence(data) {
+        // A mode that is no longer Away (changed here or in another tab) makes the prompt ask again next time
+        if (this.presence.mode !== null && data.mode !== this.presence.mode) setAwayAnswered(false);
+        if (data.mode !== 'away') this.awayPrompt = false;
+
         this.presence.mode = data.mode;
         this.presence.away = data.away;
         this.presence.reason = data.reason;
+
+        if (this.askAwayOnLoad) {
+            this.askAwayOnLoad = false;
+            this.maybeAskAway();
+        }
+    },
+
+    // Phase 10F: set to Away by hand and writing to a customer: ask once whether to switch (only words; nothing blocks)
+    maybeAskAway() {
+        if (this.presence.mode === 'away' && !awayAnswered()) this.awayPrompt = true;
+    },
+
+    async answerAwayPrompt(switchNow) {
+        this.awayPrompt = false;
+        if (switchNow) {
+            await this.setPresence('available');
+        } else {
+            setAwayAnswered(true);
+        }
     },
 
     // ---- Scrolling ----

@@ -31,17 +31,19 @@
 
         <template x-if="row.type === 'bubble'">
             <div class="chat-bubble-in flex max-w-[85%] items-start gap-2" x-bind:class="row.message.mine ? 'flex-row-reverse self-end' : 'self-start'" x-bind:data-chat-sender="row.message.sender_type">
-                {{-- Lumi and the studio share the brand mark; only Lumi's carries the AI badge (and the names say who). Once per group; the column keeps its width so the bubbles stay aligned --}}
+                {{-- Phase 10F: three different faces: Lumi's own sparkle mark (AI badge), the owner's picture or the studio mark in a
+                     neutral frame, the customer's picture or initials. Once per group; the column keeps its width so the bubbles stay aligned --}}
                 <div class="w-8 shrink-0">
                     <template x-if="row.first">
                         <div>
                             <x-chat.avatar who="lumi" x-show="row.message.sender_type === 'assistant'" />
                             {{-- Phase 10C: the owner's own picture when set, else the studio mark --}}
                             <x-chat.avatar who="studio" x-show="row.message.sender_type === 'owner' && !row.message.avatar?.url" />
-                            <img x-show="row.message.avatar?.url" x-bind:src="row.message.avatar?.url || ''" alt="" class="size-8 shrink-0 rounded-full object-cover" aria-hidden="true" data-chat-user-avatar>
+                            <img x-show="row.message.avatar?.url" x-bind:src="row.message.avatar?.url || ''" x-bind:alt="row.message.sender_label" x-bind:title="row.message.sender_label" width="32" height="32" class="size-8 shrink-0 rounded-full object-cover" data-chat-user-avatar>
                             {{-- A customer without a picture: their initials --}}
                             <span x-show="row.message.sender_type === 'customer' && !row.message.avatar?.url && row.message.avatar?.initials" x-text="row.message.avatar?.initials"
-                                class="grid size-8 shrink-0 select-none place-items-center rounded-full bg-brand text-xs font-semibold text-white" aria-hidden="true"></span>
+                                role="img" x-bind:aria-label="row.message.sender_label" x-bind:title="row.message.sender_label"
+                                class="grid size-8 shrink-0 select-none place-items-center rounded-full bg-brand text-xs font-semibold text-white"></span>
                             <span x-show="row.message.sender_type !== 'assistant' && row.message.sender_type !== 'owner' && !row.message.avatar" class="material-symbols-outlined grid size-8 shrink-0 select-none place-items-center rounded-full bg-neutral-200 text-[16px] text-app-text-2 dark:bg-white/10" aria-hidden="true">person</span>
                         </div>
                     </template>
@@ -51,7 +53,8 @@
                     <p x-show="row.first" class="flex flex-wrap items-center gap-x-1.5 text-xs" x-bind:class="row.message.mine ? 'justify-end' : ''">
                         <span class="font-semibold" x-text="row.message.sender_label"></span>
                     <span x-show="viewer === 'owner' && row.message.sender_type === 'customer'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10">Customer</span>
-                        <span x-show="viewer !== 'owner' && row.message.sender_type === 'owner'" class="rounded bg-neutral-100 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-app-text-2 dark:bg-white/10" data-chat-studio-tag>Studio</span>
+                        {{-- Phase 10F: "<owner name> · Studio" --}}
+                        <span x-show="row.message.sender_type === 'owner' && !row.message.mine" class="text-app-text-2" data-chat-studio-tag>· Studio</span>
                         <span x-show="row.message.sender_type === 'assistant'" class="rounded bg-brand/10 px-1 py-px text-[9px] font-bold uppercase tracking-wider text-brand dark:bg-[#ffb4ac]/15 dark:text-[#ffb4ac]">AI</span>
                         {{-- The backup provider wrote this reply (7E-2a); which provider is never shown --}}
                         <span x-show="row.message.sender_type === 'assistant' && row.message.via_backup === true" x-cloak title="{{ $liteText }}" tabindex="0" data-chat-lite

@@ -50,7 +50,8 @@ class MessageController extends Controller
             'conversations' => $page->getCollection()->map(fn (Conversation $conversation) => [
                 'id' => $conversation->id,
                 'url' => route('owner.messages.show', $conversation),
-                'customer' => ['name' => $conversation->customer->name],
+                // Phase 10F: the customer's own picture, else initials, on every row
+                'customer' => ['name' => $conversation->customer->name, 'avatar' => $conversation->customer->avatarUrl(), 'initials' => $conversation->customer->initials()],
                 'preview' => $conversation->last_message_preview,
                 'last_sender_type' => $conversation->last_sender_type?->value,
                 'unread_count' => (int) $conversation->unread_count,
@@ -147,7 +148,7 @@ class MessageController extends Controller
         return view('owner.messages.index', [
             'records' => $records,
             'about' => $about,
-            'conversation' => $conversation?->loadMissing('customer:id,name'),
+            'conversation' => $conversation?->loadMissing('customer:id,name,avatar_path,is_walk_in'),
             'filter' => $request instanceof InboxRequest ? ($request->filter() ?? 'all') : 'all',
             'search' => $request instanceof InboxRequest ? $request->search() : null,
         ]);

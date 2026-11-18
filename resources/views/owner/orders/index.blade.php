@@ -49,7 +49,7 @@
         @if ($status)
             <input type="hidden" name="status" value="{{ $status->value }}">
         @endif
-        <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="Reference (PR-000001) or customer name" />
+        <x-ui.typeahead :url="route('owner.suggest')" scope="orders" label="Search" :value="$search" placeholder="Reference (PR-000001) or customer name" />
         <x-ui.select id="filter-source" name="source" label="Source">
             <option value="">Online and walk-in</option>
             @foreach (\App\Enums\RecordSource::cases() as $item)

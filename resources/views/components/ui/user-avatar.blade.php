@@ -16,9 +16,10 @@
     };
 @endphp
 
-<span {{ $attributes->class(['inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-brand font-semibold text-white', $box]) }} aria-hidden="true" data-user-avatar>
+@php($name = $user?->name)
+<span {{ $attributes->class(['inline-grid shrink-0 place-items-center overflow-hidden rounded-full bg-brand font-semibold text-white', $box])->merge($name ? ['title' => $name] : []) }} aria-hidden="true" data-user-avatar>
     @if ($url)
-        <img src="{{ $url }}" alt="" class="size-full object-cover" loading="lazy" decoding="async">
+        <img src="{{ $url }}" alt="{{ $name ?? '' }}" class="size-full object-cover" loading="lazy" decoding="async">
     @else
         {{ $initials }}
     @endif

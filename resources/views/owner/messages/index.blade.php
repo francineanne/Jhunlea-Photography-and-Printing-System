@@ -14,6 +14,8 @@
         // Phase 10E: the customer's orders and bookings (side panel, attach) and the one a "Message customer about this" opened with
         'records' => $records ?? [],
         'about' => $about ?? null,
+        // Phase 10F: just started from New message or "Message customer" (the Away prompt may show once)
+        'started' => (bool) session('chat_started'),
         'filter' => $filter,
         'search' => $search,
         'maxChars' => (int) config('chat.message_max_chars'),
@@ -119,8 +121,9 @@
                                 x-bind:class="item.id === conversationId ? 'border-brand ring-1 ring-brand' : 'border-app-border hover:border-neutral-300 dark:hover:border-white/20'"
                                 class="block rounded-card border bg-app-card px-3 py-2.5 transition-colors duration-150 focus-ring" data-inbox-row>
                                 <span class="flex items-start gap-2.5">
-                                    <span class="relative grid size-9 shrink-0 place-items-center rounded-full bg-neutral-100 text-app-text-2 dark:bg-white/10" aria-hidden="true">
-                                        <x-ui.icon name="person" :size="18" />
+                                    <span class="relative grid size-9 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-white" x-bind:title="item.customer.name" data-inbox-avatar>
+                                        <img x-show="item.customer.avatar" x-bind:src="item.customer.avatar || ''" x-bind:alt="item.customer.name" width="36" height="36" class="size-9 rounded-full object-cover">
+                                        <span x-show="!item.customer.avatar" x-text="item.customer.initials" aria-hidden="true"></span>
                                         <span x-show="item.unread_count > 0" class="absolute -right-0.5 -top-0.5 size-3 rounded-full bg-brand ring-2 ring-app-card"></span>
                                     </span>
                                     <span class="min-w-0 flex-1">
@@ -154,22 +157,33 @@
                     {{-- Fills the window: on phones and tablets the thread is the whole page, on wide screens it sits beside the list --}}
                     <div class="flex h-[calc(100dvh-6.5rem)] min-h-[26rem] flex-col overflow-hidden rounded-card border border-app-border bg-app-card shadow-sm lg:h-[calc(100dvh-16.25rem)] dark:shadow-none">
                         {{-- One row: who, where to look, and the three actions as quiet buttons (labels from 1280px) --}}
-                        <header class="flex items-center gap-2 border-b border-app-border bg-neutral-100/80 px-2 py-2 dark:bg-white/5 sm:px-3">
+                        {{-- Phase 10F: who this is. Phones: back, picture, the name with the availability under it, and ONE "more" menu
+                             (customer page, the records this thread is about, Suggest reply, Summarize, Resolve), like a phone chat app.
+                             From 640px: the picture spans two lines, the status and "Customer page" sit under the name, the actions are
+                             quiet icon buttons (labels from 1280px). --}}
+                        <header class="relative z-20 flex items-center gap-1 border-b border-app-border bg-neutral-100/80 px-1 py-1.5 dark:bg-white/5 sm:gap-2 sm:px-3 sm:py-2" data-thread-header>
                             <a href="{{ route('owner.messages.index') }}" class="grid size-11 shrink-0 place-items-center rounded-control hover:bg-black/5 focus-ring lg:hidden dark:hover:bg-white/10" aria-label="Back to all conversations"><x-ui.icon name="arrow_back" /></a>
-                            <div class="min-w-0 flex-1 pl-1">
-                                <h2 class="flex min-w-0 items-center gap-1.5 font-semibold">
-                                    <span class="truncate">{{ $conversation->customer->name }}</span>
-                                    <span x-show="thread.conversation?.resolved" x-cloak class="shrink-0 rounded-full bg-status-gray-bg px-2 py-px text-[11px] font-semibold text-status-gray">Resolved</span>
-                                </h2>
-                                <p class="flex min-w-0 flex-wrap items-center gap-x-3 text-xs">
-                                    <a href="{{ route('owner.customers.show', $conversation->customer_id) }}" class="inline-flex min-h-11 shrink-0 items-center gap-1 font-semibold text-brand hover:underline focus-ring sm:min-h-6 dark:text-[#ffb4ac]"><x-ui.icon name="person" :size="14" />Customer page</a>
-                                    <template x-for="about in aboutLinks" x-bind:key="about.url">
-                                        <a x-bind:href="about.url" class="inline-flex min-h-11 shrink-0 items-center gap-1 font-mono text-app-text-2 hover:text-brand focus-ring sm:min-h-6"><x-ui.icon name="receipt_long" :size="14" /><span x-text="about.reference"></span></a>
-                                    </template>
-                                </p>
+                            <div class="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3 sm:pl-1">
+                                <x-ui.user-avatar :user="$conversation->customer" size="md" :title="$conversation->customer->name" class="shrink-0 max-sm:size-9 max-sm:text-xs" />
+                                <div class="min-w-0 flex-1">
+                                    <h2 class="flex min-w-0 items-center gap-1.5 text-[15px] font-semibold leading-tight sm:text-base">
+                                        <a href="{{ route('owner.customers.show', $conversation->customer_id) }}" class="truncate rounded hover:underline focus-ring" title="{{ $conversation->customer->name }}: customer page">{{ $conversation->customer->name }}</a>
+                                        <span x-show="thread.conversation?.resolved" x-cloak class="shrink-0 rounded-full bg-status-gray-bg px-2 py-px text-[11px] font-semibold text-status-gray">Resolved</span>
+                                    </h2>
+                                    <p class="mt-0.5 flex min-w-0 items-center gap-x-3 text-xs leading-tight">
+                                        {{-- Phase 10F: the effective availability in words, in every thread header --}}
+                                        <span x-show="presence.reason" x-cloak class="inline-flex min-w-0 items-center gap-1 text-app-text-2" data-thread-presence>
+                                            <span class="size-1.5 shrink-0 rounded-full" x-bind:class="presence.away ? 'bg-status-amber' : 'bg-status-green'" aria-hidden="true"></span><span class="truncate" x-text="presence.reason"></span>
+                                        </span>
+                                        <a href="{{ route('owner.customers.show', $conversation->customer_id) }}" class="hidden min-h-6 shrink-0 items-center gap-1 font-semibold text-brand hover:underline focus-ring sm:inline-flex dark:text-[#ffb4ac]"><x-ui.icon name="person" :size="14" />Customer page</a>
+                                        <template x-for="about in aboutLinks" x-bind:key="about.url">
+                                            <a x-bind:href="about.url" class="hidden min-h-6 shrink-0 items-center gap-1 font-mono text-app-text-2 hover:text-brand focus-ring sm:inline-flex"><x-ui.icon name="receipt_long" :size="14" /><span x-text="about.reference"></span></a>
+                                        </template>
+                                    </p>
+                                </div>
                             </div>
                             @php($quiet = 'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-control px-2 text-sm font-semibold text-app-text-2 transition-colors duration-150 hover:bg-black/5 hover:text-app-text disabled:opacity-50 focus-ring dark:hover:bg-white/10 xl:px-2.5')
-                            <div class="flex shrink-0 items-center">
+                            <div class="hidden shrink-0 items-center sm:flex">
                                 <button type="button" x-on:click="runAssist('suggest')" x-bind:disabled="assist.busy !== null || !thread.loaded" title="Suggest reply: {{ $name }} writes a draft you edit" class="{{ $quiet }}" data-assist-suggest>
                                     <x-ui.icon name="edit_note" :size="20" x-bind:class="assist.busy === 'suggest' && 'animate-pulse motion-reduce:animate-none'" /><span class="sr-only xl:not-sr-only" x-text="assist.busy === 'suggest' ? 'Writing a draft' : 'Suggest reply'">Suggest reply</span>
                                 </button>
@@ -178,6 +192,26 @@
                                 </button>
                                 <button type="button" x-show="!thread.conversation?.resolved" x-on:click="setResolved(true)" title="Resolve this conversation" class="{{ $quiet }}"><x-ui.icon name="task_alt" :size="20" /><span class="sr-only xl:not-sr-only">Resolve</span></button>
                                 <button type="button" x-show="thread.conversation?.resolved" x-cloak x-on:click="setResolved(false)" title="Reopen this conversation" class="{{ $quiet }}"><x-ui.icon name="undo" :size="20" /><span class="sr-only xl:not-sr-only">Reopen</span></button>
+                            </div>
+
+                            {{-- Phones: one "more" menu instead of three icons and a link --}}
+                            @php($item = 'flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-sm font-medium text-app-text hover:bg-black/5 disabled:opacity-50 focus-ring dark:hover:bg-white/10')
+                            <div class="relative shrink-0 sm:hidden" x-data="{ more: false }" x-on:click.outside="more = false" x-on:keydown.escape.stop="more = false; $refs.moreButton.focus()" data-thread-more>
+                                <button type="button" x-ref="moreButton" x-on:click="more = !more" class="{{ $quiet }}" aria-haspopup="menu" x-bind:aria-expanded="more.toString()" aria-label="More actions for this conversation">
+                                    <x-ui.icon name="more_vert" :size="22" />
+                                </button>
+                                <div x-show="more" x-cloak x-transition.opacity.duration.120ms role="menu" aria-label="Conversation actions"
+                                    class="absolute right-0 top-full z-30 mt-1 w-64 max-w-[calc(100vw-2rem)] rounded-card border border-app-border bg-app-card p-1 shadow-[0_12px_24px_-6px_rgba(23,23,23,0.2)] dark:shadow-2xl">
+                                    <a href="{{ route('owner.customers.show', $conversation->customer_id) }}" role="menuitem" class="{{ $item }}"><x-ui.icon name="person" :size="20" class="text-app-text-2" />Customer page</a>
+                                    <template x-for="about in aboutLinks" x-bind:key="about.url">
+                                        <a x-bind:href="about.url" role="menuitem" class="{{ $item }}"><x-ui.icon name="receipt_long" :size="20" class="text-app-text-2" /><span class="font-mono" x-text="about.reference"></span></a>
+                                    </template>
+                                    <div class="my-1 border-t border-app-border" role="separator"></div>
+                                    <button type="button" role="menuitem" x-on:click="more = false; runAssist('suggest')" x-bind:disabled="assist.busy !== null || !thread.loaded" class="{{ $item }}"><x-ui.icon name="edit_note" :size="20" class="text-app-text-2" />Suggest reply</button>
+                                    <button type="button" role="menuitem" x-on:click="more = false; runAssist('summarize')" x-bind:disabled="assist.busy !== null || !thread.loaded" class="{{ $item }}"><x-ui.icon name="summarize" :size="20" class="text-app-text-2" />Summarize</button>
+                                    <button type="button" role="menuitem" x-show="!thread.conversation?.resolved" x-on:click="more = false; setResolved(true)" class="{{ $item }}"><x-ui.icon name="task_alt" :size="20" class="text-app-text-2" />Resolve conversation</button>
+                                    <button type="button" role="menuitem" x-show="thread.conversation?.resolved" x-cloak x-on:click="more = false; setResolved(false)" class="{{ $item }}"><x-ui.icon name="undo" :size="20" class="text-app-text-2" />Reopen conversation</button>
+                                </div>
                             </div>
                         </header>
 
@@ -221,6 +255,15 @@
                         </div>
 
                         <x-chat.banner />
+
+                        {{-- Phase 10F: asked once when the owner writes while set to Away (the message is sent either way) --}}
+                        <div x-show="awayPrompt" x-cloak role="alertdialog" aria-labelledby="away-prompt-text" class="mx-2 mb-1 flex flex-col gap-2 rounded-card border border-status-amber/30 bg-status-amber-bg px-3 py-2.5 text-sm sm:mx-3 sm:flex-row sm:items-center" data-away-prompt>
+                            <p id="away-prompt-text" class="min-w-0 flex-1 text-app-text">You're set to Away, so {{ $name }} will answer this customer's next message. Switch to Available?</p>
+                            <div class="flex shrink-0 gap-2">
+                                <x-ui.button type="button" size="sm" x-on:click="answerAwayPrompt(true)" data-away-switch>Switch to Available</x-ui.button>
+                                <x-ui.button type="button" size="sm" variant="outline" x-on:click="answerAwayPrompt(false)" data-away-stay>Stay Away</x-ui.button>
+                            </div>
+                        </div>
 
                         <form x-on:submit.prevent="submit()" class="border-t border-app-border px-2 pb-1.5 pt-2 sm:px-3">
                             {{-- Phase 10E: the order or booking this reply is about (like an order card in a shop chat) --}}

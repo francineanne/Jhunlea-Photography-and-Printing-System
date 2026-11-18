@@ -51,7 +51,7 @@
         @if ($filters['kind'])
             <input type="hidden" name="kind" value="{{ $filters['kind'] }}">
         @endif
-        <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="Reference (PR-, PB-) or name" />
+        <x-ui.typeahead :url="route('customer.suggest')" label="Search" :value="$filters['search']" placeholder="Reference (PR-, PB-) or name" />
         @if ($statuses !== [])
             <x-ui.select label="Status" name="status">
                 <option value="">Any status</option>

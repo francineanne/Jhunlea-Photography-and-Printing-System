@@ -77,7 +77,7 @@
 
         <form method="GET" action="{{ route('owner.activity.index') }}" role="search" class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto] lg:items-end">
             @if ($filters['group'])<input type="hidden" name="group" value="{{ $filters['group'] }}">@endif
-            <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="PR-, PB-, PAY- number, name or action" />
+            <x-ui.typeahead :url="route('owner.suggest')" scope="activity" label="Search" :value="$filters['search']" placeholder="PR-, PB-, PAY- number, name or action" />
             <x-ui.input label="From" name="from" type="date" :value="$filters['range'] === 'custom' ? $filters['from'] : null" />
             <x-ui.input label="To" name="to" type="date" :value="$filters['range'] === 'custom' ? $filters['to'] : null" />
             <x-ui.button type="submit" variant="outline">Show</x-ui.button>

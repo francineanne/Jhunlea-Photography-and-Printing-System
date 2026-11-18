@@ -599,6 +599,122 @@ const verifyWatch = (statusUrl, nextUrl) => ({
     },
 });
 
+// Phase 10F: the search box with suggestions (<x-ui.typeahead>). One request in flight at a time; an older answer
+// never replaces a newer one; the highlight is added AFTER escaping, so nothing from the server becomes markup.
+const uiTypeahead = (url) => ({
+    open: false,
+    loading: false,
+    items: [],
+    active: -1,
+    term: '',
+    timer: null,
+    asked: 0,
+
+    typed(focusOnly = false) {
+        const term = this.$refs.input.value.trim();
+
+        if (focusOnly && (term === '' || this.items.length === 0)) return;
+        clearTimeout(this.timer);
+        if (term === '') {
+            this.close();
+            this.items = [];
+            return;
+        }
+        this.timer = setTimeout(() => this.ask(term), 200);
+    },
+
+    async ask(term) {
+        const ticket = ++this.asked;
+        this.loading = true;
+        this.term = term;
+        this.open = true;
+        try {
+            const response = await fetch(`${url}${url.includes('?') ? '&' : '?'}q=${encodeURIComponent(term)}`, {
+                headers: { Accept: 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin',
+            });
+            if (ticket !== this.asked) return;
+            const data = response.ok ? await response.json() : { items: [] };
+            this.items = Array.isArray(data.items) ? data.items : [];
+            this.active = -1;
+        } catch (error) {
+            if (ticket === this.asked) this.items = [];
+        } finally {
+            if (ticket === this.asked) this.loading = false;
+        }
+    },
+
+    close() {
+        this.open = false;
+        this.active = -1;
+    },
+
+    key(event) {
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            if (!this.open && this.items.length) this.open = true;
+            if (!this.items.length) return;
+            event.preventDefault();
+            const step = event.key === 'ArrowDown' ? 1 : -1;
+            this.active = (this.active + step + this.items.length) % this.items.length;
+            this.$nextTick(() => document.getElementById(this.$refs.input.getAttribute('aria-controls') + '')?.children[this.active]?.scrollIntoView({ block: 'nearest' }));
+        } else if (event.key === 'Enter' && this.open && this.active >= 0) {
+            // Enter on a highlighted suggestion opens it; with nothing highlighted the form is submitted as always
+            event.preventDefault();
+            this.choose(this.items[this.active]);
+        } else if (event.key === 'Escape' && this.open) {
+            event.stopPropagation();
+            this.close();
+        }
+    },
+
+    choose(item) {
+        if (!item) return;
+        this.close();
+
+        // Starting a conversation is a POST: a small form with the CSRF token, never a GET with side effects
+        if (item.post && typeof item.post.url === 'string' && item.post.url.startsWith(window.location.origin + '/')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = item.post.url;
+            const fields = { _token: csrf(), ...(item.post.fields ?? {}) };
+            Object.entries(fields).forEach(([name, value]) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = String(value);
+                form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
+            return;
+        }
+
+        if (typeof item.url === 'string' && (item.url.startsWith('/') || item.url.startsWith(window.location.origin + '/')) && !item.url.startsWith('//')) {
+            window.location.assign(item.url);
+        }
+    },
+
+    // The typed text, highlighted, in escaped text
+    mark(text) {
+        const safe = String(text ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        const term = this.term.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+        if (term === '') return safe;
+        // The start of a word first (what one letter matched on the server), else anywhere
+        const lower = safe.toLowerCase();
+        const needle = term.toLowerCase();
+        let at = -1;
+        for (let i = lower.indexOf(needle); i >= 0; i = lower.indexOf(needle, i + 1)) {
+            if (i === 0 || /[\s\-·(]/.test(lower[i - 1])) {
+                at = i;
+                break;
+            }
+        }
+        if (at < 0) at = lower.indexOf(needle);
+        if (at < 0) return safe;
+
+        return `${safe.slice(0, at)}<mark class="rounded bg-brand/15 px-0.5 text-inherit dark:bg-[#ffb4ac]/20">${safe.slice(at, at + term.length)}</mark>${safe.slice(at + term.length)}`;
+    },
+});
+
 export default function registerPolish(Alpine) {
     Alpine.magic('linkify', () => linkify);
     Alpine.data('uiTimePicker', uiTimePicker);
@@ -610,6 +726,7 @@ export default function registerPolish(Alpine) {
     Alpine.data('liveUpdates', liveUpdates);
     Alpine.data('uiHint', uiHint);
     Alpine.data('verifyWatch', verifyWatch);
+    Alpine.data('uiTypeahead', uiTypeahead);
 }
 
 export { csrf, reduced, root, store, toast };

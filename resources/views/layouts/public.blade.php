@@ -38,7 +38,9 @@
 
     <header class="site-header sticky top-0 z-40 border-b border-app-border bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.03)] backdrop-blur-xl">
         <div class="mx-auto flex h-16 max-w-[1280px] items-center justify-between gap-4 px-4 sm:h-20 sm:px-6 lg:gap-8">
-            <a href="{{ url('/') }}" class="group inline-flex min-h-11 shrink-0 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home">
+            {{-- Phase 10F: on the landing page itself the logo replays the splash once instead of reloading the page --}}
+            <a href="{{ url('/') }}" class="group inline-flex min-h-11 shrink-0 items-center rounded-control focus-ring" aria-label="Jhunlea Photography &amp; Printing, home"
+                @if (request()->is('/')) x-on:click.prevent="$dispatch('replay-loader')" data-logo-replay @endif>
                 <x-ui.logo mark compact />
             </a>
 

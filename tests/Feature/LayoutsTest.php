@@ -97,6 +97,17 @@ class LayoutsTest extends TestCase
         $this->assertGuest();
     }
 
+    /** Phase 10F: 3 seconds (at most 3.5) and the landing page's header logo replays it without leaving the page. */
+    public function test_the_splash_lasts_three_seconds_and_the_landing_logo_replays_it(): void
+    {
+        $script = file_get_contents(resource_path('js/app.js'));
+        $this->assertStringContainsString('const SHOW_MS = 3000;', $script);
+        $this->assertStringContainsString('const CAP_MS = 3500;', $script);
+
+        $this->get('/')->assertOk()->assertSee('data-logo-replay', false)->assertSee("\$dispatch('replay-loader')", false);
+        $this->get('/services')->assertOk()->assertDontSee('data-logo-replay', false);
+    }
+
     public function test_page_loader_is_only_on_the_public_and_auth_layouts(): void
     {
         $this->get('/')->assertSee('class="page-loader', false);

@@ -1,5 +1,5 @@
 {{-- Full-screen dark loader from design/login/aperture_page_loader (always dark, in both themes). --}}
-{{-- Phase 10E: only on the first page of a browser session, 2 seconds (at most 2.5), skipped by a click, a tap or any key; never with reduced motion or without JavaScript. --}}
+{{-- Phase 10F: only on the first page of a browser session, 3 seconds (at most 3.5; 2 in 10E), skipped by a click, a tap or any key; never with reduced motion or without JavaScript. The header logo on the landing page replays it (replay-loader). --}}
 {{-- Visible from first paint; the script below runs before it is painted and hides it when already seen this session. --}}
 {{-- The fade is plain CSS, so a throttled background tab can never leave the overlay stuck on screen. --}}
 <noscript><style>.page-loader { display: none !important; }</style></noscript>

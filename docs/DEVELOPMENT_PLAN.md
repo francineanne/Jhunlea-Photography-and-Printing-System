@@ -294,6 +294,19 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
   - [ ] "Attach order/booking" menu sa composer ng customer (nandiyan na ang chip mula sa order at booking pages)
   - [ ] Totoong dalawang-browser na mabilis na palitan ng message sa loob ng isang minuto
 
+### 10F — Huling fixes bago ang feature freeze (branch `phase-10f-polish`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong payment, booking, scheduling, printing o account rule
+- [x] Chat avatars: ang customer ay may sariling picture o initials (thread, inbox, New message, thread header); ang studio ay picture ng owner o ang camera mark ("<pangalan> · Studio"); si Lumi ay violet sparkle na may "AI" badge, hindi ang logo ng shop; walang avatar ang system lines
+- [x] Page header ng customer, order at booking: sino sa kaliwa, ang actions ("Message", "Message customer about this", o "Call <phone>" ng walk-in) sa kanan, kapantay ng pangalan; buong lapad na row sa ilalim kapag makitid
+- [x] Owner thread header: malaking picture, pangalan at status; sa phone isang "more" menu (customer page, Suggest reply, Summarize, Resolve)
+- [x] Typeahead (`<x-ui.typeahead>`) sa New message, Customers, Payments, printing orders, bookings, Activity log, My requests at public services; tatlong endpoint (owner, customer, public) na may sariling throttle
+- [x] Presence: "Switch to Available?" prompt kapag Away at nag-message ang owner; ang status sa salita sa inbox at bawat thread header ("Auto: active 1 minute ago", "Auto: away since 9:12 AM"); tests na bawat galaw ng owner ay nagta-touch ng presence sa Auto (walang path na kulang)
+- [x] Splash: 3 segundo (hindi lalampas ng 3.5), puwedeng i-skip; ang logo sa landing page ay nire-replay ito
+- [ ] Bukas pa (10F):
+  - [ ] Typeahead sa public packages (handa na ang `packages` scope, pero walang text search box ang packages page)
+  - [ ] Literal na % at _ sa SQLite (sa MySQL lang literal; ganoon din ang lumang searches)
+  - [ ] Browser QA sa totoong phone (iOS at Android)
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

@@ -117,7 +117,7 @@
             <input type="hidden" name="range" value="{{ $range }}">
         @endif
         <div class="sm:col-span-2 lg:col-span-4 xl:col-span-2">
-            <x-ui.input label="Search" name="q" type="search" icon="search" :value="$filters['search']" maxlength="60" placeholder="PAY, PR, PB, customer or GCash ref." />
+            <x-ui.typeahead :url="route('owner.suggest')" scope="payments" label="Search" :value="$filters['search']" placeholder="PAY, PR, PB, customer or GCash ref." />
         </div>
         <x-ui.select label="Method" name="method">
             <option value="">All methods</option>

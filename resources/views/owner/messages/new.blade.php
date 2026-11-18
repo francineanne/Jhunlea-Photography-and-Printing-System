@@ -22,7 +22,7 @@
 
         <form method="GET" action="{{ route('owner.messages.new') }}" role="search" class="mt-6 flex flex-col gap-2 sm:flex-row sm:items-end">
             <div class="min-w-0 flex-1">
-                <x-ui.input label="Search customers" name="q" type="search" maxlength="80" :value="$search" autofocus autocomplete="off" placeholder="For example: Ana, ana@, 0917" />
+                <x-ui.typeahead :url="route('owner.suggest')" scope="message" label="Search customers" :value="$search" maxlength="80" autofocus placeholder="For example: Ana, ana@, 0917" />
             </div>
             <x-ui.button type="submit"><x-ui.icon name="search" :size="18" />Search</x-ui.button>
         </form>

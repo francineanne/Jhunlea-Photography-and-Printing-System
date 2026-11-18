@@ -56,6 +56,7 @@ use App\Http\Controllers\Public\PackageController as PublicPackageController;
 use App\Http\Controllers\Public\PackageFinderController as PublicPackageFinderController;
 use App\Http\Controllers\Public\ServiceController as PublicServiceController;
 use App\Http\Controllers\Public\TermsController as PublicTermsController;
+use App\Http\Controllers\SuggestionController;
 use Illuminate\Support\Facades\Route;
 
 // Public pages: readable by anyone, and they only ever read published records. Each page has its own counter
@@ -124,6 +125,21 @@ foreach (['customer' => 'my', 'owner' => 'owner'] as $area => $prefix) {
 Route::get('/my/dashboard', CustomerDashboardController::class)
     ->middleware(['auth', 'role:customer', 'expire.downpayments', 'throttle:60,1,customer-dashboard'])
     ->name('customer.dashboard');
+
+// Phase 10F: search suggestions (<x-ui.typeahead>): the customer's own requests only
+Route::get('/my/suggest', [SuggestionController::class, 'customer'])
+    ->middleware(['auth', 'role:customer', 'throttle:60,1,customer-suggest'])
+    ->name('customer.suggest');
+
+// Phase 10F: the owner's search suggestions (?scope=message|customers|payments|orders|bookings|activity)
+Route::get('/owner/suggest', [SuggestionController::class, 'owner'])
+    ->middleware(['auth', 'role:owner', 'throttle:60,1,owner-suggest'])
+    ->name('owner.suggest');
+
+// Phase 10F: suggestions from the published catalog (?scope=services|packages)
+Route::get('/suggest', [SuggestionController::class, 'catalog'])
+    ->middleware('throttle:60,1,public-suggest')
+    ->name('public.suggest');
 
 // Phase 10D: the version stamp a customer's pages poll for live updates (their own records only; read only)
 Route::get('/my/live', LiveController::class)

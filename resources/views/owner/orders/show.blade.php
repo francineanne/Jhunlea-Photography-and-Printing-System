@@ -44,13 +44,17 @@
     </nav>
 
     {{-- Header and actions --}}
-    <section id="actions" class="scroll-mt-24 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="order-title">
-        <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-            <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center gap-1"><h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1><x-ui.copy :text="$order->reference_number" label="Copy reference number" /></div>
-                    <x-walk-in.badge :record="$order" />
-                    <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
+    <section id="actions" class="@container scroll-mt-24 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="order-title">
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between" data-page-header>
+            <div class="min-w-0 flex-1">
+                {{-- Phase 10F: the header's action slot beside the title, like the customer page; a full-width row below it when narrow --}}
+                <div class="flex flex-col gap-3 @xl:flex-row @xl:items-center @xl:justify-between">
+                    <div class="flex min-w-0 flex-wrap items-center gap-2">
+                        <div class="flex items-center gap-1"><h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1><x-ui.copy :text="$order->reference_number" label="Copy reference number" /></div>
+                        <x-walk-in.badge :record="$order" />
+                        <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
+                    </div>
+                    <div class="flex shrink-0 flex-wrap gap-2" data-header-actions><x-chat.message-customer :customer="$customer" :record="$order" type="printing_order" class="w-full @xl:w-auto" /></div>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-2">
                     <x-ui.status-badge :status="$order->status" live />
@@ -202,8 +206,7 @@
                             <x-ui.button :href="'mailto:'.$customer->email" variant="outline" size="sm"><x-ui.icon name="mail" :size="16" />Email</x-ui.button>
                         @endif
                     </div>
-                    {{-- Phase 10E --}}
-                    <x-chat.message-customer :customer="$customer" :record="$order" type="printing_order" class="mt-2 block" />
+
                 @endif
             </section>
 

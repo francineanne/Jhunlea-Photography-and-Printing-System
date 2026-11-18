@@ -101,3 +101,18 @@ changes. "No issue" means none of the measured problems; it is not a claim about
 | E7 | Splash | Too quick to see | C | 2 seconds, skippable |
 
 Checked by script (frame check): every control inside its card and form grid, no two controls overlapping, no date input under 120 px, no text cut without an ellipsis, no label colliding with its badge, at 360, 768, 1024, 1280, 1440 and 1700 px, owner pages with the sidebar open and folded.
+
+## Phase 10F: last fixes before the feature freeze
+
+| # | Screen | Problem | Sev. | Fix |
+|---|---|---|---|---|
+| F1 | Chat (both sides) | The studio and Lumi used the same shop logo; customers had no picture in the owner inbox | A | One avatar per kind: customer picture or initials, the owner's picture or the camera mark for the studio, a violet AI sparkle for Lumi; alt and title on each |
+| F2 | Customer, order and booking pages (owner) | "Message" sat under the name or deep in the contact card | B | One header pattern: actions on the right at the name's height, a full-width row on narrow cards; long emails truncate with a title |
+| F3 | Owner thread header | The small picture sat beside the name while the status line started under the picture | B | The picture spans both lines; the name and the status stack beside it |
+| F4 | Owner thread header, phone | Three icons, a tall link and a status row squeezed the name to "Ana M..." | A | Back, picture, name with the status under it, and one "more" menu (44 px items, Esc and outside tap close it, drawn above the messages) |
+| F5 | Every search box | No suggestions; the owner had to submit to see matches | B | `<x-ui.typeahead>`: suggestions from the first letter, keyboard, mouse and touch, no-JS form unchanged |
+| F6 | Owner chat while Away | Nothing said that Lumi would answer the next message | B | One "Switch to Available?" prompt; the state in words in every header |
+| F7 | Splash | 2 seconds felt cut short; no way to see it again | C | 3 seconds (cap 3.5), the landing logo replays it |
+| F8 | Typeahead highlight | One letter highlighted inside a word ("Tar-p-aulin") | C | A word start is highlighted first |
+
+Checked in the browser on the throwaway SQLite site: the page headers at 360, 768 and 1280 px (no horizontal scroll; the action beside the name from 768 px, full width at 360 px); the thread header and its menu at 360 px in light and dark and at 768 px; the avatars on the customer and owner sides; the typeahead by keyboard and mouse on the public services page and on the six owner pages (dropdown visible and on top); the Away prompt (Stay Away, Switch to Available, Auto mode with no prompt); the splash timing (about 3 s, skipped in about 0.14 s, not shown on the next page, the logo replay stays on the page). Not done: a real phone (touch on iOS and Android).

@@ -136,21 +136,33 @@ class OwnerPresence
         return null;
     }
 
-    /** The effective status in words, for the owner's presence control: "Auto: active 2 minutes ago" and the like. */
+    /**
+     * The effective status in words (Phase 10F), shown in the inbox header and every thread header:
+     * "Available (set by you)", "Away (set by you)", "Auto: active 1 minute ago", "Auto: away since 9:12 AM"
+     * (Manila time; with the date when it was not today), "Auto: away, no activity yet". Words only; no rule changed.
+     */
     public function reason(): string
     {
         $last = $this->lastActiveAt();
-        $when = $last?->diffForHumans();
 
         return match ($this->mode()) {
-            OwnerPresenceMode::Available => 'Available: set by you, Lumi stays quiet in the studio chat',
-            OwnerPresenceMode::Away => 'Away: set by you, Lumi answers in the studio chat',
+            OwnerPresenceMode::Available => 'Available (set by you)',
+            OwnerPresenceMode::Away => 'Away (set by you)',
             OwnerPresenceMode::Auto => match (true) {
                 $last === null => 'Auto: away, no activity yet',
-                $this->isAway() => "Auto: away, last active {$when}",
-                default => "Auto: active {$when}",
+                $this->isAway() => 'Auto: away since '.$this->awaySince($last),
+                default => 'Auto: active '.$last->diffForHumans(),
             },
         };
+    }
+
+    /** The moment Auto turned away: the last activity plus the active minutes, in Manila time. */
+    private function awaySince(Carbon $last): string
+    {
+        $zone = config('app.display_timezone');
+        $since = $last->copy()->addMinutes((int) config('chat.presence.active_minutes'))->setTimezone($zone);
+
+        return $since->isSameDay(Carbon::now($zone)) ? $since->format('g:i A') : $since->format('M j, g:i A');
     }
 
     /** True when the shop is inside today's opening hours in Manila, and today is not a blocked date. */

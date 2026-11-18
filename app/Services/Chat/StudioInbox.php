@@ -26,7 +26,7 @@ class StudioInbox
             ->whereRaw('chat_messages.id > COALESCE(conversations.owner_last_read_message_id, 0)');
 
         return Conversation::query()->studio()->whereNotNull('last_message_at')
-            ->with('customer:id,name')
+            ->with('customer:id,name,avatar_path,is_walk_in')
             ->withCount(['messages as unread_count' => $unread])
             ->when($filter === 'unanswered', fn ($query) => $this->unanswered($query))
             ->when($filter === 'open', fn ($query) => $query->whereNull('resolved_at'))

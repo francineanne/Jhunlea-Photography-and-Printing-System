@@ -67,7 +67,7 @@
         class="mt-4 grid gap-4 rounded-card border border-app-border bg-app-card p-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] xl:items-end">
         <input type="hidden" name="status" value="{{ $status?->value ?? 'all' }}">
         @if ($expired)<input type="hidden" name="expired" value="1">@endif
-        <x-ui.input label="Search" name="q" type="search" icon="search" :value="$search" maxlength="60" placeholder="PB-000001, customer name or contact number" />
+        <x-ui.typeahead :url="route('owner.suggest')" scope="bookings" label="Search" :value="$search" placeholder="PB-000001, customer name or contact number" />
         <x-ui.select id="filter-package" name="package" label="Package">
             <option value="">All packages</option>
             @foreach ($packages as $item)

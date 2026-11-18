@@ -73,6 +73,7 @@ class StartConversationController extends Controller
             $about = $validated['about_type'].':'.$validated['about_id'];
         }
 
-        return redirect()->route('owner.messages.show', array_filter([$conversation, 'about' => $about]));
+        // Phase 10F: the thread page asks once "Switch to Available?" when the owner is set to Away
+        return redirect()->route('owner.messages.show', array_filter([$conversation, 'about' => $about]))->with('chat_started', true);
     }
 }

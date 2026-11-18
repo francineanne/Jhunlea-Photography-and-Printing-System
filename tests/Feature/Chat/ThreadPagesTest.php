@@ -88,7 +88,8 @@ class ThreadPagesTest extends TestCase
 
         $all = $this->actingAs($owner)->getJson(route('owner.messages.index'))->assertOk()->assertJsonCount(2, 'conversations');
         $row = collect($all->json('conversations'))->firstWhere('id', $anaThread->id);
-        $this->assertSame(['name' => 'Ana Reyes'], $row['customer']);
+        // Phase 10F: the row also carries the customer's picture (none here) and initials; never an email or a phone
+        $this->assertSame(['name' => 'Ana Reyes', 'avatar' => null, 'initials' => 'AR'], $row['customer']);
         $this->assertSame('Second', $row['preview']);
         $this->assertSame('customer', $row['last_sender_type']);
         $this->assertSame(2, $row['unread_count']);

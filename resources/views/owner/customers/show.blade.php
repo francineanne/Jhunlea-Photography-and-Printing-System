@@ -22,15 +22,26 @@
 @section('main')
     <a href="{{ route('owner.customers.index') }}" class="inline-flex min-h-11 items-center gap-1 rounded text-sm font-semibold text-app-text-2 hover:text-brand focus-ring"><x-ui.icon name="arrow_back" :size="18" />All customers</a>
 
-    <div class="mt-2 rounded-card border border-app-border bg-app-card p-5 shadow-sm sm:p-6 dark:shadow-none">
-        <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>Customer</p>
-        <h1 class="mt-2 flex flex-wrap items-center gap-3 break-words font-display text-3xl font-semibold tracking-tight sm:text-4xl"><x-ui.user-avatar :user="$customer" size="md" />{{ $customer->name }}<x-walk-in.badge :record="$customer" /></h1>
-        {{-- Phase 10E: write to this customer (their Studio thread); a walk-in gets the phone instead --}}
-        <x-chat.message-customer :customer="$customer" class="mt-3 block" />
-        <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-3">
+    <div class="@container mt-2 rounded-card border border-app-border bg-app-card p-5 shadow-sm sm:p-6 dark:shadow-none">
+        {{-- Phase 10F: one header pattern (customer, order and booking pages): who on the left, actions on the right at the
+             name's height; on a narrow card the actions become a full-width row below --}}
+        <div class="flex flex-col gap-4 @xl:flex-row @xl:items-center @xl:justify-between" data-page-header>
+            <div class="flex min-w-0 items-center gap-3">
+                <x-ui.user-avatar :user="$customer" size="md" class="@xl:size-14 @xl:text-lg" />
+                <div class="min-w-0">
+                    <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 rounded-full bg-brand" aria-hidden="true"></span>Customer</p>
+                    <h1 class="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 break-words font-display text-3xl font-semibold tracking-tight sm:text-4xl">{{ $customer->name }}<x-walk-in.badge :record="$customer" /></h1>
+                </div>
+            </div>
+            <div class="flex shrink-0 flex-wrap gap-2" data-header-actions>
+                {{-- Phase 10E: write to this customer (their Studio thread); a walk-in gets the phone instead --}}
+                <x-chat.message-customer :customer="$customer" class="w-full @xl:w-auto" />
+            </div>
+        </div>
+        <dl class="mt-5 grid gap-4 border-t border-app-border pt-4 text-sm @lg:grid-cols-3">
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Email</dt>
-                <dd class="break-all">@if ($customer->email){{ $customer->email }}@else<span class="text-app-text-2">No email: a walk-in customer, with no login</span>@endif</dd>
+                <dd class="truncate" @if ($customer->email) title="{{ $customer->email }}" @endif>@if ($customer->email){{ $customer->email }}@else<span class="text-app-text-2">No email: a walk-in customer, with no login</span>@endif</dd>
             </div>
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Phone</dt>
