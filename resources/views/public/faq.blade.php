@@ -50,7 +50,7 @@
         @endif
 
         <x-ui.notice variant="payment" class="mt-8 max-w-3xl">
-            <p class="text-app-text-2">Payment is made face-to-face at Jhunlea Photography &amp; Printing.</p>
+            <p class="text-app-text-2">The studio records each payment after checking it.</p>
         </x-ui.notice>
     </section>
 @endsection

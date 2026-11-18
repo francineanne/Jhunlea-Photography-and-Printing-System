@@ -116,3 +116,12 @@ Checked by script (frame check): every control inside its card and form grid, no
 | F8 | Typeahead highlight | One letter highlighted inside a word ("Tar-p-aulin") | C | A word start is highlighted first |
 
 Checked in the browser on the throwaway SQLite site: the page headers at 360, 768 and 1280 px (no horizontal scroll; the action beside the name from 768 px, full width at 360 px); the thread header and its menu at 360 px in light and dark and at 768 px; the avatars on the customer and owner sides; the typeahead by keyboard and mouse on the public services page and on the six owner pages (dropdown visible and on top); the Away prompt (Stay Away, Switch to Available, Auto mode with no prompt); the splash timing (about 3 s, skipped in about 0.14 s, not shown on the next page, the logo replay stays on the page). Not done: a real phone (touch on iOS and Android).
+
+## Phase 10G: contact details and footer
+
+| # | Screen | Problem | Sev. | Fix |
+|---|---|---|---|---|
+| G1 | Landing, Visit us | A large gap between each label and its value (each link was a 44 px box with its text centred) | B | One `<x-ui.contact-item>`: the value 2 px under its label, the whole line is the link |
+| G2 | Landing and footer | The phone read "+639914710185" | C | "0991 471 0185" with a tel: link (display only) |
+| G3 | Footer (public and customer) | Uneven contact gaps, three unbalanced columns, "Terms and privacy" alone, a thumbs-up for Facebook, the old face-to-face sentence | A | One footer: brand, Explore, Contact (same gap on every row, one icon column, the Facebook mark), bottom bar with the copyright and Terms |
+| G4 | Notice, sign-in pages, sidebar, FAQ, terms, end-of-day, landing, services, dashboard | "Payment is made face-to-face" contradicted the 10B rules (GCash can be sent with its reference) | A | `PaymentRules::NOTICE` or `shortLine()`; the counter keeps "face to face", which is true there |

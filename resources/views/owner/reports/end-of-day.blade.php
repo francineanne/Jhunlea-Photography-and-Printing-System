@@ -140,7 +140,7 @@
         <h2>Still awaiting payment</h2>
         <p>{{ $r['awaiting']['count'] }} confirmed {{ Str::plural('price', $r['awaiting']['count']) }} not paid yet: {{ Money::cents($r['awaiting']['cents']) }} (right now, any date; not income).</p>
 
-        <p class="foot">Prepared from the system’s payment records. Not an official document. Payment is made face-to-face at {{ $shopName }}.</p>
+        <p class="foot">Prepared from the system’s payment records. Not an official document. Payments received by {{ $shopName }} in cash or by GCash.</p>
     </main>
 </body>
 </html>

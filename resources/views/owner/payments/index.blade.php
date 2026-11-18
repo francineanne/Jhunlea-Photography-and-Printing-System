@@ -50,7 +50,7 @@
     </div>
 
     <x-ui.notice variant="payment" class="mt-6">
-        <p class="text-app-text-2">The system only records and monitors payments received face to face, in cash or by GCash. It never takes a payment online. A printing order is paid in full; a photoshoot is paid in full, or as a downpayment and then its balance.</p>
+        <p class="text-app-text-2">The system only records and monitors the payments the shop received: cash or GCash at the counter, or GCash a customer sent with its reference in Messages. It never takes a payment online. A printing order is paid in full; a photoshoot is paid in full, or as a downpayment and then its balance.</p>
     </x-ui.notice>
 
     @if (session('receipt_url'))

@@ -39,6 +39,25 @@ final class PhilippineMobile implements ValidationRule
         return preg_match('/^09\d{9}$/', $digits) === 1 ? $digits : null;
     }
 
+    /**
+     * Phase 10G: how a number READS on a page: "0991 471 0185" for a Philippine mobile number, else the text as stored
+     * (a landline or anything else the owner typed). Display only; the stored value never changes.
+     */
+    public static function display(?string $value): string
+    {
+        $mobile = self::normalize($value);
+
+        return $mobile === null ? trim((string) $value) : substr($mobile, 0, 4).' '.substr($mobile, 4, 3).' '.substr($mobile, 7);
+    }
+
+    /** Phase 10G: the tel: address: +63 and the 10 digits for a mobile number, else the digits and + as typed. */
+    public static function telHref(?string $value): string
+    {
+        $mobile = self::normalize($value);
+
+        return 'tel:'.($mobile === null ? preg_replace('/[^0-9+]/', '', (string) $value) : '+63'.substr($mobile, 1));
+    }
+
     public static function isValid(?string $value): bool
     {
         return self::normalize($value) !== null;

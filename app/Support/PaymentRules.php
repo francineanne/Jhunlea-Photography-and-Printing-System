@@ -146,6 +146,13 @@ class PaymentRules
     /**
      * Phase 10D: the one short policy line of the public top bar and the customer footer, from the current settings.
      */
+    /**
+     * Phase 10G: the one fixed payment sentence for places that cannot read the settings (the payment notice, the sign-in
+     * pages, the sidebar). It replaces "Payment is made face-to-face at ...", which no longer matched the 10B rules (GCash
+     * can be sent from anywhere with its reference in Messages).
+     */
+    public const NOTICE = 'Pay at the shop in cash or GCash, or send GCash and the reference number in Messages. No online checkout.';
+
     public function shortLine(): string
     {
         $percent = $this->settings->downpaymentPercent();

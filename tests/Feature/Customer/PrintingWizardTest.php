@@ -13,6 +13,7 @@ use App\Models\PrintingServiceOption;
 use App\Models\User;
 use App\Services\OrderFileService;
 use App\Services\PrintingOrderService;
+use App\Support\PaymentRules;
 use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -167,7 +168,8 @@ class PrintingWizardTest extends TestCase
         $this->assertStringContainsString('name="notes"', $html);
         $this->assertStringContainsString('type="submit"', $html);
         $this->assertStringContainsString('Estimate only. The shop confirms the final price after checking your file.', $html);
-        $this->assertStringContainsString('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', $html);
+        // Phase 10G: the payment notice follows the 10B rules (was "Payment is made face-to-face at ...")
+        $this->assertStringContainsString(PaymentRules::NOTICE, $html);
         // Step 1 is open; only the other steps carry the marker that hides them before Alpine starts
         // (steps 2, 3 and 4, plus the pages field while no per-page service is chosen)
         $this->assertSame(4, substr_count($html, 'data-js-hidden x-bind:data-js-hidden="false"'));
@@ -228,7 +230,8 @@ class PrintingWizardTest extends TestCase
             ->assertSee('Color mode: Full color')
             ->assertSee('thesis.pdf')
             ->assertSee('What happens next')
-            ->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false)
+            ->assertSee(PaymentRules::NOTICE)
+            ->assertDontSee('Payment is made face-to-face')
             ->assertSee(route('customer.printing.show', $order), false);
     }
 

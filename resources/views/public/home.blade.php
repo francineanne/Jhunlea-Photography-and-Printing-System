@@ -8,7 +8,7 @@
 @endphp
 
 <x-seo :title="config('app.name')"
-    description="Photography packages and printing services in one studio. Browse what we offer, compare packages and see prices. Payment is made face-to-face."
+    description="Photography packages and printing services in one studio. Browse what we offer, compare packages and see prices. Pay at the shop or by GCash."
     :image="$heroCover ? url($heroCover->url()) : null" />
 
 @section('main')
@@ -146,21 +146,22 @@
             <h2 id="visit-heading" class="mt-2 font-display text-3xl font-semibold sm:text-4xl">Visit us</h2>
             <div @class(['mt-8 grid gap-5', 'lg:grid-cols-2' => $map !== null])>
                 <x-ui.card class="flex flex-col">
-                    <address class="space-y-4 not-italic">
+                    {{-- Phase 10G: every line is the same <x-ui.contact-item>: the value sits right under its label --}}
+                    <address class="space-y-3 not-italic">
                         @if (filled($shop['address'] ?? null))
-                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="location_on" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Address</span><span class="block whitespace-pre-line break-words font-semibold">{{ $shop['address'] }}</span></span></p>
+                            <x-ui.contact-item icon="location_on" label="Address"><span class="whitespace-pre-line">{{ $shop['address'] }}</span></x-ui.contact-item>
                         @endif
                         @if (filled($shop['opening_hours'] ?? null))
-                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="schedule" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Shop opening hours</span><span class="block break-words font-semibold">{{ $shop['opening_hours'] }}</span><span class="block text-sm text-app-text-2">Photoshoot times are in the booking calendar.</span></span></p>
+                            <x-ui.contact-item icon="schedule" label="Shop opening hours" note="Photoshoot times are in the booking calendar.">{{ $shop['opening_hours'] }}</x-ui.contact-item>
                         @endif
                         @if (filled($shop['phone'] ?? null))
-                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="call" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Phone</span><a href="tel:{{ preg_replace('/[^0-9+]/', '', $shop['phone']) }}" class="inline-flex min-h-11 items-center rounded font-semibold hover:text-brand focus-ring">{{ $shop['phone'] }}</a></span></p>
+                            <x-ui.contact-item icon="call" label="Phone" :href="\App\Support\PhilippineMobile::telHref($shop['phone'])">{{ \App\Support\PhilippineMobile::display($shop['phone']) }}</x-ui.contact-item>
                         @endif
                         @if (filled($shop['email'] ?? null))
-                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="mail" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Email</span><a href="mailto:{{ $shop['email'] }}" class="inline-flex min-h-11 items-center break-all rounded font-semibold hover:text-brand focus-ring">{{ $shop['email'] }}</a></span></p>
+                            <x-ui.contact-item icon="mail" label="Email" :href="'mailto:'.$shop['email']"><span class="break-all">{{ $shop['email'] }}</span></x-ui.contact-item>
                         @endif
                         @if (filled($shop['facebook_url'] ?? null))
-                            <p class="flex items-start gap-3"><span class="grid size-10 shrink-0 place-items-center rounded-control bg-brand/10 text-brand" aria-hidden="true"><x-ui.icon name="thumb_up" :size="22" /></span><span class="min-w-0"><span class="block text-[11px] font-bold uppercase tracking-wider text-app-text-2">Facebook</span><a href="{{ $shop['facebook_url'] }}" target="_blank" rel="noopener noreferrer external" class="inline-flex min-h-11 items-center gap-1 rounded font-semibold hover:text-brand focus-ring">Our Facebook page<x-ui.icon name="open_in_new" :size="16" /><span class="sr-only"> (opens in a new tab)</span></a></span></p>
+                            <x-ui.contact-item icon="thumb_up" label="Facebook" :href="$shop['facebook_url']" external>Our Facebook page</x-ui.contact-item>
                         @endif
                     </address>
                     @if ($map !== null)
@@ -182,7 +183,7 @@
         <div class="mx-auto flex max-w-[1280px] flex-col gap-6 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-between">
             <div class="max-w-xl">
                 <h2 id="cta-heading" class="font-display text-3xl font-semibold">Ready to capture your milestones?</h2>
-                <p class="mt-2 text-white/70">Look through the packages first. Nothing is booked or charged until the studio confirms it and you pay face-to-face.</p>
+                <p class="mt-2 text-white/70">Look through the packages first. Nothing is booked or charged until the studio confirms it; you pay at the shop or by GCash.</p>
             </div>
             <div class="flex flex-wrap gap-3">
                 <x-ui.button :href="route('packages.index')">Browse packages</x-ui.button>

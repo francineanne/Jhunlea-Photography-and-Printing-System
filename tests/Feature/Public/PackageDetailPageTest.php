@@ -5,6 +5,7 @@ namespace Tests\Feature\Public;
 use App\Models\PackageImage;
 use App\Models\PhotographyPackage;
 use App\Models\Theme;
+use App\Support\PaymentRules;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -32,7 +33,8 @@ class PackageDetailPageTest extends TestCase
             ->assertSee('From ₱3,500.00')->assertSee('Final price confirmed after review')
             ->assertSee('90 mins')->assertSee('Up to 6 people')->assertSee('15 edited photos')
             ->assertSee('Printed frame')->assertSee('Online gallery')->assertSee('Arrive ten minutes early.')
-            ->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false);
+            // Phase 10G: the current payment line (was the face-to-face sentence)
+            ->assertSee(app(PaymentRules::class)->shortLine())->assertDontSee('Payment is made face-to-face');
     }
 
     public function test_the_three_kinds_of_price_text_appear(): void

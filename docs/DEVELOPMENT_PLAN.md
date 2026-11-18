@@ -307,6 +307,13 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
   - [ ] Literal na % at _ sa SQLite (sa MySQL lang literal; ganoon din ang lumang searches)
   - [ ] Browser QA sa totoong phone (iOS at Android)
 
+### 10G — Contact details at footer (branch `phase-10g-contact`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule
+- [x] "Visit us": iisang `<x-ui.contact-item>` sa bawat linya; ang value ay 2 px lang sa ilalim ng label; ang buong linya ang link
+- [x] Phone na "0991 471 0185" (tel:), email na mailto: (display lang; hindi binago ang naka-save)
+- [x] Bagong footer (`<x-layout.site-footer>`) sa public at customer: brand, Explore, Contact, at bottom bar na may copyright at "Terms and privacy"
+- [x] Pinalitan ang lumang "Payment is made face-to-face ..." ng `PaymentRules::NOTICE` o `shortLine()` (notice, sign-in pages, sidebar, FAQ, terms, end-of-day, landing, services, dashboard, payments page)
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

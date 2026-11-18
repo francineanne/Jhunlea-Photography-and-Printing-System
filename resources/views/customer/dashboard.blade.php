@@ -67,7 +67,7 @@
         <x-ui.stat-tile label="Amount to pay at the shop" :delay="120" glow>
             <x-slot:aside><x-ui.icon name="storefront" :size="20" class="text-brand" /></x-slot:aside>
             <p @class(['mt-4 text-3xl font-bold tabular-nums', 'text-brand' => $data['toPayCents'] > 0])>{{ $toPay }}</p>
-            <p class="mt-1 flex min-h-11 items-center text-xs text-app-text-2">Confirmed prices not paid yet, paid face to face</p>
+            <p class="mt-1 flex min-h-11 items-center text-xs text-app-text-2">Confirmed prices not paid yet: pay at the shop or by GCash</p>
         </x-ui.stat-tile>
         <x-ui.stat-tile label="Unread notifications" :delay="180">
             <x-slot:aside><x-ui.icon name="notifications" :size="20" class="text-app-text-2" /></x-slot:aside>

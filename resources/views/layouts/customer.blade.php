@@ -61,14 +61,8 @@
         @yield('main')
     </main>
 
-    <footer @class(['mx-auto max-w-[1280px] px-4 sm:px-6', 'pb-24' => $showChat, 'pb-8' => ! $showChat])>
-        {{-- Phase 10D: one quiet line, built from the current payment rules --}}
-        <p class="flex items-start gap-2 border-t border-app-border pt-4 text-xs text-app-text-2">
-            <x-ui.icon name="storefront" :size="16" class="mt-px shrink-0 text-brand" />
-            <span class="min-w-0">{{ $policyLine ?? 'No online payment. Pay at the shop in cash or by GCash.' }} <a href="{{ route('terms') }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">Terms and privacy</a></span>
-        </p>
-        <p class="mt-2 text-xs text-app-text-2">&copy; {{ date('Y') }} Jhunlea Photography &amp; Printing. All rights reserved.</p>
-    </footer>
+    {{-- Phase 10G: the one site footer; the customer pages have no payment bar at the top, so it carries the payment line --}}
+    <x-layout.site-footer :shop="$shop ?? []" :has-faq="$hasFaq ?? false" :policy="$policyLine ?? null" :bottom-room="$showChat" />
 
     @if ($showChat)
         <x-chat.window mode="compact" />

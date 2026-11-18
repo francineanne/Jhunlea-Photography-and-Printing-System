@@ -75,7 +75,8 @@ class SettingsPageTest extends TestCase
             ->assertSee('Starting defaults')->assertSee('Shop settings and rules')->getContent();
         $this->assertMatchesRegularExpression('/href="'.preg_quote(route('owner.settings.index'), '/').'"\s+aria-current="page"/', $html);
 
-        $this->get(route('home'))->assertOk()->assertDontSee('Visit or contact')->assertDontSee('mailto:', false)->assertDontSee('tel:', false);
+        // Phase 10G: the footer's Contact column (was "Visit or contact ...") shows only when a detail is set
+        $this->get(route('home'))->assertOk()->assertDontSee('data-footer-contact', false)->assertDontSee('mailto:', false)->assertDontSee('tel:', false);
         $this->assertNull($this->row());
     }
 
@@ -86,7 +87,8 @@ class SettingsPageTest extends TestCase
 
         auth()->logout();
         foreach ([route('home'), route('services.index'), route('packages.index')] as $page) {
-            $this->get($page)->assertOk()->assertSee('Visit or contact Jhunlea Studio')->assertSee('12 Rizal Street')->assertSee('tel:+639171234567', false)->assertSee('mailto:hello@example.test', false);
+            // Phase 10G: the footer's Contact column, the phone read as 0917 123 4567 (stored as typed)
+            $this->get($page)->assertOk()->assertSee('data-footer-contact', false)->assertSee('12 Rizal Street')->assertSee('0917 123 4567')->assertSee('tel:+639171234567', false)->assertSee('mailto:hello@example.test', false);
         }
     }
 
@@ -98,11 +100,11 @@ class SettingsPageTest extends TestCase
         $this->assertNull($this->row()->address);
         $this->assertNull($this->row()->email);
         auth()->logout();
-        $this->get(route('home'))->assertSee('Visit or contact')->assertSee('+63 917 123 4567')->assertDontSee('mailto:', false)->assertDontSee('Rizal');
+        $this->get(route('home'))->assertSee('data-footer-contact', false)->assertSee('0917 123 4567')->assertDontSee('mailto:', false)->assertDontSee('Rizal');
 
         $this->actingAs($this->owner)->post(route('owner.settings.business'), ['shop_name' => '', 'address' => '', 'phone' => '', 'email' => '']);
         auth()->logout();
-        $this->get(route('home'))->assertDontSee('Visit or contact');
+        $this->get(route('home'))->assertDontSee('data-footer-contact', false);
     }
 
     /** @return array<string, array{array<string, mixed>, string}> */

@@ -13,7 +13,7 @@
 
 <x-seo
     :title="'Printing services | '.config('app.name')"
-    :description="'Browse the printing services of '.config('app.name').': what each one is, what it starts from and which files it accepts. Payment is made face-to-face.'"
+    :description="'Browse the printing services of '.config('app.name').': what each one is, what it starts from and which files it accepts. Pay at the shop or by GCash.'"
     :noindex="$filtered || $services->currentPage() > 1" />
 
 @section('main')

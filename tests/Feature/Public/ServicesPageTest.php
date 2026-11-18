@@ -6,6 +6,7 @@ use App\Enums\OptionGroup;
 use App\Enums\PricingType;
 use App\Models\PrintingService;
 use App\Models\PrintingServiceOption;
+use App\Support\PaymentRules;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -75,7 +76,8 @@ class ServicesPageTest extends TestCase
     {
         PrintingService::factory()->published()->create(['slug' => 'internal-slug-value']);
 
-        $this->get('/services')->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false)
+        // Phase 10G: the current payment line (was the face-to-face sentence)
+        $this->get('/services')->assertSee(app(PaymentRules::class)->shortLine())->assertDontSee('Payment is made face-to-face')
             ->assertDontSee('is_published')->assertDontSee('internal_notes')->assertDontSee('sort_order');
     }
 }

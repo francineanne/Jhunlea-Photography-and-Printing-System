@@ -14,7 +14,7 @@
     <x-ui.icon :name="$payment ? 'storefront' : 'info'" :size="22" class="mt-0.5 {{ $payment ? 'text-brand' : 'text-status-blue' }}" />
     <div class="min-w-0 space-y-1">
         @if ($payment)
-            <p class="font-semibold">Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.</p>
+            <p class="font-semibold">{{ \App\Support\PaymentRules::NOTICE }}</p>
         @endif
         {{ $slot }}
     </div>

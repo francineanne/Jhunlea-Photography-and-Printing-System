@@ -4,6 +4,7 @@ namespace Tests\Feature\Public;
 
 use App\Models\PhotographyPackage;
 use App\Models\PrintingService;
+use App\Support\PaymentRules;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -56,8 +57,9 @@ class LandingPageTest extends TestCase
         $this->get('/')->assertSee('<meta name="description"', false)->assertSee('og:title', false)->assertSee('<link rel="canonical" href="'.url('/').'">', false);
     }
 
-    public function test_it_keeps_the_face_to_face_payment_notice(): void
+    /** Phase 10G: the current payment line from the rules, never the old face-to-face sentence. */
+    public function test_it_shows_the_current_payment_line(): void
     {
-        $this->get('/')->assertSee('Payment is made face-to-face at Jhunlea Photography &amp; Printing.', false);
+        $this->get('/')->assertSee(app(PaymentRules::class)->shortLine())->assertDontSee('Payment is made face-to-face');
     }
 }

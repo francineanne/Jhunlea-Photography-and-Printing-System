@@ -13,6 +13,7 @@ use App\Services\Assistant\KnowledgeBuilder;
 use App\Services\Chat\OwnerPresence;
 use App\Support\NextSteps;
 use App\Support\PaymentRules;
+use App\Support\PhilippineMobile;
 use App\Support\ShopSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -50,9 +51,11 @@ class InterfaceTest extends TestCase
         $html = $this->get('/')->assertOk()->getContent();
         $this->assertSame(1, substr_count($html, 'data-policy-bar'));
         $this->assertStringContainsString('photoshoots need a 50% downpayment.', $html);
-        // The old three-line strip and the hero callout are gone; the standard sentence stays once, in the footer
+        // The old three-line strip and the hero callout are gone; Phase 10G: the old face-to-face sentence is gone from the
+        // footer too (it contradicted the 10B rules), and the payment line is said once, in the top bar
         $this->assertStringNotContainsString('Studio policy:', $html);
-        $this->assertSame(1, substr_count($html, 'Payment is made face-to-face at Jhunlea Photography &amp; Printing.'));
+        $this->assertStringNotContainsString('Payment is made face-to-face', $html);
+        $this->assertStringNotContainsString('data-footer-policy', $html);
 
         $this->settings(['downpayment_percent' => 0]);
         $this->assertSame('No online payment. Pay at the shop in cash or by GCash.', app(PaymentRules::class)->shortLine());
@@ -157,6 +160,61 @@ class InterfaceTest extends TestCase
             ->assertSee('https://www.facebook.com/jhunlea.sample', false)
             ->assertSee('https://www.google.com/maps?q=12%20Sample%20Street%2C%20Sample%20City&amp;output=embed', false)
             ->assertSee('loading="lazy"', false)->assertSee('Open in Google Maps');
+    }
+
+    /** Phase 10G: one contact line per detail, the phone read as "0991 471 0185" (stored as typed), tel: and mailto: links. */
+    public function test_visit_us_uses_one_contact_line_and_a_readable_phone(): void
+    {
+        $this->settings(['address' => '12 Sample Street', 'phone' => '+639914710185', 'email' => 'studio@example.test', 'opening_hours' => 'Mon-Sat 9:00 AM - 5:00 PM', 'facebook_url' => 'https://www.facebook.com/jhunlea.sample']);
+
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $this->assertSame(5, substr_count($html, 'data-contact-item'));
+        $this->assertStringContainsString('0991 471 0185', $html);
+        $this->assertStringContainsString('href="tel:+639914710185"', $html);
+        $this->assertStringContainsString('href="mailto:studio@example.test"', $html);
+        // The footer reads the same way
+        $this->get('/services')->assertOk()->assertSee('0991 471 0185')->assertSee('href="tel:+639914710185"', false);
+        // Stored as typed
+        $this->assertSame('+639914710185', DB::table('shop_settings')->value('phone'));
+    }
+
+    /** Phase 10G: one footer on the public and customer pages: brand, Explore, Contact, and the bottom bar. */
+    public function test_the_footer_is_the_same_on_public_and_customer_pages(): void
+    {
+        Faq::factory()->create(['question' => 'A published question?']);
+        $this->settings(['address' => '12 Sample Street', 'phone' => '+639914710185', 'email' => 'studio@example.test', 'opening_hours' => 'Mon-Sat 9:00 AM - 5:00 PM', 'facebook_url' => 'https://www.facebook.com/jhunlea.sample']);
+
+        foreach (['/services', '/my/dashboard'] as $url) {
+            $response = $url === '/services' ? $this->get($url) : $this->actingAs($this->ana)->get($url);
+            $html = $response->assertOk()->getContent();
+            $footer = substr($html, strpos($html, 'data-site-footer'));
+
+            $this->assertStringNotContainsString('face-to-face', $footer, $url);
+            $this->assertStringContainsString('Photography sessions and printing under one roof in Nasugbu, Batangas.', $footer, $url);
+            foreach ([route('services.index'), route('packages.index'), route('packages.finder'), route('faq'), route('terms')] as $link) {
+                $this->assertStringContainsString('href="'.$link.'"', $footer, $url);
+            }
+            $this->assertStringContainsString('href="tel:+639914710185"', $footer, $url);
+            $this->assertStringContainsString('0991 471 0185', $footer, $url);
+            $this->assertStringNotContainsString('+639914710185<', $footer, $url);
+            $this->assertStringContainsString('href="mailto:studio@example.test"', $footer, $url);
+            $this->assertStringContainsString('Jhunlea on Facebook', $footer, $url);
+            $this->assertStringContainsString('data-facebook-icon', $footer, $url);
+            $this->assertStringNotContainsString('thumb_up', $footer, $url);
+            $this->assertStringContainsString('&copy; '.date('Y').' Jhunlea Photography &amp; Printing', $footer, $url);
+        }
+
+        // The payment line: in the top bar on public pages, in the footer on customer pages (they have no top bar)
+        $this->assertStringNotContainsString('data-footer-policy', $this->get('/services')->getContent());
+        $this->actingAs($this->ana)->get('/my/dashboard')->assertSee('data-footer-policy', false)->assertSee(app(PaymentRules::class)->shortLine());
+    }
+
+    public function test_a_phone_that_is_not_a_mobile_number_is_shown_as_typed(): void
+    {
+        $this->assertSame('(02) 8123 4567', PhilippineMobile::display('(02) 8123 4567'));
+        $this->assertSame('tel:0281234567', PhilippineMobile::telHref('(02) 8123 4567'));
+        $this->assertSame('0917 123 4567', PhilippineMobile::display('63-917-123-4567'));
     }
 
     public function test_the_facebook_address_must_be_an_https_facebook_page(): void

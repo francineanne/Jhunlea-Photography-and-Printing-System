@@ -50,7 +50,7 @@
 
         <div class="sidebar-full flex gap-3 rounded-card bg-white/10 p-3 text-xs text-app-text-2">
             <x-ui.icon name="storefront" :size="20" class="mt-0.5 shrink-0 text-brand" />
-            <p><span class="block font-semibold text-app-text">Face-to-face payments</span>Payment is made face-to-face at Jhunlea Photography &amp; Printing.</p>
+            <p><span class="block font-semibold text-app-text">Recorded payments</span>Cash or GCash at the shop, or GCash a customer sent with its reference in Messages. You record each one.</p>
         </div>
     </aside>
 

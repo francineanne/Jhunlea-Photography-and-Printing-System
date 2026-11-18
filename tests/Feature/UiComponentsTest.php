@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Support\PaymentRules;
 use Illuminate\Support\Facades\Blade;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -50,10 +51,9 @@ class UiComponentsTest extends TestCase
     {
         $html = Blade::render('<x-ui.notice variant="payment" />');
 
-        $this->assertStringContainsString(
-            'Payment is made face-to-face at Jhunlea Photography &amp; Printing. No online checkout.',
-            $html
-        );
+        // Phase 10G: the 10B rules (was "Payment is made face-to-face at Jhunlea Photography & Printing. No online checkout.")
+        $this->assertStringContainsString(PaymentRules::NOTICE, $html);
+        $this->assertStringNotContainsString('face-to-face', $html);
     }
 
     public function test_input_shows_its_error_and_marks_itself_invalid(): void

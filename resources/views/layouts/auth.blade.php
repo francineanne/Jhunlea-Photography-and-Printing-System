@@ -37,7 +37,7 @@
 
         <p class="mt-6 flex items-center justify-center gap-1.5 px-4 text-center text-xs text-app-text-2">
             <x-ui.icon name="storefront" :size="15" class="shrink-0 text-brand dark:text-[#ffb4ac]" />
-            Payment is made face-to-face at Jhunlea Photography &amp; Printing.
+            {{ \App\Support\PaymentRules::NOTICE }}
         </p>
     </main>
 @endsection
