@@ -56,7 +56,7 @@ class UploadLimitsRequest extends FormRequest
             $messages["{$field}.required"] = "{$label}: enter a number.";
             $messages["{$field}.integer"] = "{$label}: enter a whole number, for example 10.";
             $messages["{$field}.min"] = "{$label}: the lowest is 1.";
-            $messages["{$field}.max"] = "{$label}: this server accepts at most :max.";
+            $messages["{$field}.max"] = "{$label}: the highest the website allows is :max.";
         }
 
         $messages['printing_max_total_mb.gte'] = 'All files of one order must be at least the largest printing file.';

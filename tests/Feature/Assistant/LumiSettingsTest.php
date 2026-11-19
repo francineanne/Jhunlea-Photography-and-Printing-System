@@ -92,7 +92,8 @@ class LumiSettingsTest extends TestCase
         $this->assertSame(1, $status['handoffs_today']);
         $this->assertSame(1, $status['fallbacks_today']);
         $this->assertSame(1, $status['errors_last_hour']);
-        $this->assertSame('Fake (test provider)', $status['last_answer_by']);
+        // Phase 10H: plain words, no provider names (was "Fake (test provider)")
+        $this->assertSame('the test assistant', $status['last_answer_by']);
         $this->assertSame(LumiStatus::WORKING, $status['state']);
 
         $page = $this->actingAs($owner)->get(route('owner.settings.index'))->assertOk();
@@ -115,7 +116,7 @@ class LumiSettingsTest extends TestCase
         $this->fake->push(self::reply('answer', 'Portraits, couples and families.'), new ProviderUnavailable('down'));
 
         $this->actingAs($owner)->post(route('owner.settings.lumi.test'))->assertRedirect(route('owner.settings.index').'#lumi')
-            ->assertSessionHas('status', fn (string $text) => str_starts_with($text, 'Lumi answered in ') && str_ends_with($text, 'by Fake (test provider).'));
+            ->assertSessionHas('status', fn (string $text) => str_starts_with($text, 'Lumi answered in ') && str_ends_with($text, 'by the test assistant.'));
         $this->assertSame(1, AssistantRun::query()->where('user_id', $owner->id)->count());
 
         $this->actingAs($owner)->post(route('owner.settings.lumi.test'))->assertSessionHas('error', fn (string $text) => str_contains($text, 'fallback unavailable'));

@@ -21,7 +21,7 @@
                 for="package-images-input">
                 <x-ui.icon name="cloud_upload" :size="40" class="text-app-text-2 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:text-brand" />
                 <span class="font-semibold">Choose photos to upload</span>
-                <span class="text-sm text-app-text-2">JPG, PNG or WebP, up to {{ PackageImage::MAX_SIZE_KB / 1024 }} MB each, {{ PackageImage::MAX_PER_REQUEST }} at a time, {{ ini_get('post_max_size') }}B in total. You can add {{ $room }} more.</span>
+                <span class="text-sm text-app-text-2">JPG, PNG or WebP, up to {{ PackageImage::MAX_SIZE_KB / 1024 }} MB each, {{ PackageImage::MAX_PER_REQUEST }} at a time. You can add {{ $room }} more.</span>
                 <span class="text-sm font-semibold text-brand" x-show="chosen > 0" x-cloak x-text="chosen + (chosen === 1 ? ' photo chosen' : ' photos chosen')" aria-live="polite"></span>
                 <input id="package-images-input" type="file" name="images[]" multiple accept="image/jpeg,image/png,image/webp" class="sr-only"
                     @if ($uploadError) aria-invalid="true" aria-describedby="package-images-error" @endif

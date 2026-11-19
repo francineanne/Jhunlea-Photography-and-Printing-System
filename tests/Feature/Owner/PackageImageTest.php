@@ -260,7 +260,8 @@ class PackageImageTest extends TestCase
         $tooBig = new UploadedFile($path, 'huge.jpg', 'image/jpeg', UPLOAD_ERR_INI_SIZE, true);
 
         $this->actingAs($this->owner())->post("/owner/packages/{$package->id}/images", ['images' => [$tooBig]])
-            ->assertSessionHasErrors(['images.0' => 'huge.jpg is bigger than this server accepts ('.ini_get('upload_max_filesize').' per file).']);
+            // Phase 10H: no server limit number in the message (was "bigger than this server accepts (2M per file)")
+            ->assertSessionHasErrors(['images.0' => 'huge.jpg is too big to upload. Please choose a smaller file.']);
 
         $this->assertSame([], $this->storedFiles());
         @unlink($path);
@@ -514,7 +515,9 @@ class PackageImageTest extends TestCase
         $html = view('errors.413')->render();
 
         $this->assertStringContainsString('That upload was too large', $html);
-        $this->assertStringContainsString(ini_get('post_max_size'), $html);
+        // Phase 10H: no raw server number on the page (it used to show post_max_size)
+        $this->assertStringNotContainsString(ini_get('post_max_size'), $html);
+        $this->assertStringNotContainsString('server', $html);
         // The page also serves the printing wizard, where most uploads are documents
         $this->assertStringContainsString('send fewer or smaller files', $html);
         $this->assertStringNotContainsString('photos', $html);

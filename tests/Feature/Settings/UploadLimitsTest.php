@@ -241,7 +241,7 @@ class UploadLimitsTest extends TestCase
         $this->actingAs($owner)->post(route('owner.services.store'), $data('Over', 5))->assertSessionHasErrors('max_file_size_mb');
         $this->assertSame(['Exact'], PrintingService::query()->pluck('name')->all());
 
-        $this->actingAs($owner)->get(route('owner.services.create'))->assertOk()->assertViewHas('maxFileSize', 4)->assertSee('From 1 to 4 MB.');
+        $this->actingAs($owner)->get(route('owner.services.create'))->assertOk()->assertViewHas('maxFileSize', 4)->assertSee('Up to 4 MB per file.')->assertDontSee('php.ini'); // Phase 10H: plain hint (was "From 1 to 4 MB. This server ...")
     }
 
     public function test_lowering_a_limit_never_touches_old_orders_or_files(): void

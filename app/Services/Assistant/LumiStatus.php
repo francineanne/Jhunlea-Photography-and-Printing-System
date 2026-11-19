@@ -72,18 +72,21 @@ class LumiStatus
         ];
     }
 
-    /** "Claude", "Gemini (Lumi Lite)", "Fake (test provider)", "Answered by code": never a model id or a key. */
+    /**
+     * Who answered, in the owner's words (Phase 10H: no AI company or provider names on screen): "the main assistant",
+     * "the backup assistant (Lumi Lite)", "a ready answer", "the test assistant" (tests only). Never a model id or a key.
+     */
     public static function providerName(?string $provider, bool $viaBackup = false): string
     {
-        $name = match (strtolower((string) $provider)) {
-            'anthropic', 'claude' => 'Claude',
-            'gemini', 'google' => 'Gemini',
-            'fake' => 'Fake (test provider)',
-            'code' => 'Answered by code',
-            default => $provider === null || $provider === '' ? 'Unknown' : ucfirst((string) $provider),
-        };
+        $provider = strtolower((string) $provider);
 
-        return $viaBackup ? $name.' (Lumi Lite)' : $name;
+        return match (true) {
+            $provider === 'code' => 'a ready answer',
+            $provider === 'fake' => $viaBackup ? 'the test assistant (Lumi Lite)' : 'the test assistant',
+            $viaBackup || in_array($provider, ['gemini', 'google'], true) => 'the backup assistant (Lumi Lite)',
+            in_array($provider, ['anthropic', 'claude'], true) => 'the main assistant',
+            default => 'the assistant',
+        };
     }
 
     /** One plain word for the state badge. */
@@ -91,7 +94,7 @@ class LumiStatus
     {
         return match ($state) {
             self::WORKING => 'Working',
-            self::BACKUP => 'Using backup (Gemini)',
+            self::BACKUP => 'Using the backup assistant',
             self::DOWN => 'Down: customers see the fallback message',
             default => 'Turned off',
         };

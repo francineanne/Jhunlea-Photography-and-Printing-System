@@ -172,7 +172,7 @@
                         <x-ui.notice class="mt-4 !border-status-red/30 !bg-status-red-bg" role="alert">Please check the limits marked below. Nothing was saved.</x-ui.notice>
                     @endif
                     @if (collect($limits)->contains('capped', true))
-                        <x-ui.notice class="mt-4" role="status">Some saved limits are above what this server accepts now, so the server's maximum is used. Save again to store the lower value, or raise the server limits in php.ini.</x-ui.notice>
+                        <x-ui.notice class="mt-4" role="status">Some saved limits are higher than the website allows right now, so the highest allowed value is used. Save again to keep the lower value.</x-ui.notice>
                     @endif
 
                     @foreach ($groups as $group => $fields)
@@ -186,7 +186,7 @@
                                         <label for="limit-{{ $field }}" class="font-semibold">{{ $limit['label'] }} <span class="font-normal text-app-text-2">({{ $limit['unit'] }})</span></label>
                                         <p id="limit-{{ $field }}-hint" class="mt-0.5 text-xs text-app-text-2">{{ $hints[$field] }} From 1 to {{ $limit['max'] }}. Starting default {{ $unit($limit['default'], $limit['unit']) }}.</p>
                                         @if ($limit['capped'])
-                                            <p class="mt-1 text-xs font-semibold text-status-amber">Capped: the saved value is above this server's {{ $unit($limit['max'], $limit['unit']) }}.</p>
+                                            <p class="mt-1 text-xs font-semibold text-status-amber">This is the highest the website allows right now.</p>
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-1 self-start rounded-control border border-app-border bg-app-card p-1">
@@ -207,17 +207,12 @@
                         </div>
                     @endforeach
 
-                    <div class="mt-6 form-grid md:grid-cols-2">
+                    <div class="mt-6">
                         <div class="rounded-control border border-app-border p-3 text-sm">
                             <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Accepted file types (fixed)</h3>
                             <p class="mt-2"><span class="font-semibold">Printing:</span> <span class="font-mono uppercase">{{ implode(', ', $printingTypes) }}</span></p>
                             <p class="mt-1"><span class="font-semibold">Reference images:</span> <span class="font-mono uppercase">{{ implode(', ', $bookingTypes) }}</span></p>
                             <p class="mt-2 text-xs text-app-text-2">Each printing service chooses which of these it takes. The list itself is fixed for safety.</p>
-                        </div>
-                        <div class="rounded-control border border-app-border p-3 text-sm">
-                            <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">This server accepts</h3>
-                            <p class="mt-2 font-mono text-xs">upload_max_filesize = {{ $server['file'] ?: 'not set' }} · post_max_size = {{ $server['post'] ?: 'not set' }} · max_file_uploads = {{ $server['files'] ?: 'not set' }}</p>
-                            <p class="mt-2 text-xs text-app-text-2">A limit can never go above these. To allow bigger uploads, raise them in php.ini first (the total keeps 2 MB free for the rest of the form).</p>
                         </div>
                     </div>
                 </div>
@@ -313,7 +308,7 @@
                 </div>
 
                 <dl class="@container mt-5 grid gap-3 text-sm [grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr))]">
-                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Last answer</dt><dd class="mt-1 font-semibold">{{ $lumi['last_answer_ago'] ?? 'None yet' }}</dd><dd class="text-xs text-app-text-2">{{ $lumi['last_answer_by'] ?? '' }}</dd></div>
+                    <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Last answer</dt><dd class="mt-1 font-semibold">{{ $lumi['last_answer_ago'] ?? 'None yet' }}</dd><dd class="text-xs text-app-text-2">{{ ucfirst($lumi['last_answer_by'] ?? '') }}</dd></div>
                     <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Answers today</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['answers_today'] }}</dd></div>
                     <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Fallbacks today</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['fallbacks_today'] }}</dd><dd class="text-xs text-app-text-2">Customers saw the fallback message</dd></div>
                     <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5"><dt class="eyebrow text-app-text-2">Errors, last hour</dt><dd class="mt-1 text-xl font-bold tabular-nums">{{ $lumi['errors_last_hour'] }}</dd></div>
@@ -322,7 +317,7 @@
                         <dd class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-app-border" role="img" aria-label="{{ $lumi['budget_percent'] }}% of today's budget used"><span class="block h-full rounded-full bg-brand" style="width: {{ $lumi['budget_percent'] }}%"></span></dd></div>
                 </dl>
                 @if ($lumi['off_on_server'])
-                    <p class="mt-4 text-sm text-app-text-2">{{ config('assistant.name') }} is switched off on the server (AI_ENABLED), so it stays off whatever is chosen below.</p>
+                    <p class="mt-4 text-sm text-app-text-2">{{ config('assistant.name') }} is turned off for this website, so it stays off whatever is chosen below. Ask the developer to turn it on.</p>
                 @endif
 
                 <form method="POST" action="{{ route('owner.settings.lumi.test') }}" class="mt-5 flex flex-wrap items-center gap-3">
@@ -347,7 +342,6 @@
                     @endif
                 </div>
                 <div class="flex flex-col gap-3 rounded-b-card border-t border-app-border bg-neutral-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:bg-white/5">
-                    <p class="flex items-start gap-2 text-xs text-app-text-2"><x-ui.icon name="info" :size="16" class="mt-px shrink-0 text-brand" />No API key is ever shown here. Keys live only on the server.</p>
                     <x-ui.button type="submit" class="shrink-0"><x-ui.icon name="save" :size="18" />Save {{ config('assistant.name') }} settings</x-ui.button>
                 </div>
             </form>

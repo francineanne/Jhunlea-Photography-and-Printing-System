@@ -275,7 +275,8 @@ class ThemeManagementTest extends TestCase
 
         $this->actingAs($owner)->post('/owner/themes', $this->validData(['image' => UploadedFile::fake()->image('big.jpg')->size(5121)]))->assertSessionHasErrors('image');
         $this->actingAs($owner)->post('/owner/themes', $this->validData(['image' => $tooBig]))
-            ->assertSessionHasErrors(['image' => 'huge.jpg is bigger than this server accepts ('.ini_get('upload_max_filesize').' per file).']);
+            // Phase 10H: no server limit number in the message
+            ->assertSessionHasErrors(['image' => 'huge.jpg is too big to upload. Please choose a smaller file.']);
 
         $this->assertSame([], $this->storedFiles());
         @unlink($path);

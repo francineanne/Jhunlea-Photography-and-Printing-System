@@ -128,7 +128,7 @@ class StorePhotographyBookingRequest extends FormRequest
         foreach ($this->uploads() as $index => $file) {
             // PHP drops a file bigger than its own limit before Laravel sees it: say so plainly
             if (in_array($file->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
-                $validator->errors()->add("images.{$index}", $file->getClientOriginalName().' is bigger than this server accepts ('.ini_get('upload_max_filesize').' per file).');
+                $validator->errors()->add("images.{$index}", $file->getClientOriginalName().' is too big to upload. Please choose a smaller file.');
 
                 continue;
             }

@@ -180,7 +180,6 @@ class ServiceController extends Controller
             'fileTypes' => PrintFileType::cases(),
             'categories' => PrintingService::query()->distinct()->orderBy('category')->pluck('category'),
             'maxFileSize' => ServiceRequest::maxFileSizeMb(),
-            'serverUploadLimit' => ini_get('upload_max_filesize'),
         ];
     }
 }

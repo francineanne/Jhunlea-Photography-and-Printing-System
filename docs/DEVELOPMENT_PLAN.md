@@ -314,6 +314,13 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Bagong footer (`<x-layout.site-footer>`) sa public at customer: brand, Explore, Contact, at bottom bar na may copyright at "Terms and privacy"
 - [x] Pinalitan ang lumang "Payment is made face-to-face ..." ng `PaymentRules::NOTICE` o `shortLine()` (notice, sign-in pages, sidebar, FAQ, terms, end-of-day, landing, services, dashboard, payments page)
 
+### 10H — User-facing wording clean-up (branch `phase-10h-copy`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule, limit, validation o behaviour: salita lang
+- [x] Inalis ang php.ini, upload_max_filesize, post_max_size, max_file_uploads, AI_ENABLED, "API key" at mga raw na server number sa owner pages (service form, Settings uploads at Lumi, package gallery)
+- [x] Simpleng mensahe kapag sobrang laki ng file ("... is too big to upload. Please choose a smaller file.") at sa 413 page
+- [x] Lumi status at "Test Lumi": "the main assistant" / "the backup assistant (Lumi Lite)" sa halip na pangalan ng AI company, at plain na dahilan kapag pumalya (hindi ang raw outcome code)
+- [x] Activity log alert: wala nang "php artisan audit:verify" sa screen
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

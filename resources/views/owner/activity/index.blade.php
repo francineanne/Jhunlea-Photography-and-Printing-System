@@ -41,8 +41,8 @@
         <div class="mt-6 flex items-start gap-3 rounded-control border border-status-red/40 bg-status-red-bg p-4 text-sm text-status-red" role="alert">
             <x-ui.icon name="gpp_bad" :size="20" class="mt-px shrink-0" />
             <div>
-                <p class="font-semibold">The activity log does not match its own check{{ $brokenId ? ' at row '.$brokenId : '' }}.</p>
-                <p class="mt-1">{{ ! $quick['ok'] ? ($quick['message'] ?? '') : ($full['message'] ?? '') }} A row was changed, removed or moved outside the system. Nothing here was changed by the app itself. Ask the developer to run <span class="font-mono">php artisan audit:verify</span> and to look at the database backups.</p>
+                <p class="font-semibold">The activity log does not match its own check{{ $brokenId ? ' at entry '.$brokenId : '' }}.</p>
+                <p class="mt-1">{{ ! $quick['ok'] ? ($quick['message'] ?? '') : ($full['message'] ?? '') }} An entry was changed, removed or moved outside the system. Nothing here was changed by the app itself. Ask the developer to check the activity log against the backups.</p>
             </div>
         </div>
     @endif

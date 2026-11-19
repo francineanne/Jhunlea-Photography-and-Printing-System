@@ -61,7 +61,7 @@ class ThemeRequest extends FormRequest
 
             // PHP drops a file bigger than its own limit before Laravel sees it: say so plainly
             if ($file instanceof UploadedFile && in_array($file->getError(), [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)) {
-                $validator->errors()->add('image', $file->getClientOriginalName().' is bigger than this server accepts ('.ini_get('upload_max_filesize').' per file).');
+                $validator->errors()->add('image', $file->getClientOriginalName().' is too big to upload. Please choose a smaller file.');
             }
         }];
     }

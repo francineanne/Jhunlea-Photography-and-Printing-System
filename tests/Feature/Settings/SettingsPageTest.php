@@ -205,7 +205,9 @@ class SettingsPageTest extends TestCase
         $this->app->forgetScopedInstances();
 
         $this->actingAs($this->owner)->get(route('owner.settings.index'))->assertOk()
-            ->assertSee('Some saved limits are above what this server accepts now')->assertSee('Capped: the saved value is above this server');
+            // Phase 10H: plain words, no server terms (was "above what this server accepts" / "Capped: ... this server")
+            ->assertSee('Some saved limits are higher than the website allows right now')->assertSee('This is the highest the website allows right now.')
+            ->assertDontSee('php.ini')->assertDontSee('upload_max_filesize')->assertDontSee('post_max_size')->assertDontSee('max_file_uploads');
     }
 
     public function test_a_double_submit_changes_nothing_twice_and_sections_stay_apart(): void

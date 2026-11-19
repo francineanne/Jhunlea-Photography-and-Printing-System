@@ -78,7 +78,7 @@
             <div class="max-w-md">
                 <x-ui.input label="Largest file allowed (MB)" name="max_file_size_mb" type="number" min="1" max="{{ $maxFileSize }}" step="1"
                     :value="old('max_file_size_mb', $service->max_file_size_mb)" :required="true"
-                    hint="From 1 to {{ $maxFileSize }} MB. This server currently accepts uploads of up to {{ $serverUploadLimit }}B; raise upload_max_filesize and post_max_size in php.ini before using a larger value." />
+                    hint="Up to {{ $maxFileSize }} MB per file." />
             </div>
 
             <x-ui.textarea label="Instructions for customers" name="instructions" hint="For example: how to prepare the file before sending it.">{{ old('instructions', $service->instructions) }}</x-ui.textarea>

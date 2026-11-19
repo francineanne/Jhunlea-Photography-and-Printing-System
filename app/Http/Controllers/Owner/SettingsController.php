@@ -44,7 +44,6 @@ class SettingsController extends Controller
                 'unit' => $rule['cap'] === 'files' ? 'files' : 'MB',
             ])->all(),
             'usesDefaults' => collect(ShopSettings::LIMITS)->keys()->every(fn (string $field) => $settings->storedFor($field) === null),
-            'server' => $settings->server()->raw(),
             'printingTypes' => array_keys(config('printing.types')),
             'bookingTypes' => array_keys(config('booking.types')),
             'schedule' => BookingSetting::current(),
