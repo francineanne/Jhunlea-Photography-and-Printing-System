@@ -3,5 +3,5 @@
 @section('title', 'Notifications')
 
 @section('main')
-    <x-notifications.page :items="$items" :page="$page" :counts="$counts" :unread-only="$unreadOnly" area="owner" />
+    <x-notifications.page :items="$items" :page="$page" :counts="$counts" :unread-only="$unreadOnly" :system-only="$systemOnly" area="owner" />
 @endsection

@@ -1,4 +1,4 @@
-@props(['items', 'page', 'counts', 'unreadOnly', 'area'])
+@props(['items', 'page', 'counts', 'unreadOnly', 'area', 'systemOnly' => false])
 
 {{--
     The notifications page of either area (Phase 5B), after the notification designs: All and Unread tabs with counts,
@@ -12,7 +12,9 @@
 
     $today = LocalTime::format(Carbon::now('UTC'), 'Y-m-d');
     $groups = $items->groupBy(fn ($item) => LocalTime::format($item['created_at'], 'Y-m-d') === $today ? 'Today' : 'Earlier');
-    $tab = fn (bool $unread) => route($area.'.notifications.index', $unread ? ['tab' => 'unread'] : []);
+    // Phase 10K: the owner also has "System" (what happened by itself: expiries, deadlines, reminders)
+    $tabs = ['all' => 'All', 'unread' => 'Unread'] + ($area === 'owner' ? ['system' => 'System'] : []);
+    $active = $systemOnly ? 'system' : ($unreadOnly ? 'unread' : 'all');
 @endphp
 
 <div class="flex flex-wrap items-start justify-between gap-4">
@@ -38,29 +40,37 @@
     </x-ui.notice>
 @endif
 
-<nav aria-label="Filter notifications" class="mt-6">
+<div class="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+<nav aria-label="Filter notifications">
     <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
-        @foreach ([false => 'All', true => 'Unread'] as $unread => $label)
-            @php($current = $unreadOnly === (bool) $unread)
+        @foreach ($tabs as $key => $label)
+            @php($current = $active === $key)
             <li>
-                <a href="{{ $tab((bool) $unread) }}" @if ($current) aria-current="page" @endif
+                <a href="{{ route($area.'.notifications.index', $key === 'all' ? [] : ['tab' => $key]) }}" @if ($current) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
                         'bg-brand text-white shadow-sm' => $current,
                         'text-app-text-2 hover:text-app-text' => ! $current])>
                     {{ $label }}
-                    <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/25' => $current, 'bg-black/10 dark:bg-white/15' => ! $current])>{{ $unread ? $counts['unread'] : $counts['all'] }}</span>
+                    <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/25' => $current, 'bg-black/10 dark:bg-white/15' => ! $current])>{{ $counts[$key] ?? 0 }}</span>
                 </a>
             </li>
         @endforeach
     </ul>
 </nav>
+<x-notifications.sound-switch class="rounded-card border border-app-border bg-app-card pl-4 pr-1" />
+</div>
 
 <div class="mt-6 max-w-3xl">
     @if ($items->isEmpty())
         <x-ui.card>
-            <x-ui.empty-state :icon="$unreadOnly ? 'done_all' : 'notifications_off'"
-                :title="$unreadOnly ? 'Nothing unread' : 'No notifications yet'"
-                :description="$unreadOnly ? 'You have read everything.' : ($area === 'owner' ? 'New orders, requests and customer replies appear here.' : 'Updates on your orders, photoshoots and payments appear here.')" />
+            @if ($systemOnly)
+                <x-ui.empty-state icon="schedule" title="No system notices"
+                    description="Requests whose hold ran out, downpayment deadlines, orders waiting for pickup and tomorrow's photoshoots appear here." />
+            @else
+                <x-ui.empty-state :icon="$unreadOnly ? 'done_all' : 'notifications_off'"
+                    :title="$unreadOnly ? 'Nothing unread' : 'No notifications yet'"
+                    :description="$unreadOnly ? 'You have read everything.' : ($area === 'owner' ? 'New orders, requests and customer replies appear here.' : 'Updates on your orders, photoshoots and payments appear here.')" />
+            @endif
         </x-ui.card>
     @else
         @foreach ($groups as $group => $rows)

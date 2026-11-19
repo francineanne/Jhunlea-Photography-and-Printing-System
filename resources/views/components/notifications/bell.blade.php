@@ -78,6 +78,8 @@
             </ul>
         @endif
 
+        <x-notifications.sound-switch compact class="border-t border-app-border" />
+
         <a href="{{ $index }}" class="group flex min-h-11 items-center justify-center gap-1 border-t border-app-border px-4 text-sm font-semibold text-brand hover:bg-brand/5 focus-ring">
             See all notifications<x-ui.icon name="arrow_forward" :size="16" class="transition-transform group-hover:translate-x-1" />
         </a>

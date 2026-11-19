@@ -6,10 +6,13 @@ use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** The All / Unread tab of a notifications page. Anything else sends the person back to All. */
+/** The All / Unread (/ System, owner only, Phase 10K) tab of a notifications page. Anything else sends the person back to All. */
 class NotificationListRequest extends FormRequest
 {
     public const TABS = ['all', 'unread'];
+
+    /** Phase 10K: what the system did or noticed by itself; the owner's page only. */
+    public const OWNER_TABS = ['all', 'unread', 'system'];
 
     public function authorize(): bool
     {
@@ -24,7 +27,9 @@ class NotificationListRequest extends FormRequest
     /** @return array<string, array<int, mixed>> */
     public function rules(): array
     {
-        return ['tab' => ['nullable', 'string', Rule::in(self::TABS)], 'page' => ['nullable', 'integer', 'min:1', 'max:100000']];
+        $tabs = $this->user()?->role === UserRole::Owner ? self::OWNER_TABS : self::TABS;
+
+        return ['tab' => ['nullable', 'string', Rule::in($tabs)], 'page' => ['nullable', 'integer', 'min:1', 'max:100000']];
     }
 
     /** @return array<string, string> */
@@ -36,5 +41,10 @@ class NotificationListRequest extends FormRequest
     public function unreadOnly(): bool
     {
         return $this->validated('tab') === 'unread';
+    }
+
+    public function systemOnly(): bool
+    {
+        return $this->validated('tab') === 'system';
     }
 }

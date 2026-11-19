@@ -25,6 +25,92 @@ const store = {
 
 const toast = (detail) => window.dispatchEvent(new CustomEvent('toast', { detail }));
 
+// Phase 10K: a short, soft two-note chime when a new notification arrives (the live poll sees the unread count go up).
+// Web Audio only, no file. Browsers allow sound only after the person has clicked, tapped or pressed a key, so the
+// audio is unlocked then; before that, or wherever Web Audio is missing or blocked, it simply stays silent. ON by
+// default; the switch in the bell and on the notifications page keeps the choice in localStorage. At most one chime
+// every 10 seconds.
+const chime = {
+    KEY: 'notification-sound',
+    context: null,
+    last: 0,
+
+    enabled() {
+        return store.get(this.KEY) !== 'off';
+    },
+
+    setEnabled(on) {
+        store.set(this.KEY, on ? 'on' : 'off');
+        window.dispatchEvent(new CustomEvent('notification-sound', { detail: { on } }));
+    },
+
+    unlock() {
+        try {
+            const Context = window.AudioContext || window.webkitAudioContext;
+
+            if (!Context) return;
+            this.context ??= new Context();
+            if (this.context.state === 'suspended') this.context.resume().catch(() => {});
+        } catch (e) {
+            this.context = null;
+        }
+    },
+
+    play() {
+        const now = Date.now();
+
+        if (!this.enabled() || now - this.last < 10000) return false;
+
+        try {
+            const context = this.context;
+
+            if (!context || context.state !== 'running') return false;
+            this.last = now;
+            const start = context.currentTime + 0.01;
+
+            // Two notes (E6 then A5), each a quick soft sine with a gentle fade, about 0.3 s in all
+            [[1318.5, 0], [880, 0.12]].forEach(([frequency, offset]) => {
+                const oscillator = context.createOscillator();
+                const gain = context.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = frequency;
+                gain.gain.setValueAtTime(0.0001, start + offset);
+                gain.gain.exponentialRampToValueAtTime(0.05, start + offset + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.18);
+                oscillator.connect(gain).connect(context.destination);
+                oscillator.start(start + offset);
+                oscillator.stop(start + offset + 0.2);
+            });
+
+            window.dispatchEvent(new CustomEvent('notification-chime'));
+
+            return true;
+        } catch (e) {
+            return false;
+        }
+    },
+};
+
+['pointerdown', 'keydown', 'touchstart'].forEach((type) => document.addEventListener(type, () => chime.unlock(), { capture: true, passive: true }));
+
+// The on/off switch (bell dropdown and the notifications page); every copy on the page follows the same choice
+const soundSwitch = () => ({
+    on: chime.enabled(),
+
+    init() {
+        window.addEventListener('notification-sound', (event) => {
+            this.on = Boolean(event.detail?.on);
+        });
+    },
+
+    toggle() {
+        chime.setEnabled(!this.on);
+        if (!this.on) return;
+        chime.unlock();
+    },
+});
+
 // A time field without a scrolling wheel: a button and a grid of times. The <select> stays the form control.
 const uiTimePicker = (options, value) => ({
     options,
@@ -493,6 +579,8 @@ const liveUpdates = (url) => ({
             const data = await response.json();
 
             this.wait = 15000;
+            // Phase 10K: a new notification since the last poll (never on the first poll of a page, so a reload is quiet)
+            if (this.unread !== null && data.unread > this.unread) chime.play();
             if (this.stamp !== null && data.stamp !== this.stamp) {
                 await this.changed(data);
             }
@@ -725,8 +813,9 @@ export default function registerPolish(Alpine) {
     Alpine.data('sidebarToggle', sidebarToggle);
     Alpine.data('liveUpdates', liveUpdates);
     Alpine.data('uiHint', uiHint);
+    Alpine.data('soundSwitch', soundSwitch);
     Alpine.data('verifyWatch', verifyWatch);
     Alpine.data('uiTypeahead', uiTypeahead);
 }
 
-export { csrf, reduced, root, store, toast };
+export { chime, csrf, reduced, root, store, toast };

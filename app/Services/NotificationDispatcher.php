@@ -85,6 +85,59 @@ class NotificationDispatcher
         };
 
         $this->send($kind, $booking, $actor, $context);
+
+        // Phase 10K: the system cancelled it (no downpayment by the deadline): the owner hears too, for walk-ins as well
+        if ($kind === NotificationKind::DownpaymentExpired && $actor === null) {
+            $this->system(NotificationKind::SystemBookingExpired, $booking, 'expired', ['due' => $booking->downpayment_due_at?->toIso8601ZuluString()]);
+        }
+    }
+
+    /**
+     * Phase 10K: a notice about something the system did or noticed by itself, ONCE per record, kind and occurrence
+     * (the occurrence names the moment, for example the hold that ran out or the deadline, so a new hold or a new
+     * deadline can be told again). Owner kinds go to every owner; customer kinds to the record's own online customer,
+     * never to a walk-in. Stored: the reference, the customer's name, the walk-in flag, the session time and the extras
+     * given; never a phone or an email. Returns false when this occurrence was already told (nothing is sent).
+     *
+     * Callers run under SystemEvents' lock, so two runners never check and send the same occurrence at once.
+     *
+     * @param  array<string, scalar|null>  $extra
+     */
+    public function system(NotificationKind $kind, PrintingOrder|PhotographyBooking $payable, string $occurrence, array $extra = []): bool
+    {
+        $type = $payable->getMorphClass();
+        $id = (int) $payable->getKey();
+
+        if (DatabaseNotification::query()->where('type', $kind->value)->where('data->payable_type', $type)
+            ->where('data->payable_id', $id)->where('data->occurrence', $occurrence)->exists()) {
+            return false;
+        }
+
+        $customer = $payable->customer()->first(['id', 'name', 'is_walk_in']);
+        $data = array_filter([
+            'kind' => $kind->value,
+            'payable_type' => $type,
+            'payable_id' => $id,
+            'reference' => (string) $payable->reference_number,
+            'customer' => $customer?->name,
+            'walk_in' => $customer?->is_walk_in ? true : null,
+            'starts' => $payable instanceof PhotographyBooking ? $payable->heldStart()->toIso8601ZuluString() : null,
+            'occurrence' => $occurrence,
+        ] + $extra, fn ($value) => $value !== null);
+
+        $recipients = $kind->audience() === UserRole::Owner
+            ? User::query()->where('role', UserRole::Owner)->get()
+            : User::query()->whereKey((int) $payable->customer_id)->where('role', UserRole::Customer)->where('is_walk_in', false)->get();
+
+        DB::afterCommit(function () use ($kind, $data, $recipients) {
+            try {
+                Notification::sendNow($recipients, new ActivityNotification($data));
+            } catch (Throwable $e) {
+                Log::warning('A notification could not be saved.', ['kind' => $kind->value, 'payable' => $data['payable_type'].'#'.$data['payable_id'], 'error' => $e::class]);
+            }
+        });
+
+        return true;
     }
 
     /** A customer wrote in their studio thread: every owner is told, once until they read it (Phase 7B). */

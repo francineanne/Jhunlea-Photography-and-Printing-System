@@ -67,5 +67,10 @@ class DownpaymentExpiryService
         } catch (Throwable $e) {
             Log::warning('Expired downpayments could not be processed.', ['error' => $e::class]);
         }
+
+        // Phase 10K: the automatic-event notices ride along (at most every 5 minutes, quietly; the scheduler also runs them)
+        if (config('notifications.lazy_system_events')) {
+            app(SystemEvents::class)->runIfDue();
+        }
     }
 }

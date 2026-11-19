@@ -56,6 +56,8 @@
         <env name="AI_API_KEY" value="" force="true"/>
         <env name="AI_MODEL" value="" force="true"/>
         <env name="AI_ENABLED" value="" force="true"/>
+        <!-- Phase 10K: the clock-dependent lazy system-notice run stays off; SystemNotificationsTest turns it on -->
+        <env name="NOTIFICATIONS_LAZY_SYSTEM_EVENTS" value="false" force="true"/>
         <env name="AI_FALLBACK_PROVIDER" value="" force="true"/>
         <env name="ANTHROPIC_API_KEY" value="" force="true"/>
         <env name="ANTHROPIC_MODEL" value="" force="true"/>
@@ -89,6 +91,7 @@
         <server name="AI_API_KEY" value=""/>
         <server name="AI_MODEL" value=""/>
         <server name="AI_ENABLED" value=""/>
+        <server name="NOTIFICATIONS_LAZY_SYSTEM_EVENTS" value="false"/>
         <server name="AI_FALLBACK_PROVIDER" value=""/>
         <server name="ANTHROPIC_API_KEY" value=""/>
         <server name="ANTHROPIC_MODEL" value=""/>

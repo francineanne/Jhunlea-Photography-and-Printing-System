@@ -262,7 +262,9 @@ class NotificationRulesTest extends TestCase
         }
 
         // Phase 10B added 8: downpayment requested, recorded, balance recorded, deadline extended, waived, expired,
-        // order paid before printing, order unclaimed
-        $this->assertCount(33, NotificationKind::cases());
+        // order paid before printing, order unclaimed. Phase 10K added 10 automatic ones: booking expired (owner), hold
+        // and offered time ran out (owner and customer each), downpayment due soon (both), order unclaimable (owner),
+        // photoshoot tomorrow (both)
+        $this->assertCount(43, NotificationKind::cases());
     }
 }

@@ -22,13 +22,15 @@ class NotificationController extends Controller
     {
         $user = $request->user();
         $unreadOnly = $request->unreadOnly();
-        $page = $this->feed->page($user, $unreadOnly);
+        $systemOnly = $request->systemOnly();
+        $page = $this->feed->page($user, $unreadOnly, $systemOnly);
 
         return view($this->area($request).'.notifications.index', [
             'items' => $page->getCollection()->map(fn (DatabaseNotification $row) => $this->feed->present($user, $row))->filter()->values(),
             'page' => $page,
             'counts' => $this->feed->counts($user),
             'unreadOnly' => $unreadOnly,
+            'systemOnly' => $systemOnly,
             'area' => $this->area($request),
         ]);
     }

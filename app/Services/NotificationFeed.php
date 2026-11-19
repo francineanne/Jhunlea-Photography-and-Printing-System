@@ -8,6 +8,7 @@ use App\Models\Conversation;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Models\User;
+use App\Support\PhilippineMobile;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Notifications\DatabaseNotification;
@@ -48,21 +49,33 @@ class NotificationFeed
     }
 
     /** @return LengthAwarePaginator<int, DatabaseNotification> */
-    public function page(User $user, bool $unreadOnly): LengthAwarePaginator
+    public function page(User $user, bool $unreadOnly, bool $systemOnly = false): LengthAwarePaginator
     {
         return ($unreadOnly ? $user->unreadNotifications() : $user->notifications())
+            // Phase 10K: the owner's "System" tab, the notices about what happened by itself
+            ->when($systemOnly, fn ($query) => $query->whereIn('type', self::systemTypes()))
             ->latest()
             ->paginate(self::PER_PAGE)
             ->withQueryString();
     }
 
-    /** @return array{all: int, unread: int} */
+    /** @return array{all: int, unread: int, system: int} */
     public function counts(User $user): array
     {
         // reorder(): the relation sorts by date, and MySQL refuses ORDER BY next to these aggregates
         $row = $user->notifications()->reorder()->toBase()->selectRaw('COUNT(*) as total, SUM(CASE WHEN read_at IS NULL THEN 1 ELSE 0 END) as unread')->first();
 
-        return ['all' => (int) ($row->total ?? 0), 'unread' => (int) ($row->unread ?? 0)];
+        return [
+            'all' => (int) ($row->total ?? 0),
+            'unread' => (int) ($row->unread ?? 0),
+            'system' => $user->notifications()->reorder()->whereIn('type', self::systemTypes())->count(),
+        ];
+    }
+
+    /** @return list<string> the stored types of the automatic notices (Phase 10K) */
+    public static function systemTypes(): array
+    {
+        return array_map(fn (NotificationKind $kind) => $kind->value, NotificationKind::system());
     }
 
     /** The person's own notification, or 404: another person's id is never found. */
@@ -119,11 +132,20 @@ class NotificationFeed
             return null;
         }
 
+        $message = $kind->message($data);
+
+        // Phase 10K: a walk-in has no account, so the owner's due-soon reminder says whom to call. The number is never
+        // stored in the notice; it is read from the booking when shown (only the owner ever gets this kind)
+        if ($kind === NotificationKind::SystemDownpaymentDueSoon && ! empty($data['walk_in']) && $user->role === UserRole::Owner) {
+            $phone = PhotographyBooking::query()->withTrashed()->whereKey((int) ($data['payable_id'] ?? 0))->value('contact_number');
+            $message .= filled($phone) ? ' Call '.PhilippineMobile::display((string) $phone).'.' : '';
+        }
+
         return [
             'id' => $row->id,
             'kind' => $kind,
             'title' => $kind->title(),
-            'message' => $kind->message($data),
+            'message' => $message,
             // A chat notice has no PR or PB reference; the label says where it leads instead
             'reference' => $kind->isMessage() ? 'Messages' : (string) ($data['reference'] ?? ''),
             'icon' => $kind->icon(),

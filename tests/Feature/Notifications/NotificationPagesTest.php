@@ -155,7 +155,7 @@ class NotificationPagesTest extends TestCase
 
         $this->actingAs($this->customer)->get(route('customer.notifications.index'))->assertOk()
             ->assertSee('Your order '.$this->order->reference_number.' was accepted at ₱480.00.')
-            ->assertViewHas('counts', ['all' => 28, 'unread' => 25])
+            ->assertViewHas('counts', ['all' => 28, 'unread' => 25, 'system' => 0]) // Phase 10K: the owner's System tab count
             ->assertViewHas('items', fn ($items) => $items->count() === 20);
 
         $this->actingAs($this->customer)->get(route('customer.notifications.index', ['tab' => 'unread', 'page' => 2]))

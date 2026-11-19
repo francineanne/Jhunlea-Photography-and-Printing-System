@@ -337,6 +337,14 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Isang phone field (required sa booking, naka-save sa customer)
 - [x] Naayos: lumalabas na sa Schedule calendar ang Awaiting downpayment (online at walk-in)
 
+### 10K — System notifications at tunog (branch `phase-10k-system-notifications`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule (notice lang ang dinagdag; ang expiry logic ay hindi ginalaw)
+- [x] Bawat automatic event ay may isang notice sa owner, at sa online customer kung may sarili siyang notice; ang walk-in ay hindi kailanman nino-notify
+- [x] Mga event: na-cancel dahil walang downpayment (owner; ang customer ay meron na mula 10B), naubos ang hold ng request (owner at customer), naubos ang hold ng inalok na oras (owner at customer), downpayment due sa loob ng 24 oras (owner na may "Call 09xx" para sa walk-in, at customer), puwede nang i-Unclaimed ang order (owner), photoshoot bukas mula 6:00 PM (owner at customer)
+- [x] `php artisan notifications:system-events` bawat 15 minuto (scheduler) at lazy kasabay ng downpayment expiry sa page load (hindi lalampas sa isang beses bawat 5 minuto); isang runner lang sa isang oras (cache lock), at isang notice lang bawat record at pagkakataon (occurrence key)
+- [x] "System" tab sa owner notifications page; kasama sa bell count
+- [x] Mahinang chime (Web Audio, dalawang nota) kapag tumaas ang unread count sa live poll; hindi sa page load; "Notification sound" switch sa bell at notifications page (localStorage, ON by default)
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)
