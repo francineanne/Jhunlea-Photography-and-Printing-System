@@ -18,9 +18,10 @@ use App\Services\BookingTransitionService;
 use App\Services\PaymentService;
 use App\Services\ReferenceNumberService;
 use App\Services\ScheduleConflictService;
+use App\Support\LocalTime;
 use App\Support\Money;
+use App\Support\PaymentRules;
 use App\Support\PhilippineMobile;
-use App\Support\ShopSettings;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -29,26 +30,29 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
- * A walk-in photography booking made by the owner at the counter (Phase 8A). It is created Confirmed (source walk_in)
- * with its first history row, in one transaction under the same schedule lock as BookingTransitionService::confirm(),
- * so it blocks that time for online customers exactly like any confirmed booking.
+ * A walk-in photography booking made by the owner at the counter (Phase 8A; the rules since Phase 10J). It is created
+ * (source walk_in) with its first history row, in one transaction under the same schedule lock as
+ * BookingTransitionService::confirm(), so it holds that time for online customers exactly like any other booking.
  *
- * Phase 10A: a day at the owner's daily limit is booked only with the explicit "over the daily limit" confirmation
- * ($overDailyLimit), which never sets aside a clash or a passed time.
+ * Phase 10J: a walk-in booking follows EXACTLY the online rules, with no override at the counter: the minimum notice in
+ * days (10I), how far ahead one may book, the photoshoot hours, blocked dates, the buffer, the daily limit and the
+ * people of the package; a clash or a passed time is never allowed. "Confirm anyway" and "Over the daily limit" are
+ * gone for walk-ins: when a rule blocks the time the owner picks another one.
  *
- * Phase 10B: a walk-in booking is never left "Awaiting downpayment". In the same transaction the owner records the
- * downpayment or the full price (cash or GCash, through PaymentService), or ticks "Waive downpayment" with a reason
- * (audited); a price of ₱0.00 needs neither. Without a price the downpayment must be waived. LOCK ORDER: the caller
- * (WalkInController) takes the schedule lock, then the PAY counter, before it creates a new walk-in customer.
+ * The price is REQUIRED (the owner is at the counter and knows it). The downpayment follows the online rules too
+ * (PaymentRules): the owner records the downpayment or the full price now (it is then Confirmed in this transaction),
+ * or ticks "Waive downpayment" with a reason (audited; Confirmed), or saves it "Awaiting downpayment" with the normal
+ * deadline (PaymentRules::dueAt), which is extended, waived or cancelled by the system at the deadline like any
+ * online booking. A price of ₱0.00 or a 0% rule needs no downpayment. The walk-in is never notified: the walk-in
+ * page shows the deadline and the phone so the owner can call. LOCK ORDER: the caller (WalkInController) takes the
+ * schedule lock, then the PAY counter, before it creates a new walk-in customer.
  *
- * Rules: a clash with a booking that holds the time is NEVER allowed (ScheduleConflictService, the same message as
- * confirm()); a time that has passed is never allowed; the minimum notice and how far ahead one may book do not apply
- * (the customer is at the counter); opening hours and blocked dates apply unless the owner says "confirm anyway".
- * The price is optional: it may be set now or later, and the booking is paid on the day of the shoot with the usual
- * record-payment flow. The counter token makes a double click save one booking. Phase 8B may call place() as it is.
+ * The counter token makes a double click save one booking.
  */
 class WalkInBookingService
 {
+    public const PRICE_REQUIRED = 'Enter the price of this session. You are at the counter, so the price is set now.';
+
     public function __construct(
         private readonly ReferenceNumberService $references,
         private readonly ScheduleConflictService $conflicts,
@@ -75,9 +79,7 @@ class WalkInBookingService
         string $contactNumber,
         ?string $notes,
         ?string $confirmedPrice,
-        bool $outsideSchedule,
         string $counterToken,
-        bool $overDailyLimit = false,
         ?PaymentKind $payKind = null,
         ?PaymentMethod $payMethod = null,
         ?string $gcashReference = null,
@@ -128,11 +130,12 @@ class WalkInBookingService
         $price = $this->price($confirmedPrice);
         $waiveReason = $waiveReason === null || trim($waiveReason) === '' ? null : trim($waiveReason);
         $this->checkPayment($price, $payKind, $payMethod, $waiveReason);
+        $rules = app(PaymentRules::class);
         $start = Carbon::instance($startsAt)->utc();
         $end = $start->copy()->addMinutes($package->duration_minutes);
 
         try {
-            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $outsideSchedule, $counterToken, $overDailyLimit, $payKind, $payMethod, $gcashReference, $waiveReason) {
+            return DB::transaction(function () use ($owner, $customer, $package, $theme, $customThemeText, $start, $end, $groupSize, $contactNumber, $notes, $price, $counterToken, $payKind, $payMethod, $gcashReference, $waiveReason, $rules) {
                 $this->transitions->lockSchedule();
 
                 if (! $this->conflicts->isFree($start, $end)) {
@@ -148,17 +151,34 @@ class WalkInBookingService
                     throw BookingTransitionException::tooSoon($refusal);
                 }
 
-                $reasons = $this->availability->ruleViolations($package->duration_minutes, $start, atCounter: true);
+                // Phase 10J: the online schedule rules, no override (hours, blocked days, how far ahead)
+                $reasons = $this->availability->ruleViolations($package->duration_minutes, $start);
 
-                if ($reasons !== [] && ! $outsideSchedule) {
-                    throw BookingTransitionException::outsideSchedule($reasons);
+                if ($reasons !== []) {
+                    throw BookingTransitionException::outsideScheduleNoOverride($reasons);
                 }
 
-                $overLimit = $this->availability->dayIsFull($start);
-
-                if ($overLimit && ! $overDailyLimit) {
-                    throw BookingTransitionException::dailyLimit(AvailabilityService::dailyLimitReason());
+                if ($this->availability->dayIsFull($start)) {
+                    throw BookingTransitionException::dailyLimitNoOverride(AvailabilityService::dailyLimitReason());
                 }
+
+                // The online wizard's own question last (the slot grid and the buffer around other bookings)
+                if (! $this->availability->isAvailable($package->duration_minutes, $start)) {
+                    throw BookingTransitionException::slotNotAvailable();
+                }
+
+                // Paid now: it waits for the payment recorded below, which confirms it. Otherwise the online rule:
+                // Awaiting downpayment with the normal deadline, unless no downpayment is needed or it is waived
+                $awaits = $payKind === null && $waiveReason === null && $rules->needsDownpayment($price);
+                $status = match (true) {
+                    $payKind !== null, $awaits => BookingStatus::AwaitingDownpayment,
+                    default => BookingStatus::Confirmed,
+                };
+                $due = match (true) {
+                    $payKind !== null => $start,
+                    $awaits => $rules->dueAt($start, Carbon::now('UTC')),
+                    default => null,
+                };
 
                 $booking = new PhotographyBooking([
                     'group_size' => $groupSize,
@@ -177,18 +197,16 @@ class WalkInBookingService
                     'ends_at' => $end,
                     'requested_starts_at' => $start,
                     // With a payment it starts waiting for it and the payment below confirms it in this transaction
-                    'status' => $payKind !== null ? BookingStatus::AwaitingDownpayment : BookingStatus::Confirmed,
-                    'downpayment_due_at' => $payKind !== null ? $start : null,
+                    'status' => $status,
+                    'downpayment_due_at' => $due,
                     'source' => RecordSource::WalkIn,
                     'counter_token' => $counterToken,
                     'estimated_price' => $this->bookings->estimate($package),
                     'confirmed_price' => $price,
                 ])->save();
 
-                $note = 'Created at the counter (walk-in) and confirmed by the studio.'
-                    .($price !== null ? ' Price '.Money::format($price).'.' : ' The price is set later.')
-                    .($reasons !== [] ? ' Confirmed outside the usual schedule: '.implode(' ', $reasons) : '')
-                    .($overLimit ? ' Booked over the daily limit.' : '')
+                $note = 'Created at the counter (walk-in). Price '.Money::format($price).'.'
+                    .($awaits ? ' Downpayment of '.Money::cents($rules->downpaymentCents($price)).' due by '.LocalTime::format($due).'.' : '')
                     .($waiveReason !== null ? ' Downpayment waived: '.$waiveReason : '');
                 $this->transitions->recordCounterBooking($booking, $owner, $note);
 
@@ -209,26 +227,14 @@ class WalkInBookingService
         }
     }
 
-    /** Phase 10B: a downpayment or the full price with how it was paid, or a waiver with its reason, unless it costs nothing. */
-    private function checkPayment(?string $price, ?PaymentKind $kind, ?PaymentMethod $method, ?string $waiveReason): void
+    /**
+     * Phase 10J: nothing paid now is allowed (it then waits for its downpayment like an online booking); a payment needs
+     * how it was paid; a free booking needs neither a payment nor a waiver.
+     */
+    private function checkPayment(string $price, ?PaymentKind $kind, ?PaymentMethod $method, ?string $waiveReason): void
     {
-        if ($price !== null && Money::toCents($price) === 0) {
+        if (Money::toCents($price) === 0) {
             return;
-        }
-
-        // The owner set no downpayment: the full price is paid on the day, as any confirmed booking
-        if ($kind === null && $waiveReason === null && app(ShopSettings::class)->downpaymentPercent() === 0) {
-            return;
-        }
-
-        if ($kind === null && $waiveReason === null) {
-            $this->fail('pay_kind', $price === null
-                ? 'Without a price, tick "Waive downpayment" and write why, or enter the price and record a payment.'
-                : 'Record the downpayment or the full price now, or tick "Waive downpayment" and write why.');
-        }
-
-        if ($kind !== null && $price === null) {
-            $this->fail('confirmed_price', 'Enter the price to record a payment.');
         }
 
         if ($kind === PaymentKind::Balance) {
@@ -240,14 +246,15 @@ class WalkInBookingService
         }
     }
 
-    private function price(?string $price): ?string
+    /** Phase 10J: the price is required at the counter (₱0.00 allowed for a free session). */
+    private function price(?string $price): string
     {
         if ($price === null || trim($price) === '') {
-            return null;
+            $this->fail('confirmed_price', self::PRICE_REQUIRED);
         }
 
         if (! preg_match('/^\d{1,8}(\.\d{1,2})?$/', trim($price))) {
-            $this->fail('confirmed_price', 'Type the price as a number, for example 1500 or 1500.50, or leave it empty.');
+            $this->fail('confirmed_price', 'Type the price as a number, for example 1500 or 1500.50.');
         }
 
         return Money::fromCents(Money::toCents(trim($price)));

@@ -17,6 +17,8 @@
     $url = fn ($request) => $request instanceof PrintingOrder ? route('owner.orders.show', $request) : route('owner.bookings.show', $request);
     $requests = $data['requests'];
     $payments = $data['payments'];
+    // Phase 10J: the owner's next step on each record (walk-ins are followed here: they get no notifications)
+    $next = app(\App\Support\NextSteps::class);
 @endphp
 
 @section('main')
@@ -38,6 +40,26 @@
                 <x-chat.message-customer :customer="$customer" class="w-full @xl:w-auto" />
             </div>
         </div>
+        @if ($customer->isWalkIn())
+            {{-- Phase 10J: a walk-in is followed from here: new records for them, and their name and phone --}}
+            <div class="mt-4 flex flex-wrap items-center gap-2 border-t border-app-border pt-4" data-walk-in-actions>
+                <x-ui.button :href="route('owner.orders.walk-in.create', ['customer' => $customer->id])" size="sm"><x-ui.icon name="print" :size="18" />New printing order for this customer</x-ui.button>
+                <x-ui.button :href="route('owner.bookings.walk-in.create', ['customer' => $customer->id])" size="sm"><x-ui.icon name="photo_camera" :size="18" />New booking for this customer</x-ui.button>
+                <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="storefront" :size="18" />Walk-in</a>
+            </div>
+            <details class="group mt-3 rounded-control border border-app-border" @if ($errors->walkIn->any()) open @endif data-walk-in-edit>
+                <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 px-3 text-sm font-semibold focus-ring [&::-webkit-details-marker]:hidden"><x-ui.icon name="edit" :size="18" />Edit name and phone<x-ui.icon name="expand_more" :size="18" class="ml-auto transition-transform group-open:rotate-180" /></summary>
+                <form method="POST" action="{{ route('owner.walk-in.customers.update', $customer) }}" class="border-t border-app-border p-3">
+                    @csrf
+                    @method('PUT')
+                    <div class="form-grid sm:grid-cols-2">
+                        <x-ui.input label="Full name" name="name" maxlength="80" :required="true" :value="old('name', $customer->name)" :error="$errors->walkIn->first('name')" />
+                        <x-ui.input label="Mobile number" name="phone" type="tel" :value="old('phone', $customer->phone)" :error="$errors->walkIn->first('phone')" hint="For example 0917 123 4567. The shop calls this number." />
+                    </div>
+                    <div class="mt-3 flex justify-end"><x-ui.button type="submit" size="sm"><x-ui.icon name="save" :size="18" />Save</x-ui.button></div>
+                </form>
+            </details>
+        @endif
         <dl class="mt-5 grid gap-4 border-t border-app-border pt-4 text-sm @lg:grid-cols-3">
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Email</dt>
@@ -119,6 +141,9 @@
                                 </span>
                             </div>
                             <p class="mt-2 break-words font-semibold">{{ Str::limit($title($request), 120) }}</p>
+                            @if (! $request->trashed() && ($step = $next->forOwner($request)))
+                                <p class="mt-1 flex items-start gap-1.5 text-sm text-app-text-2" data-next-step><x-ui.icon name="arrow_forward" :size="16" class="mt-0.5 shrink-0 text-brand" />{{ $step }}</p>
+                            @endif
                             <div class="mt-2 flex flex-wrap items-end justify-between gap-3 text-sm">
                                 <span class="text-app-text-2">Sent <x-ui.date :value="$request->created_at" format="M j, Y" /></span>
                                 <span class="text-right"><span class="block text-[11px] uppercase tracking-wider text-app-text-2">{{ $request->confirmed_price !== null ? 'Confirmed price' : 'Estimate' }}</span><span class="font-bold tabular-nums">{{ $request->confirmedText() ?? $request->estimateText() }}</span></span>

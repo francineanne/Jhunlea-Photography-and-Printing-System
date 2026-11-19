@@ -9,7 +9,8 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Printing orders</h1>
             <p class="mt-2 text-app-text-2">Every printing request customers have sent. Open one to review it, ask for information, accept it with a price or move it on.</p>
         </div>
-        <x-ui.button :href="route('owner.orders.walk-in.create')"><x-ui.icon name="storefront" :size="18" />New walk-in order</x-ui.button>
+        {{-- Phase 10J: walk-ins start in the one Walk-in area --}}
+        <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]" data-walk-in-link><x-ui.icon name="storefront" :size="18" />Walk-in</a>
     </div>
 
     @if ($errors->any())

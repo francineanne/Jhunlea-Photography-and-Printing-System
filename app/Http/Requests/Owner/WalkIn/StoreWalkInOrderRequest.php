@@ -35,10 +35,12 @@ class StoreWalkInOrderRequest extends WalkInRequest
             'price_choice' => ['required', 'string', Rule::in([WalkInOrderService::PRICE_CATALOG, WalkInOrderService::PRICE_CUSTOM])],
             'custom_price' => ['nullable', 'string', 'required_if:price_choice,'.WalkInOrderService::PRICE_CUSTOM, 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
             'price_note' => ['nullable', 'string', 'max:'.WalkInOrderService::PRICE_NOTE_MAX],
-            'method' => ['required', 'string', Rule::enum(PaymentMethod::class)],
+            // Phase 10J: "Paid now" is optional; unpaid, the order waits at Accepted like an online one
+            'paid_now' => ['boolean'],
+            'method' => ['nullable', 'required_if_accepted:paid_now', 'string', Rule::enum(PaymentMethod::class)],
             'gcash_reference' => ['nullable', 'string', 'required_if:method,'.PaymentMethod::Gcash->value, 'regex:'.Payment::GCASH_REFERENCE_PATTERN],
             'cash_tendered' => ['nullable', 'string', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
-            'collected' => ['accepted'],
+            'collected' => ['nullable', 'boolean'],
             'files' => ['nullable', 'array'],
             'files.*' => ['file'],
         ];
@@ -71,6 +73,11 @@ class StoreWalkInOrderRequest extends WalkInRequest
         return [function (Validator $validator) {
             $this->checkCustomer($validator);
 
+            // Phase 10J: the "collected the full amount" tick only matters when it is paid now
+            if ($this->paidNow() && ! $this->boolean('collected')) {
+                $validator->errors()->add('collected', 'Tick the box to confirm you collected the full amount.');
+            }
+
             // Like the wizard: every option group the owner set up for this service needs one choice
             $service = PrintingService::query()->find((int) $this->input('service'));
 
@@ -96,9 +103,19 @@ class StoreWalkInOrderRequest extends WalkInRequest
         return array_values(array_map('intval', array_filter($chosen, fn ($id) => filter_var($id, FILTER_VALIDATE_INT) !== false)));
     }
 
-    public function paymentMethod(): PaymentMethod
+    /**
+     * Phase 10J: paid now when the form says so; a send without the field (an older form, a script) is paid when it
+     * names a payment method, as before.
+     */
+    public function paidNow(): bool
     {
-        return PaymentMethod::from((string) $this->validated('method'));
+        return $this->has('paid_now') ? $this->boolean('paid_now') : $this->filled('method');
+    }
+
+    /** The way the customer paid now, or null when the order is paid later (Phase 10J). */
+    public function paymentMethod(): ?PaymentMethod
+    {
+        return $this->paidNow() ? PaymentMethod::tryFrom((string) $this->validated('method')) : null;
     }
 
     /** @return list<UploadedFile> */

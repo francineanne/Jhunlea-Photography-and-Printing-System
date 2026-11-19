@@ -31,21 +31,13 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Payments and counter</h1>
             <p class="mt-2 max-w-2xl text-app-text-2">Record a payment at the counter, see what is ready for pickup or still waiting for payment, and every payment recorded today.</p>
         </div>
-        {{-- The counter bar (Phase 8B): record a payment, or start a walk-in (the 8A forms) --}}
+        {{-- The counter bar (Phase 8B): record a payment; walk-ins start in the Walk-in area (Phase 10J) --}}
         {{-- Phase 10D: a one-time tip, the first time the owner opens the counter --}}
         <x-ui.hint name="counter-search" class="order-last w-full">To record a payment, press Record payment and search by the customer's name, phone number or the PR- / PB- reference number.</x-ui.hint>
         <div class="flex flex-wrap gap-2">
             <x-ui.button x-data x-on:click="$dispatch('counter-open')"><x-ui.icon name="add_card" :size="18" />Record payment</x-ui.button>
-            <div class="relative" x-data="{ open: false }" x-on:keydown.escape="if (open) { open = false; $refs.button.focus() }" x-on:click.outside="open = false">
-                <x-ui.button variant="outline" x-ref="button" x-on:click="open = ! open" x-bind:aria-expanded="open" aria-haspopup="menu">
-                    <x-ui.icon name="storefront" :size="18" />New walk-in<x-ui.icon name="expand_more" :size="18" />
-                </x-ui.button>
-                <div x-show="open" x-cloak x-transition.opacity.duration.150ms role="menu" aria-label="New walk-in"
-                    class="absolute right-0 top-full z-40 mt-2 w-60 rounded-card border border-app-border bg-app-card p-2 shadow-xl">
-                    <a role="menuitem" href="{{ route('owner.orders.walk-in.create') }}" class="flex min-h-11 items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10"><x-ui.icon name="print" :size="20" />Walk-in printing order</a>
-                    <a role="menuitem" href="{{ route('owner.bookings.walk-in.create') }}" class="flex min-h-11 items-center gap-3 rounded-control px-3 text-sm font-semibold hover:bg-black/5 focus-ring dark:hover:bg-white/10"><x-ui.icon name="photo_camera" :size="20" />Walk-in booking</a>
-                </div>
-            </div>
+            {{-- Phase 10J: walk-ins start in the one Walk-in area; Record payment still finds walk-in records --}}
+            <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]" data-walk-in-link><x-ui.icon name="storefront" :size="18" />Walk-in</a>
         </div>
     </div>
 

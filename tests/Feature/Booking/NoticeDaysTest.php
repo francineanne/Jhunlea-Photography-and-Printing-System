@@ -176,7 +176,7 @@ class NoticeDaysTest extends TestCase
             'date' => $date,
             'time' => '14:00',
             'group_size' => 2,
-            'contact_number' => '0917 555 0101',
+            'new_customer_phone' => '0917 555 0101',
             'confirmed_price' => '1500',
         ] + $ticks;
         $send = fn (array $data) => $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), $data);

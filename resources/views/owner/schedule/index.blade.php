@@ -22,7 +22,7 @@
             <p class="mt-2 text-app-text-2">Confirmed sessions, requests waiting for you and the days the studio is closed. Open a booking to work on it.</p>
         </div>
         <div class="flex flex-wrap gap-2">
-            <x-ui.button :href="route('owner.bookings.walk-in.create')" variant="outline"><x-ui.icon name="storefront" :size="18" />New walk-in booking</x-ui.button>
+            <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]" data-walk-in-link><x-ui.icon name="storefront" :size="18" />Walk-in</a>
             <x-ui.button :href="route('owner.schedule.edit')"><x-ui.icon name="tune" :size="18" />Photoshoot hours and rules</x-ui.button>
         </div>
     </div>

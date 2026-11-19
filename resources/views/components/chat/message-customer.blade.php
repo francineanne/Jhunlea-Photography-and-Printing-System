@@ -19,5 +19,5 @@
         <x-ui.button type="submit" :size="$size" class="w-full @xl:w-auto"><x-ui.icon name="forum" :size="16" />{{ $record ? 'Message customer about this' : 'Message' }}</x-ui.button>
     </form>
 @elseif ($customer)
-    <p {{ $attributes->class('text-sm text-app-text-2 @xl:max-w-xs @xl:text-right') }} data-walk-in-no-chat>Walk-in customers have no account to message.@if (filled($customer->phone)) Call <a href="tel:{{ preg_replace('/[^0-9+]/', '', $customer->phone) }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">{{ $customer->phone }}</a>.@endif</p>
+    <p {{ $attributes->class('text-sm text-app-text-2 @xl:max-w-xs @xl:text-right') }} data-walk-in-no-chat>Walk-in customers have no account to message.@if (filled($customer->phone)) Call <a href="{{ \App\Support\PhilippineMobile::telHref($customer->phone) }}" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">{{ \App\Support\PhilippineMobile::display($customer->phone) }}</a>.@endif</p>
 @endif

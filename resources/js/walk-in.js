@@ -80,6 +80,8 @@ export const walkInOrder = ({ priceUrl, perPage, initial }) => ({
     priceChoice: initial.priceChoice ?? 'catalog',
     customPrice: initial.customPrice ?? '',
     method: initial.method ?? 'cash',
+    // Phase 10J: "Paid now" is optional
+    paidNow: initial.paidNow ?? true,
     tendered: initial.tendered ?? '',
     catalog: null,
     catalogText: '',
@@ -149,6 +151,8 @@ export const walkInBooking = ({ slotsUrl, initial, people = {}, percent = 0 }) =
     // Phase 10B: the price typed, and the downpayment worked out like the server does (rounded up to the peso)
     price: initial.price ?? '',
     waive: initial.waive ?? false,
+    // Phase 10J: "Nothing yet" (Awaiting downpayment) or a payment taken now
+    payNow: initial.payNow ?? false,
 
     get priceCents() {
         const value = Number(String(this.price).replace(/,/g, ''));

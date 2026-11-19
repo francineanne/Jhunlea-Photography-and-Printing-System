@@ -18,6 +18,37 @@ class NextSteps
     public function __construct(private readonly ShopSettings $settings) {}
 
     /**
+     * Phase 10J: the owner's next step on one order or booking, in one line (the customer page, where walk-ins are
+     * followed because they get no notifications). Words only; null when nothing waits on the owner.
+     */
+    public function forOwner(PrintingOrder|PhotographyBooking $record): ?string
+    {
+        $due = $record->amountDue();
+        $owes = $due !== null && Money::toCents($due) > 0;
+        $amount = $owes ? Money::format($due) : null;
+
+        if ($record instanceof PhotographyBooking) {
+            return match (true) {
+                $record->isExpired() => 'Expired: reject it or let the customer cancel.',
+                $record->status === BookingStatus::Requested => 'Confirm it, offer another time or reject it.',
+                $record->status === BookingStatus::Proposed => 'Waiting for the customer to accept the offered time.',
+                $record->status === BookingStatus::AwaitingDownpayment => 'Collect the downpayment by '.LocalTime::format($record->downpayment_due_at).', or it is cancelled.',
+                $record->status === BookingStatus::Confirmed && $owes => 'Collect '.$amount.' by the day of the shoot ('.LocalTime::format($record->starts_at, 'M j').').',
+                $record->status === BookingStatus::Confirmed => 'Mark it completed after the shoot.',
+                default => null,
+            };
+        }
+
+        return match ($record->status) {
+            PrintingOrderStatus::Submitted, PrintingOrderStatus::UnderReview => 'Review it and accept it with a price, or reject it.',
+            PrintingOrderStatus::Accepted => $record->requires_prepayment && $owes ? 'Collect '.$amount.' before printing.' : 'Start printing.',
+            PrintingOrderStatus::Processing => 'Mark it ready for pickup when printed.',
+            PrintingOrderStatus::ReadyForPickup => $owes ? 'Collect '.$amount.' at pickup, then release it.' : 'Release it when it is picked up.',
+            default => null,
+        };
+    }
+
+    /**
      * @return array{steps: list<array{label: string, text: string, state: string}>, closed: ?string}
      */
     public function forBooking(PhotographyBooking $booking): array

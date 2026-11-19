@@ -328,6 +328,15 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Isang pangungusap para sa customer (booking page, terms, suggested FAQ, Lumi)
 - [x] Naayos din: ang "Test Lumi" kapag pumalya ay nag-crash mula 10H (kulang na import); may test na ngayon
 
+### 10J — Walk-in na sumusunod sa parehong rules (branch `phase-10j-walk-in`) · built, naghihintay ng review
+- [x] Walang migration (sapat ang 8A columns)
+- [x] Isang "Walk-in" sa sidebar (`/owner/walk-in`): New walk-in printing order / booking, Find a walk-in customer, Needs attention (downpayment deadline at phone, balance sa susunod na 7 araw, ready for pickup na hindi pa bayad, pay-first), listahan ng walk-in customers
+- [x] Walk-in customer page: bagong order/booking para sa customer, Edit name and phone (audited), next step ng owner sa bawat record
+- [x] Walk-in booking: parehong schedule rules ng online (walang "Confirm anyway" / "book anyway"), required ang presyo, puwedeng "Awaiting downpayment" na may normal na deadline at automatic cancel
+- [x] Walk-in printing order: Accepted, pay-first rule, optional "Paid now"
+- [x] Isang phone field (required sa booking, naka-save sa customer)
+- [x] Naayos: lumalabas na sa Schedule calendar ang Awaiting downpayment (online at walk-in)
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

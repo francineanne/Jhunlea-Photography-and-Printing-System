@@ -146,6 +146,8 @@ class RouteAccessMatrixTest extends TestCase
         'GET owner/bookings' => self::OWNER,
         'GET owner/live' => self::OWNER,
         'GET owner/suggest' => self::OWNER,
+        'GET owner/walk-in' => self::OWNER,
+        'PUT owner/walk-in/customers/{customer}' => self::OWNER,
         'GET owner/messages/new' => self::OWNER,
         'POST owner/settings/lumi' => self::OWNER,
         'POST owner/settings/lumi/test' => self::OWNER,

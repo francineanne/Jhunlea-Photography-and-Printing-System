@@ -3,10 +3,11 @@
 @section('title', 'New walk-in order')
 
 {{--
-    A walk-in printing order at the counter (Phase 8A), in the style of design/admin/printing_order_detail_owner. The
-    shop prints only after it is paid, so the order and its full payment are saved together: customer, service and
-    options, the price (the catalog price or one the owner types), then the payment. Cash tendered only works out the
-    change; it is never saved.
+    A walk-in printing order at the counter (Phase 8A; the rules since Phase 10J), in the style of
+    design/admin/printing_order_detail_owner. It starts Accepted with the price the owner set, then follows the online
+    lifecycle (pay first from the shop's amount, Processing, Ready for pickup, Completed only when paid, Unclaimed).
+    "Paid now" is optional: paid, printing starts at once; unpaid, it is paid later at the counter. Cash tendered only
+    works out the change; it is never saved.
 --}}
 @php
     use App\Enums\PaymentMethod;
@@ -18,6 +19,7 @@
         'priceChoice' => old('price_choice', 'catalog'),
         'customPrice' => old('custom_price', ''),
         'method' => old('method', 'cash'),
+        'paidNow' => old('paid_now', '1') === '1',
         'tendered' => old('cash_tendered', ''),
     ];
 @endphp
@@ -25,7 +27,7 @@
 @section('main')
     <nav aria-label="Breadcrumb" class="mb-4 text-xs font-semibold uppercase tracking-wider text-app-text-2">
         <ol class="flex flex-wrap items-center gap-1.5">
-            <li><a href="{{ route('owner.orders.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Printing orders</a></li>
+            <li><a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Walk-in</a></li>
             <li aria-hidden="true">/</li>
             <li aria-current="page" class="text-brand">New walk-in order</li>
         </ol>
@@ -34,7 +36,7 @@
     <div class="max-w-3xl">
         <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span>Counter</p>
         <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">New walk-in order</h1>
-        <p class="mt-2 text-app-text-2">For a customer at the shop. The order is saved together with its full payment, so it is ready to print.</p>
+        <p class="mt-2 text-app-text-2">For a customer at the shop. It starts accepted at the price you set and follows the usual steps: an order of {{ \App\Support\Money::format(app(\App\Support\ShopSettings::class)->prepayFrom()) }} or more is paid before printing.</p>
     </div>
 
     @if ($errors->any())
@@ -117,7 +119,13 @@
 
         <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="pay-title">
             <h2 id="pay-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="payments" :size="20" class="text-brand" />Payment</h2>
-            <p class="mt-1 text-sm text-app-text-2">The full price, paid now, face to face. No partial payment.</p>
+            {{-- Phase 10J: paid now, or later at the counter like an online order --}}
+            <input type="hidden" name="paid_now" value="0">
+            <div class="mt-3">
+                <x-ui.checkbox name="paid_now" value="1" x-model="paidNow" :checked="old('paid_now', '1') === '1'">Paid now (the full price, cash or GCash)</x-ui.checkbox>
+                <p class="mt-1 text-xs text-app-text-2" x-show="! paidNow" x-cloak>Saved as accepted and unpaid. Record the payment later in Payments. An order that must be paid first cannot go to printing until then.</p>
+            </div>
+            <div x-show="paidNow">
             <div class="mt-4 flex flex-wrap gap-2" role="radiogroup" aria-label="Payment method">
                 @foreach ($methods as $method)
                     <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-4 font-semibold has-[:checked]:border-brand has-[:checked]:bg-brand/5">
@@ -142,11 +150,12 @@
             <div class="mt-4">
                 <x-ui.checkbox name="collected" value="1" :error="$errors->first('collected')">I collected the full amount from the customer.</x-ui.checkbox>
             </div>
+            </div>
         </section>
 
         <div class="flex flex-wrap justify-end gap-2">
-            <x-ui.button :href="route('owner.orders.index')" variant="outline">Cancel</x-ui.button>
-            <x-ui.button type="submit"><x-ui.icon name="check_circle" :size="18" />Save order and payment</x-ui.button>
+            <x-ui.button :href="route('owner.walk-in.index')" variant="outline">Cancel</x-ui.button>
+            <x-ui.button type="submit"><x-ui.icon name="check_circle" :size="18" />Save walk-in order</x-ui.button>
         </div>
     </form>
 @endsection

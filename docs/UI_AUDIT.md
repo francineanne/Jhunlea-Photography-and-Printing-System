@@ -125,3 +125,15 @@ Checked in the browser on the throwaway SQLite site: the page headers at 360, 76
 | G2 | Landing and footer | The phone read "+639914710185" | C | "0991 471 0185" with a tel: link (display only) |
 | G3 | Footer (public and customer) | Uneven contact gaps, three unbalanced columns, "Terms and privacy" alone, a thumbs-up for Facebook, the old face-to-face sentence | A | One footer: brand, Explore, Contact (same gap on every row, one icon column, the Facebook mark), bottom bar with the copyright and Terms |
 | G4 | Notice, sign-in pages, sidebar, FAQ, terms, end-of-day, landing, services, dashboard | "Payment is made face-to-face" contradicted the 10B rules (GCash can be sent with its reference) | A | `PaymentRules::NOTICE` or `shortLine()`; the counter keeps "face to face", which is true there |
+
+## Phase 10J: walk-ins
+
+| # | Screen | Problem | Sev. | Fix |
+|---|---|---|---|---|
+| J1 | Owner console | "New walk-in" in three places (Payments dropdown, bookings and orders headers, Schedule); walk-ins vanished into the general lists | A | ONE "Walk-in" sidebar item and page: start, Needs attention, walk-in customers; the old places link to it |
+| J2 | Walk-in booking form | The phone asked twice ("Phone (optional)" and "Contact number") | B | One "Mobile number" (required for a booking), or the picked customer's own with "Use a different number for this booking" |
+| J3 | Walk-in booking form | "Confirm anyway" and "Over the daily limit, book anyway" let the counter break the online rules | A | Removed; the counter offers exactly the wizard's times |
+| J4 | Walk-in order form | Payment always required | B | "Paid now" optional; unpaid orders follow the pay-first rule |
+| J5 | Customer page (walk-in) | No way to start a record for them or fix their name or phone | B | "New printing order / booking for this customer", "Edit name and phone", the owner's next step on each record |
+| J6 | Schedule calendar | Awaiting downpayment bookings were not shown although they held time | A | Shown with their dotted violet style; the "Save anyway" list counts them too |
+| J7 | Walk-in page, phones | Reference links under 44 px | C | 44 px tap targets below 640 px |

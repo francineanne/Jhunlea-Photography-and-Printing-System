@@ -5,11 +5,14 @@
     // One entry = label, icon, route name
     $nav = [
         ['label' => 'Overview', 'icon' => 'space_dashboard', 'route' => 'owner.dashboard'],
-        ['label' => 'Printing orders', 'icon' => 'receipt_long', 'route' => 'owner.orders.index', 'match' => 'owner.orders.*'],
-        ['label' => 'Photography bookings', 'icon' => 'photo_camera_front', 'route' => 'owner.bookings.index', 'match' => 'owner.bookings.*'],
+        // Phase 10J: the walk-in forms highlight Walk-in, not these two
+        ['label' => 'Printing orders', 'icon' => 'receipt_long', 'route' => 'owner.orders.index', 'match' => ['owner.orders.index', 'owner.orders.show']],
+        ['label' => 'Photography bookings', 'icon' => 'photo_camera_front', 'route' => 'owner.bookings.index', 'match' => ['owner.bookings.index', 'owner.bookings.show']],
         ['label' => 'Schedule', 'icon' => 'calendar_month', 'route' => 'owner.schedule.index', 'match' => 'owner.schedule.*'],
         ['label' => 'Payments', 'icon' => 'point_of_sale', 'route' => 'owner.payments.index', 'match' => 'owner.payments.*'],
         ['label' => 'Customers', 'icon' => 'group', 'route' => 'owner.customers.index', 'match' => 'owner.customers.*'],
+        // Phase 10J: the one walk-in area, right after Customers (walk-ins are customers without an account)
+        ['label' => 'Walk-in', 'icon' => 'storefront', 'route' => 'owner.walk-in.index', 'match' => ['owner.walk-in.*', 'owner.orders.walk-in.*', 'owner.bookings.walk-in.*']],
         ['label' => 'Reports', 'icon' => 'bar_chart', 'route' => 'owner.reports.income', 'match' => 'owner.reports.*'],
         ['label' => 'Messages', 'icon' => 'forum', 'route' => 'owner.messages.index', 'match' => 'owner.messages.*', 'badge' => $unanswered ?? 0],
         ['label' => 'Ask '.config('assistant.name'), 'icon' => 'camera', 'route' => 'owner.assistant.index', 'match' => 'owner.assistant.*'],

@@ -17,8 +17,12 @@ use Illuminate\Support\Collection;
  */
 class ScheduleCalendarService
 {
-    /** Statuses the calendar shows; rejected and cancelled bookings no longer hold anything. */
-    public const SHOWN = [BookingStatus::Confirmed, BookingStatus::Completed, BookingStatus::Requested, BookingStatus::Proposed];
+    /**
+     * Statuses the calendar shows; rejected and cancelled bookings no longer hold anything. Phase 10J: Awaiting
+     * downpayment too (it holds its time until the deadline; it was missing, so such bookings, online or walk-in, did
+     * not appear on the calendar although they blocked the time).
+     */
+    public const SHOWN = [BookingStatus::Confirmed, BookingStatus::Completed, BookingStatus::Requested, BookingStatus::Proposed, BookingStatus::AwaitingDownpayment];
 
     /**
      * @return array{

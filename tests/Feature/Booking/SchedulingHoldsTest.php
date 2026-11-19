@@ -357,38 +357,32 @@ class SchedulingHoldsTest extends TestCase
         $this->assertTrue(app(AvailabilityService::class)->dayIsFull($this->manila('2026-11-04 00:00')));
     }
 
-    public function test_a_walk_in_over_the_daily_limit_needs_the_tick_and_never_overrides_a_clash(): void
+    // Phase 10J: was "over the daily limit needs the tick": a walk-in now follows the daily limit like an online booking,
+    // with no "book anyway" (the old ticks are ignored if sent), and never takes a time another booking holds
+    public function test_a_walk_in_follows_the_daily_limit_with_no_override_and_never_takes_a_held_time(): void
     {
         $this->setLimit(1);
         $this->confirmedAt('2026-11-03 10:00');
         $payload = fn (array $overrides) => array_replace([
             'counter_token' => (string) Str::uuid(), 'new_customer_name' => 'Lola Walk-in', 'package' => $this->packages[60]->id, 'custom_theme_text' => 'Plain wall',
-            'date' => '2026-11-03', 'time' => '14:00', 'group_size' => 2, 'contact_number' => '0917 555 0101',
+            'date' => '2026-11-03', 'time' => '14:00', 'group_size' => 2, 'new_customer_phone' => '0917 555 0101', 'confirmed_price' => '0',
         ], $overrides);
         $send = fn (array $overrides = []) => $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), $payload($overrides));
 
-        // The counter still lists the day's free times, marked as over the limit
+        // The counter offers what the wizard offers: a full day has no times
         $this->actingAs($this->owner)->getJson(route('owner.bookings.walk-in.slots', ['package' => $this->packages[60]->id, 'date' => '2026-11-03']))
-            ->assertOk()->assertJsonPath('over_limit', true)->assertJsonFragment(['value' => '14:00', 'label' => '2:00 PM', 'ends' => '3:00 PM']);
+            ->assertOk()->assertJsonPath('over_limit', true)->assertJsonPath('times', [])->assertJsonPath('day_text', 'Fully booked.');
 
-        $send()->assertSessionHasErrors(['starts_at' => 'The day already has 1 photoshoot (the daily limit). Tick "Over the daily limit, book anyway" to book it all the same.']);
-        // "Confirm anyway" is about the hours and blocked days, not the limit
-        $send(['outside_schedule' => '1'])->assertSessionHasErrors('starts_at');
+        foreach ([[], ['outside_schedule' => '1'], ['over_daily_limit' => '1', 'outside_schedule' => '1']] as $ticks) {
+            $send($ticks)->assertSessionHasErrors(['starts_at' => 'The day already has 1 photoshoot (the daily limit). Pick another day.']);
+        }
         $this->assertSame(1, PhotographyBooking::count());
         $this->assertSame(0, User::query()->where('is_walk_in', true)->count());
 
-        // The tick never sets a clash aside
-        $send(['over_daily_limit' => '1', 'outside_schedule' => '1', 'time' => '10:30'])
-            ->assertSessionHasErrors(['starts_at' => BookingTransitionException::conflict()->getMessage()]);
-        $this->assertSame(1, PhotographyBooking::count());
-
-        $send(['over_daily_limit' => '1'])->assertSessionHasNoErrors();
-        $booking = PhotographyBooking::query()->latest('id')->first();
-        $this->assertSame(BookingStatus::Confirmed, $booking->status);
-        $this->assertStringContainsString('Booked over the daily limit.', $booking->statusHistories()->sole()->note);
-
-        // A walk-in never takes a time a customer's request holds either
+        // Without the limit the time is booked; a time a customer's request holds is never taken
         $this->setLimit(null);
+        $send()->assertSessionHasNoErrors();
+        $this->assertSame(BookingStatus::Confirmed, PhotographyBooking::query()->latest('id')->first()->status);
         $this->place($this->ana, '2026-11-05 11:00');
         $send(['date' => '2026-11-05', 'time' => '11:00', 'outside_schedule' => '1', 'over_daily_limit' => '1'])
             ->assertSessionHasErrors(['starts_at' => BookingTransitionException::conflict()->getMessage()]);
@@ -476,7 +470,7 @@ class SchedulingHoldsTest extends TestCase
         // The walk-in form uses the same rule and words
         $walkIn = fn (int $people, PhotographyPackage $package) => $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), [
             'counter_token' => (string) Str::uuid(), 'new_customer_name' => 'Lola Walk-in', 'package' => $package->id, 'custom_theme_text' => 'Plain wall',
-            'date' => '2026-11-10', 'time' => '13:00', 'group_size' => $people, 'contact_number' => '0917 555 0101',
+            'date' => '2026-11-10', 'time' => '13:00', 'group_size' => $people, 'new_customer_phone' => '0917 555 0101', 'confirmed_price' => '0',
         ]);
         $walkIn(3, $couple)->assertSessionHasErrors(['group_size' => 'Couple Session is for 2 people.']);
         $walkIn(1, $family)->assertSessionHasErrors(['group_size' => 'Family Portrait is for 2 to 6 people.']);

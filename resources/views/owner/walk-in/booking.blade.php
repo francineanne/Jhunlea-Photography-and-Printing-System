@@ -3,20 +3,22 @@
 @section('title', 'New walk-in booking')
 
 {{--
-    A walk-in photography booking at the counter (Phase 8A), in the style of design/admin/booking_detail_owner. It is
-    saved confirmed. The free times come from the same schedule as the online calendar, without the minimum notice and
-    the advance limit (the customer is here); a time that clashes with another session is never allowed. The price is
-    optional: the booking is paid on the day of the shoot with the usual "Record payment".
+    A walk-in photography booking at the counter (Phase 8A; the rules since Phase 10J), in the style of
+    design/admin/booking_detail_owner. The free times are EXACTLY the online wizard's (minimum notice in days, how far
+    ahead, photoshoot hours, blocked days, buffer, daily limit); there is no "Confirm anyway" at the counter. The price
+    is required. The downpayment follows the online rules: paid now (downpayment or full price), waived with a reason,
+    or saved "Awaiting downpayment" with the normal deadline. ONE phone, in the Customer section.
 --}}
 @php
     $initial = ['package' => old('package', ''), 'date' => old('date', $today), 'time' => old('time', ''), 'groupSize' => (int) old('group_size', 1),
-        'price' => (string) old('confirmed_price', ''), 'waive' => (bool) old('waive')];
+        'price' => (string) old('confirmed_price', ''), 'waive' => (bool) old('waive'), 'payNow' => old('pay_kind') !== null && old('pay_kind') !== ''];
+    $firstDay = \App\Support\LocalTime::format(\App\Models\BookingSetting::current()->earliestStart(), 'Y-m-d');
 @endphp
 
 @section('main')
     <nav aria-label="Breadcrumb" class="mb-4 text-xs font-semibold uppercase tracking-wider text-app-text-2">
         <ol class="flex flex-wrap items-center gap-1.5">
-            <li><a href="{{ route('owner.bookings.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Photography bookings</a></li>
+            <li><a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center rounded hover:text-brand focus-ring">Walk-in</a></li>
             <li aria-hidden="true">/</li>
             <li aria-current="page" class="text-brand">New walk-in booking</li>
         </ol>
@@ -25,7 +27,7 @@
     <div class="max-w-3xl">
         <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span>Counter</p>
         <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">New walk-in booking</h1>
-        <p class="mt-2 text-app-text-2">For a customer at the shop. It is saved as confirmed and blocks the time for online customers.</p>
+        <p class="mt-2 text-app-text-2">For a customer at the shop. The same rules as an online booking: {{ $windowText }}</p>
     </div>
 
     @if ($errors->any())
@@ -40,7 +42,7 @@
         @csrf
         <input type="hidden" name="counter_token" value="{{ old('counter_token', $token) }}">
 
-        <x-walk-in.customer-picker :picked="$picked" />
+        <x-walk-in.customer-picker :picked="$picked" for-booking />
 
         <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="session-title">
             <h2 id="session-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="photo_camera" :size="20" class="text-brand" />Session</h2>
@@ -70,7 +72,7 @@
                 <div class="sm:col-span-2">
                     <x-ui.input label="Their own idea (optional)" name="custom_theme_text" maxlength="500" :value="old('custom_theme_text')" :error="$errors->first('custom_theme_text')" />
                 </div>
-                <x-ui.input label="Date" name="date" type="date" :required="true" x-model="date" :value="old('date', $today)" min="{{ $today }}" :error="$errors->first('date')" />
+                <x-ui.input label="Date" name="date" type="date" :required="true" x-model="date" :value="old('date', $firstDay)" min="{{ $firstDay }}" :error="$errors->first('date')" />
                 <div>
                     <x-ui.select label="Start time" name="time" :required="true" x-model="time" :error="$errors->first('time') ?: $errors->first('starts_at')">
                         <option value="">Choose a time</option>
@@ -90,24 +92,17 @@
                         x-model.number="groupSize" x-bind:min="rule ? rule.min : 1" x-bind:max="rule ? rule.max : null" x-bind:readonly="fixedPeople" />
                     <p class="mt-1 text-xs text-app-text-2" x-show="rule" x-text="rule ? rule.rule : ''" x-cloak></p>
                 </div>
-                <x-ui.input label="Contact number" name="contact_number" type="tel" :required="true" :value="old('contact_number')" :error="$errors->first('contact_number')" hint="The number the studio can call about this session." />
                 <div class="sm:col-span-2">
                     <x-ui.textarea label="Note (optional)" name="notes" rows="2" maxlength="2000" :error="$errors->first('notes')">{{ old('notes') }}</x-ui.textarea>
                 </div>
-                <x-ui.input label="Confirmed price" name="confirmed_price" inputmode="decimal" :value="old('confirmed_price')" :error="$errors->first('confirmed_price')"
-                    x-model="price" hint="Needed to record a payment now. Leave empty only when you waive the downpayment." />
+                <x-ui.input label="Confirmed price" name="confirmed_price" inputmode="decimal" :required="true" :value="old('confirmed_price')" :error="$errors->first('confirmed_price')"
+                    x-model="price" hint="Required: you are at the counter, so the price is set now. 0 for a free session." />
             </div>
-            <div class="mt-4">
-                <x-ui.checkbox name="outside_schedule" value="1" :checked="(bool) old('outside_schedule')">Confirm anyway if it is outside the photoshoot hours or on a blocked day</x-ui.checkbox>
-                <div class="mt-3" x-show="overLimit" x-bind:class="overLimit && 'rounded-lg border border-status-amber/40 bg-status-amber-bg p-3'">
-                    <p class="mb-1 text-sm font-semibold" x-show="overLimit" x-cloak>This day already has its daily limit of photoshoots.</p>
-                    <x-ui.checkbox name="over_daily_limit" value="1" :checked="(bool) old('over_daily_limit')">Over the daily limit, book anyway</x-ui.checkbox>
-                </div>
-                <p class="mt-1 text-xs text-app-text-2">A time that clashes with another booking, or has already passed, is never allowed, with or without these ticks.</p>
-            </div>
+            <p class="mt-3 text-xs text-app-text-2">Only the times an online customer could book are offered. When a time is not free, pick another one.</p>
         </section>
 
-        {{-- Phase 10B: a walk-in booking is never left waiting for its downpayment: record it (or the full price) now, or waive it --}}
+        {{-- Phase 10J: the online downpayment rules: pay now (downpayment or full price), waive with a reason, or save it
+             "Awaiting downpayment" with the normal deadline (the shop calls the walk-in, who is never notified) --}}
         @if ($downpaymentPercent > 0)
             <section class="rounded-card border border-app-border bg-app-card p-4 sm:p-5 dark:shadow-none" aria-labelledby="pay-title">
                 <h2 id="pay-title" class="flex items-center gap-2 font-display text-lg font-semibold"><x-ui.icon name="point_of_sale" :size="20" class="text-brand" />Payment now</h2>
@@ -116,23 +111,27 @@
                 @endif
                 <fieldset class="mt-3" x-show="! waive">
                     <legend class="text-sm font-semibold">What is paid now?</legend>
-                    <div class="mt-2 grid gap-2 sm:grid-cols-2">
+                    <div class="mt-2 grid gap-2 sm:grid-cols-3">
                         <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
-                            <input type="radio" name="pay_kind" value="downpayment" class="accent-brand" @checked(old('pay_kind', 'downpayment') === 'downpayment')>
+                            <input type="radio" name="pay_kind" value="" class="accent-brand" x-on:change="payNow = false" @checked(old('pay_kind', '') === '')>
+                            <span>Nothing yet <span class="block text-xs text-app-text-2">Awaiting downpayment, with the usual deadline</span></span>
+                        </label>
+                        <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
+                            <input type="radio" name="pay_kind" value="downpayment" class="accent-brand" x-on:change="payNow = true" @checked(old('pay_kind') === 'downpayment')>
                             <span>Downpayment ({{ $downpaymentPercent }}%) <span class="font-semibold tabular-nums" x-text="downpaymentText"></span></span>
                         </label>
                         <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
-                            <input type="radio" name="pay_kind" value="full" class="accent-brand" @checked(old('pay_kind') === 'full')>
+                            <input type="radio" name="pay_kind" value="full" class="accent-brand" x-on:change="payNow = true" @checked(old('pay_kind') === 'full')>
                             <span>Full price <span class="font-semibold tabular-nums" x-text="fullText"></span></span>
                         </label>
                     </div>
                 </fieldset>
-                <fieldset class="mt-3" x-show="! waive" x-data="{ method: @js(old('pay_method', 'cash')) }">
+                <fieldset class="mt-3" x-show="! waive && payNow" x-data="{ method: @js(old('pay_method', 'cash')) }">
                     <legend class="text-sm font-semibold">How did the customer pay?</legend>
                     <div class="mt-2 grid grid-cols-2 gap-2">
                         @foreach (\App\Enums\PaymentMethod::cases() as $method)
                             <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border px-3 text-sm has-checked:border-brand has-checked:bg-brand/5">
-                                <input type="radio" name="pay_method" value="{{ $method->value }}" x-model="method" class="accent-brand">{{ $method->label() }}
+                                <input type="radio" name="pay_method" value="{{ $method->value }}" x-model="method" x-bind:disabled="! payNow" class="accent-brand">{{ $method->label() }}
                             </label>
                         @endforeach
                     </div>
@@ -150,8 +149,8 @@
         @endif
 
         <div class="flex flex-wrap justify-end gap-2">
-            <x-ui.button :href="route('owner.bookings.index')" variant="outline">Cancel</x-ui.button>
-            <x-ui.button type="submit"><x-ui.icon name="event_available" :size="18" />Save confirmed booking</x-ui.button>
+            <x-ui.button :href="route('owner.walk-in.index')" variant="outline">Cancel</x-ui.button>
+            <x-ui.button type="submit"><x-ui.icon name="event_available" :size="18" />Save walk-in booking</x-ui.button>
         </div>
     </form>
 @endsection

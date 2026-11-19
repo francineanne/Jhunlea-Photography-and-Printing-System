@@ -15,7 +15,8 @@
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Photography bookings</h1>
             <p class="mt-2 max-w-2xl text-app-text-2">Every photoshoot request. Open one to confirm it, offer another time, reject it, or mark the shoot done. Requests do not hold a time until you confirm them.</p>
         </div>
-        <x-ui.button :href="route('owner.bookings.walk-in.create')"><x-ui.icon name="storefront" :size="18" />New walk-in booking</x-ui.button>
+        {{-- Phase 10J: walk-ins start in the one Walk-in area --}}
+        <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]" data-walk-in-link><x-ui.icon name="storefront" :size="18" />Walk-in</a>
     </div>
 
     @if ($errors->any())

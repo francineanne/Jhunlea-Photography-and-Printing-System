@@ -15,6 +15,7 @@ use App\Services\PricingService;
 use App\Services\ReferenceNumberService;
 use App\Services\StatusTransitionService;
 use App\Support\Money;
+use App\Support\PaymentRules;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
@@ -25,11 +26,16 @@ use InvalidArgumentException;
 use Throwable;
 
 /**
- * A walk-in printing order made by the owner at the counter (Phase 8A). The shop prints only after it is paid, so a
- * walk-in order is never saved unpaid: the order (source walk_in, status Accepted, its confirmed price and first history
- * row), its optional files and its full payment through PaymentService are saved in ONE transaction, and the order then
- * moves to Processing (paid, so printing starts). If anything fails, including the payment, nothing is left behind (and
- * files already written are deleted).
+ * A walk-in printing order made by the owner at the counter (Phase 8A; the rules since Phase 10J). The owner reviewed
+ * it at the counter, so it starts Accepted with its confirmed price (source walk_in, first history row), and from there
+ * it follows the ONLINE lifecycle: the same pay-first rule as an accepted online order (requires_prepayment from the
+ * "Pay first from" amount or the customer's flag), Processing only when that rule allows it, Ready for pickup,
+ * Completed only when fully paid, Unclaimed after the setting.
+ *
+ * "Paid now" is optional (Phase 10J): with a payment method the full price is recorded through PaymentService in the
+ * same transaction and the order moves on to Processing (it is settled, so the usual move is allowed). Without one it
+ * stays Accepted and is paid later at the counter, like an online order. If anything fails, nothing is left behind
+ * (and files already written are deleted). Removed in 10J: the rule that a walk-in order is never saved unpaid.
  *
  * The form's one-time counter token is stored on the order (unique): the same form sent twice returns the order the
  * first send made, so a double click or a retry never makes two orders or two payments. Phase 8B's Quick walk-in calls
@@ -83,7 +89,7 @@ class WalkInOrderService
         string $priceChoice,
         ?string $customPrice,
         ?string $priceNote,
-        PaymentMethod $method,
+        ?PaymentMethod $method,
         ?string $gcashReference,
         string $counterToken,
         array $uploads = [],
@@ -134,7 +140,12 @@ class WalkInOrderService
                 ];
 
                 $order = new PrintingOrder(['quantity' => $quantity, 'notes' => $notes]);
+                // Phase 10J: the same pay-first rule as an online order the shop accepts (the flag, else the amount)
+                $prepay = (bool) User::query()->whereKey($customer->getKey())->value('prepay_required')
+                    || app(PaymentRules::class)->prepayByPrice($price);
+
                 $order->forceFill([
+                    'requires_prepayment' => $prepay,
                     'reference_number' => $this->references->next(ReferenceNumberService::PRINTING),
                     'customer_id' => $customer->getKey(),
                     'printing_service_id' => $service->getKey(),
@@ -153,12 +164,12 @@ class WalkInOrderService
                     $written[] = $this->files->storeAtCounter($order, $upload, $owner)->path;
                 }
 
-                // Every Phase 5 rule: the full confirmed price, once, with its history row and ledger entry
-                $this->payments->record($order, $owner, $method, $gcashReference, $price);
-
-                // Paid at the counter, so printing starts now (decided with the shop): the usual owner move Accepted ->
-                // Processing, with its own history row, so the timeline shows created, paid, then processing
-                $this->transitions->transition($order->refresh(), PrintingOrderStatus::Processing, $owner, 'Paid at the counter; printing starts.');
+                // "Paid now": every Phase 5 rule (the full confirmed price, once, with its history row and ledger entry),
+                // then the usual owner move Accepted -> Processing, which the pay-first rule allows once it is paid
+                if ($method !== null) {
+                    $this->payments->record($order, $owner, $method, $gcashReference, $price);
+                    $this->transitions->transition($order->refresh(), PrintingOrderStatus::Processing, $owner, 'Paid at the counter; printing starts.');
+                }
 
                 return ['order' => $order->refresh(), 'created' => true];
             });

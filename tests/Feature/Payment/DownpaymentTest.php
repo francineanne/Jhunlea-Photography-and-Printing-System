@@ -313,7 +313,7 @@ class DownpaymentTest extends TestCase
         $package = PhotographyPackage::factory()->published()->create(['duration_minutes' => 60, 'max_people' => 4, 'price' => '1500.00', 'price_requires_confirmation' => false]);
         $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), [
             'counter_token' => (string) Str::uuid(), 'new_customer_name' => 'Lola Walk-in', 'package' => $package->id, 'custom_theme_text' => 'Plain wall',
-            'date' => '2026-11-03', 'time' => '10:00', 'group_size' => 2, 'contact_number' => '0917 555 0101', 'confirmed_price' => '1500',
+            'date' => '2026-11-03', 'time' => '10:00', 'group_size' => 2, 'new_customer_phone' => '0917 555 0101', 'confirmed_price' => '1500',
             'waive' => '1', 'waive_reason' => 'Regular customer.',
         ])->assertSessionHasNoErrors();
         $booking = PhotographyBooking::query()->latest('id')->first();
@@ -472,13 +472,18 @@ class DownpaymentTest extends TestCase
         $package = PhotographyPackage::factory()->published()->create(['duration_minutes' => 60, 'max_people' => 4, 'price' => '1500.00', 'price_requires_confirmation' => false]);
         $send = fn (array $overrides) => $this->actingAs($this->owner)->post(route('owner.bookings.walk-in.store'), $overrides + [
             'counter_token' => (string) Str::uuid(), 'new_customer_name' => 'Lola Walk-in', 'package' => $package->id, 'custom_theme_text' => 'Plain wall',
-            'date' => '2026-11-03', 'group_size' => 2, 'contact_number' => '0917 555 0101', 'confirmed_price' => '1500',
+            'date' => '2026-11-03', 'group_size' => 2, 'new_customer_phone' => '0917 555 0101', 'confirmed_price' => '1500',
         ]);
 
-        $send(['time' => '10:00'])->assertSessionHasErrors('pay_kind');
-        $this->assertSame(0, PhotographyBooking::count());
+        // Phase 10J: nothing paid now is allowed (it was refused): the walk-in booking waits for its downpayment with the
+        // online deadline (shoot Tue 10:00, now Mon 08:00: the minimum 24 hours, Tue 08:00) and holds its time until then
+        $send(['time' => '10:00'])->assertSessionHasNoErrors();
+        $awaiting = PhotographyBooking::query()->sole();
+        $this->assertSame(BookingStatus::AwaitingDownpayment, $awaiting->status);
+        $this->assertTrue($awaiting->downpayment_due_at->eq($this->manila('2026-11-03 08:00')));
+        $this->assertTrue($awaiting->holdsTime());
 
-        $send(['time' => '10:00', 'pay_kind' => 'downpayment', 'pay_method' => 'cash'])->assertSessionHasNoErrors();
+        $send(['time' => '11:00', 'pay_kind' => 'downpayment', 'pay_method' => 'cash'])->assertSessionHasNoErrors();
         $down = PhotographyBooking::query()->latest('id')->first();
         $this->assertSame([BookingStatus::Confirmed, PaymentStatus::DownpaymentPaid, '750.00'], [$down->status, $down->paymentStatus(), $down->recordedPayment->amount]);
 

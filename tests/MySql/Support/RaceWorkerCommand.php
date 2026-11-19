@@ -195,8 +195,8 @@ class RaceWorkerCommand extends Command
                 1,
                 '09171234567',
                 null,
-                null,
-                false,
+                // Phase 10J: the price is required and there is no "confirm anyway"; a free session is confirmed at once
+                '0.00',
                 (string) Str::uuid(),
             )['booking']->id;
         });

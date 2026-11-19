@@ -12,7 +12,7 @@
 @section('main')
     <div class="mx-auto max-w-xl animate-fade-up rounded-card border border-app-border bg-app-card p-6 text-center shadow-sm dark:shadow-none">
         <span class="mx-auto grid size-14 place-items-center rounded-full bg-status-green-bg text-status-green" aria-hidden="true"><x-ui.icon name="check_circle" :size="32" /></span>
-        <h1 class="mt-4 font-display text-2xl font-semibold">Order and payment saved</h1>
+        <h1 class="mt-4 font-display text-2xl font-semibold">{{ $payment ? 'Order and payment saved' : 'Order saved, not paid yet' }}</h1>
         <p class="mt-1 text-app-text-2">{{ $order->customer?->name }} · Walk-in</p>
 
         <dl class="mt-6 grid gap-3 text-left sm:grid-cols-2">
@@ -21,7 +21,7 @@
                 <dd class="font-mono text-lg font-bold">{{ $order->reference_number }}</dd>
             </div>
             <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5">
-                <dt class="text-xs text-app-text-2">Amount paid</dt>
+                <dt class="text-xs text-app-text-2">{{ $payment ? 'Amount paid' : 'Amount to pay' }}</dt>
                 <dd class="text-lg font-bold tabular-nums">{{ Money::format($payment?->amount ?? $order->confirmed_price) }}</dd>
             </div>
             <div class="rounded-control bg-neutral-100 p-3 dark:bg-white/5">

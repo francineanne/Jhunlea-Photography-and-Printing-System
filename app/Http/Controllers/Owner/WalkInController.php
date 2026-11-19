@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Owner;
 
+use App\Enums\BookingStatus;
 use App\Enums\OptionGroup;
 use App\Enums\PaymentMethod;
 use App\Enums\PricingType;
@@ -12,6 +13,7 @@ use App\Http\Requests\Owner\WalkIn\StoreWalkInBookingRequest;
 use App\Http\Requests\Owner\WalkIn\StoreWalkInOrderRequest;
 use App\Http\Requests\Owner\WalkIn\WalkInLookupRequest;
 use App\Http\Requests\Owner\WalkIn\WalkInRequest;
+use App\Models\BookingSetting;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Models\PrintingOrder;
@@ -67,7 +69,7 @@ class WalkInController extends Controller
             'perPage' => $services->filter(fn (PrintingService $service) => $service->pricing_type === PricingType::PerPage)->pluck('id')->values(),
             'methods' => PaymentMethod::cases(),
             'token' => (string) Str::uuid(),
-            'picked' => old('customer_id') ? $this->customers->find((int) old('customer_id')) : null,
+            'picked' => $this->picked(),
         ]);
     }
 
@@ -111,7 +113,7 @@ class WalkInController extends Controller
             return $this->refuse(route('owner.orders.walk-in.create'), ['payment' => $e->getMessage()]);
         }
 
-        $tendered = $request->validated('cash_tendered');
+        $tendered = $request->paymentMethod() !== null ? $request->validated('cash_tendered') : null;
         $change = $tendered !== null && $request->paymentMethod() === PaymentMethod::Cash && $order->confirmed_price !== null
             ? max(0, Money::toCents($tendered) - Money::toCents($order->confirmed_price))
             : null;
@@ -144,11 +146,13 @@ class WalkInController extends Controller
                 'min' => $package->minPeople(), 'max' => $package->max_people, 'rule' => BookingService::groupSizeMessage($package),
             ]]),
             'token' => (string) Str::uuid(),
-            'picked' => old('customer_id') ? $this->customers->find((int) old('customer_id')) : null,
+            'picked' => $this->picked(),
+            // Phase 10J: the same schedule rules as online, worded once for the form
+            'windowText' => BookingSetting::current()->windowText(),
         ]);
     }
 
-    /** The free start times of a package on a date at the counter (no minimum notice, no advance limit). JSON. */
+    /** Phase 10J: the free start times of a package on a date, by the ONLINE rules (the same slots the wizard offers). JSON. */
     public function slots(WalkInLookupRequest $request, AvailabilityService $availability): JsonResponse
     {
         $package = PhotographyPackage::query()->where('is_published', true)->find((int) $request->validated('package'));
@@ -158,13 +162,13 @@ class WalkInController extends Controller
             return response()->json(['times' => [], 'over_limit' => false, 'day_text' => null]);
         }
 
-        $day = $availability->overview($package->duration_minutes, $date, $date, atCounter: true)->first();
+        $day = $availability->overview($package->duration_minutes, $date, $date)->first();
 
         return response()->json([
             'times' => collect($day['slots'])
                 ->map(fn ($slot) => ['value' => LocalTime::format($slot->startsAt, 'H:i'), 'label' => LocalTime::format($slot->startsAt, 'g:i A'), 'ends' => LocalTime::format($slot->endsAt, 'g:i A')])
                 ->values(),
-            // Phase 10A: the day already has its daily limit of photoshoots; the form then asks for the explicit tick
+            // Phase 10J: no "book anyway" at the counter; the day is simply full
             'over_limit' => $day['overLimit'],
             'day_text' => $day['slots'] === [] ? AvailabilityService::dayText($day['state']) : null,
         ]);
@@ -193,20 +197,23 @@ class WalkInController extends Controller
                 // new customer's audit row), the same order as every other payment (docs/MYSQL_TESTING.md)
                 app(ReferenceNumberService::class)->lock(ReferenceNumberService::PAYMENT);
 
+                $customer = $this->customer($request);
+                // Phase 10J: ONE phone, the customer's own unless the owner typed a different one for this booking
+                $contact = $request->contactFor($customer) ?? throw ValidationException::withMessages(['contact_number' => StoreWalkInBookingRequest::NO_PHONE]);
+                $this->customers->fillPhoneIfMissing($customer, $contact);
+
                 $result = $bookings->place(
                     $request->user(),
-                    $this->customer($request),
+                    $customer,
                     $package,
                     $theme,
                     $request->validated('custom_theme_text'),
                     $request->startsAt(),
                     (int) $request->validated('group_size'),
-                    (string) $request->validated('contact_number'),
+                    $contact,
                     $request->validated('notes'),
                     $request->validated('confirmed_price'),
-                    (bool) $request->validated('outside_schedule'),
                     $request->counterToken(),
-                    (bool) $request->validated('over_daily_limit'),
                     $request->payKind(),
                     $request->payMethod(),
                     $request->gcashReference(),
@@ -226,7 +233,17 @@ class WalkInController extends Controller
         }
 
         /** @var PhotographyBooking $booking */
-        return redirect()->route('owner.bookings.show', $booking)->with('status', 'Walk-in booking '.$booking->reference_number.' saved and confirmed.');
+        return redirect()->route('owner.bookings.show', $booking)->with('status', $booking->status === BookingStatus::AwaitingDownpayment
+            ? 'Walk-in booking '.$booking->reference_number.' saved. It holds its time until the downpayment deadline; call the customer if it is not paid.'
+            : 'Walk-in booking '.$booking->reference_number.' saved and confirmed.');
+    }
+
+    /** Phase 10J: the customer chosen before a refused send, or the one the walk-in customer page sent (?customer=id). */
+    private function picked(): ?User
+    {
+        $id = (int) (old('customer_id') ?? request()->query('customer'));
+
+        return $id > 0 ? $this->customers->find($id) : null;
     }
 
     /** The customer the owner picked, or a new walk-in customer (inside the caller's transaction). */

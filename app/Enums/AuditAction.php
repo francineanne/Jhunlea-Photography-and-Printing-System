@@ -34,6 +34,8 @@ enum AuditAction: string
     case BookingDownpaymentExpired = 'booking.downpayment_expired';
 
     case WalkInCustomerCreated = 'customer.walk_in_created';
+    // Phase 10J: the owner edited a walk-in customer's name or phone (never the values themselves)
+    case WalkInCustomerUpdated = 'customer.walk_in_updated';
     case CustomerPrepaySet = 'customer.prepay_set';
     case CustomerPrepayCleared = 'customer.prepay_cleared';
 
@@ -124,6 +126,7 @@ enum AuditAction: string
             self::BookingRejected => 'Booking rejected',
             self::BookingCompleted => 'Booking completed',
             self::WalkInCustomerCreated => 'Walk-in customer added',
+            self::WalkInCustomerUpdated => 'Walk-in customer edited',
             self::HoursChanged => 'Photoshoot hours changed',
             self::ScheduleRulesChanged => 'Booking rules changed',
             self::DateBlocked => 'Date blocked',

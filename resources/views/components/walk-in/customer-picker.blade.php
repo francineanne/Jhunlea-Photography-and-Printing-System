@@ -1,9 +1,13 @@
-@props(['picked' => null])
+@props(['picked' => null, 'forBooking' => false])
 
 {{--
     Who the walk-in order or booking is for (Phase 8A): search existing customers by name or phone and pick one (two
-    people may share a name, so the phone is shown), or add a new walk-in customer with a name and an optional phone.
+    people may share a name, so the phone is shown), or add a new walk-in customer with a name and a phone.
     Without JavaScript only the "new walk-in customer" fields are used.
+
+    Phase 10J, ONE phone: for a booking ($forBooking) the new customer's "Mobile number" is required and is also the
+    booking's contact number; for a picked customer their saved number is used, with "Use a different number for this
+    booking" to type another one (or a field to type one when they have none). For a printing order it is optional.
 --}}
 @php
     $pickedData = $picked ? ['id' => $picked->id, 'name' => $picked->name, 'phone' => $picked->phone, 'walk_in' => $picked->isWalkIn()] : null;
@@ -41,6 +45,22 @@
             </div>
         </template>
 
+        @if ($forBooking)
+            {{-- The booking's contact number: the picked customer's own, or a different one typed here --}}
+            <div x-show="picked" x-cloak class="mt-3" x-data="{ other: @js((bool) old('other_number')) }" data-contact-choice>
+                <input type="hidden" name="other_number" x-bind:value="other && picked && picked.phone ? '1' : '0'">
+                <p x-show="picked && picked.phone && ! other" class="text-sm text-app-text-2">
+                    The studio calls <span class="font-mono font-semibold text-app-text" x-text="picked ? picked.phone : ''"></span> about this booking.
+                    <button type="button" x-on:click="other = true; $nextTick(() => $refs.other.querySelector('input').focus())" class="ml-1 inline-flex min-h-11 items-center rounded font-semibold text-brand hover:underline focus-ring sm:min-h-0">Use a different number for this booking</button>
+                </p>
+                <div x-show="picked && (! picked.phone || other)" x-ref="other" class="max-w-sm">
+                    <x-ui.input label="Mobile number for this booking" name="contact_number" type="tel" :value="old('contact_number')" :error="$errors->first('contact_number')"
+                        x-bind:disabled="! (mode === 'search' && picked && (! picked.phone || other))"
+                        hint="The studio calls this number about the booking and the downpayment deadline." />
+                </div>
+            </div>
+        @endif
+
         <div x-show="! picked" class="relative">
             <x-ui.input label="Search by name or phone" type="search" icon="search" autocomplete="off" maxlength="60"
                 x-ref="search" x-model="query" x-on:input="search()" hint="Type at least 2 letters or digits." />
@@ -67,9 +87,10 @@
         <x-ui.input label="Full name" name="new_customer_name" maxlength="80" :value="old('new_customer_name')" x-bind:disabled="mode !== 'new'"
             x-on:input="checkNew($event.target.value)"
             hint="A walk-in customer has no login. Search first so the same person is not added twice." />
-        <x-ui.input label="Phone (optional)" name="new_customer_phone" type="tel" :value="old('new_customer_phone')" x-bind:disabled="mode !== 'new'"
+        <x-ui.input :label="$forBooking ? 'Mobile number' : 'Mobile number (optional)'" name="new_customer_phone" type="tel" :value="old('new_customer_phone')" x-bind:disabled="mode !== 'new'"
+            :required="$forBooking" :error="$errors->first('new_customer_phone')"
             x-on:input="checkNew($event.target.value)"
-            hint="For example 0917 123 4567." />
+            :hint="$forBooking ? 'For example 0917 123 4567. Saved on the customer and used to call about this booking.' : 'For example 0917 123 4567.'" />
         {{-- Phase 10B: an existing customer with the same name or phone is offered before a second one is created --}}
         <div x-show="matches.length" x-cloak class="rounded-control border border-status-amber/40 bg-status-amber-bg/60 p-3 sm:col-span-2" role="status">
             <p class="text-sm font-semibold">Possible match</p>

@@ -97,7 +97,8 @@ class ScheduleImpactService
 
         return PhotographyBooking::query()
             ->with('customer:id,name')
-            ->whereIn('status', [BookingStatus::Confirmed, BookingStatus::Requested, BookingStatus::Proposed])
+            // Phase 10J: Awaiting downpayment holds its time too (it was left out of this list)
+            ->whereIn('status', [BookingStatus::Confirmed, BookingStatus::Requested, BookingStatus::Proposed, BookingStatus::AwaitingDownpayment])
             ->where(fn ($query) => $query->where('starts_at', '>', $now)->orWhere('proposed_starts_at', '>', $now))
             ->orderBy('starts_at')
             ->get()

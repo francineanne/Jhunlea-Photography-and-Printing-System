@@ -48,6 +48,7 @@ use App\Http\Controllers\Owner\SettingsController;
 use App\Http\Controllers\Owner\StartConversationController;
 use App\Http\Controllers\Owner\ThemeController;
 use App\Http\Controllers\Owner\WalkInController;
+use App\Http\Controllers\Owner\WalkInDeskController;
 use App\Http\Controllers\Public\FaqController as PublicFaqController;
 use App\Http\Controllers\Public\GuestAssistantController;
 use App\Http\Controllers\Public\HomeController as PublicHomeController;
@@ -316,6 +317,9 @@ Route::middleware('auth')->prefix('booking-images')->name('booking-images.')->wh
 // The owner's counter (Phase 8A): walk-in printing orders (paid when made) and walk-in bookings. These come before the
 // {order} and {booking} routes below, which only take numbers anyway
 Route::middleware(['auth', 'role:owner'])->group(function () {
+    // Phase 10J: the ONE walk-in area (the counter forms, what needs the owner, the walk-in customers)
+    Route::get('/owner/walk-in', [WalkInDeskController::class, 'index'])->middleware(['expire.downpayments', 'throttle:60,1,owner-walkin-desk'])->name('owner.walk-in.index');
+    Route::put('/owner/walk-in/customers/{customer}', [WalkInDeskController::class, 'updateCustomer'])->whereNumber('customer')->middleware('throttle:20,1,owner-walkin-customer-update')->name('owner.walk-in.customers.update');
     Route::get('/owner/walk-in/customers', [WalkInController::class, 'customers'])->middleware('throttle:120,1,owner-walkin-customers')->name('owner.walk-in.customers');
     Route::get('/owner/printing-orders/walk-in/new', [WalkInController::class, 'createOrder'])->middleware('throttle:60,1,owner-walkin-order-form')->name('owner.orders.walk-in.create');
     Route::get('/owner/printing-orders/walk-in/price', PrintingEstimateController::class)->middleware('throttle:120,1,owner-walkin-order-price')->name('owner.orders.walk-in.price');

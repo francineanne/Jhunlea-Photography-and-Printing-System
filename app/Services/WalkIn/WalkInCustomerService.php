@@ -6,8 +6,10 @@ use App\Enums\AuditAction;
 use App\Enums\UserRole;
 use App\Models\User;
 use App\Services\Audit\AuditLogger;
+use App\Support\PhilippineMobile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 /**
@@ -74,6 +76,39 @@ class WalkInCustomerService
         app(AuditLogger::class)->record(AuditAction::WalkInCustomerCreated, $customer);
 
         return $customer;
+    }
+
+    /**
+     * Phase 10J: the owner edits a walk-in customer's name or phone (a walk-in only; an online customer edits their own
+     * account). The phone is stored as 09XXXXXXXXX. Audited without the values.
+     */
+    public function update(User $customer, string $name, ?string $phone): User
+    {
+        $name = trim($name);
+
+        if (! $customer->isWalkIn() || $name === '' || mb_strlen($name) > self::NAME_MAX) {
+            throw new InvalidArgumentException('Only a walk-in customer with a name of up to '.self::NAME_MAX.' characters can be edited here.');
+        }
+
+        $phone = $phone === null || trim($phone) === '' ? null : PhilippineMobile::normalize($phone);
+        $customer->forceFill(['name' => $name, 'phone' => $phone]);
+
+        if ($customer->isDirty()) {
+            DB::transaction(function () use ($customer) {
+                $customer->save();
+                app(AuditLogger::class)->record(AuditAction::WalkInCustomerUpdated, $customer);
+            });
+        }
+
+        return $customer;
+    }
+
+    /** Phase 10J: a walk-in with no phone gets the one the owner typed for a booking (never replaces a saved one). */
+    public function fillPhoneIfMissing(User $customer, string $phone): void
+    {
+        if ($customer->isWalkIn() && blank($customer->phone)) {
+            $customer->forceFill(['phone' => PhilippineMobile::normalize($phone)])->save();
+        }
     }
 
     /** The customer the owner picked; it must be a customer (walk-in or online), never an owner. */

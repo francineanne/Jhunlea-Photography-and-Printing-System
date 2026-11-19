@@ -71,6 +71,18 @@ class BookingTransitionException extends DomainException
         return new self($reason, self::TIME_NOT_OPEN);
     }
 
+    /** @param  list<string>  $reasons  Phase 10J: at the counter there is no "Confirm anyway"; another time is chosen */
+    public static function outsideScheduleNoOverride(array $reasons): self
+    {
+        return new self('This time is outside the schedule: '.implode(' ', $reasons).' Pick another time.', self::TIME_NOT_OPEN);
+    }
+
+    /** Phase 10J: the daily limit holds for walk-ins too (no "book anyway") */
+    public static function dailyLimitNoOverride(string $reason): self
+    {
+        return new self($reason.' Pick another day.', self::TIME_NOT_OPEN);
+    }
+
     public static function slotNotAvailable(): self
     {
         return new self('That time is not open for bookings. Pick a free time within the photoshoot hours.', self::TIME_NOT_OPEN);

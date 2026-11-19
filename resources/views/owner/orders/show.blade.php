@@ -184,7 +184,11 @@
                     <span class="grid size-12 shrink-0 place-items-center rounded-full bg-neutral-100 font-display text-lg font-semibold text-app-text-2 dark:bg-white/10" aria-hidden="true">{{ Str::upper(Str::substr($customer?->name ?? '?', 0, 2)) }}</span>
                     <div class="min-w-0">
                         <p class="break-words text-lg font-semibold">{{ $customer?->name ?? 'Deleted account' }}</p>
-                        <p class="text-xs text-app-text-2">Customer</p>
+                        {{-- Phase 10J: a walk-in says so, and every customer links to their page (a walk-in is followed there) --}}
+                        <p class="text-xs text-app-text-2">{{ $customer?->isWalkIn() ? 'Walk-in, no account' : 'Customer' }}</p>
+                        @if ($customer)
+                            <a href="{{ route('owner.customers.show', $customer) }}" class="inline-flex min-h-11 items-center gap-1 rounded text-sm font-semibold text-brand hover:underline focus-ring sm:min-h-0 dark:text-[#ffb4ac]" data-customer-page-link>{{ $customer->isWalkIn() ? 'Walk-in customer page' : 'Customer page' }}<x-ui.icon name="arrow_forward" :size="16" /></a>
+                        @endif
                     </div>
                 </div>
                 @if ($customer)

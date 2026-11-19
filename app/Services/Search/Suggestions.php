@@ -29,7 +29,7 @@ class Suggestions
 {
     public const LIMIT = 8;
 
-    public const OWNER_SCOPES = ['message', 'customers', 'payments', 'orders', 'bookings', 'activity'];
+    public const OWNER_SCOPES = ['message', 'customers', 'payments', 'orders', 'bookings', 'activity', 'walk_in'];
 
     public const PUBLIC_SCOPES = ['services', 'packages'];
 
@@ -39,6 +39,8 @@ class Suggestions
         return match ($scope) {
             'message' => $this->customers($term, false, true),
             'customers' => $this->customers($term, true, false),
+            // Phase 10J: "Find a walk-in customer" on the Walk-in page
+            'walk_in' => $this->customers($term, true, false, onlyWalkIns: true),
             'payments' => $this->payable($term, 'payments'),
             'orders' => $this->payable($term, 'orders'),
             'bookings' => $this->payable($term, 'bookings'),
@@ -82,12 +84,13 @@ class Suggestions
     }
 
     /** @return list<array<string, mixed>> */
-    private function customers(string $term, bool $walkIns, bool $forMessage): array
+    private function customers(string $term, bool $walkIns, bool $forMessage, bool $onlyWalkIns = false): array
     {
         $digits = preg_replace('/\D/', '', $term);
 
         $rows = User::query()->where('role', UserRole::Customer)
             ->when(! $walkIns, fn (Builder $q) => $q->where('is_walk_in', false))
+            ->when($onlyWalkIns, fn (Builder $q) => $q->where('is_walk_in', true))
             ->where(function (Builder $q) use ($term, $digits) {
                 $this->match($q, 'name', $term);
                 if (mb_strlen($term) >= 2) {

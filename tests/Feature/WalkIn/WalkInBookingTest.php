@@ -11,6 +11,7 @@ use App\Models\PhotographyPackage;
 use App\Models\User;
 use App\Services\AvailabilityService;
 use App\Services\BookingService;
+use App\Services\WalkIn\WalkInBookingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ class WalkInBookingTest extends TestCase
             'date' => '2026-11-03',
             'time' => '10:00',
             'group_size' => 2,
-            'contact_number' => '0917 555 0101',
+            'new_customer_phone' => '0917 555 0101',
             'confirmed_price' => '1500',
         ], $overrides);
     }
@@ -93,12 +94,15 @@ class WalkInBookingTest extends TestCase
         $this->actingAs($this->owner)->get(route('owner.bookings.show', $booking))->assertOk()->assertSee('Walk-in');
     }
 
-    public function test_the_price_is_optional_and_set_later(): void
+    // Phase 10J: was "the price is optional and set later": at the counter the price is required (0 = free)
+    public function test_the_price_is_required_at_the_counter(): void
     {
-        $this->send($this->payload(['confirmed_price' => '']))->assertSessionHasNoErrors();
-        $this->assertNull(PhotographyBooking::query()->sole()->confirmed_price);
+        $this->send($this->payload(['confirmed_price' => '']))->assertSessionHasErrors(['confirmed_price' => WalkInBookingService::PRICE_REQUIRED]);
+        $this->send($this->payload(['confirmed_price' => 'a lot']))->assertSessionHasErrors('confirmed_price');
+        $this->assertSame(0, PhotographyBooking::query()->count());
 
-        $this->send($this->payload(['confirmed_price' => 'a lot', 'time' => '13:00']))->assertSessionHasErrors('confirmed_price');
+        $this->send($this->payload(['confirmed_price' => '0']))->assertSessionHasNoErrors();
+        $this->assertSame('0.00', PhotographyBooking::query()->sole()->confirmed_price);
     }
 
     public function test_a_clash_with_a_confirmed_booking_is_never_allowed(): void
@@ -134,14 +138,13 @@ class WalkInBookingTest extends TestCase
     {
         $this->send($this->payload(['time' => '07:00', 'date' => '2026-11-01']))->assertSessionHasErrors('starts_at');
 
-        // Sunday is closed: refused, unless the owner confirms anyway
+        // Phase 10J: the online rules with no override (was "refused unless the owner confirms anyway" and "beyond the
+        // advance limit is fine at the counter"): Sunday is closed, with or without the old tick
         $this->send($this->payload(['date' => '2026-11-08']))->assertSessionHasErrors('starts_at');
+        $this->send($this->payload(['date' => '2026-11-08', 'outside_schedule' => '1']))->assertSessionHasErrors('starts_at');
+        // Beyond the 30-day advance window is refused too, as online
+        $this->send($this->payload(['date' => '2026-12-21']))->assertSessionHasErrors('starts_at');
         $this->assertSame(0, PhotographyBooking::query()->count());
-        $this->send($this->payload(['date' => '2026-11-08', 'outside_schedule' => '1']))->assertSessionHasNoErrors();
-        $this->assertStringContainsString('Confirmed outside the usual schedule', PhotographyBooking::query()->sole()->statusHistories()->first()->note);
-
-        // Beyond the 30-day advance limit is fine at the counter
-        $this->send($this->payload(['date' => '2026-12-21']))->assertSessionHasNoErrors();
     }
 
     public function test_a_failure_after_the_insert_leaves_nothing_behind(): void
@@ -199,9 +202,10 @@ class WalkInBookingTest extends TestCase
         PhotographyBooking::factory()->status(BookingStatus::Confirmed)->at($this->manila('2026-11-04 13:00'), 60)->create(['reference_number' => 'PB-800002']);
 
         $this->actingAs($this->owner)->get(route('owner.bookings.walk-in.create'))->assertOk()->assertSee('Solo Portrait');
-        $this->actingAs($this->owner)->get(route('owner.bookings.index', ['status' => 'all']))->assertOk()->assertSee('PB-800001')->assertSee('Walk-in')->assertSee('New walk-in booking');
+        // Phase 10J: the list links to the one Walk-in area instead of its own "New walk-in booking" button
+        $this->actingAs($this->owner)->get(route('owner.bookings.index', ['status' => 'all']))->assertOk()->assertSee('PB-800001')->assertSee('Walk-in')->assertDontSee('New walk-in booking')->assertSee(route('owner.walk-in.index'), false);
         $this->actingAs($this->owner)->get(route('owner.bookings.index', ['status' => 'all', 'source' => 'walk_in']))->assertSee('PB-800001')->assertDontSee('PB-800002');
-        $this->actingAs($this->owner)->get(route('owner.schedule.index', ['view' => 'week', 'date' => '2026-11-04']))->assertOk()->assertSee('PB-800001 · Confirmed · Walk-in', false)->assertSee('New walk-in booking');
+        $this->actingAs($this->owner)->get(route('owner.schedule.index', ['view' => 'week', 'date' => '2026-11-04']))->assertOk()->assertSee('PB-800001 · Confirmed · Walk-in', false)->assertSee(route('owner.walk-in.index'), false);
         $this->assertTrue($walkIn->isWalkIn());
     }
 }

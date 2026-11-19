@@ -260,7 +260,7 @@ class WalkInOrderTest extends TestCase
         $walkIn = PrintingOrder::factory()->walkIn()->create(['reference_number' => 'PR-700001']);
         PrintingOrder::factory()->create(['reference_number' => 'PR-700002']);
 
-        $this->actingAs($this->owner)->get(route('owner.orders.index'))->assertOk()->assertSee('PR-700001')->assertSee('PR-700002')->assertSee('Walk-in')->assertSee('New walk-in order');
+        $this->actingAs($this->owner)->get(route('owner.orders.index'))->assertOk()->assertSee('PR-700001')->assertSee('PR-700002')->assertSee('Walk-in')->assertDontSee('New walk-in order')->assertSee(route('owner.walk-in.index'), false); // Phase 10J: the one Walk-in area
         $this->actingAs($this->owner)->get(route('owner.orders.index', ['source' => 'walk_in']))->assertOk()->assertSee('PR-700001')->assertDontSee('PR-700002');
         $this->actingAs($this->owner)->get(route('owner.orders.index', ['source' => 'online']))->assertOk()->assertDontSee('PR-700001')->assertSee('PR-700002');
         $this->actingAs($this->owner)->get(route('owner.orders.index', ['source' => 'robot']))->assertSessionHasErrors('source');
