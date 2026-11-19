@@ -51,7 +51,7 @@ class DownpaymentTest extends TestCase
     {
         parent::setUp();
 
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
         $this->owner = User::factory()->owner()->create(['name' => 'Jhun Owner']);
         $this->customer = User::factory()->create(['name' => 'Ana Cruz']);
     }
@@ -72,9 +72,10 @@ class DownpaymentTest extends TestCase
         return app(PaymentService::class);
     }
 
-    private function confirmed(string $manila = '2026-11-20 10:00', string $estimate = '2000.00'): PhotographyBooking
+    /** Phase 10I: $anyway ticks "Confirm anyway" (a same-day session is now inside the minimum notice of 1 day). */
+    private function confirmed(string $manila = '2026-11-20 10:00', string $estimate = '2000.00', bool $anyway = false): PhotographyBooking
     {
-        return $this->transitions()->confirm($this->request($manila, $estimate), $this->owner);
+        return $this->transitions()->confirm($this->request($manila, $estimate), $this->owner, outsideSchedule: $anyway);
     }
 
     private function pay(PhotographyBooking $booking, PaymentKind $kind, PaymentMethod $method = PaymentMethod::Cash, ?string $gcash = null): Payment
@@ -277,7 +278,7 @@ class DownpaymentTest extends TestCase
         $this->assertTrue($booking->downpayment_due_at->eq(Carbon::now('UTC')->addHours(24)));
         $this->assertTrue($booking->holdsTime());
 
-        $soon = $this->confirmed('2026-11-02 16:00');
+        $soon = $this->confirmed('2026-11-02 16:00', anyway: true);
         $soonDown = $this->pay($soon, PaymentKind::Downpayment);
         $this->payments()->void($soon, $soonDown, $this->owner, 'Wrong booking.');
         $this->assertTrue($soon->fresh()->downpayment_due_at->eq($this->manila('2026-11-02 16:00')));
@@ -407,7 +408,7 @@ class DownpaymentTest extends TestCase
         $this->assertSame(100000, app(PaymentLedgerService::class)->totals(['method' => null, 'status' => null, 'search' => '', 'from' => null, 'to' => null])['cents']);
 
         // Awaiting its downpayment, the customer may cancel at any time
-        $awaiting = $this->confirmed('2026-11-02 15:00');
+        $awaiting = $this->confirmed('2026-11-02 15:00', anyway: true);
         $this->transitions()->cancel($awaiting, $this->customer);
         $this->assertSame(BookingStatus::Cancelled, $awaiting->fresh()->status);
     }

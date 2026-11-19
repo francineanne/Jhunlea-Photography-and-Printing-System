@@ -245,10 +245,11 @@ class BookingWizardTest extends TestCase
 
     public function test_the_page_states_the_booking_window_from_the_settings(): void
     {
-        $this->settings(noticeHours: 48, advanceDays: 14);
+        $this->settings(noticeDays: 2, advanceDays: 14);
 
         $this->actingAs($this->customer)->get(route('customer.bookings.create'))
-            ->assertSee('Book at least 48 hours ahead and up to 14 days ahead.')
+            // Phase 10I: whole days (was "Book at least 48 hours ahead and up to 14 days ahead.")
+            ->assertSee('Photoshoots must be booked at least 2 days ahead; same-day photoshoots are not allowed. You can book up to 14 days ahead.')
             ->assertSee('Times are in Philippine time.');
     }
 
@@ -431,10 +432,13 @@ class BookingWizardTest extends TestCase
     /** @return array<string, array{string}> */
     public static function tamperedSlots(): array
     {
+        // Phase 10I: a day before the first day the notice allows (the past, today) gets the notice's own words
+        $notice = 'Same-day photoshoots are not allowed. Choose tomorrow or later.';
+
         return [
             'not on the slot grid' => ['2026-11-05T02:10:00Z'],
-            'in the past' => ['2026-11-01T02:00:00Z'],
-            'inside the notice period' => ['2026-11-02T06:00:00Z'],
+            'in the past' => ['2026-11-01T02:00:00Z', $notice],
+            'inside the notice period' => ['2026-11-02T06:00:00Z', $notice],
             'beyond how far ahead one may book' => ['2026-12-04T02:00:00Z'],
             'on a closed day (Sunday)' => ['2026-11-08T02:00:00Z'],
             'running past closing time' => ['2026-11-05T08:30:00Z'],
@@ -443,9 +447,9 @@ class BookingWizardTest extends TestCase
     }
 
     #[DataProvider('tamperedSlots')]
-    public function test_a_tampered_time_is_refused(string $startsAt): void
+    public function test_a_tampered_time_is_refused(string $startsAt, ?string $message = null): void
     {
-        $this->send(['starts_at' => $startsAt])->assertSessionHasErrors(['starts_at' => BookingService::SLOT_TAKEN_MESSAGE]);
+        $this->send(['starts_at' => $startsAt])->assertSessionHasErrors(['starts_at' => $message ?? BookingService::SLOT_TAKEN_MESSAGE]);
 
         $this->assertNothingSaved();
     }

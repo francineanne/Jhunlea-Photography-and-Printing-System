@@ -55,7 +55,8 @@ class ConfirmOverrideTest extends TestCase
         $this->assertSame(['There are no photoshoots on Sundays.'], $this->rules('2026-11-08 10:00'));
         $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 16:30'));
         $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).'], $this->rules('2026-11-05 08:00'));
-        $this->assertSame(['It is less than 24 hours from now (the minimum notice).'], $this->rules('2026-11-02 15:00'));
+        // Phase 10I: the notice is whole days (was "It is less than 24 hours from now (the minimum notice).")
+        $this->assertSame(['Same-day photoshoots are not allowed. Choose tomorrow or later.'], $this->rules('2026-11-02 15:00'));
         // 7:00 this morning: before opening, and already over
         $this->assertSame(['It is outside the photoshoot hours (9:00 AM to 5:00 PM).', 'The time has already passed.'], $this->rules('2026-11-02 07:00', 30));
         $this->assertSame(['It is more than 30 days ahead (how far ahead one may book).'], $this->rules('2026-12-03 10:00'));

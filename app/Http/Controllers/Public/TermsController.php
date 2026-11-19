@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookingSetting;
 use App\Support\ShopSettings;
 use Illuminate\View\View;
 
@@ -18,6 +19,8 @@ class TermsController extends Controller
         return view('public.terms', [
             'shop' => $settings->business(),
             'downpaymentPercent' => $settings->downpaymentPercent(),
+            // Phase 10I: the one notice sentence
+            'noticeSentence' => BookingSetting::current()->noticeSentence(),
             'auditDays' => (int) config('audit.retention_days'),
         ]);
     }

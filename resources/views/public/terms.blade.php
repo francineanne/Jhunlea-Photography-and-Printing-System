@@ -34,6 +34,7 @@
                 <ul class="space-y-1.5">
                     <li>Sending a printing order or a booking request does not mean it is accepted. The shop reviews it first.</li>
                     <li>A requested time is not a confirmed appointment until the shop confirms it.</li>
+                    <li>{{ $noticeSentence }}</li>
                     <li>An estimated price is only an estimate. The shop confirms the final price.</li>
                     <li>You pay at {{ $shopName }} in cash or GCash, or send GCash to the shop and the reference number in Messages; the shop checks it and records the payment. The system only records payments; it never takes money online.</li>
                     @if ($downpaymentPercent > 0)

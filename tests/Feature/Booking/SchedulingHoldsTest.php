@@ -299,7 +299,7 @@ class SchedulingHoldsTest extends TestCase
     public function test_sessions_at_once_is_fixed_at_one_and_cannot_be_sent_from_the_editor(): void
     {
         $this->actingAs($this->owner)->post(route('owner.schedule.settings'), [
-            'buffer_minutes' => 10, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 24, 'max_sessions_per_day' => 4, 'concurrent_sessions' => 3,
+            'buffer_minutes' => 10, 'min_notice_days' => 1, 'max_advance_days' => 30, 'request_hold_hours' => 24, 'max_sessions_per_day' => 4, 'concurrent_sessions' => 3,
         ])->assertSessionHasNoErrors();
 
         $row = DB::table('booking_settings')->where('id', 1)->first();
@@ -313,7 +313,7 @@ class SchedulingHoldsTest extends TestCase
 
         // An empty daily limit means no limit
         $this->actingAs($this->owner)->post(route('owner.schedule.settings'), [
-            'buffer_minutes' => 10, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 24, 'max_sessions_per_day' => '',
+            'buffer_minutes' => 10, 'min_notice_days' => 1, 'max_advance_days' => 30, 'request_hold_hours' => 24, 'max_sessions_per_day' => '',
         ])->assertSessionHasNoErrors();
         $this->assertNull(BookingSetting::current()->max_sessions_per_day);
 
@@ -582,7 +582,7 @@ class SchedulingHoldsTest extends TestCase
         $this->assertSame(0, DB::table('blocked_dates')->count());
 
         $this->actingAs($this->owner)->from(route('owner.schedule.edit'))->post(route('owner.schedule.settings'), [
-            'buffer_minutes' => 0, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => 1,
+            'buffer_minutes' => 0, 'min_notice_days' => 1, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => 1,
         ])->assertSessionHas('impact', fn ($impact) => $impact['needsTick'] && array_column($impact['confirmed'], 'reference') === $references);
         $this->assertNull(BookingSetting::current()->max_sessions_per_day);
 

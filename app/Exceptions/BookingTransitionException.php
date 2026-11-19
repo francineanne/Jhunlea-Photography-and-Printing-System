@@ -65,6 +65,12 @@ class BookingTransitionException extends DomainException
         return new self('This time is outside the usual schedule: '.implode(' ', $reasons).' Tick “Confirm anyway” to confirm it all the same.');
     }
 
+    /** Phase 10I: a day before the first day the minimum notice allows; never set aside by "Confirm anyway". */
+    public static function tooSoon(string $reason): self
+    {
+        return new self($reason, self::TIME_NOT_OPEN);
+    }
+
     public static function slotNotAvailable(): self
     {
         return new self('That time is not open for bookings. Pick a free time within the photoshoot hours.', self::TIME_NOT_OPEN);

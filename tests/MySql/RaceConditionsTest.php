@@ -188,7 +188,7 @@ class RaceConditionsTest extends MySqlTestCase
             $rule->save();
         }
         $settings = new BookingSetting;
-        $settings->fill(['buffer_minutes' => 0, 'min_notice_hours' => 0, 'max_advance_days' => 60, 'concurrent_sessions' => 1]);
+        $settings->fill(['buffer_minutes' => 0, 'min_notice_days' => 1, 'max_advance_days' => 60, 'concurrent_sessions' => 1]);
         $settings->id = BookingSetting::ROW_ID;
         $settings->save();
 

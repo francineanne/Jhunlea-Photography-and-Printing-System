@@ -177,7 +177,7 @@
                 </dl>
                 <dl class="mt-3 space-y-1 border-t border-app-border pt-3 text-sm">
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Buffer between sessions</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->buffer_minutes }} mins</dd></div>
-                    <div class="flex justify-between gap-2"><dt class="text-app-text-2">Minimum notice</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->min_notice_hours }} hrs</dd></div>
+                    <div class="flex justify-between gap-2"><dt class="text-app-text-2">Minimum notice</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->noticeDays() }} {{ Str::plural('day', $settings->noticeDays()) }}</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Book ahead up to</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->max_advance_days }} days</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Request hold</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->request_hold_hours }} hrs</dd></div>
                     <div class="flex justify-between gap-2"><dt class="text-app-text-2">Photoshoots per day</dt><dd class="font-mono text-xs font-semibold text-brand">{{ $settings->max_sessions_per_day ?? 'No limit' }}</dd></div>

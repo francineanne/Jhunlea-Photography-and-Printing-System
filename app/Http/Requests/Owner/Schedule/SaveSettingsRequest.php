@@ -12,7 +12,7 @@ class SaveSettingsRequest extends FormRequest
 {
     public const FIELDS = [
         'buffer_minutes' => 'The buffer between sessions',
-        'min_notice_hours' => 'The minimum notice',
+        'min_notice_days' => 'The minimum notice',
         'max_advance_days' => 'How far ahead customers may book',
         'request_hold_hours' => 'How long a request holds its time',
     ];
@@ -65,7 +65,7 @@ class SaveSettingsRequest extends FormRequest
         return $messages;
     }
 
-    /** @return array{buffer_minutes: int, min_notice_hours: int, max_advance_days: int, request_hold_hours: int, max_sessions_per_day: ?int} */
+    /** @return array{buffer_minutes: int, min_notice_days: int, max_advance_days: int, request_hold_hours: int, max_sessions_per_day: ?int} */
     public function settings(): array
     {
         $limit = $this->validated(self::DAILY_LIMIT);

@@ -183,6 +183,11 @@ class BookingTransitionService
         return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $startsAt, $note, $price) {
             $this->check($current, BookingStatus::Proposed, $owner);
 
+            // Phase 10I: a proposed time follows the same minimum notice as an online request
+            if ($refusal = $this->availability->noticeRefusal($startsAt)) {
+                throw BookingTransitionException::tooSoon($refusal);
+            }
+
             if (! $this->availability->isAvailable($current->durationMinutes(), $startsAt, $current->id)) {
                 throw BookingTransitionException::slotNotAvailable();
             }

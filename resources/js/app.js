@@ -1104,9 +1104,11 @@ Alpine.data('bookingWizard', ({ start, packages, slotsUrl, bookableFrom, bookabl
             const state = !inWindow ? 'outside' : this.slotState !== 'ready' ? 'pending' : count > 0 ? 'free' : 'none';
             const name = dayName.format(new Date(Date.UTC(y, m, d)));
             const why = this.dayInfo(date)?.text ?? 'No free times.';
-            const label = state === 'free' ? `${name}: ${count} free ${count === 1 ? 'time' : 'times'}` : state === 'outside' ? `${name}: cannot be booked` : `${name}: ${why}`;
+            // Phase 10I: a day before the first bookable one says why (the minimum notice), not only "cannot be booked"
+            const outsideWhy = date < this.bookableFrom ? (messages.tooSoon ?? 'cannot be booked') : 'cannot be booked';
+            const label = state === 'free' ? `${name}: ${count} free ${count === 1 ? 'time' : 'times'}` : state === 'outside' ? `${name}: ${outsideWhy}` : `${name}: ${why}`;
 
-            cells.push({ key: date, state, day: d, date, label });
+            cells.push({ key: date, state, day: d, date, label, title: state === 'outside' ? outsideWhy : null });
         }
 
         return cells;

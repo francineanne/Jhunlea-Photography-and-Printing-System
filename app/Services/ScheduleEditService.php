@@ -58,7 +58,7 @@ class ScheduleEditService
      * the owner saves): it is created with insertOrIgnore, so two saves at once can never create it twice, and then only
      * these settings are updated. lock_version is never written here.
      *
-     * @param  array{buffer_minutes: int, min_notice_hours: int, max_advance_days: int, request_hold_hours: int, max_sessions_per_day: ?int}  $settings
+     * @param  array{buffer_minutes: int, min_notice_days: int, max_advance_days: int, request_hold_hours: int, max_sessions_per_day: ?int}  $settings
      */
     public function saveSettings(array $settings): void
     {
@@ -70,7 +70,7 @@ class ScheduleEditService
             $before = (array) DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->first();
             $changes = [];
 
-            foreach (['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'request_hold_hours'] as $key) {
+            foreach (['buffer_minutes', 'min_notice_days', 'max_advance_days', 'request_hold_hours'] as $key) {
                 if ((int) ($before[$key] ?? 0) !== (int) $settings[$key]) {
                     $changes[$key] = ['old' => (int) ($before[$key] ?? 0), 'new' => (int) $settings[$key]];
                 }
@@ -89,7 +89,7 @@ class ScheduleEditService
 
             DB::table('booking_settings')->where('id', BookingSetting::ROW_ID)->update([
                 'buffer_minutes' => $settings['buffer_minutes'],
-                'min_notice_hours' => $settings['min_notice_hours'],
+                'min_notice_days' => $settings['min_notice_days'],
                 'max_advance_days' => $settings['max_advance_days'],
                 'request_hold_hours' => $settings['request_hold_hours'],
                 'max_sessions_per_day' => $settings['max_sessions_per_day'],

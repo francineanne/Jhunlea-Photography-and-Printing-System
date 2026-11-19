@@ -21,8 +21,9 @@ use Tests\Support\SetsPaymentRules;
 use Tests\TestCase;
 
 /**
- * Phase 8A: a walk-in booking is saved confirmed under the schedule lock. A clash is never allowed; the minimum notice
- * and the advance limit do not apply at the counter; opening hours and blocked days apply unless "confirm anyway".
+ * Phase 8A: a walk-in booking is saved confirmed under the schedule lock. A clash is never allowed; the advance limit
+ * does not apply at the counter; opening hours and blocked days apply unless "confirm anyway". Since Phase 10I the
+ * minimum notice (whole days, never same-day) applies at the counter too and is never set aside.
  * Now is Monday 2 November 2026, 08:00 in Manila; the studio opens 09:00 to 17:00, Monday to Saturday.
  */
 class WalkInBookingTest extends TestCase
@@ -52,7 +53,8 @@ class WalkInBookingTest extends TestCase
             'new_customer_name' => 'Lola Walk-in',
             'package' => $this->package->id,
             'custom_theme_text' => 'Plain white wall',
-            'date' => '2026-11-02',
+            // Phase 10I: tomorrow (same-day photoshoots are never allowed, at the counter too; this was today)
+            'date' => '2026-11-03',
             'time' => '10:00',
             'group_size' => 2,
             'contact_number' => '0917 555 0101',
@@ -70,16 +72,16 @@ class WalkInBookingTest extends TestCase
         return PhotographyBooking::factory()->status(BookingStatus::Confirmed)->at($this->manila($local), 60)->create(['photography_package_id' => $this->package->id]);
     }
 
-    public function test_a_walk_in_booking_inside_the_notice_window_is_saved_confirmed(): void
+    // Phase 10I: was "inside the notice window" (10:00 today); the counter now follows the same notice as online
+    public function test_a_walk_in_booking_for_tomorrow_is_saved_confirmed(): void
     {
-        // 10:00 today is only 2 hours away: fine at the counter (the online minimum notice is 24 hours)
         $this->send($this->payload())->assertSessionHasNoErrors();
 
         $booking = PhotographyBooking::query()->sole();
         $this->assertSame(RecordSource::WalkIn, $booking->source);
         $this->assertSame(BookingStatus::Confirmed, $booking->status);
         $this->assertSame('1500.00', $booking->confirmed_price);
-        $this->assertTrue($booking->starts_at->eq($this->manila('2026-11-02 10:00')));
+        $this->assertTrue($booking->starts_at->eq($this->manila('2026-11-03 10:00')));
         $this->assertTrue($booking->customer->isWalkIn());
 
         $history = $booking->statusHistories()->sole();
@@ -168,12 +170,16 @@ class WalkInBookingTest extends TestCase
         $this->assertSame(1, User::query()->where('is_walk_in', true)->count());
     }
 
-    public function test_the_owners_free_times_skip_the_notice_and_busy_times(): void
+    // Phase 10I: was "skip the notice": the counter's free times follow the same notice as online (none today)
+    public function test_the_owners_free_times_follow_the_notice_and_skip_busy_times(): void
     {
-        $this->confirmedAt('2026-11-02 11:00');
+        $this->confirmedAt('2026-11-03 11:00');
 
-        $times = $this->actingAs($this->owner)->getJson(route('owner.bookings.walk-in.slots', ['package' => $this->package->id, 'date' => '2026-11-02']))->assertOk()->json('times');
-        $values = array_column($times, 'value');
+        $slots = fn (string $date) => $this->actingAs($this->owner)->getJson(route('owner.bookings.walk-in.slots', ['package' => $this->package->id, 'date' => $date]))->assertOk();
+        $this->assertSame([], $slots('2026-11-02')->json('times'));
+        $this->assertSame('Same-day photoshoots are not allowed. Choose tomorrow or later.', $slots('2026-11-02')->json('day_text'));
+
+        $values = array_column($slots('2026-11-03')->json('times'), 'value');
         $this->assertSame('09:00', $values[0]);
         $this->assertNotContains('11:00', $values);
         $this->assertSame([], $this->actingAs($this->owner)->getJson(route('owner.bookings.walk-in.slots', ['package' => $this->package->id, 'date' => '2026-11-08']))->json('times'));

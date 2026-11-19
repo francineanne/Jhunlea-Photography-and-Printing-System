@@ -143,6 +143,11 @@ class WalkInBookingService
                     throw BookingTransitionException::timePassed();
                 }
 
+                // Phase 10I: the same minimum notice as online; "Confirm anyway" and "Over the daily limit" never set it aside
+                if ($refusal = $this->availability->noticeRefusal($start)) {
+                    throw BookingTransitionException::tooSoon($refusal);
+                }
+
                 $reasons = $this->availability->ruleViolations($package->duration_minutes, $start, atCounter: true);
 
                 if ($reasons !== [] && ! $outsideSchedule) {

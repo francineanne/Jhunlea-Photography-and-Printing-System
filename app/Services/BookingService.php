@@ -205,6 +205,11 @@ class BookingService
     {
         $start = Carbon::instance($startsAt)->utc();
 
+        // Phase 10I: a day before the first day the minimum notice allows (never today), in the notice's own words
+        if ($refusal = $this->availability->noticeRefusal($start)) {
+            return $refusal;
+        }
+
         if ($this->availability->isAvailable($package->duration_minutes, $start)) {
             return null;
         }

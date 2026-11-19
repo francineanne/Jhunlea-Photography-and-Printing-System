@@ -33,7 +33,7 @@ An order with a confirmed price of ₱300.00 or more is paid in full before prin
 
 ## 6. How do I book a photoshoot?
 
-Choose "Book a photoshoot", pick a package, a date and a free time, and send the request. Times that are already requested or booked are not shown. A request is not a confirmed booking: the studio confirms it, offers another time, or tells you if it cannot take it. While you wait, your time is held for 48 hours.
+Choose "Book a photoshoot", pick a package, a date and a free time, and send the request. Photoshoots must be booked at least 1 day ahead; same-day photoshoots are not allowed. Times that are already requested or booked are not shown. A request is not a confirmed booking: the studio confirms it, offers another time, or tells you if it cannot take it. While you wait, your time is held for 48 hours.
 
 ## 7. Do I need to pay a downpayment for a photoshoot?
 

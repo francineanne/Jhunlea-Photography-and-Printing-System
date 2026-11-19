@@ -47,7 +47,8 @@ return [
     // Starting values of the owner's schedule settings (booking_settings), used until the owner saves their own
     'defaults' => [
         'buffer_minutes' => 15,
-        'min_notice_hours' => 24,
+        // Phase 10I: whole Manila calendar days, never 0 (same-day photoshoots are never allowed); 1 = from tomorrow
+        'min_notice_days' => 1,
         'max_advance_days' => 30,
         // Fixed at 1 since Phase 10A: the shop has one studio. Not editable; the column stays
         'concurrent_sessions' => 1,
@@ -60,7 +61,7 @@ return [
     // The ranges the owner may choose in the schedule editor, [lowest, highest]. The one place these limits live
     'limits' => [
         'buffer_minutes' => [0, 240],
-        'min_notice_hours' => [0, 720],
+        'min_notice_days' => [1, 60],
         'max_advance_days' => [1, 365],
         'request_hold_hours' => [1, 720],
         'max_sessions_per_day' => [1, 50],

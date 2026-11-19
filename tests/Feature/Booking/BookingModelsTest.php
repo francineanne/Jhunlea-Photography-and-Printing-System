@@ -110,7 +110,7 @@ class BookingModelsTest extends TestCase
         $this->assertTrue(Schema::hasColumns('booking_status_histories', ['photography_booking_id', 'from_status', 'to_status', 'event', 'changed_by', 'note', 'created_at']));
         $this->assertTrue(Schema::hasColumns('availability_rules', ['weekday', 'is_open', 'opens_at', 'closes_at']));
         $this->assertTrue(Schema::hasColumns('blocked_dates', ['date', 'reason', 'created_by']));
-        $this->assertTrue(Schema::hasColumns('booking_settings', ['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'concurrent_sessions', 'lock_version']));
+        $this->assertTrue(Schema::hasColumns('booking_settings', ['buffer_minutes', 'min_notice_days', 'max_advance_days', 'concurrent_sessions', 'lock_version']));
         $this->assertTrue(Schema::hasColumn('printing_orders', 'photography_booking_id'));
     }
 
@@ -126,7 +126,8 @@ class BookingModelsTest extends TestCase
         $this->assertSame('09:00:00', $monday->opens_at);
         $this->assertSame('17:00:00', $monday->closes_at);
         $settings = BookingSetting::current();
-        $this->assertSame([15, 24, 30, 1], [$settings->buffer_minutes, $settings->min_notice_hours, $settings->max_advance_days, $settings->concurrent_sessions]);
+        // Phase 10I: the notice is 1 day (was 24 hours)
+        $this->assertSame([15, 1, 30, 1], [$settings->buffer_minutes, $settings->min_notice_days, $settings->max_advance_days, $settings->concurrent_sessions]);
 
         // The owner changes things; seeding again keeps them
         $monday->update(['opens_at' => '10:00:00']);

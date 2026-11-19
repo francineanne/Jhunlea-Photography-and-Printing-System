@@ -131,7 +131,7 @@
                         <h3 class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Requests and sessions</h3>
                         <dl class="mt-2 grid gap-3 sm:grid-cols-2">
                             @foreach ([
-                                ['Notice needed', $schedule->min_notice_hours.' '.Str::plural('hour', $schedule->min_notice_hours), 'How long before a session a customer must request it.'],
+                                ['Notice needed', $schedule->noticeDays().' '.Str::plural('day', $schedule->noticeDays()), 'How many days ahead a customer must book; same-day photoshoots are never allowed.'],
                                 ['Booking calendar opens', $schedule->max_advance_days.' '.Str::plural('day', $schedule->max_advance_days).' ahead', 'How far ahead customers can choose a date.'],
                                 ['Buffer between sessions', $schedule->buffer_minutes.' '.Str::plural('minute', $schedule->buffer_minutes), 'Kept free before and after every confirmed session.'],
                                 ['Request hold', $schedule->request_hold_hours.' '.Str::plural('hour', $schedule->request_hold_hours), 'How long a new request, or a time you propose, holds its time.'],

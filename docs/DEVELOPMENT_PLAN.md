@@ -321,6 +321,13 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Lumi status at "Test Lumi": "the main assistant" / "the backup assistant (Lumi Lite)" sa halip na pangalan ng AI company, at plain na dahilan kapag pumalya (hindi ang raw outcome code)
 - [x] Activity log alert: wala nang "php artisan audit:verify" sa screen
 
+### 10I — Minimum notice in days (branch `phase-10i-notice-days`) · built, naghihintay ng review
+- [x] Isang migration (`2026_11_30_100000_change_min_notice_to_days`): `min_notice_days` (1 hanggang 60, default 1) kapalit ng `min_notice_hours`; max(1, ceil(hours / 24)) ang conversion
+- [x] Isang rule: `BookingSetting::earliestStart()` = 00:00 Manila ng (ngayon + N araw); walang same-day photoshoot, online man, proposal ng studio o walk-in sa counter ("Confirm anyway" at "Over the daily limit" hindi ito nilalampasan)
+- [x] Wizard at counter: ang mga araw bago ang unang puwedeng araw ay may dahilan ("Same-day photoshoots are not allowed. Choose tomorrow or later." o "Book at least N days ahead.")
+- [x] Isang pangungusap para sa customer (booking page, terms, suggested FAQ, Lumi)
+- [x] Naayos din: ang "Test Lumi" kapag pumalya ay nag-crash mula 10H (kulang na import); may test na ngayon
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

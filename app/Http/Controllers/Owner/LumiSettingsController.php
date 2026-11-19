@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Enums\AssistantFeature;
+use App\Enums\AssistantOutcome;
 use App\Http\Controllers\Controller;
 use App\Services\Assistant\AssistantActor;
 use App\Services\Assistant\AssistantEngine;

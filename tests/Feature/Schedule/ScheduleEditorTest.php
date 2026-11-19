@@ -43,7 +43,7 @@ class ScheduleEditorTest extends TestCase
 
     private function settingsForm(array $overrides = []): array
     {
-        return array_replace(['buffer_minutes' => 15, 'min_notice_hours' => 24, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => ''], $overrides);
+        return array_replace(['buffer_minutes' => 15, 'min_notice_days' => 1, 'max_advance_days' => 30, 'request_hold_hours' => 48, 'max_sessions_per_day' => ''], $overrides);
     }
 
     private function send(string $action, array $data, ?User $as = null)
@@ -153,10 +153,10 @@ class ScheduleEditorTest extends TestCase
     {
         $this->assertContains('9:00 AM', $this->freeTimes('2026-11-03'));
 
-        // 48 hours of notice: Tuesday 3 November is now too soon
-        $this->send('settings', $this->settingsForm(['min_notice_hours' => 48, 'buffer_minutes' => 30]))->assertSessionHas('status');
+        // Phase 10I: 2 days of notice (was 48 hours): Tuesday 3 November is now too soon
+        $this->send('settings', $this->settingsForm(['min_notice_days' => 2, 'buffer_minutes' => 30]))->assertSessionHas('status');
 
-        $this->assertSame([30, 48, 30, 1], [BookingSetting::current()->buffer_minutes, BookingSetting::current()->min_notice_hours, BookingSetting::current()->max_advance_days, BookingSetting::current()->concurrent_sessions]);
+        $this->assertSame([30, 2, 30, 1], [BookingSetting::current()->buffer_minutes, BookingSetting::current()->min_notice_days, BookingSetting::current()->max_advance_days, BookingSetting::current()->concurrent_sessions]);
         $this->assertSame([], $this->freeTimes('2026-11-03'));
     }
 
@@ -183,7 +183,9 @@ class ScheduleEditorTest extends TestCase
         return [
             'negative buffer' => [['buffer_minutes' => -1], 'buffer_minutes'],
             'buffer too long' => [['buffer_minutes' => 241], 'buffer_minutes'],
-            'notice too long' => [['min_notice_hours' => 721], 'min_notice_hours'],
+            // Phase 10I: whole days from 1 to 60 (was hours from 0 to 720)
+            'no notice' => [['min_notice_days' => 0], 'min_notice_days'],
+            'notice too long' => [['min_notice_days' => 61], 'min_notice_days'],
             'zero days ahead' => [['max_advance_days' => 0], 'max_advance_days'],
             'too many days ahead' => [['max_advance_days' => 366], 'max_advance_days'],
             // Phase 10A: "sessions at once" is gone (one studio); the request hold and the daily limit took its place
@@ -192,7 +194,7 @@ class ScheduleEditorTest extends TestCase
             'daily limit of zero' => [['max_sessions_per_day' => 0], 'max_sessions_per_day'],
             'daily limit too high' => [['max_sessions_per_day' => 51], 'max_sessions_per_day'],
             'not a whole number' => [['buffer_minutes' => '10.5'], 'buffer_minutes'],
-            'text' => [['min_notice_hours' => 'a day'], 'min_notice_hours'],
+            'text' => [['min_notice_days' => 'a day'], 'min_notice_days'],
             'an array' => [['request_hold_hours' => [2]], 'request_hold_hours'],
             'missing' => [['max_advance_days' => null], 'max_advance_days'],
         ];

@@ -244,7 +244,7 @@ class SettingsPageTest extends TestCase
 
     public function test_the_schedule_values_are_shown_read_only(): void
     {
-        BookingSetting::query()->forceCreate(['id' => 1, 'buffer_minutes' => 25, 'min_notice_hours' => 48, 'max_advance_days' => 60, 'concurrent_sessions' => 2, 'lock_version' => 0]);
+        BookingSetting::query()->forceCreate(['id' => 1, 'buffer_minutes' => 25, 'min_notice_days' => 2, 'max_advance_days' => 60, 'concurrent_sessions' => 2, 'lock_version' => 0]);
         $monday = new AvailabilityRule(['is_open' => true, 'opens_at' => '09:00:00', 'closes_at' => '17:30:00']);
         $monday->weekday = 1;
         $monday->save();
@@ -255,7 +255,7 @@ class SettingsPageTest extends TestCase
             ->assertSee(route('owner.schedule.edit'))->assertSee('Change in the Schedule editor')
             ->getContent();
 
-        foreach (['buffer_minutes', 'min_notice_hours', 'max_advance_days', 'concurrent_sessions', 'hours[', 'opens_at', 'closes_at'] as $field) {
+        foreach (['buffer_minutes', 'min_notice_days', 'max_advance_days', 'concurrent_sessions', 'hours[', 'opens_at', 'closes_at'] as $field) {
             $this->assertStringNotContainsString('name="'.$field, $html, $field);
         }
         $this->assertStringNotContainsString(route('owner.schedule.settings'), $html);

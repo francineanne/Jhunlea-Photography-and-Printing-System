@@ -190,6 +190,8 @@ class SpeedTest extends MySqlTestCase
         $this->bulk('users', self::SIZES['customers'], fn (int $i) => [
             'name' => "Speed Customer {$i}", 'email' => $i % 5 === 0 ? null : "speed{$i}@example.test", 'phone' => '0917'.str_pad((string) $i, 7, '0', STR_PAD_LEFT),
             'password' => $i % 5 === 0 ? null : $password, 'role' => 'customer', 'is_walk_in' => $i % 5 === 0, 'theme' => 'system',
+            // Since Phase 10C a customer's pages need a verified email (else they redirect); walk-ins have no email
+            'email_verified_at' => $i % 5 === 0 ? null : $now,
             'created_at' => $now->copy()->subDays($i % 365), 'updated_at' => $now,
         ]);
         $customers = User::query()->where('role', 'customer')->orderBy('id')->pluck('id')->all();

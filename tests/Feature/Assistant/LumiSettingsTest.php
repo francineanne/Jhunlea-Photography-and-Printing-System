@@ -119,7 +119,8 @@ class LumiSettingsTest extends TestCase
             ->assertSessionHas('status', fn (string $text) => str_starts_with($text, 'Lumi answered in ') && str_ends_with($text, 'by the test assistant.'));
         $this->assertSame(1, AssistantRun::query()->where('user_id', $owner->id)->count());
 
-        $this->actingAs($owner)->post(route('owner.settings.lumi.test'))->assertSessionHas('error', fn (string $text) => str_contains($text, 'fallback unavailable'));
+        // Phase 10H: plain words, not the raw outcome code (was "fallback unavailable"); fixed in 10I
+        $this->actingAs($owner)->post(route('owner.settings.lumi.test'))->assertSessionHas('error', fn (string $text) => str_contains($text, 'the AI service did not respond') && ! str_contains($text, 'fallback_'));
         $this->actingAs($owner)->post(route('owner.settings.lumi.test'));
         $this->actingAs($owner)->post(route('owner.settings.lumi.test'))->assertStatus(429);
 

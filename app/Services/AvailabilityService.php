@@ -35,6 +35,9 @@ class AvailabilityService
 
     public const NONE = 'none';
 
+    // Phase 10I: a day before the first day the minimum notice allows
+    public const TOO_SOON = 'too_soon';
+
     public const NOT_SHOWN_TEXT = 'Times that are already requested or booked are not shown.';
 
     public function __construct(private readonly ScheduleConflictService $conflicts) {}
@@ -46,6 +49,7 @@ class AvailabilityService
             self::CLOSED => 'No photoshoots on this day.',
             self::FULL => 'Fully booked.',
             self::NO_FIT => 'No time long enough for this package on this day.',
+            self::TOO_SOON => BookingSetting::current()->noticeReason(),
             default => 'No free time on this day.',
         };
     }
@@ -88,9 +92,9 @@ class AvailabilityService
         $settings = BookingSetting::current();
         [$earliest, $latest] = $this->window($settings);
 
-        // At the counter (Phase 8A) any future time of an open day may be offered: no minimum notice, no advance limit
+        // At the counter (Phase 8A) there is no advance limit; since Phase 10I the minimum notice applies there too
         if ($atCounter) {
-            [$earliest, $latest] = [Carbon::now('UTC'), $to->copy()->endOfDay()->utc()];
+            $latest = $to->copy()->endOfDay()->utc();
         }
 
         $step = (int) config('booking.slot_step_minutes');
@@ -155,6 +159,7 @@ class AvailabilityService
 
             $info['state'] = match (true) {
                 $info['slots'] !== [] => self::OPEN,
+                $closes->lte($earliest) && $day->copy()->startOfDay()->utc()->lt($earliest) => self::TOO_SOON,
                 $closes->lte($earliest) || $opens->gt($latest) => self::NONE,
                 $gap => self::NO_FIT,
                 default => self::FULL,
@@ -233,17 +238,28 @@ class AvailabilityService
     }
 
     /**
-     * The earliest and the latest moment a session may start right now (UTC): the minimum notice from now, and how
-     * far ahead one may book. The wizard's calendar disables the days outside it.
+     * The earliest and the latest moment a session may start right now (UTC): the start of the first day the minimum
+     * notice allows (Phase 10I, BookingSetting::earliestStart(), whole Manila days), and how far ahead one may book.
+     * The wizard's calendar disables the days outside it.
      *
      * @return array{0: Carbon, 1: Carbon}
      */
     public function window(?BookingSetting $settings = null): array
     {
         $settings ??= BookingSetting::current();
-        $now = Carbon::now('UTC');
 
-        return [$now->copy()->addHours($settings->min_notice_hours), $now->copy()->addDays($settings->max_advance_days)];
+        return [$settings->earliestStart(), Carbon::now('UTC')->addDays($settings->max_advance_days)];
+    }
+
+    /**
+     * Phase 10I: why this start is too soon (a day before the first day the notice allows), or null. The same answer
+     * for online requests, the studio's proposals and walk-ins; "Confirm anyway" never sets it aside at the counter.
+     */
+    public function noticeRefusal(CarbonInterface $startsAt, ?BookingSetting $settings = null): ?string
+    {
+        $settings ??= BookingSetting::current();
+
+        return Carbon::instance($startsAt)->utc()->lt($settings->earliestStart()) ? $settings->noticeReason() : null;
     }
 
     /**
@@ -265,8 +281,9 @@ class AvailabilityService
      * An empty list means it keeps every rule. Other bookings are NOT looked at here: a clash with a confirmed booking
      * is ScheduleConflictService's question, and the studio can never override it.
      *
-     * At the counter (Phase 8A, a walk-in booking with the customer standing there) the minimum notice and how far
-     * ahead one may book do not apply; a time that has already passed is still reported.
+     * At the counter (Phase 8A, a walk-in booking with the customer standing there) how far ahead one may book does not
+     * apply; a time that has already passed is still reported. The minimum notice (Phase 10I) is NOT among these
+     * overridable reasons: callers refuse it first with noticeRefusal(), for the counter too.
      *
      * @return list<string>
      */
@@ -312,7 +329,7 @@ class AvailabilityService
         if ($start->lt($earliest)) {
             $reasons[] = $start->lte(Carbon::now('UTC'))
                 ? 'The time has already passed.'
-                : "It is less than {$settings->min_notice_hours} hours from now (the minimum notice).";
+                : $settings->noticeReason();
         }
 
         if ($start->gt($latest)) {

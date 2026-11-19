@@ -98,6 +98,8 @@ class PhotographyBookingController extends Controller
                 'contact' => BookingService::CONTACT_NUMBER_MESSAGE,
                 'slot' => StorePhotographyBookingRequest::CHOOSE_SLOT,
                 'theme' => BookingService::THEME_OR_IDEA_MESSAGE,
+                // Phase 10I: why the days before the first bookable day cannot be chosen
+                'tooSoon' => BookingSetting::current()->noticeReason(),
             ],
         ]);
     }

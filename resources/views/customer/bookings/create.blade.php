@@ -243,7 +243,7 @@
                                         <div class="grid grid-cols-7 transition-opacity duration-200 sm:gap-1.5" x-bind:class="slotState === 'loading' ? 'opacity-50' : ''">
                                             <template x-for="cell in cells()" x-bind:key="cell.key">
                                                 <button type="button" x-on:click="pickDay(cell)" x-bind:disabled="cell.state !== 'free' && cell.state !== 'none'"
-                                                    x-bind:aria-label="cell.label" x-bind:aria-pressed="cell.date && selectedDate === cell.date ? 'true' : 'false'"
+                                                    x-bind:aria-label="cell.label" x-bind:title="cell.title" x-bind:aria-pressed="cell.date && selectedDate === cell.date ? 'true' : 'false'"
                                                     x-bind:tabindex="cell.state === 'blank' ? -1 : null" x-bind:aria-hidden="cell.state === 'blank' ? 'true' : null"
                                                     class="relative grid h-11 w-full place-items-center rounded-lg text-sm tabular-nums transition-[background-color,color,box-shadow] duration-200 focus-ring"
                                                     x-bind:class="dayClass(cell)">

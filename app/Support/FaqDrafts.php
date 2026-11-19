@@ -23,6 +23,7 @@ class FaqDrafts
         $unclaimed = $this->settings->paymentRule('unclaimed_after_days');
         $prepay = Money::format($this->settings->prepayFrom());
         $hold = (int) BookingSetting::current()->request_hold_hours;
+        $notice = BookingSetting::current()->noticeSentence();
         $cutoff = (int) config('booking.customer_cancel_cutoff_hours');
         $gcash = trim(($this->settings->gcashName() ?? '').' '.($this->settings->gcashNumber() ?? ''));
         $plural = fn (int $n, string $word) => $n.' '.$word.($n === 1 ? '' : 's');
@@ -37,7 +38,7 @@ class FaqDrafts
             ['question' => 'I forgot my password. What do I do?', 'answer' => 'On the login page choose "Forgot password" and type your email. We send a 6-digit code that works for 10 minutes. Type the code together with your new password. For your safety, other devices signed in to your account are signed out.'],
             ['question' => 'How do I send a printing order?', 'answer' => 'Choose "Request printing", pick the service and its options, upload your files and send the order. Sending an order does not mean it is accepted yet: the shop checks your files first and confirms the final price. You can follow every step on your order page with its PR- reference number.'],
             ['question' => 'When do I pay for a printing order?', 'answer' => "An order with a confirmed price of {$prepay} or more is paid in full before printing starts. A smaller order is paid in full when you pick it up. Orders are released only when fully paid."],
-            ['question' => 'How do I book a photoshoot?', 'answer' => "Choose \"Book a photoshoot\", pick a package, a date and a free time, and send the request. Times that are already requested or booked are not shown. A request is not a confirmed booking: the studio confirms it, offers another time, or tells you if it cannot take it. While you wait, your time is held for {$plural($hold, 'hour')}."],
+            ['question' => 'How do I book a photoshoot?', 'answer' => "Choose \"Book a photoshoot\", pick a package, a date and a free time, and send the request. {$notice} Times that are already requested or booked are not shown. A request is not a confirmed booking: the studio confirms it, offers another time, or tells you if it cannot take it. While you wait, your time is held for {$plural($hold, 'hour')}."],
             ['question' => 'Do I need to pay a downpayment for a photoshoot?', 'answer' => $downpayment],
             ['question' => 'What happens if I do not pay the downpayment on time?', 'answer' => $percent > 0
                 ? 'A booking whose downpayment is not paid by its deadline is cancelled by the system and the time becomes free for other customers. If you need more time, message the studio before the deadline.'

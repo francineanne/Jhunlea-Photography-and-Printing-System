@@ -10,11 +10,11 @@
     $hasOld = session()->hasOldInput();
     $hints = [
         'buffer_minutes' => 'Free minutes kept before and after every booking that holds time.',
-        'min_notice_hours' => 'How long before a session a customer must request it.',
+        'min_notice_days' => 'How many days ahead a customer must book. 1 means from tomorrow; same-day photoshoots are never allowed. 1 to 60.',
         'max_advance_days' => 'How many days ahead the booking calendar opens.',
         'request_hold_hours' => 'A new request, or a time you propose, holds its time this long while it waits for an answer. After that the time is free for others again; the request stays for you.',
     ];
-    $units = ['buffer_minutes' => 'minutes', 'min_notice_hours' => 'hours', 'max_advance_days' => 'days', 'request_hold_hours' => 'hours'];
+    $units = ['buffer_minutes' => 'minutes', 'min_notice_days' => 'days', 'max_advance_days' => 'days', 'request_hold_hours' => 'hours'];
     [$limitMin, $limitMax] = config('booking.limits.'.SaveSettingsRequest::DAILY_LIMIT);
 @endphp
 

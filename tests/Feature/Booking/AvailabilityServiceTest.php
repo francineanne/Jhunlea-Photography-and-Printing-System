@@ -103,20 +103,21 @@ class AvailabilityServiceTest extends TestCase
         $this->assertSame(['09:00'], $this->times(8 * 60, '2026-11-03'));
     }
 
-    public function test_the_minimum_notice_boundary_is_exact_to_the_minute(): void
+    // Phase 10I: the notice is counted in whole Manila calendar days, so its boundary is midnight in Manila (this test
+    // used to prove an exact 24-hour boundary: 9:00 Tuesday offered at 9:00 Monday, not at 9:01)
+    public function test_the_minimum_notice_boundary_is_the_manila_day(): void
     {
-        $this->setUpSchedule(noticeHours: 24);
+        $this->setUpSchedule(noticeDays: 1);
 
-        // Now 08:00 Monday; Tuesday 9:00 is 25 hours away. Move now so 9:00 Tuesday is exactly 24 hours away
-        $this->travelTo($this->manila('2026-11-02 09:00'));
-        $this->assertContains('09:00', $this->times(60, '2026-11-03'));
+        // Late Monday evening, a minute before midnight in Manila: Tuesday opens from its first hour, Monday never
+        $this->travelTo($this->manila('2026-11-02 23:59'));
+        $this->assertSame('09:00', $this->times(60, '2026-11-03')[0]);
+        $this->assertSame([], $this->times(60, '2026-11-02'));
 
-        $this->travelTo($this->manila('2026-11-02 09:01'));
-        $this->assertNotContains('09:00', $this->times(60, '2026-11-03'));
-        $this->assertContains('09:30', $this->times(60, '2026-11-03'));
-
-        $this->travelTo($this->manila('2026-11-02 08:59'));
-        $this->assertContains('09:00', $this->times(60, '2026-11-03'));
+        // Just after midnight it is Tuesday: Tuesday is now "today" and closed to bookings; Wednesday opens
+        $this->travelTo($this->manila('2026-11-03 00:01'));
+        $this->assertSame([], $this->times(60, '2026-11-03'));
+        $this->assertSame('09:00', $this->times(60, '2026-11-04')[0]);
     }
 
     public function test_the_maximum_advance_boundary_is_exact_to_the_minute(): void
@@ -138,14 +139,16 @@ class AvailabilityServiceTest extends TestCase
 
     public function test_the_past_is_never_offered(): void
     {
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
 
         $this->assertSame([], $this->times(60, '2026-10-30'));
-        // Today: now is 08:00, so the day starts at 9:00 and nothing earlier
-        $this->assertSame('09:00', $this->times(60, '2026-11-02')[0]);
+        // Phase 10I: today is never offered, whatever the hour (it used to offer today's later times)
+        $this->assertSame([], $this->times(60, '2026-11-02'));
+        $this->assertSame('09:00', $this->times(60, '2026-11-03')[0]);
 
         $this->travelTo($this->manila('2026-11-02 10:10'));
-        $this->assertSame('10:30', $this->times(60, '2026-11-02')[0]);
+        $this->assertSame([], $this->times(60, '2026-11-02'));
+        $this->assertSame('09:00', $this->times(60, '2026-11-03')[0]);
     }
 
     public function test_a_confirmed_booking_blocks_its_time(): void
@@ -188,7 +191,7 @@ class AvailabilityServiceTest extends TestCase
 
     public function test_rejected_and_cancelled_bookings_do_not_block_but_completed_ones_do(): void
     {
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
         $this->confirmedAt('2026-11-03 10:00', status: BookingStatus::Cancelled);
         $this->confirmedAt('2026-11-03 12:00', status: BookingStatus::Rejected);
         $this->confirmedAt('2026-11-03 14:00', status: BookingStatus::Completed);
@@ -229,7 +232,7 @@ class AvailabilityServiceTest extends TestCase
 
     public function test_manila_mornings_are_the_previous_day_in_utc(): void
     {
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
         // A confirmed booking from 7:00 to 8:30 UTC is 15:00 to 16:30 in Manila: same Manila day, later in UTC
         PhotographyBooking::factory()->status(BookingStatus::Confirmed)->at(Carbon::parse('2026-11-03 07:00', 'UTC'), 90)->create();
 
@@ -242,7 +245,7 @@ class AvailabilityServiceTest extends TestCase
 
     public function test_a_session_crossing_midnight_utc_stays_on_one_manila_day(): void
     {
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
         // 07:30 to 08:30 Manila on Wednesday is 23:30 Tuesday to 00:30 Wednesday in UTC. Open early that day
         $rule = AvailabilityRule::query()->where('weekday', 3)->first();
         $rule->opens_at = '07:30:00';
@@ -262,7 +265,7 @@ class AvailabilityServiceTest extends TestCase
 
     public function test_the_local_day_edges_map_to_the_right_utc_hours(): void
     {
-        $this->setUpSchedule(noticeHours: 0);
+        $this->setUpSchedule(noticeDays: 1);
         foreach (AvailabilityRule::all() as $rule) {
             $rule->forceFill(['is_open' => true, 'opens_at' => '00:00:00', 'closes_at' => '23:59:00'])->save();
         }
