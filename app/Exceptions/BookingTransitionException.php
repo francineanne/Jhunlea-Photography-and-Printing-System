@@ -19,6 +19,12 @@ class BookingTransitionException extends DomainException
         return new self("This booking is {$from->label()}, so it cannot be moved to {$to->label()}. The page may be out of date; please reload it.");
     }
 
+    /** Phase 10P: "Confirm" on a booking the studio already confirmed (awaiting its downpayment, confirmed, completed). */
+    public static function alreadyConfirmed(): self
+    {
+        return new self('This booking is already confirmed.');
+    }
+
     public static function notPermitted(BookingStatus $from, BookingStatus $to): self
     {
         return new self("You are not allowed to move this booking from {$from->label()} to {$to->label()}.");

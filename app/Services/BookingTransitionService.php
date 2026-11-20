@@ -115,6 +115,15 @@ class BookingTransitionService
     public function confirm(PhotographyBooking $booking, User $owner, ?string $price = null, ?string $note = null, bool $outsideSchedule = false): PhotographyBooking
     {
         return $this->locked($booking, $owner, function (PhotographyBooking $current) use ($owner, $price, $note, $outsideSchedule) {
+            // Phase 10P: the studio confirms a REQUEST only. Awaiting downpayment -> Confirmed is the payment path's
+            // (confirmByPayment), never this one: confirming again would write a second history row and quietly move
+            // the downpayment deadline and the price
+            if ($current->status !== BookingStatus::Requested) {
+                throw in_array($current->status, [BookingStatus::AwaitingDownpayment, BookingStatus::Confirmed, BookingStatus::Completed], true)
+                    ? BookingTransitionException::alreadyConfirmed()
+                    : BookingTransitionException::notAllowed($current->status, BookingStatus::Confirmed);
+            }
+
             $this->check($current, BookingStatus::Confirmed, $owner);
 
             $confirmedPrice = $this->price($price, $current->estimated_price);

@@ -305,6 +305,12 @@ document.addEventListener('submit', (event) => {
 
     if (!(form instanceof HTMLFormElement) || form.dataset.confirmed === '1') return;
     if (!(event.submitter?.dataset.confirm || form.dataset.confirm)) return;
+    // Phase 10P: a form that is already sending never asks again (a quick second click is simply ignored)
+    if (busyForms.has(form)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+    }
     if (!document.querySelector('[data-confirm-dialog]')) return;
 
     event.preventDefault();

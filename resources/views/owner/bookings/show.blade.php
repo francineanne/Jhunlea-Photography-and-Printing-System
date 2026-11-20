@@ -97,7 +97,8 @@
         @endif
 
         <div class="mt-4 space-y-2">
-            @if (in_array(Status::Confirmed->value, $moveValues, true))
+            {{-- Phase 10P: only a Requested booking is confirmed here (Awaiting downpayment -> Confirmed is the payment's move) --}}
+            @if ($booking->status === Status::Requested && in_array(Status::Confirmed->value, $moveValues, true))
                 <details class="group rounded-card border border-app-border open:bg-neutral-50 dark:open:bg-white/5" @if ($openForm === 'confirm' || ($schedule && $openForm === null)) open @endif>
                     <summary class="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-card px-4 py-2 text-sm font-semibold text-status-green focus-ring [&::-webkit-details-marker]:hidden">
                         <x-ui.icon name="event_available" :size="18" />Confirm the requested time
