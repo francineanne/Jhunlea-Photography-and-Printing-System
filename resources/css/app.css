@@ -689,6 +689,32 @@ html.js [data-time-select] {
     border-radius: 9999px;
 }
 
+/* Phase 10M: the sidebar menus (the owner sidebar, expanded and collapsed, and the slide-in menu below 1024px) scroll
+   without a visible scrollbar. A mask fades the top or the bottom edge only while there is more menu that way
+   (data-fade, set by Alpine sidebarScroll): it only changes what is seen, so it never blocks a click, it causes no
+   layout shift and it works on any background, in both themes. Nothing else hides its scrollbar. */
+.sidebar-scroll {
+    --fade-top: 0px;
+    --fade-bottom: 0px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade-top), #000 calc(100% - var(--fade-bottom)), transparent 100%);
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-scroll[data-fade~='top'] {
+    --fade-top: 2rem;
+}
+
+.sidebar-scroll[data-fade~='bottom'] {
+    --fade-bottom: 2rem;
+}
+
 /* The packages list: while its compare bar is showing (a package is ticked), the Chat button moves above it */
 html:has(#compare-form input[type='checkbox']:checked) [data-chat-launcher] {
     bottom: 10rem;

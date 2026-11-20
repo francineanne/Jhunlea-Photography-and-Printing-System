@@ -524,6 +524,44 @@ whenReady(() => {
     document.querySelectorAll('[data-live-check]').forEach(liveCheck);
 });
 
+// Phase 10M: a sidebar menu that scrolls without a visible scrollbar (.sidebar-scroll in app.css). A soft fade shows at
+// the top or the bottom only while there is more menu in that direction (data-fade), and the current page's item is
+// brought into view when the page opens. Wheel, touchpad, touch and keyboard scrolling are the browser's own.
+// x-init="$sidebarScroll($el)": an x-init helper, not x-data, so it adds no Alpine scope (the slide-in menu's panel is
+// the drawer's own x-ref and must stay in the drawer's scope)
+const sidebarScroll = (el) => {
+    let centered = false;
+
+    // The current page's item: scrolled to the middle when it is out of view, once, as soon as the menu has a size
+    // (at once for the sidebar; when it first opens for the slide-in menu, which is hidden on page load)
+    const center = () => {
+        const current = el.querySelector('[aria-current="page"]');
+
+        centered = true;
+        if (!current) return;
+        const box = el.getBoundingClientRect();
+        const item = current.getBoundingClientRect();
+
+        if (item.bottom > box.bottom || item.top < box.top) {
+            el.scrollTop += item.top - box.top - (box.height - item.height) / 2;
+        }
+    };
+
+    const update = () => {
+        if (!centered && el.clientHeight > 0) center();
+        const fades = [];
+
+        if (el.scrollTop > 1) fades.push('top');
+        if (el.scrollTop + el.clientHeight < el.scrollHeight - 1) fades.push('bottom');
+        el.dataset.fade = fades.join(' ');
+    };
+
+    el.addEventListener('scroll', update, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(update).observe(el);
+    window.addEventListener('resize', update, { passive: true });
+    update();
+};
+
 // The owner sidebar: folded to icons or open, remembered in this browser only (a convenience, nothing more)
 const sidebarToggle = () => ({
     collapsed: root.classList.contains('sidebar-collapsed'),
@@ -811,6 +849,7 @@ export default function registerPolish(Alpine) {
     Alpine.data('uiLightbox', uiLightbox);
     Alpine.data('uiCountdown', uiCountdown);
     Alpine.data('sidebarToggle', sidebarToggle);
+    Alpine.magic('sidebarScroll', () => sidebarScroll);
     Alpine.data('liveUpdates', liveUpdates);
     Alpine.data('uiHint', uiHint);
     Alpine.data('soundSwitch', soundSwitch);

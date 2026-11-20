@@ -10,13 +10,14 @@
     {{ $attributes->class('fixed inset-0 z-50') }}>
     <div x-show="open" x-transition.opacity.duration.280ms x-on:click="hide()" class="absolute inset-0 bg-ink/50 backdrop-blur-[12px]" aria-hidden="true"></div>
 
-    <div x-ref="panel" x-show="open" tabindex="-1" role="dialog" aria-modal="true" aria-label="{{ $label }}"
+    {{-- Phase 10M: the menu scrolls without a visible scrollbar, with a fade where more menu is (sidebarScroll) --}}
+    <div x-ref="panel" x-show="open" tabindex="-1" role="dialog" aria-modal="true" aria-label="{{ $label }}" x-init="$sidebarScroll($el)"
         x-transition:enter="transition duration-[280ms] ease-brand"
         x-transition:enter-start="{{ $left ? '-translate-x-full' : 'translate-x-full' }}" x-transition:enter-end="translate-x-0"
         x-transition:leave="transition duration-150 ease-brand"
         x-transition:leave-start="translate-x-0" x-transition:leave-end="{{ $left ? '-translate-x-full' : 'translate-x-full' }}"
         @class([
-            'absolute inset-y-0 flex w-[min(20rem,85vw)] flex-col overflow-y-auto bg-app-bg p-4 text-app-text shadow-2xl focus:outline-none',
+            'sidebar-scroll absolute inset-y-0 flex w-[min(20rem,85vw)] flex-col overflow-y-auto bg-app-bg p-4 text-app-text shadow-2xl focus:outline-none',
             'left-0 border-r border-app-border' => $left,
             'right-0 border-l border-app-border' => ! $left,
         ])>

@@ -48,7 +48,7 @@
                     <span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span> Owner console
                 </p>
             </div>
-            <x-layout.nav :items="$nav" label="Owner" class="thin-scroll min-h-0 overflow-y-auto" />
+            <x-layout.nav :items="$nav" label="Owner" class="sidebar-scroll min-h-0 overflow-y-auto" x-init="$sidebarScroll($el)" />
         </div>
 
         <div class="sidebar-full flex gap-3 rounded-card bg-white/10 p-3 text-xs text-app-text-2">
