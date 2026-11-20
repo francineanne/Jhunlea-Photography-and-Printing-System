@@ -29,7 +29,7 @@
 
     {{-- Status tabs with counts, as in the design. Only statuses you have orders in are listed --}}
     <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
-        <ul class="flex w-max gap-1 sm:w-auto sm:flex-wrap">
+        <ul class="flex w-max gap-1">
             <li>
                 <a href="{{ route('customer.printing.index') }}" @if (! $status) aria-current="page" @endif
                     @class(['relative inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',

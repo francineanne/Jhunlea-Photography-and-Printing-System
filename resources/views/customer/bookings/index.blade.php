@@ -31,7 +31,7 @@
 
     {{-- Status tabs with the customer's own counts, as in the design --}}
     <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
-        <ul class="flex w-max gap-2 lg:w-auto lg:flex-wrap">
+        <ul class="flex w-max gap-2">
             <li>
                 <a href="{{ route('customer.bookings.index') }}" @if (! $status && ! $expired) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-all duration-200 focus-ring',

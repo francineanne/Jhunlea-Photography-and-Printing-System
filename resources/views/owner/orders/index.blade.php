@@ -22,7 +22,7 @@
 
     {{-- Status tabs with counts of every order, as in the design --}}
     <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
-        <ul class="flex w-max gap-1 xl:w-auto xl:flex-wrap rounded-card bg-neutral-100 p-1 dark:bg-white/5">
+        <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
             <li>
                 <a href="{{ route('owner.orders.index', array_filter(['q' => $search, 'from' => $from, 'to' => $to])) }}" @if (! $status) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',

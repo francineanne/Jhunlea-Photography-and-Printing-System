@@ -28,7 +28,7 @@
 
     {{-- Status tabs with a count on every tab (0 too), as in the design; Requested is the work queue and opens first --}}
     <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
-        <ul class="flex w-max gap-1 xl:w-auto xl:flex-wrap rounded-card bg-neutral-100 p-1 dark:bg-white/5">
+        <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
             @foreach ($statuses as $item)
                 <li>
                     <a href="{{ route('owner.bookings.index', ['status' => $item->value] + $keep) }}" @if ($status === $item) aria-current="page" @endif

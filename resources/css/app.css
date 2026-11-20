@@ -742,6 +742,31 @@ html.js [data-time-select] {
     --fade-right: 2rem;
 }
 
+/* Phase 10N-2: the status tab bars never wrap. From 768px the tabs are compact (40px tall, 13px text, tighter padding and
+   a smaller count) so more of them fit on one line; where they still do not fit (the owner's nine booking tabs need about
+   1,300px, more than the box at 1280px with the sidebar open) the bar keeps the fade above. Below 768px the tabs stay
+   44px tall for touch. Plain CSS outside the Tailwind layers, so it
+   wins over the tabs' own utilities without touching their markup. */
+@media (min-width: 768px) {
+    .scroll-x-fade > ul {
+        gap: 0.25rem;
+    }
+
+    .scroll-x-fade > ul > li > a {
+        min-height: 2.5rem;
+        padding-inline: 0.625rem;
+        gap: 0.375rem;
+        font-size: 0.8125rem;
+    }
+
+    /* the count pill (not the small status dot, which is aria-hidden, nor an underline, which is absolute) */
+    .scroll-x-fade > ul > li > a > span.rounded-full:not(.absolute):not([aria-hidden]) {
+        padding: 0.0625rem 0.375rem;
+        font-size: 0.6875rem;
+        line-height: 1rem;
+    }
+}
+
 /* The packages list: while its compare bar is showing (a package is ticked), the Chat button moves above it */
 html:has(#compare-form input[type='checkbox']:checked) [data-chat-launcher] {
     bottom: 10rem;
