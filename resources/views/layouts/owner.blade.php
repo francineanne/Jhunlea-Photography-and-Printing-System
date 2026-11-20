@@ -32,6 +32,10 @@
     @endif
     <x-ui.toast />
     <x-ui.confirm />
+    {{-- Phase 10O: "Needs your attention", once after signing in, only when something is urgent --}}
+    @if (! empty($urgent))
+        <x-urgent.modal :urgent="$urgent" />
+    @endif
     {{-- Keeps "Auto" presence honest: a ping only while this tab is visible and the owner really uses it (7D) --}}
     <div x-data="ownerHeartbeat(@js(route('owner.messages.presence.heartbeat')))" hidden></div>
 

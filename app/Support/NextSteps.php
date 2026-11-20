@@ -7,6 +7,7 @@ use App\Enums\PrintingOrderStatus;
 use App\Models\BookingSetting;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
+use Illuminate\Support\Carbon;
 
 /**
  * Phase 10D: the short "what happens next" timeline a customer reads after sending a request and on its detail page.
@@ -16,6 +17,62 @@ use App\Models\PrintingOrder;
 class NextSteps
 {
     public function __construct(private readonly ShopSettings $settings) {}
+
+    /**
+     * Phase 10O: the ONE urgent sentence a customer reads about their own order or booking (the amber notice at the top
+     * of its page, and the current step of the timeline): what to do, by when, and what happens if not. Words only, from
+     * the real status, the deadline and the payment rules; null when nothing is urgent.
+     *
+     * @return array{text: string, until: ?Carbon}|null
+     */
+    public function warning(PrintingOrder|PhotographyBooking $record): ?array
+    {
+        if ($record instanceof PhotographyBooking) {
+            if ($record->isExpired()) {
+                return null;
+            }
+
+            return match ($record->status) {
+                BookingStatus::AwaitingDownpayment => $record->downpayment_due_at === null || $record->confirmed_price === null ? null : [
+                    'text' => 'Pay the downpayment of '.Money::cents($this->downpaymentDueCents($record)).' by '.LocalTime::format($record->downpayment_due_at)
+                        .'. If it is not paid by then, this booking is cancelled automatically and the time is given to other customers.',
+                    'until' => $record->downpayment_due_at,
+                ],
+                BookingStatus::Requested => [
+                    'text' => 'If the studio does not answer before '.LocalTime::format($record->starts_at).', this request expires.',
+                    'until' => null,
+                ],
+                BookingStatus::Proposed => $record->proposed_starts_at === null ? null : [
+                    'text' => 'Accept or ask for another time before '.LocalTime::format($record->proposed_starts_at).', or this offer expires.',
+                    'until' => null,
+                ],
+                default => null,
+            };
+        }
+
+        $due = $record->amountDue();
+
+        if ($record->status !== PrintingOrderStatus::ReadyForPickup || $due === null || Money::toCents($due) <= 0) {
+            return null;
+        }
+
+        $days = (int) $this->settings->paymentRule('unclaimed_after_days');
+        $ready = $record->relationLoaded('statusHistories')
+            ? $record->statusHistories->where('to_status', PrintingOrderStatus::ReadyForPickup)->sortByDesc('id')->first()
+            : $record->statusHistories()->where('to_status', PrintingOrderStatus::ReadyForPickup)->reorder('id', 'desc')->first();
+
+        return [
+            'text' => 'Please pick up and pay within '.$days.' '.($days === 1 ? 'day' : 'days').' of '.LocalTime::format($ready?->created_at ?? $record->updated_at, 'M j, Y')
+                .'. After that the shop may close it as Unclaimed, and your next orders must be paid first.',
+            'until' => null,
+        ];
+    }
+
+    /** The downpayment still to pay on a booking awaiting it (the rule's amount, minus nothing: none is recorded yet). */
+    private function downpaymentDueCents(PhotographyBooking $booking): int
+    {
+        return app(PaymentRules::class)->downpaymentCents((string) $booking->confirmed_price);
+    }
 
     /**
      * Phase 10J: the owner's next step on one order or booking, in one line (the customer page, where walk-ins are
@@ -95,6 +152,11 @@ class NextSteps
             default => null,
         };
 
+        // Phase 10O: the urgent sentence is also the current step's words
+        if ($closed === null && ($warning = $this->warning($booking)) !== null && isset($steps[$current])) {
+            $steps[$current]['text'] = $status === BookingStatus::Requested ? $steps[$current]['text'].' '.$warning['text'] : $warning['text'];
+        }
+
         return ['steps' => $this->mark($steps, $current), 'closed' => $closed];
     }
 
@@ -135,6 +197,11 @@ class NextSteps
             PrintingOrderStatus::Unclaimed => 'This order was closed because it was not picked up.',
             default => null,
         };
+
+        // Phase 10O: the urgent sentence is also the current step's words
+        if ($closed === null && ($warning = $this->warning($order)) !== null && isset($steps[$current])) {
+            $steps[$current]['text'] = $warning['text'];
+        }
 
         return ['steps' => $this->mark($steps, $current), 'closed' => $closed];
     }

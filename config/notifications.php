@@ -9,4 +9,9 @@ return [
     // to the next; SystemNotificationsTest turns it on where it tests the page-load run.
     'lazy_system_events' => (bool) env('NOTIFICATIONS_LAZY_SYSTEM_EVENTS', true),
 
+    // Phase 10O: the "Needs your attention" list on the first page after signing in. On by default. phpunit.xml turns
+    // it off for the same reason as above (the first page of a test's session would read more than the next one);
+    // UrgentItemsTest turns it on.
+    'urgent_on_login' => (bool) env('NOTIFICATIONS_URGENT_ON_LOGIN', true),
+
 ];

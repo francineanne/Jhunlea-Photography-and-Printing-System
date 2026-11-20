@@ -363,6 +363,11 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Tab bars: walang scrollbar, may fade sa gilid, ang active tab nakikita; sa desktop lumilipat sa pangalawang linya
 - [x] Audit: phone, petsa at pera sa body font; maliliit na tap target inayos; orders at payments table mula 1400px (cards sa ilalim)
 
+### 10O — Urgent notices (branch `phase-10o-urgent-notices`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule
+- [x] Isang amber na babala sa itaas ng booking at order page ng customer: ano ang gagawin, hanggang kailan, at ano ang mangyayari kung hindi (downpayment, request na mag-e-expire, offer, order na Ready for pickup na hindi bayad)
+- [x] "Needs your attention": isang beses pagkatapos mag-log in (customer at owner), hanggang 5, ang pinaka-urgent muna, may link sa record; walang lumalabas kung walang urgent; hindi para sa walk-in
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

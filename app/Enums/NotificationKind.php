@@ -201,7 +201,8 @@ enum NotificationKind: string
             self::SystemProposalExpired => "{$named}: the time you offered, {$when}, is no longer held because the customer did not answer in time. Offer it again or another time.",
             self::ProposalExpired => "The time the studio offered for {$ref}, {$when}, is no longer reserved because it was not accepted in time. Open it to accept it if it is still free, or ask for another time.",
             self::SystemDownpaymentDueSoon => "{$named}: the downpayment is due by ".($due ?? 'the deadline').'. If it is not paid, the booking is cancelled.',
-            self::DownpaymentDueSoon => "Reminder: pay the downpayment of {$ref} by ".($due ?? 'the deadline').' to keep your photoshoot. Open it to see how to pay.',
+            // Phase 10O: what happens if not
+            self::DownpaymentDueSoon => "Reminder: pay the downpayment of {$ref} by ".($due ?? 'the deadline').' to keep your photoshoot. Open it to see how to pay. If it is not paid, the booking is cancelled.',
             self::SystemOrderUnclaimable => "{$named} has waited {$days} ".($days === 1 ? 'day' : 'days').' for pickup and is unpaid. You may close it as Unclaimed.',
             self::SystemShootTomorrow => "Photoshoot tomorrow: {$named} at {$at}.",
             self::ShootTomorrow => "Reminder: your photoshoot {$ref} is tomorrow at {$at}.",

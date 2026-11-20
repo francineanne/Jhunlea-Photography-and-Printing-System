@@ -25,6 +25,10 @@
     <div x-data="liveUpdates(@js(route('customer.live')))" hidden></div>
     <x-ui.toast />
     <x-ui.confirm />
+    {{-- Phase 10O: "Needs your attention", once after signing in, only when something is urgent --}}
+    @if (! empty($urgent))
+        <x-urgent.modal :urgent="$urgent" />
+    @endif
     <x-ui.lightbox />
 
     <header class="site-header sticky top-0 z-40 bg-app-bg/90 shadow-[0_1px_8px_rgba(0,0,0,0.04)] backdrop-blur-xl">

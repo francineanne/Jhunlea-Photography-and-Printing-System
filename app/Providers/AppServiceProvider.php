@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\Assistant\GuardStats;
 use App\Services\Chat\StudioInbox;
 use App\Services\NotificationFeed;
+use App\Services\UrgentItems;
 use App\Support\PasswordRules;
 use App\Support\PaymentRules;
 use App\Support\ShopSettings;
@@ -67,6 +68,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.owner', fn ($view) => $view->with('unanswered', rescue(fn () => app(StudioInbox::class)->unansweredCount(), 0, false)));
 
         // The bell of the customer and owner shells: the unread count and the latest few, once per page (Phase 5B)
+        // Phase 10O: the "Needs your attention" list, on the first page after signing in only (a session flag; rescue():
+        // it never breaks a page)
+        View::composer(['layouts.customer', 'layouts.owner'], fn ($view) => $view->with('urgent', rescue(fn () => app(UrgentItems::class)->onceForLogin(auth()->user()), null, false)));
+
         View::composer(['layouts.customer', 'layouts.owner'], function ($view) {
             $user = auth()->user();
             $view->with('bell', $user ? app(NotificationFeed::class)->bell($user) : ['unread' => 0, 'items' => collect()]);

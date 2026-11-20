@@ -40,6 +40,9 @@
         </div>
     </section>
 
+    {{-- Phase 10O: what must be done, by when, and what happens if not --}}
+    <x-ui.urgent-notice :record="$order" class="mt-6" />
+
     <div class="mt-6 grid items-start gap-6 lg:grid-cols-12">
         <div class="min-w-0 space-y-6 lg:col-span-8">
             @if ($order->needsInfo())

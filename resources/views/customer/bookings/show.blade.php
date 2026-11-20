@@ -31,6 +31,9 @@
         <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live class="self-start md:self-auto" />
     </header>
 
+    {{-- Phase 10O: what must be done, by when, and what happens if not --}}
+    <x-ui.urgent-notice :record="$booking" class="mt-6" />
+
     @if ($booking->isExpired())
         <x-ui.notice class="mt-6" role="status">
             <p class="font-semibold">{{ \App\Models\PhotographyBooking::EXPIRED_NOTE }}</p>
