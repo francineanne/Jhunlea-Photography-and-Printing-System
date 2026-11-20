@@ -37,7 +37,7 @@
     <dl class="grid gap-3 text-sm sm:grid-cols-2 [&>div]:min-w-0">
         <div>
             <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Contact number</dt>
-            <dd class="mt-0.5 break-words font-mono">{{ $booking->contact_number }}</dd>
+            <dd class="mt-0.5 break-words tabular-nums">{{ \App\Support\PhilippineMobile::display($booking->contact_number) }}</dd>
         </div>
         @if ($inclusions !== [])
             <div>

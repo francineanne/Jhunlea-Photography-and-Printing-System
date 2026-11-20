@@ -131,7 +131,7 @@
                                 <span class="min-w-0 flex-1">
                                     <span class="flex flex-wrap items-baseline gap-x-2"><span class="font-mono text-xs font-bold text-brand">{{ $request->reference_number }}</span><span class="text-[11px] font-semibold uppercase tracking-wider text-app-text-2">{{ $isOrder ? 'Printing' : 'Photography' }}</span></span>
                                     <span class="block truncate font-semibold group-hover:text-brand">{{ $isOrder ? $request->serviceName() : ($request->snapshot['package']['name'] ?? $request->package?->name ?? 'Photoshoot') }}</span>
-                                    <x-ui.date :value="$request->created_at" class="block font-mono text-[11px] text-app-text-2" />
+                                    <x-ui.date :value="$request->created_at" class="block tabular-nums text-[11px] text-app-text-2" />
                                 </span>
                                 <span class="flex shrink-0 flex-col items-end gap-1"><x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" /><x-payment.badge :payable="$request" /></span>
                             </a>

@@ -67,7 +67,7 @@
             </div>
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Phone</dt>
-                <dd class="break-all font-mono">{{ $customer->phone ?: '—' }}</dd>
+                <dd class="break-all tabular-nums">{{ $customer->phone ? \App\Support\PhilippineMobile::display($customer->phone) : '—' }}</dd>
             </div>
             <div class="min-w-0">
                 <dt class="text-[11px] font-bold uppercase tracking-wider text-app-text-2">Joined</dt>
@@ -189,7 +189,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Received</dt>
-                                    <dd class="font-mono text-xs"><x-ui.date :value="$payment->received_at" /></dd>
+                                    <dd class="tabular-nums text-xs"><x-ui.date :value="$payment->received_at" /></dd>
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">For</dt>

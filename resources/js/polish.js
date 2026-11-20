@@ -841,7 +841,56 @@ const uiTypeahead = (url) => ({
     },
 });
 
+// Phase 10N: a horizontal tab or pill bar without a visible scrollbar (.scroll-x-fade in app.css; the sidebarScroll idea
+// of 10M turned sideways). A fade shows on the left or the right only while there are more tabs that way, and the current
+// tab (aria-current or aria-selected) is brought into view once the bar has a size. x-init="$scrollFade($el)": no scope
+const scrollFade = (el) => {
+    let placed = false;
+
+    const place = () => {
+        const current = el.querySelector('[aria-current="page"], [aria-current="true"], [aria-selected="true"]');
+
+        placed = true;
+        if (!current) return;
+        const box = el.getBoundingClientRect();
+        const item = current.getBoundingClientRect();
+
+        if (item.right > box.right || item.left < box.left) {
+            el.scrollLeft += item.left - box.left - (box.width - item.width) / 2;
+        }
+    };
+
+    const update = () => {
+        if (!placed && el.clientWidth > 0) place();
+        const fades = [];
+
+        if (el.scrollLeft > 1) fades.push('left');
+        if (el.scrollLeft + el.clientWidth < el.scrollWidth - 1) fades.push('right');
+        el.dataset.fade = fades.join(' ');
+    };
+
+    el.addEventListener('scroll', update, { passive: true });
+    if ('ResizeObserver' in window) new ResizeObserver(update).observe(el);
+    requestAnimationFrame(update);
+};
+
+// Phase 10N: the chosen file name(s) under <x-ui.file-button> ("No files yet" before). One listener for the whole page,
+// no Alpine scope (the wizards keep their own x-ref on the input); it reads the input that the button's label points at
+const fileButtons = () => {
+    document.addEventListener('change', (event) => {
+        const input = event.target;
+        if (!(input instanceof HTMLInputElement) || input.type !== 'file' || !input.id) return;
+        const label = input.parentElement?.querySelector(`[data-file-button][for="${CSS.escape(input.id)}"]`);
+        const line = label?.parentElement?.querySelector('[data-file-chosen]');
+        if (!line) return;
+        const names = [...(input.files ?? [])].map((file) => file.name);
+        line.textContent = names.length === 0 ? line.dataset.empty : names.length === 1 ? names[0] : `${names.length} files chosen`;
+        line.title = names.join(', ');
+    });
+};
+
 export default function registerPolish(Alpine) {
+    fileButtons();
     Alpine.magic('linkify', () => linkify);
     Alpine.data('uiTimePicker', uiTimePicker);
     Alpine.data('uiFilterSheet', uiFilterSheet);
@@ -850,6 +899,7 @@ export default function registerPolish(Alpine) {
     Alpine.data('uiCountdown', uiCountdown);
     Alpine.data('sidebarToggle', sidebarToggle);
     Alpine.magic('sidebarScroll', () => sidebarScroll);
+    Alpine.magic('scrollFade', () => scrollFade);
     Alpine.data('liveUpdates', liveUpdates);
     Alpine.data('uiHint', uiHint);
     Alpine.data('soundSwitch', soundSwitch);

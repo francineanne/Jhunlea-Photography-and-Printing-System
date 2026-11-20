@@ -41,20 +41,19 @@
                     <x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live />
                     <x-walk-in.badge :record="$booking" />
                 </div>
-                {{-- Phase 10F: the header's action slot beside the title, like the customer page; a full-width row below it when narrow --}}
-                <div class="mt-2 flex flex-col gap-3 @xl:flex-row @xl:items-center @xl:justify-between">
-                    <h1 id="booking-title" class="min-w-0 break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
-                        {{ $packageName }} <span class="font-normal italic text-app-text-2">— {{ $customer?->name ?? 'Deleted account' }}</span>
-                    </h1>
-                    <div class="flex shrink-0 flex-wrap gap-2" data-header-actions><x-chat.message-customer :customer="$customer" :record="$booking" type="photography_booking" class="w-full @xl:w-auto" /></div>
-                </div>
-                <p class="mt-1 font-mono text-xs text-app-text-2">Sent: <x-ui.date :value="$booking->created_at" /></p>
+                <h1 id="booking-title" class="mt-2 min-w-0 text-balance break-words font-display text-2xl font-semibold leading-tight sm:text-3xl">
+                    {{ $packageName }} <span class="font-normal italic text-app-text-2">— {{ $customer?->name ?? 'Deleted account' }}</span>
+                </h1>
+                <p class="mt-1 text-xs tabular-nums text-app-text-2">Sent: <x-ui.date :value="$booking->created_at" /></p>
             </div>
-            <dl class="grid shrink-0 grid-cols-2 gap-2 text-sm">
+            {{-- Phase 10N: the summary tiles on the right with the message button right under them (never floating beside
+                 the title); narrow: title, tiles, then the button full width --}}
+            <div class="flex shrink-0 flex-col gap-3">
+            <dl class="grid grid-cols-2 gap-2 text-sm">
                 <div class="rounded-card bg-neutral-100 p-3 dark:bg-white/5">
                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">{{ in_array($booking->status, [Status::Confirmed, Status::Completed], true) ? 'Confirmed time' : 'Requested time' }}</dt>
                     <dd class="mt-0.5 font-semibold"><x-ui.date :value="$booking->starts_at" format="D, M j" /></dd>
-                    <dd class="font-mono text-xs text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /></dd>
+                    <dd class="text-xs tabular-nums text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /></dd>
                 </div>
                 <div class="rounded-card bg-neutral-100 p-3 dark:bg-white/5">
                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">{{ $booking->confirmed_price !== null ? 'Confirmed price' : 'Estimate' }}</dt>
@@ -62,6 +61,8 @@
                     <dd class="text-xs text-app-text-2">Paid at the studio</dd>
                 </div>
             </dl>
+                <div class="flex" data-header-actions><x-chat.message-customer :customer="$customer" :record="$booking" type="photography_booking" class="w-full" /></div>
+            </div>
         </div>
 
         @if (session('error'))
@@ -303,7 +304,7 @@
                 <dl class="mt-4 grid gap-2 rounded-card bg-neutral-100 p-3 text-sm sm:grid-cols-2 dark:bg-white/5">
                     <div class="flex min-w-0 items-center gap-2">
                         <dt><x-ui.icon name="call" :size="18" class="text-app-text-2" /><span class="sr-only">Contact number</span></dt>
-                        <dd class="min-w-0 break-words font-mono">{{ $booking->contact_number }}</dd>
+                        <dd class="min-w-0 break-words tabular-nums">{{ \App\Support\PhilippineMobile::display($booking->contact_number) }}</dd>
                     </div>
                     @if ($customer)
                         <div class="flex min-w-0 items-center gap-2">

@@ -68,7 +68,7 @@
                                         <span @class(['font-semibold' => ! $item['read']])>{{ $item['title'] }}</span>
                                     </span>
                                     <span class="mt-0.5 line-clamp-2 block break-words text-xs text-app-text-2">{{ $item['message'] }}</span>
-                                    <x-ui.date :value="$item['created_at']" class="mt-1 block font-mono text-[11px] text-app-text-2" />
+                                    <x-ui.date :value="$item['created_at']" class="mt-1 block tabular-nums text-[11px] text-app-text-2" />
                                 </span>
                                 @unless ($item['read'])<span class="sr-only">Unread</span>@endunless
                             </button>

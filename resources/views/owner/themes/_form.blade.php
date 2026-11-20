@@ -57,9 +57,13 @@
                 @endif
                 <x-ui.field id="theme-image" :label="$theme->imageUrl() ? 'Replace the photo' : 'Add a photo'" :error="$errors->first('image')"
                     :hint="'JPG, PNG or WebP, up to '.(PackageImage::MAX_SIZE_KB / 1024).' MB. Optional.'">
-                    <input id="theme-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" x-on:change="file = $event.target.files[0]?.name ?? ''"
-                        @if ($errors->has('image')) aria-invalid="true" aria-describedby="theme-image-error" @endif
-                        class="block w-full cursor-pointer rounded-control border border-neutral-200 bg-app-card text-sm file:mr-3 file:h-11 file:cursor-pointer file:border-0 file:bg-neutral-100 file:px-4 file:font-semibold file:text-app-text hover:file:bg-neutral-200 focus-ring dark:border-neutral-700 dark:file:bg-white/10 dark:hover:file:bg-white/20">
+                    {{-- Phase 10N: one styled button over the native input, the chosen name under it --}}
+                    <div class="flex flex-col items-start gap-1">
+                        <input id="theme-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" x-on:change="file = $event.target.files[0]?.name ?? ''"
+                            @if ($errors->has('image')) aria-invalid="true" aria-describedby="theme-image-error" @endif
+                            class="peer sr-only">
+                        <x-ui.file-button for="theme-image" label="Choose a photo" icon="add_photo_alternate" variant="outline" empty="No photo chosen yet" />
+                    </div>
                 </x-ui.field>
             </div>
         </x-ui.card>

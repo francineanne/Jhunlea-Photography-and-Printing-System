@@ -30,6 +30,9 @@ class RequestHistoryService
 
     public const KINDS = ['printing', 'photography'];
 
+    // Phase 10N: the photography status filter for the expired requests (derived, never stored; PhotographyBooking::scopeInTab)
+    public const EXPIRED = 'expired';
+
     /**
      * @param  array{kind: ?string, status: ?string, search: string, from: ?string, to: ?string}  $filters
      * @param  bool  $withRemoved  the owner's customer page (6A) also lists removed (soft deleted) requests; the customer's own list never does
@@ -90,10 +93,15 @@ class RequestHistoryService
     private function side(Builder $query, string $kind, User $customer, array $filters, ?BackedEnum $status, Closure $nameLike): QueryBuilder
     {
         $search = $filters['search'];
+        $expired = $kind === 'photography' && $filters['status'] === self::EXPIRED;
 
         return $query
             ->where('customer_id', $customer->id)
-            ->when($status !== null && $filters['kind'] === $kind, fn (Builder $q) => $q->where('status', $status))
+            // Phase 10N: bookings filter the way the booking tabs do (PhotographyBooking::scopeInTab, 10L): "expired" lists
+            // the expired requests, and Requested or New time proposed leave them out
+            ->when($filters['kind'] === $kind && ($status !== null || $expired), fn (Builder $q) => $q->getModel() instanceof PhotographyBooking
+                ? $q->inTab($status, $expired)
+                : $q->where('status', $status))
             ->when($search !== '', function (Builder $q) use ($search, $nameLike) {
                 // Bound parameters, and % _ \ typed by the customer are matched literally instead of as wildcards
                 $like = '%'.addcslashes($search, '%_\\').'%';

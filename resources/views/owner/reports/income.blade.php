@@ -279,7 +279,7 @@
                                         <a href="{{ route('owner.payments.receipt', $payment) }}" class="inline-flex min-h-9 items-center gap-1 rounded text-xs font-semibold text-app-text-2 hover:text-brand focus-ring print:hidden"><x-ui.icon name="print" :size="14" />Receipt</a>
                                     </p>
                                 </td>
-                                <td class="whitespace-nowrap px-3 py-3 font-mono text-xs"><x-ui.date :value="$payment->received_at" /></td>
+                                <td class="whitespace-nowrap px-3 py-3 tabular-nums text-xs"><x-ui.date :value="$payment->received_at" /></td>
                                 <td class="max-w-44 px-3 py-3"><p class="truncate font-semibold" title="{{ $payment->payable?->customer?->name }}">{{ $payment->payable?->customer?->name ?? 'Deleted account' }}</p></td>
                                 <td class="px-3 py-3">
                                     @if ($payment->payable)

@@ -113,7 +113,7 @@ class CustomerDirectoryTest extends TestCase
         // Tiles: Maria joined 31 October 23:30 in Manila (last month); Ben at 00:30 on 1 November (this month)
         $this->assertSame(['total' => 3, 'newThisMonth' => 2, 'open' => 2, 'awaiting' => 1], app(CustomerDirectoryService::class)->tiles());
 
-        $this->index()->assertOk()->assertSee('₱1,350.00')->assertSee('09171234567')->assertSee('Oct 31, 2026')->assertDontSee('₱9.00');
+        $this->index()->assertOk()->assertSee('₱1,350.00')->assertSee('0917 123 4567') /* Phase 10N: the readable form (stored 09171234567) */ ->assertSee('Oct 31, 2026')->assertDontSee('₱9.00');
     }
 
     public function test_search_is_case_insensitive_and_wildcards_are_literal(): void
@@ -197,7 +197,7 @@ class CustomerDirectoryTest extends TestCase
         $removed->delete();
 
         $response = $this->actingAs($this->owner)->get(route('owner.customers.show', $busy))->assertOk()
-            ->assertSee('Maria Santos')->assertSee('maria@example.test')->assertSee('09171234567')
+            ->assertSee('Maria Santos')->assertSee('maria@example.test')->assertSee('0917 123 4567') /* Phase 10N: the readable form (stored 09171234567) */
             ->assertSee(route('owner.orders.show', $mine[0]))->assertSee(route('owner.orders.show', $mine[1]))
             ->assertSee('PR-077777')->assertSee('Removed')->assertDontSee(route('owner.orders.show', $removed))
             ->assertDontSee($theirs->reference_number)->assertDontSee('ana@example.test')

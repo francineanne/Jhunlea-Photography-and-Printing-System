@@ -178,4 +178,26 @@ class RequestHistoryTest extends TestCase
         $this->list()->assertOk()->assertSee('No requests yet');
         $this->list(['q' => 'nothing'])->assertSee('No requests found');
     }
+
+    /** Phase 10N: "Expired" in the photography status filter, the same rule as the booking tabs (10L scopeInTab). */
+    public function test_the_status_filter_lists_expired_requests_apart(): void
+    {
+        $at = fn (string $manila) => Carbon::parse($manila, 'Asia/Manila')->utc();
+        // Now is Wednesday 4 November 2026, 12:00 in Manila
+        $expired = $this->booking($this->ana, '2026-10-20 09:00', ['status' => B::Requested, 'starts_at' => $at('2026-11-02 10:00'), 'ends_at' => $at('2026-11-02 11:00')]);
+        $expiredProposal = $this->booking($this->ana, '2026-10-21 09:00', ['status' => B::Proposed, 'starts_at' => $at('2026-11-01 10:00'), 'ends_at' => $at('2026-11-01 11:00'), 'proposed_starts_at' => $at('2026-11-03 10:00')]);
+        $waiting = $this->booking($this->ana, '2026-10-22 09:00', ['status' => B::Requested, 'starts_at' => $at('2026-11-20 10:00'), 'ends_at' => $at('2026-11-20 11:00')]);
+        $proposed = $this->booking($this->ana, '2026-10-23 09:00', ['status' => B::Proposed, 'starts_at' => $at('2026-11-20 10:00'), 'ends_at' => $at('2026-11-20 11:00'), 'proposed_starts_at' => $at('2026-11-21 10:00')]);
+        $this->booking($this->ben, '2026-10-20 09:00', ['status' => B::Requested, 'starts_at' => $at('2026-11-02 10:00'), 'ends_at' => $at('2026-11-02 11:00')]);
+
+        $this->assertEqualsCanonicalizing([$expired->reference_number, $expiredProposal->reference_number], $this->refs($this->list(['kind' => 'photography', 'status' => 'expired'])->assertOk()));
+        $this->assertSame([$waiting->reference_number], $this->refs($this->list(['kind' => 'photography', 'status' => 'requested'])));
+        $this->assertSame([$proposed->reference_number], $this->refs($this->list(['kind' => 'photography', 'status' => 'proposed'])));
+        $this->assertCount(4, $this->refs($this->list(['kind' => 'photography'])));
+
+        // The option is offered for photography only, right after "New time proposed"; printing refuses it
+        $html = $this->list(['kind' => 'photography'])->getContent();
+        $this->assertMatchesRegularExpression('/value="proposed"[^>]*>New time proposed<\/option>\s*<option value="expired"[^>]*>Expired<\/option>/', $html);
+        $this->list(['kind' => 'printing', 'status' => 'expired'])->assertRedirect(route('customer.requests.index'));
+    }
 }

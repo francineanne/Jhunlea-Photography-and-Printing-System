@@ -44,7 +44,7 @@
     </div>
 
     {{-- Phase 10E: the one current payment line (PaymentRules::shortLine()), not the old Phase 5 callout --}}
-    <p class="mt-6 flex items-start gap-2 text-sm text-app-text-2"><x-ui.icon name="storefront" :size="18" class="mt-px shrink-0 text-brand" /><span class="min-w-0">{{ $policyLine ?? '' }} <a href="{{ route('owner.settings.index') }}#payments" class="font-semibold text-brand underline-offset-2 hover:underline focus-ring">Payment rules</a></span></p>
+    <p class="mt-6 flex items-start gap-2 text-sm text-app-text-2"><x-ui.icon name="storefront" :size="18" class="mt-px shrink-0 text-brand" /><span class="min-w-0">{{ $policyLine ?? '' }} <a href="{{ route('owner.settings.index') }}#payments" class="inline-flex min-h-11 items-center rounded font-semibold text-brand underline-offset-2 hover:underline focus-ring sm:min-h-0">Payment rules</a></span></p>
 
     {{-- Phase 10E: the tiles follow the width of this area (container query), so the sidebar open or folded never squeezes them --}}
     <div class="@container mt-6">
@@ -181,7 +181,7 @@
             <section class="rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="today-title">
                 <div class="flex flex-wrap items-baseline justify-between gap-2">
                     <h2 id="today-title" class="flex items-center gap-2 font-display text-xl font-semibold"><x-ui.icon name="photo_camera" :size="22" class="text-brand" />Today’s photoshoots</h2>
-                    <x-ui.date :value="Carbon::now('UTC')" format="M j, Y" class="font-mono text-xs text-app-text-2" />
+                    <x-ui.date :value="Carbon::now('UTC')" format="M j, Y" class="tabular-nums text-xs text-app-text-2" />
                 </div>
                 @if ($data['shoots']->isEmpty())
                     <p class="mt-4 rounded-control bg-neutral-100 p-3 text-sm text-app-text-2 dark:bg-white/5">No confirmed photoshoots today.</p>
@@ -192,7 +192,7 @@
                             <li class="relative">
                                 <span class="absolute -left-6 top-1.5 size-3 rounded-full border-2 border-app-card bg-brand" aria-hidden="true"></span>
                                 <a href="{{ route('owner.bookings.show', $shoot) }}" class="block rounded-control bg-neutral-100/70 p-3 transition-colors hover:bg-neutral-100 focus-ring dark:bg-white/5 dark:hover:bg-white/10">
-                                    <span class="font-mono text-sm font-bold"><x-ui.date :value="$shoot->starts_at" format="g:i A" /> – <x-ui.date :value="$shoot->ends_at" format="g:i A" /></span>
+                                    <span class="tabular-nums text-sm font-bold"><x-ui.date :value="$shoot->starts_at" format="g:i A" /> – <x-ui.date :value="$shoot->ends_at" format="g:i A" /></span>
                                     <span class="mt-1 block truncate font-semibold">{{ $shoot->snapshot['package']['name'] ?? $shoot->package?->name }}</span>
                                     <span class="block truncate text-xs text-app-text-2">{{ $shoot->reference_number }} · {{ $shoot->customer?->name ?? 'Deleted account' }}{{ $shoot->isWalkIn() ? ' · Walk-in' : '' }}</span>
                                 </a>

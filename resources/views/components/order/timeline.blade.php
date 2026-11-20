@@ -39,7 +39,7 @@
             ])>
                 <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
                     <p class="font-semibold">{{ $row->title() }}</p>
-                    <x-ui.date :value="$row->created_at" class="font-mono text-xs text-app-text-2" />
+                    <x-ui.date :value="$row->created_at" class="tabular-nums text-xs text-app-text-2" />
                 </div>
                 <p class="mt-0.5 text-xs text-app-text-2">{{ $who }}</p>
                 @if ($row->note)

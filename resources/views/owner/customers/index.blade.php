@@ -108,7 +108,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-4 font-mono text-xs">{{ $customer->phone ?: '—' }}</td>
+                                <td class="whitespace-nowrap px-4 py-4 text-sm tabular-nums">{{ $customer->phone ? \App\Support\PhilippineMobile::display($customer->phone) : '—' }}</td>
                                 <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$customer->created_at" format="M j, Y" /></td>
                                 <td class="whitespace-nowrap px-4 py-4 text-xs tabular-nums">
                                     <span class="block">{{ $customer->printing_orders_count }} {{ Str::plural('order', $customer->printing_orders_count) }}</span>
@@ -139,7 +139,7 @@
                                 @endif
                             </span>
                             <span class="mt-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                                <span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Phone</span><span class="break-all font-mono text-xs">{{ $customer->phone ?: '—' }}</span></span>
+                                <span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Phone</span><span class="break-all text-sm tabular-nums">{{ $customer->phone ? \App\Support\PhilippineMobile::display($customer->phone) : '—' }}</span></span>
                                 <span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Joined</span><x-ui.date :value="$customer->created_at" format="M j, Y" class="text-xs" /></span>
                                 <span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Requests</span><span class="text-xs tabular-nums">{{ $customer->printing_orders_count }} {{ Str::plural('order', $customer->printing_orders_count) }} · {{ $customer->photography_bookings_count }} {{ Str::plural('booking', $customer->photography_bookings_count) }}</span></span>
                                 <span class="min-w-0"><span class="block text-[10px] font-bold uppercase tracking-wider text-app-text-2">Last request</span><x-ui.date :value="$customer->last_activity_at" format="M j, Y" class="text-xs" /></span>

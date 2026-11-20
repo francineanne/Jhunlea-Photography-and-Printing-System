@@ -30,7 +30,7 @@
         </x-ui.notice>
     @endif
 
-    <nav aria-label="Filter by kind" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
+    <nav aria-label="Filter by kind" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
         <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
             @foreach ($tabs as $kind => [$label, $count])
                 @php($current = ($filters['kind'] ?? '') === (string) $kind)
@@ -55,8 +55,8 @@
         @if ($statuses !== [])
             <x-ui.select label="Status" name="status">
                 <option value="">Any status</option>
-                @foreach ($statuses as $status)
-                    <option value="{{ $status->value }}" @selected($filters['status'] === $status->value)>{{ $status->label() }}</option>
+                @foreach ($statuses as $value => $label)
+                    <option value="{{ $value }}" @selected($filters['status'] === $value)>{{ $label }}</option>
                 @endforeach
             </x-ui.select>
         @else
@@ -114,7 +114,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$request->created_at" format="M j, Y" /><span class="block font-mono text-[11px] text-app-text-2"><x-ui.date :value="$request->created_at" format="g:i A" /></span></td>
+                                <td class="whitespace-nowrap px-4 py-4"><x-ui.date :value="$request->created_at" format="M j, Y" /><span class="block tabular-nums text-[11px] text-app-text-2"><x-ui.date :value="$request->created_at" format="g:i A" /></span></td>
                                 <td class="px-4 py-4"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$request->status" :expired="$request instanceof \App\Models\PhotographyBooking && $request->isExpired()" live /><x-payment.badge :payable="$request" /></span></td>
                                 <td class="whitespace-nowrap px-4 py-4 text-right">
                                     <p class="font-bold tabular-nums">{{ $request->confirmedText() ?? $request->estimateText() }}</p>

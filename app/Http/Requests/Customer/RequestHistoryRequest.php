@@ -29,7 +29,8 @@ class RequestHistoryRequest extends FormRequest
     {
         $statuses = match ($this->input('kind')) {
             'printing' => array_column(PrintingOrderStatus::cases(), 'value'),
-            'photography' => array_column(BookingStatus::cases(), 'value'),
+            // Phase 10N: "expired" is the 10L derived state (no stored status), filtered like the booking tabs
+            'photography' => [...array_column(BookingStatus::cases(), 'value'), RequestHistoryService::EXPIRED],
             default => [],
         };
 

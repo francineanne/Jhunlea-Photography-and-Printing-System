@@ -20,9 +20,12 @@ class RequestHistoryController extends Controller
             'requests' => $history->page($request->user(), $filters),
             'counts' => $history->counts($request->user()),
             'filters' => $filters,
+            // value => label; Phase 10N: photography adds "Expired" right after the two request statuses (as the tabs do)
             'statuses' => match ($filters['kind']) {
-                'printing' => PrintingOrderStatus::cases(),
-                'photography' => BookingStatus::cases(),
+                'printing' => collect(PrintingOrderStatus::cases())->mapWithKeys(fn (PrintingOrderStatus $s) => [$s->value => $s->label()])->all(),
+                'photography' => collect(BookingStatus::cases())->flatMap(fn (BookingStatus $s) => $s === BookingStatus::Proposed
+                    ? [$s->value => $s->label(), RequestHistoryService::EXPIRED => 'Expired']
+                    : [$s->value => $s->label()])->all(),
                 default => [],
             },
             'hasFilters' => $filters['kind'] || $filters['status'] || $filters['search'] !== '' || $filters['from'] || $filters['to'],

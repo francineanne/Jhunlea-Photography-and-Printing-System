@@ -47,14 +47,10 @@
     <section id="actions" class="@container scroll-mt-24 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none" aria-labelledby="order-title">
         <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between" data-page-header>
             <div class="min-w-0 flex-1">
-                {{-- Phase 10F: the header's action slot beside the title, like the customer page; a full-width row below it when narrow --}}
-                <div class="flex flex-col gap-3 @xl:flex-row @xl:items-center @xl:justify-between">
-                    <div class="flex min-w-0 flex-wrap items-center gap-2">
-                        <div class="flex items-center gap-1"><h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1><x-ui.copy :text="$order->reference_number" label="Copy reference number" /></div>
-                        <x-walk-in.badge :record="$order" />
-                        <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
-                    </div>
-                    <div class="flex shrink-0 flex-wrap gap-2" data-header-actions><x-chat.message-customer :customer="$customer" :record="$order" type="printing_order" class="w-full @xl:w-auto" /></div>
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-1"><h1 id="order-title" class="font-display text-2xl font-semibold sm:text-3xl">{{ $order->reference_number }}</h1><x-ui.copy :text="$order->reference_number" label="Copy reference number" /></div>
+                    <x-walk-in.badge :record="$order" />
+                    <span class="rounded bg-status-red-bg px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-brand">{{ $order->serviceName() }}</span>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-2">
                     <x-ui.status-badge :status="$order->status" live />
@@ -62,12 +58,15 @@
                         <x-ui.badge tone="amber" pulse="pulse">Waiting for the customer</x-ui.badge>
                     @endif
                 </div>
-                <p class="mt-2 font-mono text-xs text-app-text-2">Sent: <x-ui.date :value="$order->created_at" /></p>
+                <p class="mt-2 text-xs tabular-nums text-app-text-2">Sent: <x-ui.date :value="$order->created_at" /></p>
                 <x-order.from-booking :order="$order" viewer="owner" class="mt-1" />
             </div>
 
+            {{-- Phase 10N: the order's actions on the right, the message button the last of them at the same top line (never
+                 floating beside the title); narrow: under the title, the message button full width --}}
+            <div class="flex flex-col gap-2 xl:max-w-xl xl:items-end">
             @if ($moves->isNotEmpty() || $canRequestInfo || $canChangePrice)
-                <div class="flex flex-wrap gap-2 xl:max-w-xl xl:justify-end">
+                <div class="flex flex-wrap gap-2 xl:justify-end">
                     @foreach ($simple as $value => $action)
                         @if (in_array($value, $moveValues, true))
                             <form method="POST" action="{{ route($action['route'], $order) }}" @if ($action['route'] === 'owner.orders.unclaimed') data-confirm="Mark {{ $order->reference_number }} as unclaimed?" data-confirm-text="The order is closed without payment and this customer pays before printing next time. This cannot be undone." data-confirm-ok="Mark unclaimed" data-confirm-danger @endif>
@@ -78,6 +77,8 @@
                     @endforeach
                 </div>
             @endif
+                <div class="flex xl:justify-end" data-header-actions><x-chat.message-customer :customer="$customer" :record="$order" type="printing_order" class="w-full xl:w-auto" /></div>
+            </div>
         </div>
 
         @if ($errors->any())
@@ -234,13 +235,13 @@
                     @if (($snapshot['service']['base_price'] ?? null) !== null)
                         <div class="flex justify-between gap-3">
                             <dt class="text-app-text-2">Base price ({{ \App\Enums\PricingType::tryFrom($snapshot['service']['pricing_type'] ?? '')?->label() ?? 'service' }})</dt>
-                            <dd class="font-mono text-xs font-semibold tabular-nums">{{ \App\Support\Money::format($snapshot['service']['base_price']) }}</dd>
+                            <dd class="text-xs font-semibold tabular-nums">{{ \App\Support\Money::format($snapshot['service']['base_price']) }}</dd>
                         </div>
                     @endif
                     @foreach ($order->chosenOptions() as $option)
                         <div class="flex justify-between gap-3">
                             <dt class="min-w-0 break-words text-app-text-2">{{ $option['group'] }}: {{ $option['label'] }}</dt>
-                            <dd class="shrink-0 font-mono text-xs tabular-nums">{{ $option['price'] }}</dd>
+                            <dd class="shrink-0 text-xs tabular-nums">{{ $option['price'] }}</dd>
                         </div>
                     @endforeach
                     <div class="flex justify-between gap-3 border-t border-app-border pt-2">

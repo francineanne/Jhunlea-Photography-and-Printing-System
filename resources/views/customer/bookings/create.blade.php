@@ -456,12 +456,16 @@
                                 x-on:dragover.prevent="dragging = true" x-on:dragleave.prevent="dragging = false" x-on:drop.prevent="dropImages($event)"
                                 x-bind:class="dragging ? '!border-brand !bg-brand/5' : ''">
                                 <span class="grid size-12 place-items-center rounded-full bg-app-card text-brand shadow-sm" aria-hidden="true"><x-ui.icon name="add_photo_alternate" :size="28" /></span>
-                                <p class="mt-2 text-sm text-app-text-2">{{ $imageRules['types'] }} · up to {{ $imageRules['maxMb'] }} MB each · up to {{ $imageRules['max'] }} images and {{ $imageRules['totalMb'] }} MB in total.</p>
+                                <p class="mt-2 max-w-sm text-balance text-sm text-app-text-2">{{ $imageRules['types'] }} · up to {{ $imageRules['maxMb'] }} MB each · up to {{ $imageRules['max'] }} images and {{ $imageRules['totalMb'] }} MB in total.</p>
                                 <label for="images" class="sr-only">Reference images</label>
-                                <input id="images" type="file" name="images[]" multiple x-ref="images" x-on:change.stop="readImages(); problem = ''; sync()"
-                                    accept="{{ collect($imageRules['extensions'])->map(fn ($ext) => '.'.$ext)->join(',') }}"
-                                    @if ($imageErrors->isNotEmpty()) aria-invalid="true" aria-describedby="images-error" @endif
-                                    class="mt-3 block w-full max-w-md cursor-pointer rounded-control text-sm text-app-text-2 file:mr-3 file:h-11 file:cursor-pointer file:rounded-control file:border-0 file:bg-brand file:px-5 file:text-sm file:font-semibold file:text-white file:transition-colors hover:file:bg-brand-deep focus-ring">
+                                {{-- Phase 10N: one styled button over the native input --}}
+                                <div class="mt-3 flex flex-col items-center">
+                                    <input id="images" type="file" name="images[]" multiple x-ref="images" x-on:change.stop="readImages(); problem = ''; sync()"
+                                        accept="{{ collect($imageRules['extensions'])->map(fn ($ext) => '.'.$ext)->join(',') }}"
+                                        @if ($imageErrors->isNotEmpty()) aria-invalid="true" aria-describedby="images-error" @endif
+                                        class="peer sr-only">
+                                    <x-ui.file-button for="images" label="Choose images" icon="add_photo_alternate" :chosen="false" />
+                                </div>
                             </div>
 
                             <p class="mt-2 flex items-start gap-1 rounded-control border border-status-red/30 bg-status-red-bg p-3 text-sm text-status-red" role="alert" x-cloak x-show="imageTotalProblem()">

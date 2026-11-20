@@ -42,7 +42,7 @@
                 <p class="mt-2 inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-app-text-2 dark:bg-white/10">
                     <x-ui.icon name="{{ $area === 'owner' ? 'storefront' : 'person' }}" :size="14" />{{ $area === 'owner' ? 'Shop owner' : 'Customer' }}
                 </p>
-                <p class="mt-3 font-mono text-xs text-app-text-2">Member since <x-ui.date :value="$user->created_at" format="M j, Y" /></p>
+                <p class="mt-3 tabular-nums text-xs text-app-text-2">Member since <x-ui.date :value="$user->created_at" format="M j, Y" /></p>
                 @if ($counts !== null)
                     <dl class="mt-4 grid grid-cols-2 divide-x divide-app-border rounded-control bg-neutral-100 py-3 dark:bg-white/5">
                         <div>
@@ -93,9 +93,13 @@
                             <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex min-w-0 max-w-full flex-wrap items-center gap-2">
                                 @csrf
                                 <label class="sr-only" for="avatar-file">Choose a picture</label>
-                                <input id="avatar-file" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required
-                                    @if ($avatarErrors->any()) aria-invalid="true" aria-describedby="avatar-error" @endif
-                                    class="block min-h-11 w-full min-w-0 max-w-full text-base text-app-text-2 sm:w-auto file:mr-3 file:min-h-11 file:cursor-pointer file:rounded-control file:border file:border-app-border file:bg-app-card file:px-3 file:text-sm file:font-semibold file:text-app-text hover:file:border-brand sm:text-sm">
+                                {{-- Phase 10N: one styled button over the native input, the chosen name under it --}}
+                                <span class="flex min-w-0 flex-col items-start gap-1">
+                                    <input id="avatar-file" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required
+                                        @if ($avatarErrors->any()) aria-invalid="true" aria-describedby="avatar-error" @endif
+                                        class="peer sr-only">
+                                    <x-ui.file-button for="avatar-file" label="Choose a picture" icon="image" variant="outline" empty="No picture chosen yet" />
+                                </span>
                                 <x-ui.button type="submit" variant="outline" size="sm"><x-ui.icon name="upload" :size="18" />{{ $user->avatarUrl() ? 'Replace picture' : 'Upload picture' }}</x-ui.button>
                             </form>
                             @if ($user->avatarUrl())

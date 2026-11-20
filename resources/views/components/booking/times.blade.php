@@ -23,7 +23,7 @@
             @endif
         </div>
         <p class="mt-1 font-semibold"><x-ui.date :value="$booking->requested_starts_at" format="D, M j, Y" /></p>
-        <p class="font-mono text-sm text-app-text-2"><x-ui.date :value="$booking->requested_starts_at" format="g:i A" /> – <x-ui.date :value="$booking->requested_starts_at->copy()->addMinutes($minutes)" format="g:i A" /></p>
+        <p class="tabular-nums text-sm text-app-text-2"><x-ui.date :value="$booking->requested_starts_at" format="g:i A" /> – <x-ui.date :value="$booking->requested_starts_at->copy()->addMinutes($minutes)" format="g:i A" /></p>
     </div>
 
     @if ($status === BookingStatus::Proposed && $booking->proposed_starts_at)
@@ -31,7 +31,7 @@
         <div class="rounded-card border border-status-blue/30 bg-status-blue-bg p-4">
             <p class="text-[11px] font-bold uppercase tracking-wider text-status-blue">Proposed by the studio</p>
             <p class="mt-1 text-lg font-semibold"><x-ui.date :value="$booking->proposed_starts_at" format="D, M j, Y" /></p>
-            <p class="font-mono text-sm"><x-ui.date :value="$booking->proposed_starts_at" format="g:i A" /> – <x-ui.date :value="$booking->proposed_starts_at->copy()->addMinutes($minutes)" format="g:i A" /></p>
+            <p class="tabular-nums text-sm"><x-ui.date :value="$booking->proposed_starts_at" format="g:i A" /> – <x-ui.date :value="$booking->proposed_starts_at->copy()->addMinutes($minutes)" format="g:i A" /></p>
         </div>
     @endif
 
@@ -45,7 +45,7 @@
                 @endunless
             </div>
             <p class="mt-1 text-lg font-semibold"><x-ui.date :value="$booking->starts_at" format="D, M j, Y" /></p>
-            <p class="font-mono text-sm text-brand"><x-ui.date :value="$booking->starts_at" format="g:i A" /> – <x-ui.date :value="$booking->ends_at" format="g:i A" /></p>
+            <p class="tabular-nums text-sm text-brand"><x-ui.date :value="$booking->starts_at" format="g:i A" /> – <x-ui.date :value="$booking->ends_at" format="g:i A" /></p>
         </div>
     @endif
 

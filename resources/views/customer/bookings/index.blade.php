@@ -30,8 +30,8 @@
     @endif
 
     {{-- Status tabs with the customer's own counts, as in the design --}}
-    <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <ul class="flex w-max gap-2">
+    <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
+        <ul class="flex w-max gap-2 lg:w-auto lg:flex-wrap">
             <li>
                 <a href="{{ route('customer.bookings.index') }}" @if (! $status && ! $expired) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-all duration-200 focus-ring',
@@ -112,7 +112,7 @@
                                     <x-ui.icon name="event" :size="18" class="mt-0.5 shrink-0 text-brand" />
                                     <span>
                                         <span class="block font-semibold">{{ $booking->timeLine()['booked'] ? 'Booked: ' : 'Asked: ' }}<x-ui.date :value="$booking->starts_at" format="D, M j, Y" /></span>
-                                        <span class="block font-mono text-xs text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /> – <x-ui.date :value="$booking->ends_at" format="g:i A" /> · Philippine time</span>
+                                        <span class="block tabular-nums text-xs text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /> – <x-ui.date :value="$booking->ends_at" format="g:i A" /> · Philippine time</span>
                                     </span>
                                 </p>
                                 @if ($booking->isExpired())

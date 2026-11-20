@@ -156,7 +156,7 @@
                     @endif
                 </x-ui.card>
             @else
-                <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
+                <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none min-[1400px]:block">
                     <table class="w-full text-left text-sm">
                         <caption class="sr-only">Payments, newest first</caption>
                         <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">
@@ -178,7 +178,7 @@
                                         <x-ui.badge :tone="$payment->isRecorded() ? 'green' : 'gray'" class="mt-1">{{ $payment->status->label() }}</x-ui.badge>
                                         <a href="{{ route('owner.payments.receipt', $payment) }}" class="mt-1 flex min-h-9 items-center gap-1 rounded text-xs font-semibold text-app-text-2 hover:text-brand focus-ring"><x-ui.icon name="print" :size="14" />Print receipt</a>
                                     </td>
-                                    <td class="whitespace-nowrap px-4 py-4 font-mono text-xs"><x-ui.date :value="$payment->received_at" /></td>
+                                    <td class="whitespace-nowrap px-4 py-4 tabular-nums text-xs"><x-ui.date :value="$payment->received_at" /></td>
                                     <td class="px-4 py-4">
                                         @if ($payment->payable)
                                             <a href="{{ $payableUrl($payment->payable) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold hover:text-brand hover:underline focus-ring sm:min-h-0">{{ $payment->payable->reference_number }}</a>
@@ -209,7 +209,7 @@
                 </div>
 
                 {{-- Phones and tablets: one card per payment --}}
-                <ul class="space-y-3 xl:hidden">
+                <ul class="space-y-3 min-[1400px]:hidden">
                     @foreach ($payments as $payment)
                         <li @class(['rounded-card border border-app-border bg-app-card p-4 shadow-sm dark:shadow-none', 'opacity-75' => ! $payment->isRecorded()])>
                             <div class="flex flex-wrap items-center justify-between gap-2">
@@ -228,7 +228,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Received</dt>
-                                    <dd class="font-mono text-xs"><x-ui.date :value="$payment->received_at" /></dd>
+                                    <dd class="tabular-nums text-xs"><x-ui.date :value="$payment->received_at" /></dd>
                                 </div>
                                 <div class="min-w-0">
                                     <dt class="text-[10px] font-bold uppercase tracking-wider text-app-text-2">Recorded by</dt>

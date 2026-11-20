@@ -189,7 +189,7 @@
                                                     <label class="group flex min-h-14 cursor-pointer items-start justify-between gap-3 rounded-control border border-app-border bg-neutral-50 p-3 transition-[background-color,border-color,box-shadow] duration-300 hover:bg-neutral-100 has-checked:border-brand has-checked:bg-app-card has-checked:ring-2 has-checked:ring-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand dark:bg-white/5 dark:hover:bg-white/10 dark:has-checked:bg-white/10">
                                                         <span class="min-w-0">
                                                             <span class="block text-sm font-semibold">{{ $option->label }}</span>
-                                                            <span class="mt-0.5 block font-mono text-xs text-app-text-2 group-has-checked:text-brand">{{ \App\Support\Money::modifier($option->price_modifier) }}</span>
+                                                            <span class="mt-0.5 block tabular-nums text-xs text-app-text-2 group-has-checked:text-brand">{{ \App\Support\Money::modifier($option->price_modifier) }}</span>
                                                         </span>
                                                         <input type="radio" name="options[{{ $service->id }}][{{ $group->value }}]" value="{{ $option->id }}"
                                                             data-label="{{ $group->label() }}: {{ $option->label }}" @checked($checked)
@@ -256,13 +256,17 @@
                             x-bind:class="dragging ? '!border-brand !bg-brand/5' : ''">
                             <span class="grid size-14 place-items-center rounded-full bg-app-card text-brand shadow-sm" aria-hidden="true"><x-ui.icon name="upload_file" :size="30" /></span>
                             <p class="mt-3 font-semibold"><span x-cloak class="hidden sm:inline">Drag and drop your files here, or choose them below</span><span class="sm:hidden">Choose the files to print</span><span x-show="false" class="hidden sm:inline">Choose the files to print</span></p>
-                            <p class="mt-1 max-w-md text-sm text-app-text-2" x-cloak x-text="acceptText()"></p>
-                            <p class="mt-1 max-w-md text-sm text-app-text-2" x-show="false">Each service in step 1 lists the files it accepts and the largest file it takes. Up to {{ $maxFiles }} files and {{ $maxTotalMb }} MB in total per order.</p>
+                            <p class="mt-1 max-w-sm text-balance text-sm text-app-text-2" x-cloak x-text="acceptText()"></p>
+                            <p class="mt-1 max-w-sm text-balance text-sm text-app-text-2" x-show="false">Each service in step 1 lists the files it accepts and the largest file it takes. Up to {{ $maxFiles }} files and {{ $maxTotalMb }} MB in total per order.</p>
                             <label for="files" class="sr-only">Files to print</label>
-                            <input id="files" type="file" name="files[]" multiple x-ref="files" x-on:change.stop="readFiles(); sync()"
-                                accept="{{ $allExtensions->map(fn ($ext) => '.'.$ext)->join(',') }}" x-bind:accept="acceptList()"
-                                @if ($fileErrors->isNotEmpty()) aria-invalid="true" aria-describedby="files-error" @endif
-                                class="mt-4 block w-full max-w-md cursor-pointer rounded-control text-sm text-app-text-2 file:mr-3 file:h-11 file:cursor-pointer file:rounded-control file:border-0 file:bg-brand file:px-5 file:text-sm file:font-semibold file:text-white file:transition-colors hover:file:bg-brand-deep focus-ring">
+                            {{-- Phase 10N: the native input stays (focusable, labelled, posted without JavaScript); the button is what is seen --}}
+                            <div class="mt-4 flex flex-col items-center">
+                                <input id="files" type="file" name="files[]" multiple x-ref="files" x-on:change.stop="readFiles(); sync()"
+                                    accept="{{ $allExtensions->map(fn ($ext) => '.'.$ext)->join(',') }}" x-bind:accept="acceptList()"
+                                    @if ($fileErrors->isNotEmpty()) aria-invalid="true" aria-describedby="files-error" @endif
+                                    class="peer sr-only">
+                                <x-ui.file-button for="files" :chosen="false" />
+                            </div>
                         </div>
 
                         <div class="mt-5" x-cloak x-show="files.length > 0">

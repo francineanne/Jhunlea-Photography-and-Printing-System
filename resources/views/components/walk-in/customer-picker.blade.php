@@ -39,7 +39,7 @@
                 <div class="min-w-0">
                     <p class="flex flex-wrap items-center gap-2 font-semibold"><span class="break-words" x-text="picked.name"></span>
                         <span x-show="picked.walk_in" class="rounded-full bg-status-blue-bg px-2 py-0.5 text-[11px] font-bold text-status-blue">Walk-in</span></p>
-                    <p class="font-mono text-xs text-app-text-2" x-text="picked.phone || 'No phone'"></p>
+                    <p class="tabular-nums text-xs text-app-text-2" x-text="picked.phone || 'No phone'"></p>
                 </div>
                 <x-ui.button type="button" variant="ghost" size="sm" class="min-h-11" x-on:click="clear()">Change</x-ui.button>
             </div>
@@ -50,7 +50,7 @@
             <div x-show="picked" x-cloak class="mt-3" x-data="{ other: @js((bool) old('other_number')) }" data-contact-choice>
                 <input type="hidden" name="other_number" x-bind:value="other && picked && picked.phone ? '1' : '0'">
                 <p x-show="picked && picked.phone && ! other" class="text-sm text-app-text-2">
-                    The studio calls <span class="font-mono font-semibold text-app-text" x-text="picked ? picked.phone : ''"></span> about this booking.
+                    The studio calls <span class="tabular-nums font-semibold text-app-text" x-text="picked ? picked.phone : ''"></span> about this booking.
                     <button type="button" x-on:click="other = true; $nextTick(() => $refs.other.querySelector('input').focus())" class="ml-1 inline-flex min-h-11 items-center rounded font-semibold text-brand hover:underline focus-ring sm:min-h-0">Use a different number for this booking</button>
                 </p>
                 <div x-show="picked && (! picked.phone || other)" x-ref="other" class="max-w-sm">
@@ -70,7 +70,7 @@
                         <button type="button" role="option" x-on:click="pick(customer)"
                             class="flex min-h-11 w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-neutral-100 focus-ring dark:hover:bg-white/10">
                             <span class="min-w-0"><span class="block break-words font-semibold" x-text="customer.name"></span>
-                                <span class="block font-mono text-xs text-app-text-2" x-text="customer.phone || 'No phone'"></span></span>
+                                <span class="block tabular-nums text-xs text-app-text-2" x-text="customer.phone || 'No phone'"></span></span>
                             <span x-show="customer.walk_in" class="shrink-0 rounded-full bg-status-blue-bg px-2 py-0.5 text-[11px] font-bold text-status-blue">Walk-in</span>
                         </button>
                     </li>

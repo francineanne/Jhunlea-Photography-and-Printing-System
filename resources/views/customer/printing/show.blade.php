@@ -116,12 +116,16 @@
                         @endif
 
                         @if ($room > 0)
-                            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-                                <label for="add-files" class="sr-only">Files to add</label>
-                                <input id="add-files" type="file" name="files[]" multiple required
-                                    accept="{{ $accept }}"
-                                    @if ($fileErrors->isNotEmpty()) aria-invalid="true" aria-describedby="add-files-error" @endif
-                                    class="block w-full min-w-0 cursor-pointer rounded-control text-sm text-app-text-2 file:mr-3 file:h-11 file:cursor-pointer file:rounded-control file:border-0 file:bg-neutral-200 file:px-4 file:text-sm file:font-semibold file:text-app-text file:transition-colors hover:file:bg-neutral-300 focus-ring dark:file:bg-white/10 dark:file:text-white">
+                            {{-- Phase 10N: one styled "Choose files" button over the native input, the chosen names under it --}}
+                            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-start">
+                                <div class="flex min-w-0 flex-col items-start gap-1">
+                                    <label for="add-files" class="sr-only">Files to add</label>
+                                    <input id="add-files" type="file" name="files[]" multiple required
+                                        accept="{{ $accept }}"
+                                        @if ($fileErrors->isNotEmpty()) aria-invalid="true" aria-describedby="add-files-error" @endif
+                                        class="peer sr-only">
+                                    <x-ui.file-button for="add-files" variant="outline" class="w-full sm:w-auto" />
+                                </div>
                                 <x-ui.button type="submit" class="shrink-0"><x-ui.icon name="upload" :size="18" />Add files</x-ui.button>
                             </div>
                         @endif

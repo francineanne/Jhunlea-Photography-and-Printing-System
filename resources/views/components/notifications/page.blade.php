@@ -41,7 +41,8 @@
 @endif
 
 <div class="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-<nav aria-label="Filter notifications">
+{{-- Phase 10N: scrolls sideways without a scrollbar when the tabs are wider than the page --}}
+<nav aria-label="Filter notifications" class="scroll-x-fade -mx-4 px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
     <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
         @foreach ($tabs as $key => $label)
             @php($current = $active === $key)
@@ -106,7 +107,7 @@
                                                 @endunless
                                                 <span @class(['break-words', 'font-semibold' => ! $item['read']])>{{ $item['title'] }}</span>
                                             </span>
-                                            <x-ui.date :value="$item['created_at']" class="shrink-0 font-mono text-xs text-app-text-2" />
+                                            <x-ui.date :value="$item['created_at']" class="shrink-0 tabular-nums text-xs text-app-text-2" />
                                         </span>
                                         <span class="mt-1 block break-words text-sm text-app-text-2">{{ $item['message'] }}</span>
                                         <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand">Open<x-ui.icon name="arrow_forward" :size="16" class="transition-transform group-hover:translate-x-1" /></span>

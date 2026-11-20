@@ -82,7 +82,7 @@
 
         {{-- Filters and search --}}
         <div class="mt-4 flex flex-col gap-2 rounded-card border border-app-border bg-app-card p-1.5 shadow-sm md:flex-row md:items-center dark:shadow-none" @if ($conversation) x-bind:class="'max-lg:hidden'" @endif>
-            <div class="flex gap-1 relative overflow-x-auto" role="tablist" aria-label="Filter conversations">
+            <div class="scroll-x-fade flex gap-1 relative" role="tablist" aria-label="Filter conversations" x-init="$scrollFade($el)">
                 @foreach ($tabs as $key => $label)
                     <button type="button" role="tab" x-bind:aria-selected="list.filter === '{{ $key }}'" x-on:click="setFilter('{{ $key }}')"
                         x-bind:class="list.filter === '{{ $key }}' ? 'bg-brand text-white' : 'text-app-text-2 hover:bg-black/5 dark:hover:bg-white/5'"

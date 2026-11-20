@@ -65,7 +65,7 @@
                                         <x-ui.countdown :until="$booking->downpayment_due_at" class="text-xs" />
                                     </span>
                                     @if ($phone = $call($booking->contact_number ?? $booking->customer?->phone))
-                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 font-mono text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
+                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 tabular-nums text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
                                     @endif
                                 </li>
                             @endforeach
@@ -85,7 +85,7 @@
                                         <span class="block text-xs text-app-text-2">{{ LocalTime::format($booking->starts_at) }} · {{ Money::format($booking->amountDue()) }} to pay</span>
                                     </span>
                                     @if ($phone = $call($booking->contact_number ?? $booking->customer?->phone))
-                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 font-mono text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
+                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 tabular-nums text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
                                     @endif
                                 </li>
                             @endforeach
@@ -106,7 +106,7 @@
                                         <span class="block text-xs text-app-text-2">{{ Money::format($row['order']->amountDue()) }} to pay · waiting {{ $row['days'] }} {{ Str::plural('day', $row['days']) }}@if ($row['unclaimable']) · <span class="font-semibold text-status-amber">can be marked Unclaimed</span>@endif</span>
                                     </span>
                                     @if ($phone = $call($row['order']->customer?->phone))
-                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 font-mono text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
+                                        <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control px-2 tabular-nums text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
                                     @endif
                                 </li>
                             @endforeach
@@ -150,7 +150,7 @@
                 @foreach ($customers as $customer)
                     @php($open = (int) $customer->open_orders_count + (int) $customer->open_bookings_count)
                     <li class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-3">
-                        <a href="{{ route('owner.customers.show', $customer) }}" class="flex min-w-0 items-center gap-3 rounded focus-ring">
+                        <a href="{{ route('owner.customers.show', $customer) }}" class="flex min-h-11 min-w-0 items-center gap-3 rounded focus-ring">
                             <x-ui.user-avatar :user="$customer" size="sm" class="shrink-0" />
                             <span class="min-w-0">
                                 <span class="block truncate font-semibold hover:text-brand">{{ $customer->name }}</span>
@@ -160,7 +160,7 @@
                         <span class="flex flex-wrap items-center gap-3 text-sm">
                             <span class="rounded-full px-2 py-0.5 text-xs font-semibold {{ $open > 0 ? 'bg-status-blue-bg text-status-blue' : 'bg-status-gray-bg text-status-gray' }}">{{ $open }} open</span>
                             @if ($phone = $call($customer->phone))
-                                <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control font-mono font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
+                                <a href="{{ $phone['href'] }}" class="inline-flex min-h-11 items-center gap-1 rounded-control tabular-nums font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]"><x-ui.icon name="call" :size="16" />{{ $phone['text'] }}</a>
                             @else
                                 <span class="text-xs text-app-text-2">No phone</span>
                             @endif

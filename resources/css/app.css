@@ -715,6 +715,33 @@ html.js [data-time-select] {
     --fade-bottom: 2rem;
 }
 
+/* Phase 10N: the same idea for every horizontal tab or pill bar that can be wider than its box (the status tabs of the
+   order and booking lists, My requests, notifications, the inbox filters): no visible scrollbar, a soft fade on the left
+   or the right only while there are more tabs that way (data-fade, set by $scrollFade), the current tab brought into
+   view. When the tabs fit there is no fade at all. Wheel, trackpad, touch and Tab keep scrolling it. */
+.scroll-x-fade {
+    --fade-left: 0px;
+    --fade-right: 0px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent 100%);
+}
+
+.scroll-x-fade::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-x-fade[data-fade~='left'] {
+    --fade-left: 2rem;
+}
+
+.scroll-x-fade[data-fade~='right'] {
+    --fade-right: 2rem;
+}
+
 /* The packages list: while its compare bar is showing (a package is ticked), the Chat button moves above it */
 html:has(#compare-form input[type='checkbox']:checked) [data-chat-launcher] {
     bottom: 10rem;

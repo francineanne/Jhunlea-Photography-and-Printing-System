@@ -355,6 +355,14 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Ang 24-hour downpayment reminder ay hinihintay munang 6 na oras na Awaiting downpayment ang booking
 - [x] "Paid now" sa walk-in printing order: nakita sa browser na naitatago at naipapakita ang payment fields
 
+### 10N — Visual polish (branch `phase-10n-ui-polish`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule
+- [x] Iisang file picker (`<x-ui.file-button>`): isang "Choose files" na button sa gitna, wala nang "No file chosen" ng browser; gumagana pa rin sa keyboard at drag and drop
+- [x] "Expired" sa Status ng My requests; ang Requested at New time proposed hindi na naglilista ng expired (parehong rule ng tabs)
+- [x] Header ng booking at order: ang "Message customer about this" ay nasa ilalim ng tiles o kasama ng ibang actions, hindi na lumulutang
+- [x] Tab bars: walang scrollbar, may fade sa gilid, ang active tab nakikita; sa desktop lumilipat sa pangalawang linya
+- [x] Audit: phone, petsa at pera sa body font; maliliit na tap target inayos; orders at payments table mula 1400px (cards sa ilalim)
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

@@ -89,8 +89,15 @@
                     <x-ui.textarea label="Note (optional)" name="notes" rows="2" maxlength="1000" :error="$errors->first('notes')">{{ old('notes') }}</x-ui.textarea>
                 </div>
                 <div class="sm:col-span-2">
-                    <x-ui.input label="Files (optional)" name="files[]" type="file" multiple :error="$errors->first('files')"
-                        hint="Only if the customer gave a file to keep with the order. The usual file types and size limits apply." />
+                    {{-- Phase 10N: one styled button over the native input, the chosen names under it --}}
+                    <x-ui.field id="walk-in-files" label="Files (optional)" :error="$errors->first('files')"
+                        hint="Only if the customer gave a file to keep with the order. The usual file types and size limits apply.">
+                        <div class="flex flex-col items-start gap-1">
+                            <input id="walk-in-files" type="file" name="files[]" multiple class="peer sr-only"
+                                @if ($errors->has('files')) aria-invalid="true" aria-describedby="walk-in-files-error" @endif>
+                            <x-ui.file-button for="walk-in-files" variant="outline" />
+                        </div>
+                    </x-ui.field>
                 </div>
             </div>
         </section>

@@ -148,3 +148,19 @@ Checked in the browser on the throwaway SQLite site: the page headers at 360, 76
 | L4 | Owner bookings list, customer My bookings | An expired request counted and listed under Requested, with "Awaiting price" | A | Expired tab right after the two request tabs on both sides; Requested and New time proposed count only requests still waiting; an expired request shows only "Expired" |
 | L5 | Owner bookings intro, package compare | "Requests do not hold a time until you confirm them" (wrong since 10A) | B | "A new request holds its time for N hours (Booking rules)"; the compare page says a requested time is held for a short while |
 
+## Phase 10N: visual polish
+
+| # | Screen | Problem | Fix |
+|---|---|---|---|
+| N1 | Request printing step 3, booking images, Add files, walk-in order, theme photo, profile picture | The browser's own "Choose Files / No file chosen" control, off-centre | `<x-ui.file-button>` over a hidden but focusable input; the chosen name in a muted line; helper text balanced |
+| N2 | My requests | No "Expired" in the Status filter | Added after "New time proposed"; Requested and New time proposed leave expired requests out (scopeInTab) |
+| N3 | Owner booking and order pages | "Message customer about this" floated beside the title | Under the tiles (booking) or the last of the actions (order), full width when narrow; the walk-in "Call" note left-aligned |
+| N4 | Owner bookings and orders, My bookings, My orders, My requests, notifications, inbox filters | A thick native horizontal scrollbar under the tabs; the notifications tabs could push the page sideways on phones | `.scroll-x-fade` + `$scrollFade`: no scrollbar, edge fades, the active tab in view; the long lists wrap on desktop |
+| N5 | Owner orders and payments lists at 1280px | The table was wider than its box (a native scrollbar, 129px and 16px) | The table shows from 1400px like the bookings list; cards below |
+| N6 | Booking contact, customer page and list, walk-in desk and picker | Phone numbers in the mono font, raw "09171234567" | Body font with tabular digits, `PhilippineMobile::display()` |
+| N7 | Overview, lists, order specs and price lines, booking times, timeline, notifications, payments, income table | Dates and money in the mono font beside body text | Body font with tabular digits (references and specs stay mono) |
+| N8 | Owner overview (phone) | "Payment rules" link 18px tall | 44px tap target on phones |
+| N9 | Payments, awaiting downpayment (phone) | Booking reference links 18px tall | 44px tap target on phones |
+| N10 | Walk-in customers list (phone) | Customer row link 40px tall | 44px |
+
+Checked by script on the throwaway site (sideways page scroll, visible native scrollbars inside components, tap targets under 44px on phones, phones, dates or money in the mono font) at 360 and 1280px: owner Overview, Printing orders (list and detail), Photography bookings (list and detail), Payments, Customers, Walk-in, Schedule; customer dashboard, Request printing, Book a photoshoot, My requests, My bookings, My orders, notifications, account; landing and services. By eye: the file picker (360, dark; keyboard), the tab bars (360 and 1280, dark), the booking header (360, 768, 1280), My requests (360, light). Not checked this pass: packages, compare, FAQ, login and register, the Messages and Lumi windows, owner Reports pages other than income, Ask Lumi, Services and Packages editors, Settings, at 768px and in light theme for most pages.

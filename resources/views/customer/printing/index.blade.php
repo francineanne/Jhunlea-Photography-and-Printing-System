@@ -28,7 +28,7 @@
     @endif
 
     {{-- Status tabs with counts, as in the design. Only statuses you have orders in are listed --}}
-    <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
+    <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
         <ul class="flex w-max gap-1 sm:w-auto sm:flex-wrap">
             <li>
                 <a href="{{ route('customer.printing.index') }}" @if (! $status) aria-current="page" @endif
@@ -97,7 +97,7 @@
                                     <p class="truncate font-semibold">{{ $order->serviceName() }}</p>
                                     <p class="text-xs text-app-text-2">{{ $order->files_count }} {{ Str::plural('file', $order->files_count) }}</p>
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-4 font-mono text-xs text-app-text-2"><x-ui.date :value="$order->created_at" /></td>
+                                <td class="whitespace-nowrap px-4 py-4 tabular-nums text-xs text-app-text-2"><x-ui.date :value="$order->created_at" /></td>
                                 <td class="px-4 py-4 tabular-nums">{{ $order->quantity }}</td>
                                 <td class="px-4 py-4"><span class="flex flex-col items-start gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span></td>
                                 <td class="whitespace-nowrap px-4 py-4">

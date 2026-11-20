@@ -21,8 +21,8 @@
     @endif
 
     {{-- Status tabs with counts of every order, as in the design --}}
-    <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <ul class="flex w-max gap-1 rounded-card bg-neutral-100 p-1 dark:bg-white/5">
+    <nav aria-label="Filter by status" class="scroll-x-fade mt-6 -mx-4 relative px-4 sm:mx-0 sm:px-0" x-init="$scrollFade($el)">
+        <ul class="flex w-max gap-1 xl:w-auto xl:flex-wrap rounded-card bg-neutral-100 p-1 dark:bg-white/5">
             <li>
                 <a href="{{ route('owner.orders.index', array_filter(['q' => $search, 'from' => $from, 'to' => $to])) }}" @if (! $status) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
@@ -79,7 +79,7 @@
                 @endif
             </x-ui.card>
         @else
-            <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none xl:block">
+            <div class="hidden relative overflow-x-auto rounded-card border border-app-border bg-app-card shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:shadow-none min-[1400px]:block">
                 <table class="w-full text-left text-sm">
                     <caption class="sr-only">Printing orders</caption>
                     <thead class="bg-neutral-50 text-[11px] uppercase tracking-wider text-app-text-2 dark:bg-white/5">
@@ -113,7 +113,7 @@
                                     <p class="truncate font-semibold">{{ $order->serviceName() }}</p>
                                     <p class="text-xs text-app-text-2">{{ $order->quantity }} {{ Str::plural('copy', $order->quantity) }} · {{ $order->files_count }} {{ Str::plural('file', $order->files_count) }}</p>
                                 </td>
-                                <td class="whitespace-nowrap px-4 py-4 font-mono text-xs text-app-text-2"><x-ui.date :value="$order->created_at" /></td>
+                                <td class="whitespace-nowrap px-4 py-4 tabular-nums text-xs text-app-text-2"><x-ui.date :value="$order->created_at" /></td>
                                 <td class="whitespace-nowrap px-4 py-4">
                                     <p class="text-xs text-app-text-2">Est. {{ $order->estimateText() }}</p>
                                     <p class="font-bold tabular-nums {{ $order->confirmed_price !== null ? 'text-brand' : 'text-app-text-2' }}">{{ $order->confirmedText() ?? 'Not confirmed' }}</p>
@@ -135,7 +135,7 @@
                 </table>
             </div>
 
-            <ul class="space-y-3 xl:hidden">
+            <ul class="space-y-3 min-[1400px]:hidden">
                 @foreach ($orders as $order)
                     <li>
                         <a href="{{ route('owner.orders.show', $order) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">

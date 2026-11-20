@@ -17,7 +17,7 @@
             <div class="rounded-card bg-neutral-100 p-4 dark:bg-white/5">
                 <dt class="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-app-text-2"><x-ui.icon name="tune" :size="16" />{{ $option['group'] }}</dt>
                 <dd class="mt-1 break-words font-semibold">{{ $option['label'] }}</dd>
-                <dd class="font-mono text-xs text-app-text-2">{{ $option['price'] }}</dd>
+                <dd class="tabular-nums text-xs text-app-text-2">{{ $option['price'] }}</dd>
             </div>
         @endforeach
     </dl>

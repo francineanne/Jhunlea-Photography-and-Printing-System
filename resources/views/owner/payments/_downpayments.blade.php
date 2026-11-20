@@ -22,7 +22,7 @@
                     @php($options = $booking->paymentOptions())
                     <li class="flex flex-wrap items-center justify-between gap-2 py-3">
                         <div class="min-w-0">
-                            <a href="{{ route('owner.bookings.show', $booking) }}" class="font-mono text-sm font-semibold text-brand hover:underline focus-ring rounded">{{ $booking->reference_number }}</a>
+                            <a href="{{ route('owner.bookings.show', $booking) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold text-brand hover:underline focus-ring sm:min-h-0">{{ $booking->reference_number }}</a>
                             <span class="text-sm">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
                             <p class="text-xs text-app-text-2">Due <x-ui.date :value="$booking->downpayment_due_at" /> · <span class="font-semibold">{{ CounterService::timeLeft($booking) }}</span></p>
                         </div>
@@ -46,7 +46,7 @@
                 @foreach ($balanceToday as $booking)
                     <li class="flex flex-wrap items-center justify-between gap-2 py-3">
                         <div class="min-w-0">
-                            <a href="{{ route('owner.bookings.show', $booking) }}" class="font-mono text-sm font-semibold text-brand hover:underline focus-ring rounded">{{ $booking->reference_number }}</a>
+                            <a href="{{ route('owner.bookings.show', $booking) }}" class="inline-flex min-h-11 items-center rounded font-mono text-sm font-semibold text-brand hover:underline focus-ring sm:min-h-0">{{ $booking->reference_number }}</a>
                             <span class="text-sm">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
                             <p class="text-xs text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /> · paid so far {{ Money::cents($booking->paidCents()) }}</p>
                         </div>
