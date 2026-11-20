@@ -110,9 +110,8 @@
                         <form method="POST" action="{{ route('owner.bookings.confirm', $booking) }}" data-confirm="Confirm booking {{ $booking->reference_number }}?" data-confirm-text="The customer is told and this time is kept for them.{{ $downPercent > 0 ? ' A '.$downPercent.'% downpayment of the confirmed price is asked for, due by '.$downDue.'.' : ' No downpayment is asked for: the full price is paid on the day.' }}" data-confirm-detail="{{ \App\Support\LocalTime::format($booking->starts_at) }}" data-confirm-ok="Confirm booking" class="grid gap-3 px-4 pb-4 sm:grid-cols-2">
                             @csrf
                             <input type="hidden" name="_form" value="confirm">
-                            <x-ui.input id="confirm-price" name="confirmed_price" label="Confirmed price (₱)" inputmode="decimal" :required="$onRequest"
-                                value="{{ $openForm === 'confirm' ? old('confirmed_price') : ($booking->estimated_price ?? '') }}"
-                                hint="{{ $onRequest ? 'This package is priced on request: enter the price.' : 'Filled in with the estimate. Change it if the price is different.' }}" />
+                            <x-owner.price-field id="confirm-price" :required="$onRequest" :base="$booking->estimated_price"
+                                :value="$openForm === 'confirm' ? old('confirmed_price') : null" empty="This package is priced on request: enter the price." />
                             <x-ui.input id="confirm-note" name="note" label="Note for the customer (optional)" maxlength="{{ $noteMax }}" value="{{ $openForm === 'confirm' ? old('note') : '' }}" />
                             @if ($breaksRules)
                                 <div class="rounded-control border border-status-amber/30 bg-status-amber-bg p-3 text-sm sm:col-span-2">
@@ -172,8 +171,8 @@
                                     <x-ui.textarea id="propose-note" name="note" label="Note for the customer" maxlength="{{ $noteMax }}" rows="3" :required="true"
                                         hint="Up to {{ $noteMax }} characters. Say why you offer this time.">{{ $openForm === 'propose' ? old('note') : '' }}</x-ui.textarea>
                                     @if ($onRequest)
-                                        <x-ui.input id="propose-price" name="confirmed_price" label="Price for this session (₱)" inputmode="decimal" :required="true"
-                                            value="{{ $openForm === 'propose' ? old('confirmed_price') : '' }}" hint="This package is priced on request: the customer sees this price with the time." />
+                                        <x-owner.price-field id="propose-price" label="Price for this session (₱)"
+                                            :value="$openForm === 'propose' ? old('confirmed_price') : null" empty="This package is priced on request: the customer sees this price with the time." />
                                     @endif
                                 </div>
                                 <x-ui.button type="submit" variant="secondary"><x-ui.icon name="send" :size="18" />Send the new time</x-ui.button>
@@ -363,7 +362,7 @@
                         <form method="POST" action="{{ route('owner.bookings.price', $booking) }}" class="mt-3 space-y-3">
                             @csrf
                             <input type="hidden" name="_form" value="price">
-                            <x-ui.input id="price-new" name="confirmed_price" label="New confirmed price (₱)" inputmode="decimal" :required="true" value="{{ $openForm === 'price' ? old('confirmed_price') : $booking->confirmed_price }}" />
+                            <x-owner.price-field id="price-new" label="New confirmed price (₱)" basis="current" :base="$booking->confirmed_price" :value="$openForm === 'price' ? old('confirmed_price') : null" />
                             <x-ui.input id="price-reason" name="reason" label="Reason (optional)" maxlength="{{ $noteMax }}" value="{{ $openForm === 'price' ? old('reason') : '' }}" hint="Saved in the history, which the customer can read." />
                             <x-ui.button type="submit">Save price</x-ui.button>
                         </form>

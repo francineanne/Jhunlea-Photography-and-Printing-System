@@ -12,6 +12,33 @@ async function getJson(url) {
 }
 
 // The customer picker: search by name or phone, pick one, or add a new walk-in (name and optional phone)
+// Phase 10L: a typed price in centavos (null when it is not a number), and whether it differs from the price it started from
+const cents = (value) => {
+    const text = String(value ?? '').replace(/[,\s₱]/g, '');
+
+    if (text === '') return null;
+    const number = Number(text);
+
+    return Number.isFinite(number) ? Math.round(number * 100) : null;
+};
+
+const differs = (price, base) => base !== null && base !== undefined && base !== '' && cents(price) !== cents(base);
+
+// Phase 10L: the owner price field (<x-owner.price-field>): starts at the package price, the estimate or the current
+// price, and says "Changed from ..." once the owner types a different amount
+export const ownerPrice = (base, value) => ({
+    basePrice: base,
+    price: value ?? '',
+
+    get priceChanged() {
+        return differs(this.price, this.basePrice);
+    },
+
+    get basePriceText() {
+        return this.basePrice === null || this.basePrice === undefined ? '' : pesos(cents(this.basePrice) ?? 0);
+    },
+});
+
 export const walkInCustomer = ({ url, picked = null, mode = 'search' }) => ({
     mode,
     query: '',
@@ -147,9 +174,30 @@ export const walkInOrder = ({ priceUrl, perPage, initial }) => ({
 });
 
 // The walk-in booking: the free start times of the chosen package on the chosen day
-export const walkInBooking = ({ slotsUrl, initial, people = {}, percent = 0 }) => ({
-    // Phase 10B: the price typed, and the downpayment worked out like the server does (rounded up to the peso)
-    price: initial.price ?? '',
+export const walkInBooking = ({ slotsUrl, initial, people = {}, percent = 0, prices = {} }) => ({
+    // Phase 10B: the price typed, and the downpayment worked out like the server does (rounded up to the peso).
+    // Phase 10L: it starts at the chosen package's price; a new package replaces it only while it was not edited
+    price: initial.price !== '' && initial.price !== undefined ? initial.price : (prices[initial.package] ?? ''),
+
+    get basePrice() {
+        return prices[this.package] ?? null;
+    },
+
+    get priceChanged() {
+        return differs(this.price, this.basePrice);
+    },
+
+    get basePriceText() {
+        return this.basePrice === null ? '' : pesos(cents(this.basePrice) ?? 0);
+    },
+
+    get priceNote() {
+        if (this.package === '') return 'Choose a package first: its price is filled in here.';
+
+        return this.basePrice === null
+            ? 'This package is priced on request: enter the price. 0 for a free session.'
+            : 'Package price: ' + this.basePriceText + '. Change it only if this session costs differently.';
+    },
     waive: initial.waive ?? false,
     // Phase 10J: "Nothing yet" (Awaiting downpayment) or a payment taken now
     payNow: initial.payNow ?? false,
@@ -184,9 +232,14 @@ export const walkInBooking = ({ slotsUrl, initial, people = {}, percent = 0 }) =
     init() {
         this.load();
         this.fitPeople();
-        this.$watch('package', () => {
+        this.$watch('package', (next, previous) => {
             this.load();
             this.fitPeople();
+            // Not edited yet (empty, or still the previous package's price): follow the new package
+            const before = prices[previous] ?? null;
+            if (String(this.price).trim() === '' || (before !== null && !differs(this.price, before))) {
+                this.price = prices[next] ?? '';
+            }
         });
         this.$watch('date', () => this.load());
     },

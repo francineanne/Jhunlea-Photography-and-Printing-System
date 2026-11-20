@@ -8,6 +8,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Owner\Bookings\BookingListRequest;
 use App\Http\Requests\Owner\Bookings\BookingShowRequest;
+use App\Models\BookingSetting;
 use App\Models\PhotographyBooking;
 use App\Models\PhotographyPackage;
 use App\Services\AvailabilityService;
@@ -41,8 +42,8 @@ class PhotographyBookingController extends Controller
 
         $bookings = PhotographyBooking::query()
             ->with(['customer', 'package', 'recordedPayment', 'activePayments'])
-            ->when($status, fn (Builder $query) => $query->where('status', $status))
-            ->when($request->expired(), fn (Builder $query) => $query->expired())
+            // Phase 10L: Requested and New time proposed leave out the expired requests; they have their own tab
+            ->inTab($status, $request->expired())
             ->when($search !== '', function (Builder $query) use ($search) {
                 // Bound parameters, and % _ \ typed by the owner are matched literally instead of as wildcards
                 $like = '%'.addcslashes($search, '%_\\').'%';
@@ -62,13 +63,14 @@ class PhotographyBookingController extends Controller
             ->paginate(self::PER_PAGE)
             ->withQueryString();
 
-        $counts = PhotographyBooking::query()->toBase()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')->map(fn ($total) => (int) $total);
+        $counts = PhotographyBooking::tabCounts(PhotographyBooking::query());
 
         return view('owner.bookings.index', [
             'bookings' => $bookings,
             'status' => $status,
             'expired' => $request->expired(),
-            'expiredCount' => PhotographyBooking::query()->expired()->count(),
+            'expiredCount' => $counts['expired'],
+            'holdHours' => (int) BookingSetting::current()->request_hold_hours,
             'search' => $search,
             'package' => $request->package(),
             'from' => $request->from(),

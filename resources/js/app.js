@@ -2,7 +2,7 @@ import Alpine from 'alpinejs';
 import chatWindow from './chat';
 import { ownerHeartbeat, ownerInbox } from './owner-chat';
 import ownerAsk, { ownerBriefing } from './owner-ask';
-import { walkInBooking, walkInCustomer, walkInOrder } from './walk-in';
+import { ownerPrice, walkInBooking, walkInCustomer, walkInOrder } from './walk-in';
 import paymentCounter from './counter';
 import registerPolish from './polish';
 
@@ -1315,6 +1315,7 @@ Alpine.data('ownerAsk', ownerAsk);
 Alpine.data('walkInCustomer', walkInCustomer);
 Alpine.data('walkInOrder', walkInOrder);
 Alpine.data('walkInBooking', walkInBooking);
+Alpine.data('ownerPrice', ownerPrice);
 Alpine.data('ownerBriefing', ownerBriefing);
 Alpine.data('paymentCounter', paymentCounter);
 registerPolish(Alpine);

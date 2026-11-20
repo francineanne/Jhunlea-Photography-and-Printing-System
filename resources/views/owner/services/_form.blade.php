@@ -54,7 +54,7 @@
                     <p class="mt-1.5 flex items-start gap-1 text-sm text-status-red"><x-ui.icon name="error" :size="16" class="mt-0.5" /> <span>{{ $message }}</span></p>
                 @enderror
             </fieldset>
-            <x-ui.input label="Base price (₱)" name="base_price" type="number" min="0" step="0.01" inputmode="decimal"
+            <x-ui.input label="Base price (₱)" name="base_price" autocomplete="off" type="number" min="0" step="0.01" inputmode="decimal"
                 :value="old('base_price', $service->base_price)" hint="Required unless the pricing type is quotation." />
         </div>
     </x-ui.card>

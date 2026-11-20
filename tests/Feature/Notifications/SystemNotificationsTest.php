@@ -210,6 +210,43 @@ class SystemNotificationsTest extends TestCase
         $this->assertSame(2, $this->notices(NotificationKind::DownpaymentDueSoon, $this->customer));
     }
 
+    public function test_a_deadline_one_day_after_the_approval_is_reminded_only_after_6_hours(): void
+    {
+        // Approved Monday 08:00 for Wednesday 10:00: the deadline is the approval + 24 hours (Tuesday 08:00)
+        $booking = $this->confirmed($this->customer, '2026-11-04 10:00');
+        $this->assertTrue($booking->downpayment_due_at->eq($this->manila('2026-11-03 08:00')));
+
+        $this->run10k();
+        $this->travelTo($this->manila('2026-11-02 13:59'));
+        $this->run10k();
+        $this->assertSame(0, $this->notices(NotificationKind::SystemDownpaymentDueSoon), 'Not together with the approval');
+        $this->assertSame(0, $this->notices(NotificationKind::DownpaymentDueSoon));
+
+        $this->travelTo($this->manila('2026-11-02 14:01'));
+        $this->run10k();
+        $this->travelTo($this->manila('2026-11-02 20:00'));
+        $this->run10k();
+        $this->assertSame(1, $this->notices(NotificationKind::SystemDownpaymentDueSoon, $this->owner));
+        $this->assertSame(1, $this->notices(NotificationKind::DownpaymentDueSoon, $this->customer));
+    }
+
+    public function test_an_extended_deadline_follows_the_same_6_hour_rule(): void
+    {
+        $booking = $this->confirmed($this->customer, '2026-11-05 10:00'); // due Tue 3 Nov 08:00 (approval + 24 hours)
+        $this->travelTo($this->manila('2026-11-02 09:00'));
+        app(BookingTransitionService::class)->extendDeadline($booking, $this->owner, $this->manila('2026-11-03 12:00'), 'Asked for a few more hours.');
+
+        $this->travelTo($this->manila('2026-11-02 13:00'));
+        $this->run10k();
+        $this->assertSame(0, $this->notices(NotificationKind::SystemDownpaymentDueSoon), 'Still within 6 hours of the approval');
+
+        $this->travelTo($this->manila('2026-11-02 14:30'));
+        $this->run10k();
+        $this->run10k();
+        $this->assertSame(1, $this->notices(NotificationKind::SystemDownpaymentDueSoon, $this->owner));
+        $this->assertStringContainsString('Nov 3, 2026 12:00 PM', $this->ownerReads(NotificationKind::SystemDownpaymentDueSoon));
+    }
+
     public function test_the_walk_in_reminder_tells_the_owner_whom_to_call_and_stores_no_phone(): void
     {
         $this->confirmed($this->walkIn, '2026-11-20 10:00', ['contact_number' => '09171234567']);

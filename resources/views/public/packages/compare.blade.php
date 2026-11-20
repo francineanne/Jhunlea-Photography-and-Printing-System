@@ -153,7 +153,7 @@
             </div>
 
             <x-ui.notice variant="payment" class="mt-8">
-                <p class="text-app-text-2">Prices are estimates. The studio confirms the final price after reviewing a request, and a package does not hold a date until the studio confirms the schedule.</p>
+                <p class="text-app-text-2">Prices are estimates. The studio confirms the final price after reviewing a request, and a requested time is held only for a short while until the studio answers; it becomes a session once the studio confirms it.</p>
             </x-ui.notice>
         @endif
     </section>

@@ -99,9 +99,8 @@
                     <form method="POST" action="{{ route('owner.orders.accept', $order) }}" class="grid gap-3 px-4 pb-4 sm:grid-cols-2">
                         @csrf
                         <input type="hidden" name="_form" value="accept">
-                        <x-ui.input id="accept-price" name="confirmed_price" label="Confirmed price (₱)" inputmode="decimal" :required="true"
-                            value="{{ $openForm === 'accept' ? old('confirmed_price') : ($order->estimated_price ?? '') }}"
-                            hint="{{ $order->estimated_price !== null ? 'Filled in with the estimate. Change it if the final price is different.' : 'No estimate: this is a quoted service.' }}" />
+                        <x-owner.price-field id="accept-price" basis="estimate" :base="$order->estimated_price"
+                            :value="$openForm === 'accept' ? old('confirmed_price') : null" empty="No estimate: this is a quoted service. Enter the price." />
                         <x-ui.input id="accept-note" name="note" label="Note for the history (optional)" maxlength="500" value="{{ $openForm === 'accept' ? old('note') : '' }}" />
                         {{-- Phase 10B: paid before printing. Ticked by itself from the "Pay first from" amount; always for a flagged customer --}}
                         <div class="sm:col-span-2" x-data="{ manual: null, threshold: {{ (float) $prepayFrom }}, flagged: @js($prepayFlagged), get auto() { return this.flagged || Number(document.getElementById('accept-price')?.value || 0) >= this.threshold } }">
@@ -262,7 +261,7 @@
                         <form method="POST" action="{{ route('owner.orders.price', $order) }}" class="mt-3 space-y-3">
                             @csrf
                             <input type="hidden" name="_form" value="price">
-                            <x-ui.input id="price-new" name="confirmed_price" label="New confirmed price (₱)" inputmode="decimal" :required="true" value="{{ $openForm === 'price' ? old('confirmed_price') : $order->confirmed_price }}" />
+                            <x-owner.price-field id="price-new" label="New confirmed price (₱)" basis="current" :base="$order->confirmed_price" :value="$openForm === 'price' ? old('confirmed_price') : null" />
                             <x-ui.input id="price-reason" name="reason" label="Reason (optional)" maxlength="500" value="{{ $openForm === 'price' ? old('reason') : '' }}" hint="Saved in the history, which the customer can read." />
                             <x-ui.button type="submit">Save price</x-ui.button>
                         </form>

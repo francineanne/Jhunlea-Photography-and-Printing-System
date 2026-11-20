@@ -110,7 +110,7 @@
                     <span class="block font-semibold">Type a price</span>
                 </label>
                 <div x-show="priceChoice === 'custom'" class="form-grid sm:grid-cols-2">
-                    <x-ui.input label="Price (₱)" name="custom_price" inputmode="decimal" x-model="customPrice" :value="old('custom_price')" :error="$errors->first('custom_price')" hint="For example 150 or 150.50." />
+                    <x-ui.input label="Price (₱)" name="custom_price" autocomplete="off" inputmode="decimal" x-model="customPrice" :value="old('custom_price')" :error="$errors->first('custom_price')" hint="For example 150 or 150.50." />
                     <x-ui.input label="Why it differs (optional)" name="price_note" maxlength="200" :value="old('price_note')" :error="$errors->first('price_note')" hint="Kept in the order history with your name." />
                 </div>
                 @error('price_choice')<p class="text-sm font-semibold text-status-red">{{ $message }}</p>@enderror
@@ -139,7 +139,7 @@
                     <x-ui.input label="GCash reference" name="gcash_reference" maxlength="40" autocomplete="off" :value="old('gcash_reference')" :error="$errors->first('gcash_reference')" hint="From the customer’s GCash receipt." />
                 </div>
                 <div x-show="method === 'cash'">
-                    <x-ui.input label="Cash received (optional)" name="cash_tendered" inputmode="decimal" x-model="tendered" :value="old('cash_tendered')" :error="$errors->first('cash_tendered')" hint="Only to work out the change. Not saved." />
+                    <x-ui.input label="Cash received (optional)" name="cash_tendered" autocomplete="off" inputmode="decimal" x-model="tendered" :value="old('cash_tendered')" :error="$errors->first('cash_tendered')" hint="Only to work out the change. Not saved." />
                 </div>
             </div>
             <dl class="mt-4 grid grid-cols-2 gap-3 rounded-control bg-neutral-100 p-3 text-sm dark:bg-white/5">

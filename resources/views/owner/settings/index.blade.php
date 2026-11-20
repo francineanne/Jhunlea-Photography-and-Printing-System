@@ -251,7 +251,7 @@
                     <div class="mt-4 form-grid md:grid-cols-2 xl:grid-cols-3">
                         @foreach ($paymentRules as $field => $rule)
                             @php([$min, $max] = $rule['limits'])
-                            <x-ui.input :id="'rule-'.$field" :name="$field" :label="$rule['label']" type="number" inputmode="decimal" :min="$min" :max="$max" :step="$field === 'prepay_from' ? '0.01' : '1'" :required="true"
+                            <x-ui.input :id="'rule-'.$field" :name="$field" :label="$rule['label']" type="number" inputmode="decimal" autocomplete="off" :min="$min" :max="$max" :step="$field === 'prepay_from' ? '0.01' : '1'" :required="true"
                                 :value="old($field, $rule['value'])" :error="$errors->first($field)"
                                 :hint="match ($field) {
                                     'downpayment_percent' => 'Share of a photoshoot\'s price paid to hold it. 0 = no downpayment.',

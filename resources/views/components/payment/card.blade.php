@@ -184,7 +184,7 @@
                         @endforeach
                     </div>
                 </fieldset>
-                <x-ui.input id="nojs-gcash-{{ $payable->getKey() }}" name="gcash_reference" label="GCash reference (GCash only)" maxlength="40" value="{{ is_string(old('gcash_reference')) ? old('gcash_reference') : '' }}" hint="6 to 40 letters, digits or hyphens, from the customer’s GCash receipt." />
+                <x-ui.input id="nojs-gcash-{{ $payable->getKey() }}" name="gcash_reference" autocomplete="off" label="GCash reference (GCash only)" maxlength="40" value="{{ is_string(old('gcash_reference')) ? old('gcash_reference') : '' }}" hint="6 to 40 letters, digits or hyphens, from the customer’s GCash receipt." />
                 <x-ui.checkbox name="confirm" value="1" required id="nojs-confirm-{{ $payable->getKey() }}">I confirm I received {{ count($options) === 1 ? $amountTexts[$firstKind] : 'the amount I chose' }} at the {{ $place }}.</x-ui.checkbox>
                 <x-ui.button type="submit">Record payment</x-ui.button>
             </form>

@@ -80,7 +80,8 @@ class DashboardService
     {
         $today = LocalTime::format(Carbon::now('UTC'), 'Y-m-d');
         $review = PrintingOrder::query()->whereIn('status', [PrintingOrderStatus::Submitted, PrintingOrderStatus::UnderReview]);
-        $requests = PhotographyBooking::query()->where('status', BookingStatus::Requested);
+        // Phase 10L: requests still waiting for an answer in time; an expired one is in the list's Expired tab
+        $requests = PhotographyBooking::query()->inTab(BookingStatus::Requested);
         $shoots = PhotographyBooking::query()->where('status', BookingStatus::Confirmed)
             ->whereBetween('starts_at', [LocalTime::dayStartUtc($today), LocalTime::dayEndUtc($today)]);
 

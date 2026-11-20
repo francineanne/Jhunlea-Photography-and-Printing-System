@@ -4,6 +4,7 @@ namespace Tests\MySql;
 
 use App\Enums\AuditAction;
 use App\Enums\BookingStatus;
+use App\Enums\NotificationKind;
 use App\Enums\PrintingOrderStatus;
 use App\Models\AuditLog;
 use App\Models\Payment;
@@ -12,12 +13,15 @@ use App\Models\PrintingOrder;
 use App\Models\User;
 use App\Services\Audit\AuditChain;
 use App\Services\Audit\AuditLogger;
+use App\Services\NotificationDispatcher;
 use App\Services\PaymentLedgerService;
 use App\Services\Reports\IncomePeriod;
 use App\Services\Reports\IncomeReportService;
 use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Tests\MySqlTestCase;
 
 /**
@@ -193,5 +197,48 @@ class SqlBehaviourTest extends MySqlTestCase
 
         $this->actingAs($this->owner)->get(route('owner.reports.end-of-day', ['date' => '2026-11-12']))->assertOk()
             ->assertSee($before->reference_number)->assertDontSee($after->reference_number);
+    }
+
+    /**
+     * Phase 10L: the 10K duplicate check reads the notifications' JSON `data` (payable_type, payable_id, occurrence).
+     * On MySQL/MariaDB those are JSON_EXTRACT comparisons: an id of 1 must not match 10 or 11, and a notice must be
+     * found again whether the stored id came in as an integer or a string; two runs of the command send one copy.
+     */
+    public function test_the_system_notice_duplicate_check_reads_json_the_same_on_mysql(): void
+    {
+        $this->travelTo(Carbon::parse('2026-11-02 00:00:00', 'UTC'));
+        $ana = User::factory()->create(['name' => 'Ana Json']);
+        $dispatcher = app(NotificationDispatcher::class);
+        $at = ['starts_at' => Carbon::parse('2026-11-20 02:00:00', 'UTC'), 'ends_at' => Carbon::parse('2026-11-20 03:00:00', 'UTC')];
+        $bookings = collect(range(1, 11))->map(fn () => PhotographyBooking::factory()->status(BookingStatus::Requested)->forCustomer($ana)->create($at));
+        $first = $bookings->first();
+        $sent = fn () => DatabaseNotification::query()->where('notifiable_id', $this->owner->id)->where('type', NotificationKind::SystemHoldExpired->value)->count();
+
+        $this->assertTrue($dispatcher->system(NotificationKind::SystemHoldExpired, $first, 'hold:x', ['hours' => 48]));
+        $this->assertFalse($dispatcher->system(NotificationKind::SystemHoldExpired, $first, 'hold:x', ['hours' => 48]), 'Same record and occurrence');
+        $this->assertTrue($dispatcher->system(NotificationKind::SystemHoldExpired, $first, 'hold:y', ['hours' => 48]), 'A new occurrence');
+        // The 10th and 11th bookings are not taken for the 1st (no prefix or string match)
+        foreach ($bookings->slice(9) as $booking) {
+            $this->assertTrue($dispatcher->system(NotificationKind::SystemHoldExpired, $booking, 'hold:x', ['hours' => 48]));
+        }
+        $this->assertSame(4, $sent());
+
+        // A row whose id was stored as a string still counts as sent
+        $second = $bookings->get(1);
+        DatabaseNotification::query()->create(['id' => (string) Str::uuid(), 'type' => NotificationKind::SystemHoldExpired->value,
+            'notifiable_type' => 'user', 'notifiable_id' => $this->owner->id,
+            'data' => ['kind' => NotificationKind::SystemHoldExpired->value, 'payable_type' => 'photography_booking', 'payable_id' => (string) $second->id, 'occurrence' => 'hold:x']]);
+        $this->assertFalse($dispatcher->system(NotificationKind::SystemHoldExpired, $second, 'hold:x', ['hours' => 48]));
+        $this->assertSame(5, $sent());
+
+        // The whole command, twice: a request whose hold ran out is told once to each side
+        DatabaseNotification::query()->delete();
+        $held = PhotographyBooking::factory()->status(BookingStatus::Requested)->forCustomer($ana)->create($at + ['hold_expires_at' => now()->addHours(48)]);
+        $this->travelTo(now()->addHours(49));
+        $this->artisan('notifications:system-events')->assertSuccessful();
+        $this->artisan('notifications:system-events')->assertSuccessful();
+        $this->assertSame(1, DatabaseNotification::query()->where('type', NotificationKind::SystemHoldExpired->value)->where('notifiable_id', $this->owner->id)->count());
+        $this->assertSame(1, DatabaseNotification::query()->where('type', NotificationKind::HoldExpired->value)->where('notifiable_id', $ana->id)->count());
+        $this->assertSame((int) $held->id, (int) DatabaseNotification::query()->where('type', NotificationKind::HoldExpired->value)->sole()->data['payable_id']);
     }
 }

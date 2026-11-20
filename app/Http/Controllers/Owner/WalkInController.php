@@ -145,6 +145,8 @@ class WalkInController extends Controller
             'people' => $packages->mapWithKeys(fn (PhotographyPackage $package) => [$package->id => [
                 'min' => $package->minPeople(), 'max' => $package->max_people, 'rule' => BookingService::groupSizeMessage($package),
             ]]),
+            // Phase 10L: the price field starts at the chosen package's price (BookingService::estimate, as online)
+            'prices' => $packages->mapWithKeys(fn (PhotographyPackage $package) => [$package->id => app(BookingService::class)->estimate($package)]),
             'token' => (string) Str::uuid(),
             'picked' => $this->picked(),
             // Phase 10J: the same schedule rules as online, worded once for the form

@@ -345,6 +345,16 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] "System" tab sa owner notifications page; kasama sa bell count
 - [x] Mahinang chime (Web Audio, dalawang nota) kapag tumaas ang unread count sa live poll; hindi sa page load; "Notification sound" switch sa bell at notifications page (localStorage, ON by default)
 
+### 10L — Huling ayos bago ang defense (branch `phase-10l-final-fixes`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule maliban sa 24-hour reminder (decision 5)
+- [x] 10K sa MySQL: pumasa ang `SystemNotificationsTest` sa MySQL test database; may bagong MySQL test ng JSON duplicate check (id 1 laban sa 10 at 11, id na string) at ng command na pinatakbo nang dalawang beses
+- [x] Expired tab (owner at customer) kasunod ng dalawang request tab; hindi na binibilang ang expired sa Requested o New time proposed (`PhotographyBooking::scopeInTab()` at `tabCounts()`); "Expired" lang ang pill; tama na ang intro ("A new request holds its time for N hours")
+- [x] Dashboard, briefing at Lumi "waiting": mga request na naghihintay pa lang
+- [x] Lahat ng owner price field ay may laman na (presyo ng package, estimate, o kasalukuyang presyo), "Changed from ..." kapag binago, walang browser autocomplete (`<x-owner.price-field>`)
+- [x] "Walk-in" pill katabi ng pangalan ng customer; phone sa body font; isang wording ng oras bawat status (`timeLine()`)
+- [x] Ang 24-hour downpayment reminder ay hinihintay munang 6 na oras na Awaiting downpayment ang booking
+- [x] "Paid now" sa walk-in printing order: nakita sa browser na naitatago at naipapakita ang payment fields
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

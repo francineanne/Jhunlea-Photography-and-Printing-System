@@ -38,7 +38,7 @@
     @endif
 
     <form method="POST" action="{{ route('owner.bookings.walk-in.store') }}" class="mt-6 max-w-3xl space-y-6 pb-24 sm:pb-0"
-        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial), people: @js($people), percent: @js($downpaymentPercent) })">
+        x-data="walkInBooking({ slotsUrl: @js(route('owner.bookings.walk-in.slots')), initial: @js($initial), people: @js($people), percent: @js($downpaymentPercent), prices: @js($prices) })">
         @csrf
         <input type="hidden" name="counter_token" value="{{ old('counter_token', $token) }}">
 
@@ -95,8 +95,7 @@
                 <div class="sm:col-span-2">
                     <x-ui.textarea label="Note (optional)" name="notes" rows="2" maxlength="2000" :error="$errors->first('notes')">{{ old('notes') }}</x-ui.textarea>
                 </div>
-                <x-ui.input label="Confirmed price" name="confirmed_price" inputmode="decimal" :required="true" :value="old('confirmed_price')" :error="$errors->first('confirmed_price')"
-                    x-model="price" hint="Required: you are at the counter, so the price is set now. 0 for a free session." />
+                <x-owner.price-field id="walk-in-price" label="Confirmed price" scoped :value="old('confirmed_price', $prices[old('package')] ?? '')" />
             </div>
             <p class="mt-3 text-xs text-app-text-2">Only the times an online customer could book are offered. When a time is not free, pick another one.</p>
         </section>
@@ -136,7 +135,7 @@
                         @endforeach
                     </div>
                     <div class="mt-3" x-show="method === 'gcash'">
-                        <x-ui.input label="GCash reference" name="gcash_reference" maxlength="40" :value="old('gcash_reference')" hint="6 to 40 letters, digits or hyphens, from the customer's GCash receipt." />
+                        <x-ui.input label="GCash reference" name="gcash_reference" autocomplete="off" maxlength="40" :value="old('gcash_reference')" hint="6 to 40 letters, digits or hyphens, from the customer's GCash receipt." />
                     </div>
                 </fieldset>
                 <div class="mt-4">

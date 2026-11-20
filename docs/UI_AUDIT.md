@@ -137,3 +137,14 @@ Checked in the browser on the throwaway SQLite site: the page headers at 360, 76
 | J5 | Customer page (walk-in) | No way to start a record for them or fix their name or phone | B | "New printing order / booking for this customer", "Edit name and phone", the owner's next step on each record |
 | J6 | Schedule calendar | Awaiting downpayment bookings were not shown although they held time | A | Shown with their dotted violet style; the "Save anyway" list counts them too |
 | J7 | Walk-in page, phones | Reference links under 44 px | C | 44 px tap targets below 640 px |
+
+## Phase 10L: final fixes before the defense
+
+| # | Screen | Problem | Sev. | Fix |
+|---|---|---|---|---|
+| L1 | Owner bookings and printing orders lists | "Walk-in" pill under the reference made the row taller; the phone was in the monospace font | B | The pill follows the customer's name (it never wraps at 360 px); the phone is in the body font as "0991 471 0187" |
+| L2 | Owner bookings list | A walk-in session Awaiting downpayment read "Asked ... / Not confirmed" | A | One wording per status (`PhotographyBooking::timeLine()`): Asked / Not confirmed, Offered / Waiting for the customer, Booked / Waiting for downpayment, Booked, and for an expired request Asked / Time passed, not answered; the customer list says Booked or Asked the same way |
+| L3 | Every owner price field | Started empty and the browser listed old values (2500.00, 3.00, 1200) | A | `<x-owner.price-field>`: starts at the package price, the estimate or the current price, says so under the field, shows "Changed from ..." once edited, `autocomplete="off"`; the other owner money inputs also have autocomplete off |
+| L4 | Owner bookings list, customer My bookings | An expired request counted and listed under Requested, with "Awaiting price" | A | Expired tab right after the two request tabs on both sides; Requested and New time proposed count only requests still waiting; an expired request shows only "Expired" |
+| L5 | Owner bookings intro, package compare | "Requests do not hold a time until you confirm them" (wrong since 10A) | B | "A new request holds its time for N hours (Booking rules)"; the compare page says a requested time is held for a short while |
+

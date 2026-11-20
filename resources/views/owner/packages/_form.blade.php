@@ -48,7 +48,7 @@
         <x-ui.card>
             <h2 class="font-display text-xl font-semibold">2. Pricing and session time</h2>
             <div class="mt-5 grid gap-x-6 gap-y-5 md:grid-cols-2">
-                <x-ui.input label="Listed price (₱)" name="price" type="number" min="0" step="0.01" inputmode="decimal" :value="old('price', $package->price)"
+                <x-ui.input label="Listed price (₱)" name="price" autocomplete="off" type="number" min="0" step="0.01" inputmode="decimal" :value="old('price', $package->price)"
                     hint='Leave empty to show "Price on request".' />
                 <div class="self-end">
                     <x-ui.checkbox name="price_requires_confirmation" value="1" label="The final price is confirmed after review" :checked="$requiresConfirmation"

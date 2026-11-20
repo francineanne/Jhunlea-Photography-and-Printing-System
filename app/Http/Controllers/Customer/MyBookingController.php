@@ -43,7 +43,7 @@ class MyBookingController extends Controller
         $bookings = $mine()
             ->with(['package.coverImage', 'recordedPayment', 'activePayments'])
             ->withCount('images')
-            ->when($status, fn ($query) => $query->where('status', $status))
+            ->inTab($status, $request->expired())
             ->orderByRaw($upcoming, [BookingStatus::Confirmed->value, $now])
             ->orderByRaw('case when status = ? and starts_at >= ? then starts_at end asc', [BookingStatus::Confirmed->value, $now])
             ->latest()
@@ -54,7 +54,8 @@ class MyBookingController extends Controller
         return view('customer.bookings.index', [
             'bookings' => $bookings,
             'status' => $status,
-            'counts' => $mine()->toBase()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')->map(fn ($total) => (int) $total),
+            'expired' => $request->expired(),
+            'counts' => PhotographyBooking::tabCounts($mine()),
             'statuses' => BookingStatus::cases(),
         ]);
     }

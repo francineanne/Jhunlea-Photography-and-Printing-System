@@ -33,11 +33,11 @@
     <nav aria-label="Filter by status" class="mt-6 -mx-4 relative overflow-x-auto px-4 sm:mx-0 sm:px-0">
         <ul class="flex w-max gap-2">
             <li>
-                <a href="{{ route('customer.bookings.index') }}" @if (! $status) aria-current="page" @endif
+                <a href="{{ route('customer.bookings.index') }}" @if (! $status && ! $expired) aria-current="page" @endif
                     @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-all duration-200 focus-ring',
-                        'bg-brand text-white shadow-sm' => ! $status,
-                        'bg-neutral-100 text-app-text-2 hover:bg-neutral-200 hover:text-app-text dark:bg-white/5 dark:hover:bg-white/10' => $status])>
-                    All <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/20' => ! $status, 'bg-black/10 dark:bg-white/15' => $status])>{{ $counts->sum() }}</span>
+                        'bg-brand text-white shadow-sm' => ! $status && ! $expired,
+                        'bg-neutral-100 text-app-text-2 hover:bg-neutral-200 hover:text-app-text dark:bg-white/5 dark:hover:bg-white/10' => $status || $expired])>
+                    All <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/20' => ! $status && ! $expired, 'bg-black/10 dark:bg-white/15' => $status || $expired])>{{ $counts->sum() }}</span>
                 </a>
             </li>
             @foreach ($statuses as $item)
@@ -50,6 +50,18 @@
                         <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/20' => $status === $item, 'bg-black/10 dark:bg-white/15' => $status !== $item])>{{ $counts[$item->value] ?? 0 }}</span>
                     </a>
                 </li>
+                @if ($item === \App\Enums\BookingStatus::Proposed)
+                    {{-- Phase 10L: requests the studio did not answer before their time --}}
+                    <li>
+                        <a href="{{ route('customer.bookings.index', ['status' => 'expired']) }}" @if ($expired) aria-current="page" @endif
+                            @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-all duration-200 focus-ring',
+                                'bg-brand text-white shadow-sm' => $expired,
+                                'bg-neutral-100 text-app-text-2 hover:bg-neutral-200 hover:text-app-text dark:bg-white/5 dark:hover:bg-white/10' => ! $expired])>
+                            Expired
+                            <span @class(['rounded-full px-2 py-0.5 text-xs tabular-nums', 'bg-white/20' => $expired, 'bg-black/10 dark:bg-white/15' => ! $expired])>{{ $counts['expired'] ?? 0 }}</span>
+                        </a>
+                    </li>
+                @endif
             @endforeach
         </ul>
     </nav>
@@ -57,7 +69,11 @@
     <div class="mt-6">
         @if ($bookings->isEmpty())
             <x-ui.card>
-                @if ($status)
+                @if ($expired)
+                    <x-ui.empty-state icon="event_busy" title="No expired requests" description="A request the studio did not answer before its time appears here.">
+                        <x-ui.button :href="route('customer.bookings.index')" variant="outline">Show all my bookings</x-ui.button>
+                    </x-ui.empty-state>
+                @elseif ($status)
                     <x-ui.empty-state icon="event_busy" title="No {{ strtolower($status->label()) }} bookings" description="You have no bookings with this status right now.">
                         <x-ui.button :href="route('customer.bookings.index')" variant="outline">Show all my bookings</x-ui.button>
                     </x-ui.empty-state>
@@ -73,7 +89,6 @@
                     @php
                         $cover = $booking->package?->coverImage;
                         $name = $booking->snapshot['package']['name'] ?? $booking->package?->name;
-                        $agreed = in_array($booking->status->value, ['confirmed', 'completed'], true);
                     @endphp
                     <li>
                         <article class="group grid gap-4 rounded-card border border-app-border bg-app-card p-3 shadow-sm transition-[transform,box-shadow,border-color] duration-[280ms] ease-brand hover:-translate-y-[3px] hover:shadow-md motion-reduce:hover:translate-y-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:p-4 lg:grid-cols-[12rem_minmax(0,1fr)_14rem] dark:shadow-none">
@@ -96,11 +111,13 @@
                                 <p class="mt-2 flex items-start gap-1.5 text-sm">
                                     <x-ui.icon name="event" :size="18" class="mt-0.5 shrink-0 text-brand" />
                                     <span>
-                                        <span class="block font-semibold">{{ $agreed ? '' : 'Requested: ' }}<x-ui.date :value="$booking->starts_at" format="D, M j, Y" /></span>
+                                        <span class="block font-semibold">{{ $booking->timeLine()['booked'] ? 'Booked: ' : 'Asked: ' }}<x-ui.date :value="$booking->starts_at" format="D, M j, Y" /></span>
                                         <span class="block font-mono text-xs text-app-text-2"><x-ui.date :value="$booking->starts_at" format="g:i A" /> – <x-ui.date :value="$booking->ends_at" format="g:i A" /> · Philippine time</span>
                                     </span>
                                 </p>
-                                @if ($booking->status->value === 'proposed' && $booking->proposed_starts_at)
+                                @if ($booking->isExpired())
+                                    <p class="mt-2 text-sm text-app-text-2">{{ \App\Models\PhotographyBooking::EXPIRED_CUSTOMER_TEXT }} <a href="{{ route('customer.bookings.create') }}" class="inline-flex min-h-11 items-center font-semibold text-brand hover:underline focus-ring">Book a new time</a></p>
+                                @elseif ($booking->status->value === 'proposed' && $booking->proposed_starts_at)
                                     <p class="mt-2 inline-flex items-center gap-1.5 rounded-control bg-status-blue-bg px-2.5 py-1.5 text-xs font-semibold text-status-blue">
                                         <x-ui.icon name="schedule" :size="16" />New time offered: <x-ui.date :value="$booking->proposed_starts_at" /> · please answer
                                     </p>

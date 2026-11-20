@@ -34,6 +34,12 @@ class SystemEvents
 
     public const RECENT = 'system-events:recent';
 
+    /**
+     * Phase 10L: the 24-hour downpayment reminder waits until the booking has been Awaiting downpayment this long, so a
+     * deadline of "approval + 24 hours" is reminded once, about 18 hours before it, never together with the approval.
+     */
+    public const REMIND_AFTER_HOURS = 6;
+
     /** The evening before a shoot when its reminder is sent (Manila). */
     public const TOMORROW_FROM_HOUR = 18;
 
@@ -100,7 +106,10 @@ class SystemEvents
         return $sent;
     }
 
-    /** A downpayment due within the next 24 hours: one reminder per deadline (an extended deadline is reminded again). */
+    /**
+     * A downpayment due within the next 24 hours: one reminder per deadline (an extended deadline is reminded again),
+     * and only once the booking has waited REMIND_AFTER_HOURS since it last became Awaiting downpayment (its history).
+     */
     private function dueSoon(): int
     {
         $now = Carbon::now('UTC');
@@ -108,9 +117,18 @@ class SystemEvents
 
         $bookings = PhotographyBooking::query()->where('status', BookingStatus::AwaitingDownpayment)
             ->whereBetween('downpayment_due_at', [$now, $now->copy()->addHours(24)])
+            // The moves INTO Awaiting downpayment (event null; an extension or a price change is an event on the same status)
+            ->with(['statusHistories' => fn ($query) => $query->where('to_status', BookingStatus::AwaitingDownpayment)->whereNull('event')
+                ->where(fn ($from) => $from->whereNull('from_status')->orWhere('from_status', '!=', BookingStatus::AwaitingDownpayment))->reorder('id', 'desc')])
             ->orderBy('downpayment_due_at')->limit(200)->get();
 
         foreach ($bookings as $booking) {
+            $since = $booking->statusHistories->first()?->created_at ?? $booking->created_at;
+
+            if ($since !== null && $since->gt($now->copy()->subHours(self::REMIND_AFTER_HOURS))) {
+                continue; // just approved (or sent back): the approval itself says the deadline
+            }
+
             $due = $booking->downpayment_due_at->toIso8601ZuluString();
             $sent += (int) $this->notices->system(NotificationKind::SystemDownpaymentDueSoon, $booking, 'due:'.$due, ['due' => $due]);
             $this->notices->system(NotificationKind::DownpaymentDueSoon, $booking, 'due:'.$due, ['due' => $due]);

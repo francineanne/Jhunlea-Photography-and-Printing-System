@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 // Only what a customer types is fillable. The owner of the booking, the status, the reference number, every time and
 // every price are set by server code (BookingService, BookingTransitionService), never from a request. The contact
@@ -200,6 +201,75 @@ class PhotographyBooking extends Model
                     ->where(fn (Builder $time) => $time->whereNull('proposed_starts_at')->orWhere('proposed_starts_at', '>', $now)));
         });
     }
+
+    /**
+     * Phase 10L: ONE rule for a list tab, the owner's and the customer's. Expired lists the expired requests (any status
+     * they were in); Requested and New time proposed list only the ones still waiting (never an expired one); any
+     * other status is that status. Null and not expired: every booking ("All" still includes the expired ones).
+     *
+     * @param  Builder<PhotographyBooking>  $query
+     */
+    public function scopeInTab(Builder $query, ?BookingStatus $status, bool $expired = false): void
+    {
+        if ($expired) {
+            $query->expired();
+
+            return;
+        }
+
+        if ($status === null) {
+            return;
+        }
+
+        $query->where('status', $status);
+
+        if (in_array($status, [BookingStatus::Requested, BookingStatus::Proposed], true)) {
+            $query->waiting();
+        }
+    }
+
+    /**
+     * Phase 10L: the count of every tab for a set of bookings (the owner's: all; the customer's: their own), with the
+     * expired requests counted under "expired" and never under Requested or New time proposed. Two queries.
+     *
+     * @param  Builder<PhotographyBooking>  $query
+     * @return Collection<string, int> status value => count, plus "expired"
+     */
+    public static function tabCounts(Builder $query): Collection
+    {
+        $now = Carbon::now('UTC');
+        $counts = (clone $query)->whereNot(fn (Builder $expired) => $expired->expired($now))->toBase()
+            ->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')->map(fn ($total) => (int) $total);
+
+        return $counts->put('expired', (clone $query)->expired($now)->count());
+    }
+
+    /**
+     * Phase 10L: the ONE wording of a booking's time on the lists, the same online and walk-in: which time it is (the
+     * label before it), that time, and a short note. Asked (Requested, Rejected, Cancelled) and "Not confirmed"; Offered
+     * and "Waiting for the customer"; Booked (Awaiting downpayment) and "Waiting for downpayment"; Booked (Confirmed,
+     * Completed); an expired request: Asked and "Time passed, not answered".
+     *
+     * @return array{label: string, at: CarbonInterface, note: string|null, booked: bool}
+     */
+    public function timeLine(?CarbonInterface $now = null): array
+    {
+        $asked = $this->requested_starts_at ?? $this->starts_at;
+
+        if ($this->isExpired($now)) {
+            return ['label' => 'Asked', 'at' => $asked, 'note' => 'Time passed, not answered', 'booked' => false];
+        }
+
+        return match ($this->status) {
+            BookingStatus::Proposed => ['label' => 'Offered', 'at' => $this->proposed_starts_at ?? $this->starts_at, 'note' => 'Waiting for the customer', 'booked' => false],
+            BookingStatus::AwaitingDownpayment => ['label' => 'Booked', 'at' => $this->starts_at, 'note' => 'Waiting for downpayment', 'booked' => true],
+            BookingStatus::Confirmed, BookingStatus::Completed => ['label' => 'Booked', 'at' => $this->starts_at, 'note' => null, 'booked' => true],
+            default => ['label' => 'Asked', 'at' => $asked, 'note' => 'Not confirmed', 'booked' => false],
+        };
+    }
+
+    /** Phase 10L: what the customer reads on an expired request in "My bookings". */
+    public const EXPIRED_CUSTOMER_TEXT = 'The studio did not answer before the time. You can book a new time.';
 
     public function isExpired(?CarbonInterface $now = null): bool
     {

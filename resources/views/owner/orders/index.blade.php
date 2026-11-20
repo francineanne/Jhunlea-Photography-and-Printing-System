@@ -98,14 +98,14 @@
                             <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                 <td class="px-4 py-4">
                                     <a href="{{ route('owner.orders.show', $order) }}" class="rounded font-mono text-sm font-bold text-brand hover:underline focus-ring">{{ $order->reference_number }}</a>
-                                    <x-walk-in.badge :record="$order" class="mt-1" />
                                 </td>
                                 <td class="max-w-56 px-4 py-4">
                                     <div class="flex items-center gap-3">
                                         <span class="grid size-9 shrink-0 place-items-center rounded-full bg-status-red-bg text-xs font-bold text-brand" aria-hidden="true">{{ Str::upper(Str::substr($order->customer?->name ?? '?', 0, 1)) }}</span>
                                         <div class="min-w-0">
-                                            <p class="truncate font-semibold">{{ $order->customer?->name ?? 'Deleted account' }}</p>
-                                            <p class="truncate font-mono text-[11px] text-app-text-2">{{ $order->customer?->phone ?: $order->customer?->email }}</p>
+                                            {{-- Phase 10L: "Walk-in" right after the name, the phone in the body font --}}
+                                            <p class="flex min-w-0 items-center gap-1.5"><span class="truncate font-semibold" title="{{ $order->customer?->name }}">{{ $order->customer?->name ?? 'Deleted account' }}</span><x-walk-in.badge :record="$order" class="shrink-0" /></p>
+                                            <p class="truncate text-xs tabular-nums text-app-text-2">{{ $order->customer?->phone ? \App\Support\PhilippineMobile::display($order->customer->phone) : $order->customer?->email }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -140,10 +140,10 @@
                     <li>
                         <a href="{{ route('owner.orders.show', $order) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="flex flex-wrap items-center gap-1.5"><span class="font-mono text-sm font-bold text-brand">{{ $order->reference_number }}</span><x-walk-in.badge :record="$order" /></span>
+                                <span class="font-mono text-sm font-bold text-brand">{{ $order->reference_number }}</span>
                                 <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$order->status" live /><x-payment.badge :payable="$order" /></span>
                             </span>
-                            <span class="mt-2 block break-words font-semibold">{{ $order->customer?->name ?? 'Deleted account' }}</span>
+                            <span class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1"><span class="break-words font-semibold">{{ $order->customer?->name ?? 'Deleted account' }}</span><x-walk-in.badge :record="$order" /></span>
                             <span class="block break-words text-sm text-app-text-2">{{ $order->serviceName() }} · {{ $order->quantity }} {{ Str::plural('copy', $order->quantity) }}</span>
                             @if ($order->needsInfo())
                                 <span class="mt-1 block text-xs font-semibold text-status-amber">Waiting for the customer</span>

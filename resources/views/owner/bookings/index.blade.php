@@ -13,7 +13,7 @@
         <div>
             <p class="flex items-center gap-2 font-mono text-[13px] font-medium uppercase text-brand"><span class="size-1.5 animate-pulse rounded-full bg-brand" aria-hidden="true"></span>Photography</p>
             <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight sm:text-4xl">Photography bookings</h1>
-            <p class="mt-2 max-w-2xl text-app-text-2">Every photoshoot request. Open one to confirm it, offer another time, reject it, or mark the shoot done. Requests do not hold a time until you confirm them.</p>
+            <p class="mt-2 max-w-2xl text-app-text-2">Every photoshoot request. Open one to confirm it, offer another time, reject it, or mark the shoot done. A new request holds its time for {{ $holdHours }} {{ $holdHours === 1 ? 'hour' : 'hours' }} (<a href="{{ route('owner.schedule.edit') }}" class="font-semibold text-brand hover:underline focus-ring">Booking rules</a>).</p>
         </div>
         {{-- Phase 10J: walk-ins start in the one Walk-in area --}}
         <a href="{{ route('owner.walk-in.index') }}" class="inline-flex min-h-11 items-center gap-1.5 rounded-control px-2 text-sm font-semibold text-brand hover:underline focus-ring dark:text-[#ffb4ac]" data-walk-in-link><x-ui.icon name="storefront" :size="18" />Walk-in</a>
@@ -42,6 +42,19 @@
                             'bg-black/10 dark:bg-white/15' => ! ($item->value === 'requested' && ($counts['requested'] ?? 0) > 0)])>{{ $counts[$item->value] ?? 0 }}</span>
                     </a>
                 </li>
+                @if ($item === \App\Enums\BookingStatus::Proposed)
+                    {{-- Phase 10L: right after the two request tabs, because these are requests nobody answered in time and they still
+                         need the owner (reject them); they are never counted under Requested or New time proposed --}}
+                    <li>
+                        <a href="{{ route('owner.bookings.index', ['status' => 'all', 'expired' => 1] + $keep) }}" @if ($expired) aria-current="page" @endif
+                            @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
+                                'bg-app-card text-app-text shadow-sm dark:bg-white/10' => $expired,
+                                'text-app-text-2 hover:text-app-text' => ! $expired])>
+                            <span class="size-2 rounded-full bg-neutral-400" aria-hidden="true"></span>
+                            Expired <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs tabular-nums dark:bg-white/15">{{ $expiredCount }}</span>
+                        </a>
+                    </li>
+                @endif
             @endforeach
             <li>
                 <a href="{{ route('owner.bookings.index', ['status' => 'all'] + $keep) }}" @if (! $status && ! $expired) aria-current="page" @endif
@@ -49,16 +62,6 @@
                         'bg-app-card text-app-text shadow-sm dark:bg-white/10' => ! $status && ! $expired,
                         'text-app-text-2 hover:text-app-text' => $status || $expired])>
                     All bookings <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs tabular-nums dark:bg-white/15">{{ $counts->sum() }}</span>
-                </a>
-            </li>
-            {{-- Phase 10A: requests whose time passed without being confirmed; they hold no time and wait to be rejected --}}
-            <li>
-                <a href="{{ route('owner.bookings.index', ['status' => 'all', 'expired' => 1] + $keep) }}" @if ($expired) aria-current="page" @endif
-                    @class(['inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition-colors focus-ring',
-                        'bg-app-card text-app-text shadow-sm dark:bg-white/10' => $expired,
-                        'text-app-text-2 hover:text-app-text' => ! $expired])>
-                    <span class="size-2 rounded-full bg-neutral-400" aria-hidden="true"></span>
-                    Expired <span class="rounded-full bg-black/10 px-2 py-0.5 text-xs tabular-nums dark:bg-white/15">{{ $expiredCount }}</span>
                 </a>
             </li>
         </ul>
@@ -122,19 +125,18 @@
                     </thead>
                     <tbody class="divide-y divide-app-border">
                         @foreach ($bookings as $booking)
-                            @php $agreed = in_array($booking->status->value, ['confirmed', 'completed'], true); @endphp
                             <tr class="transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
                                 <td class="whitespace-nowrap px-3 py-4 align-top">
                                     <a href="{{ route('owner.bookings.show', $booking) }}" class="inline-flex min-h-9 items-center gap-0.5 rounded font-mono text-sm font-bold text-brand hover:underline focus-ring">{{ $booking->reference_number }}<x-ui.icon name="chevron_right" :size="16" /></a>
                                     <p class="mt-0.5 text-[11px] uppercase text-app-text-2"><x-ui.date :value="$booking->created_at" format="M j" /></p>
-                                    <x-walk-in.badge :record="$booking" class="mt-1" />
                                 </td>
                                 <td class="px-3 py-4 align-top">
-                                    <div class="flex w-52 items-center gap-3">
+                                    <div class="flex w-60 items-center gap-3">
                                         <span class="grid size-9 shrink-0 place-items-center rounded-full bg-status-red-bg text-xs font-bold text-brand" aria-hidden="true">{{ Str::upper(Str::substr($booking->customer?->name ?? '?', 0, 1)) }}</span>
                                         <div class="min-w-0">
-                                            <p class="truncate font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</p>
-                                            <p class="truncate font-mono text-[11px] text-app-text-2">{{ $booking->contact_number }}</p>
+                                            {{-- Phase 10L: "Walk-in" right after the name, the phone in the body font --}}
+                                            <p class="flex min-w-0 items-center gap-1.5"><span class="truncate font-semibold" title="{{ $booking->customer?->name }}">{{ $booking->customer?->name ?? 'Deleted account' }}</span><x-walk-in.badge :record="$booking" class="shrink-0" /></p>
+                                            <p class="truncate text-xs tabular-nums text-app-text-2">{{ \App\Support\PhilippineMobile::display($booking->contact_number) }}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -143,20 +145,15 @@
                                     <p class="text-xs text-app-text-2">{{ $booking->durationMinutes() }} mins · {{ $booking->group_size }} {{ $booking->group_size === 1 ? 'person' : 'people' }}</p>
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 align-top">
-                                    {{-- Requested and confirmed are always shown apart --}}
-                                    <p><span class="text-xs text-app-text-2">Asked:</span> <x-ui.date :value="$booking->requested_starts_at" format="M j, g:i A" /></p>
-                                    @if ($agreed)
-                                        <p class="mt-0.5 flex items-center gap-1.5"><span class="text-xs text-app-text-2">Confirmed:</span> <x-ui.date :value="$booking->starts_at" format="M j, g:i A" class="font-semibold" />
-                                            @if ($booking->starts_at->eq($booking->requested_starts_at))
-                                                <span class="rounded bg-status-green-bg px-1 text-[10px] font-bold text-status-green">Matches</span>
-                                            @else
-                                                <span class="rounded bg-status-amber-bg px-1 text-[10px] font-bold text-status-amber">Moved</span>
-                                            @endif
-                                        </p>
-                                    @elseif ($booking->status->value === 'proposed' && $booking->proposed_starts_at)
-                                        <p class="mt-0.5"><span class="text-xs text-app-text-2">Offered:</span> <x-ui.date :value="$booking->proposed_starts_at" format="M j, g:i A" class="font-semibold text-status-blue" /></p>
-                                    @else
-                                        <p class="mt-0.5 text-xs italic text-app-text-2">Not confirmed</p>
+                                    {{-- Phase 10L: one wording per status (PhotographyBooking::timeLine), online and walk-in alike --}}
+                                    @php $line = $booking->timeLine(); @endphp
+                                    <p class="flex items-center gap-1.5"><span class="text-xs text-app-text-2">{{ $line['label'] }}:</span> <x-ui.date :value="$line['at']" format="M j, g:i A" @class(['font-semibold' => $line['booked'], 'font-semibold text-status-blue' => $line['label'] === 'Offered']) />
+                                        @if ($line['booked'] && $booking->requested_starts_at && ! $booking->starts_at->eq($booking->requested_starts_at))
+                                            <span class="rounded bg-status-amber-bg px-1 text-[10px] font-bold text-status-amber" title="Asked for {{ \App\Support\LocalTime::format($booking->requested_starts_at, 'M j, g:i A') }}">Moved</span>
+                                        @endif
+                                    </p>
+                                    @if ($line['note'])
+                                        <p class="mt-0.5 text-xs italic text-app-text-2">{{ $line['note'] }}</p>
                                     @endif
                                 </td>
                                 <td class="whitespace-nowrap px-3 py-4 align-top">
@@ -173,19 +170,20 @@
             {{-- Six columns need about 1100px next to the sidebar, so cards are used up to 1400px wide --}}
             <ul class="space-y-3 min-[1400px]:hidden">
                 @foreach ($bookings as $booking)
-                    @php $agreed = in_array($booking->status->value, ['confirmed', 'completed'], true); @endphp
                     <li>
                         <a href="{{ route('owner.bookings.show', $booking) }}" class="block rounded-card border border-app-border bg-app-card p-4 shadow-sm transition-colors hover:border-brand focus-ring dark:shadow-none">
                             <span class="flex flex-wrap items-center justify-between gap-2">
-                                <span class="flex flex-wrap items-center gap-1.5"><span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span><x-walk-in.badge :record="$booking" /></span>
+                                <span class="font-mono text-sm font-bold text-brand">{{ $booking->reference_number }}</span>
                                 <span class="flex flex-wrap gap-1"><x-ui.status-badge :status="$booking->status" :expired="$booking->isExpired()" live /><x-payment.badge :payable="$booking" /></span>
                             </span>
-                            <span class="mt-2 block break-words font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</span>
+                            <span class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1"><span class="break-words font-semibold">{{ $booking->customer?->name ?? 'Deleted account' }}</span><x-walk-in.badge :record="$booking" /></span>
                             <span class="block break-words text-sm text-app-text-2">{{ $booking->snapshot['package']['name'] ?? $booking->package?->name }} · {{ $booking->group_size }} {{ $booking->group_size === 1 ? 'person' : 'people' }}</span>
+                            @php $line = $booking->timeLine(); @endphp
                             <span class="mt-3 grid grid-cols-2 gap-3 text-sm">
                                 <span class="min-w-0">
-                                    <span class="block text-xs text-app-text-2">{{ $agreed ? 'Confirmed time' : 'Requested time' }}</span>
-                                    <x-ui.date :value="$booking->starts_at" class="block" />
+                                    <span class="block text-xs text-app-text-2">{{ $line['label'] }}</span>
+                                    <x-ui.date :value="$line['at']" class="block" />
+                                    @if ($line['note'])<span class="block text-xs italic text-app-text-2">{{ $line['note'] }}</span>@endif
                                 </span>
                                 <span class="min-w-0">
                                     <span class="block text-xs text-app-text-2">{{ $booking->confirmed_price !== null ? 'Confirmed' : 'Estimate' }}</span>

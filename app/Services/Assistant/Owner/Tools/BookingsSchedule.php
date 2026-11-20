@@ -45,7 +45,9 @@ class BookingsSchedule extends OwnerTool
         $query = PhotographyBooking::query()->whereIn('status', $statuses)
             ->when($range->from, fn (Builder $q, string $day) => $q->where('starts_at', '>=', LocalTime::dayStartUtc($day)))
             ->when($range->to, fn (Builder $q, string $day) => $q->where('starts_at', '<=', LocalTime::dayEndUtc($day)))
-            ->when($params['source'] !== 'all', fn (Builder $q) => $q->where('source', RecordSource::from($params['source'])));
+            ->when($params['source'] !== 'all', fn (Builder $q) => $q->where('source', RecordSource::from($params['source'])))
+            // Phase 10L: an expired request (its time passed without an answer) is not waiting
+            ->when($params['status'] === 'waiting', fn (Builder $q) => $q->waiting());
 
         $result->total = (clone $query)->count();
 

@@ -19,7 +19,7 @@
                 @endforeach
             </x-ui.select>
             <x-ui.input label="Label" name="label" :value="$newHasErrors ? old('label') : ''" :error="$newErrors->first('label')" placeholder="For example: A4 (210 x 297 mm)" />
-            <x-ui.input label="Extra price (₱)" name="price_modifier" type="number" min="0" step="0.01" inputmode="decimal"
+            <x-ui.input label="Extra price (₱)" name="price_modifier" autocomplete="off" type="number" min="0" step="0.01" inputmode="decimal"
                 :value="$newHasErrors ? old('price_modifier') : '0.00'" :error="$newErrors->first('price_modifier')" />
             <div class="lg:pt-7">
                 <x-ui.checkbox name="is_active" value="1" label="Active" :checked="$newHasErrors ? (bool) old('is_active') : true" />
@@ -55,7 +55,7 @@
                                         @endforeach
                                     </x-ui.select>
                                     <x-ui.input label="Label" name="label" :value="$has ? old('label') : $option->label" :error="$bagErrors->first('label')" />
-                                    <x-ui.input label="Extra price (₱)" name="price_modifier" type="number" min="0" step="0.01" inputmode="decimal"
+                                    <x-ui.input label="Extra price (₱)" name="price_modifier" autocomplete="off" type="number" min="0" step="0.01" inputmode="decimal"
                                         :value="$has ? old('price_modifier') : $option->price_modifier" :error="$bagErrors->first('price_modifier')" />
                                     <div class="lg:pt-7">
                                         <x-ui.checkbox name="is_active" value="1" label="Active" :checked="$has ? (bool) old('is_active') : $option->is_active" />
