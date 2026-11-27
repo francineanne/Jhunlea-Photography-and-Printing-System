@@ -16,7 +16,8 @@ class ThreadReader
     public function page(Conversation $conversation, ?int $after = null, ?int $before = null): array
     {
         $size = (int) config('chat.page_size');
-        $query = $conversation->messages()->with('sender:id,name');
+        // Phase 10Q: the picture columns too - ChatPresenter's loadMissing() never reloads a relation already loaded here
+        $query = $conversation->messages()->with('sender:id,name,avatar_path,is_walk_in');
 
         $messages = match (true) {
             $after !== null => $query->where('id', '>', $after)->orderBy('id')->limit($size + 1)->get(),

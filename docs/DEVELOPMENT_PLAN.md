@@ -368,6 +368,9 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Isang amber na babala sa itaas ng booking at order page ng customer: ano ang gagawin, hanggang kailan, at ano ang mangyayari kung hindi (downpayment, request na mag-e-expire, offer, order na Ready for pickup na hindi bayad)
 - [x] "Needs your attention": isang beses pagkatapos mag-log in (customer at owner), hanggang 5, ang pinaka-urgent muna, may link sa record; walang lumalabas kung walang urgent; hindi para sa walk-in
 
+### 10Q — Small fixes from the live test (branch `phase-10q-small-fixes`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong rule. Profile picture: ang Choose, Upload o Replace at Remove ay pantay sa itaas at pare-pareho ang taas (44px); hindi gumagalaw kapag pumili ng file. Chat: ang litrato ng customer at ng owner ay lumalabas na sa mga bubble (ThreadReader naglo-load na ng avatar), may regression test
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

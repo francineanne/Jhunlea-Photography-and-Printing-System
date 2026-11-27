@@ -68,4 +68,34 @@ class ChatAvatarTest extends TestCase
         $page = $this->actingAs($customer)->get(route('customer.assistant.page'))->assertOk();
         $page->assertSee('data-chat-studio-tag', false)->assertSee('· Studio');
     }
+
+    /** Phase 10Q: the thread JSON (through ThreadReader) carries the pictures, not only the initials, on both sides. */
+    public function test_the_thread_json_carries_the_customers_and_the_owners_picture_on_both_sides(): void
+    {
+        $owner = $this->owner(['name' => 'Jhun']);
+        $owner->forceFill(['avatar_path' => 'avatars/owner.png'])->save();
+        $ana = $this->customer(['name' => 'Ana Morales']);
+        $ana->forceFill(['avatar_path' => 'avatars/ana.png'])->save();
+        $ben = $this->customer(['name' => 'Ben Cruz']);
+
+        $thread = $this->studio($ana);
+        $this->say($thread, $ana, 'From Ana');
+        $this->ownerSays($thread, $owner, 'From the studio');
+        $benThread = $this->studio($ben);
+        $this->say($benThread, $ben, 'From Ben');
+
+        foreach ([
+            [$owner, route('owner.messages.show', $thread)],
+            [$ana, route('customer.messages.show', $thread)],
+        ] as [$viewer, $url]) {
+            $messages = collect($this->actingAs($viewer)->getJson($url)->assertOk()->json('messages'))->keyBy('body');
+            $this->assertSame('/storage/avatars/ana.png', $messages['From Ana']['avatar']['url']);
+            $this->assertSame('AM', $messages['From Ana']['avatar']['initials']);
+            $this->assertSame('/storage/avatars/owner.png', $messages['From the studio']['avatar']['url']);
+        }
+
+        // A customer without a picture still gets the initials and no url
+        $messages = collect($this->actingAs($owner)->getJson(route('owner.messages.show', $benThread))->assertOk()->json('messages'))->keyBy('body');
+        $this->assertSame(['url' => null, 'initials' => 'BC'], $messages['From Ben']['avatar']);
+    }
 }

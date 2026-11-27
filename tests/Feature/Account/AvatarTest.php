@@ -173,4 +173,24 @@ class AvatarTest extends TestCase
         $this->assertSame(['url' => null, 'initials' => 'JA'], $rows[1]['avatar']);
         $this->assertNull($rows[2]['avatar']);
     }
+
+    /** Phase 10Q: Choose, Upload or Replace and Remove line up by their top edge at one height (h-11, never the compact sm:h-9). */
+    public function test_the_picture_buttons_line_up_at_one_height(): void
+    {
+        $form = fn (string $html): string => (string) preg_replace('#^.*?(<div[^>]*data-avatar-form.*?)<form method="POST" action="[^"]*account/profile.*$#s', '$1', $html);
+
+        $empty = $form($this->actingAs($this->customer)->get(route('customer.account.show'))->assertOk()->getContent());
+        $this->assertStringContainsString('flex flex-wrap items-start gap-2', $empty);
+        $this->assertStringNotContainsString('items-center gap-2', $empty);
+        $this->assertStringNotContainsString('sm:h-9', $empty);
+        $this->assertStringContainsString('Upload picture', $empty);
+        $this->assertStringContainsString('No picture chosen yet', $empty);
+
+        $this->upload($this->customer, $this->image());
+        $pictured = $form($this->actingAs($this->customer->fresh())->get(route('customer.account.show'))->assertOk()->getContent());
+        $this->assertStringContainsString('Replace picture', $pictured);
+        $this->assertStringContainsString('Remove', $pictured);
+        $this->assertStringNotContainsString('sm:h-9', $pictured);
+        $this->assertSame(3, substr_count($pictured, 'h-11'));
+    }
 }

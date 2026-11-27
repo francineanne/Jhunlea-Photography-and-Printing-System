@@ -89,24 +89,26 @@
                         @if ($avatarErrors->any())
                             <p id="avatar-error" class="mt-2 text-sm font-semibold text-status-red dark:text-[#ffb4ac]" role="alert">{{ $avatarErrors->first() }}</p>
                         @endif
-                        <div class="mt-3 flex flex-wrap items-center gap-2">
-                            <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex min-w-0 max-w-full flex-wrap items-center gap-2">
+                        {{-- Phase 10Q: top-aligned at one height (h-11), so the chosen-file line under "Choose a picture" never pushes the other buttons down --}}
+                        <div class="mt-3 flex flex-wrap items-start gap-2">
+                            <form method="POST" action="{{ route($area.'.account.avatar') }}" enctype="multipart/form-data" class="flex min-w-0 max-w-full flex-wrap items-start gap-2">
                                 @csrf
                                 <label class="sr-only" for="avatar-file">Choose a picture</label>
                                 {{-- Phase 10N: one styled button over the native input, the chosen name under it --}}
-                                <span class="flex min-w-0 flex-col items-start gap-1">
+                                {{-- Phase 10Q: the chosen-file line fills the column but never widens it, so a long name never moves the other buttons --}}
+                                <span class="flex min-w-0 flex-col items-start gap-1 [&>[data-file-chosen]]:w-0 [&>[data-file-chosen]]:min-w-full">
                                     <input id="avatar-file" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" required
                                         @if ($avatarErrors->any()) aria-invalid="true" aria-describedby="avatar-error" @endif
                                         class="peer sr-only">
                                     <x-ui.file-button for="avatar-file" label="Choose a picture" icon="image" variant="outline" empty="No picture chosen yet" />
                                 </span>
-                                <x-ui.button type="submit" variant="outline" size="sm"><x-ui.icon name="upload" :size="18" />{{ $user->avatarUrl() ? 'Replace picture' : 'Upload picture' }}</x-ui.button>
+                                <x-ui.button type="submit" variant="outline"><x-ui.icon name="upload" :size="18" />{{ $user->avatarUrl() ? 'Replace picture' : 'Upload picture' }}</x-ui.button>
                             </form>
                             @if ($user->avatarUrl())
                                 <form method="POST" action="{{ route($area.'.account.avatar.remove') }}">
                                     @csrf
                                     @method('DELETE')
-                                    <x-ui.button type="submit" variant="ghost" size="sm"><x-ui.icon name="delete" :size="18" />Remove</x-ui.button>
+                                    <x-ui.button type="submit" variant="ghost"><x-ui.icon name="delete" :size="18" />Remove</x-ui.button>
                                 </form>
                             @endif
                         </div>
