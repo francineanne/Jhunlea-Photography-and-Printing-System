@@ -470,22 +470,215 @@ Alpine.data('uiPageLoader', () => ({
     },
 }));
 
+// Phase 10R: the pages of a PDF, read in the browser only to show "This PDF has N pages" early and keep the live
+// estimate right. The same steps as App\Support\PdfPageCounter (the server's count always wins): skip stream bodies but
+// inflate object streams, then trust the /Root page tree's /Count, else the largest /Type /Pages /Count, else the number
+// of /Type /Page leaves. Null means unknown: the customer types the number of pages.
+const pdfPageCache = new WeakMap();
+const PDF_MAX_BYTES = 64 * 1024 * 1024;
+
+const inflatePdfStream = async (bytes) => {
+    if (typeof DecompressionStream === 'undefined') return null;
+
+    try {
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+
+        return new TextDecoder('latin1').decode(await new Response(stream).arrayBuffer());
+    } catch {
+        return null;
+    }
+};
+
+const pdfDictionaryFrom = (text, open) => {
+    let depth = 0;
+
+    for (let i = open, stop = Math.min(text.length, open + 200000); i < stop - 1; i++) {
+        const pair = text[i] + text[i + 1];
+
+        if (pair === '<<') {
+            depth++;
+            i++;
+        } else if (pair === '>>') {
+            depth--;
+            i++;
+            if (depth === 0) return text.slice(open, i + 1);
+        }
+    }
+
+    return null;
+};
+
+const pdfEnclosingDictionary = (text, at) => {
+    let depth = 0;
+
+    for (let i = at - 1, stop = Math.max(0, at - 100000); i >= stop; i--) {
+        const pair = text.substr(i, 2);
+
+        if (pair === '>>') {
+            depth++;
+            i--;
+        } else if (pair === '<<') {
+            if (depth === 0) return pdfDictionaryFrom(text, i);
+            depth--;
+            i--;
+        }
+    }
+
+    return null;
+};
+
+const pdfObjectDictionary = (text, number, generation) => {
+    // No lookbehind (older Safari cannot parse it): match the character before the number too, and step over it
+    const matches = [...text.matchAll(new RegExp(`(?:^|[^0-9])${number}\\s+${generation}\\s+obj\\b`, 'g'))];
+
+    if (!matches.length) return null;
+
+    const last = matches[matches.length - 1];
+    const at = last.index + (/^[0-9]/.test(last[0]) ? 0 : 1);
+    const open = text.indexOf('<<', at);
+
+    return open === -1 || open - at > 200 ? null : pdfDictionaryFrom(text, open);
+};
+
+const countPdfPagesInText = async (raw, bytes) => {
+    if (!raw.slice(0, 1024).includes('%PDF-')) return null;
+
+    const parts = [];
+    const inflated = [];
+    const streamStart = /stream\r?\n/g;
+    let offset = 0;
+    let match;
+
+    streamStart.lastIndex = 0;
+    while ((match = streamStart.exec(raw)) !== null) {
+        // "endstream" followed by a line break is not the start of a stream
+        if (raw.slice(Math.max(0, match.index - 3), match.index) === 'end') continue;
+
+        const bodyStart = match.index + match[0].length;
+        const end = raw.indexOf('endstream', bodyStart);
+
+        if (end === -1) break;
+
+        const before = raw.slice(offset, match.index);
+        const objAt = before.lastIndexOf('obj');
+        const dictionary = objAt === -1 ? before : before.slice(objAt);
+
+        parts.push(before);
+
+        if (bytes && inflated.length < 500 && /\/Type\s*\/ObjStm\b/.test(dictionary) && dictionary.includes('/FlateDecode')) {
+            let stop = end;
+
+            while (stop > bodyStart && (raw[stop - 1] === '\n' || raw[stop - 1] === '\r')) stop--;
+
+            const text = await inflatePdfStream(bytes.subarray(bodyStart, stop));
+
+            if (text !== null) inflated.push(text);
+        }
+
+        offset = end + 'endstream'.length;
+        streamStart.lastIndex = offset;
+    }
+
+    parts.push(raw.slice(offset));
+
+    const text = `${parts.join('\n')}\n${inflated.join('\n')}`;
+
+    if (/\/Encrypt\b/.test(text)) return null;
+
+    const fromRoot = () => {
+        const roots = [...text.matchAll(/\/Root\s+(\d+)\s+(\d+)\s+R/g)];
+
+        if (!roots.length) return null;
+
+        const root = roots[roots.length - 1];
+        const catalog = pdfObjectDictionary(text, root[1], root[2]);
+        const pages = catalog?.match(/\/Pages\s+(\d+)\s+(\d+)\s+R/);
+        const tree = pages ? pdfObjectDictionary(text, pages[1], pages[2]) : null;
+        const count = tree?.match(/\/Count\s+(\d+)/);
+
+        return count ? Number(count[1]) : null;
+    };
+
+    const largest = () => {
+        let best = null;
+
+        for (const found of text.matchAll(/\/Type\s*\/Pages\b/g)) {
+            const count = pdfEnclosingDictionary(text, found.index)?.match(/\/Count\s+(\d+)/);
+
+            if (count) best = Math.max(best ?? 0, Number(count[1]));
+        }
+
+        return best;
+    };
+
+    const leaves = () => (text.match(/\/Type\s*\/Page(?![A-Za-z])/g) ?? []).length || null;
+
+    for (const count of [fromRoot(), largest(), leaves()]) {
+        if (count !== null && count >= 1 && count <= 100000) return count;
+    }
+
+    return null;
+};
+
+const countPdfPages = async (file) => {
+    try {
+        if (file.size < 8 || file.size > PDF_MAX_BYTES) return null;
+
+        const bytes = new Uint8Array(await file.arrayBuffer());
+
+        return await countPdfPagesInText(new TextDecoder('latin1').decode(bytes), bytes);
+    } catch {
+        return null;
+    }
+};
+
+// Phase 10R: "1-5, 8" as a list of pages, the same rule as App\Support\PageRange (the server decides). Null = not valid
+const parsePageRange = (input, max) => {
+    const text = (input ?? '').trim();
+
+    if (!text || text.length > 200 || !/^[0-9,\-\s]+$/.test(text)) return null;
+
+    const pages = new Set();
+
+    for (const raw of text.split(',')) {
+        const part = raw.trim();
+        const match = part.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+
+        if (!match) return null;
+
+        const from = Number(match[1]);
+        const to = match[2] === undefined ? from : Number(match[2]);
+
+        if (from < 1 || from > to || to > max) return null;
+        for (let page = from; page <= to; page++) pages.add(page);
+    }
+
+    return { count: pages.size, highest: Math.max(...pages) };
+};
+
+const RANGE_INVALID = 'Enter the pages like 1-5, 8: page numbers from 1, commas between them, and a dash for a range such as 2-4.';
+
 // The printing order wizard. The four steps are sections of one plain form, so it also works without scripts; here they
 // open one at a time. The checks below only help the customer: the server checks every step again on submit. The
 // estimate comes from the server (PricingService), never from arithmetic in the browser.
-Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb, maxQuantity }) => ({
+Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb, maxQuantity, maxPages, unknownHint }) => ({
     step: start,
     reached: start,
     serviceId: null,
     perPage: false,
+    pageMode: 'all',
     files: [],
     dragging: false,
     problem: '',
     submitting: false,
     summary: { service: '', options: [], quantity: '', pages: '', notes: '' },
+    // The line under Custom pages ("That is 3 pages." or the problem), kept here so Alpine redraws it
+    rangeLine: '',
+    rangeBad: false,
     estimate: null,
     estimateState: 'idle',
     estimateProblem: '',
+    estimateField: '',
     estimateTimer: null,
     estimateRequest: null,
     estimateSeq: 0,
@@ -504,6 +697,7 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
 
         this.serviceId = ticked ? Number(ticked.value) : null;
         this.perPage = Boolean(this.rule?.perPage);
+        this.pageMode = this.$root.querySelector('input[name="page_mode"]:checked')?.value === 'custom' ? 'custom' : 'all';
         this.readFiles();
         // Options of other services are disabled through x-bind; wait for that before reading the form
         this.$nextTick(() => {
@@ -513,6 +707,9 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
     },
 
     collect() {
+        this.rangeLine = this.rangeText();
+        this.rangeBad = this.pageMode === 'custom' && this.rangeLine !== '' && this.rangeProblem() !== '';
+
         const ticked = this.$root.querySelector('input[name="service"]:checked');
         const options = this.serviceId ? [...this.$root.querySelectorAll(`[data-service-options="${this.serviceId}"] input:checked`)] : [];
 
@@ -520,7 +717,8 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
             service: ticked?.dataset.name ?? '',
             options: options.map((input) => input.dataset.label),
             quantity: this.$refs.quantity?.value ?? '',
-            pages: this.$root.querySelector('#pages')?.value ?? '',
+            // Phase 10R: worked out here, because Alpine does not watch the value of a plain field
+            pages: this.pagesSummary(),
             notes: (this.$root.querySelector('#notes')?.value ?? '').trim(),
         };
     },
@@ -572,16 +770,11 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
 
     check(step) {
         const quantity = parseInt(this.$refs.quantity.value, 10);
-        const pages = parseInt(this.$root.querySelector('#pages')?.value ?? '', 10);
+        // Step 2 holds only the options now: a refused estimate blocks it only when the options are the problem
+        const optionProblem = this.estimateState === 'invalid' && (this.estimateField === '' || this.estimateField.startsWith('options') || this.estimateField === 'service');
         const problems = {
             1: !this.serviceId ? 'Choose a printing service to continue.' : '',
-            2: !(quantity >= 1 && quantity <= maxQuantity)
-                ? `Enter a number of copies from 1 to ${maxQuantity}.`
-                : this.perPage && !(pages >= 1)
-                  ? 'Enter the number of pages in your file.'
-                  : this.estimateState === 'invalid'
-                    ? this.estimateProblem
-                    : '',
+            2: optionProblem ? this.estimateProblem : '',
             3: !this.files.length
                 ? 'Add at least one file to print.'
                 : this.files.length > maxFiles
@@ -590,7 +783,9 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
                     ? 'Remove the files that cannot be sent first.'
                     : this.overTotal()
                       ? this.totalProblem()
-                      : '',
+                      : !(quantity >= 1 && quantity <= maxQuantity)
+                        ? `Enter a number of copies from 1 to ${maxQuantity}.`
+                        : this.pagesProblem() || (this.estimateState === 'invalid' ? this.estimateProblem : ''),
         };
 
         this.problem = problems[step] ?? '';
@@ -624,7 +819,127 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
     readFiles() {
         const picked = [...(this.$refs.files?.files ?? [])];
 
-        this.files = picked.map((file) => ({ name: file.name, bytes: file.size, size: this.size(file.size), error: this.fileProblem(file) }));
+        this.files = picked.map((file) => {
+            const pdf = file.name.toLowerCase().endsWith('.pdf');
+
+            // Count each chosen PDF once; the answer refreshes the list, the pages field and the estimate
+            if (pdf && !pdfPageCache.has(file)) {
+                pdfPageCache.set(file, 'counting');
+                countPdfPages(file).then((pages) => {
+                    pdfPageCache.set(file, pages);
+                    this.readFiles();
+                    this.collect();
+                    this.queueEstimate();
+                });
+            }
+
+            return { name: file.name, bytes: file.size, size: this.size(file.size), error: this.fileProblem(file), pdf, pages: pdf ? pdfPageCache.get(file) : null };
+        });
+
+        // The typed field carries the count too, so a form sent while the server cannot count still says the right number
+        const total = this.pdfTotal();
+        const field = this.$root.querySelector('#pages');
+
+        if (total !== null && field) field.value = total;
+    },
+
+    fileLine(file) {
+        if (file.pages === 'counting') return `${file.size} · counting pages…`;
+
+        return typeof file.pages === 'number' ? `${file.size} · ${file.pages} ${file.pages === 1 ? 'page' : 'pages'}` : file.size;
+    },
+
+    // Pages (Phase 10R)
+
+    counting() {
+        return this.files.some((file) => file.pages === 'counting');
+    },
+
+    // The pages of every chosen file, when all of them are PDFs counted here; else null (typed)
+    pdfTotal() {
+        if (!this.files.length || !this.files.every((file) => file.pdf && typeof file.pages === 'number')) return null;
+
+        return this.files.reduce((sum, file) => sum + file.pages, 0);
+    },
+
+    // All pages: more counted pages than one online order may hold (the server says the same on the files)
+    pageLimitProblem() {
+        const total = this.pdfTotal();
+
+        return this.perPage && this.pageMode !== 'custom' && total !== null && total > maxPages
+            ? `Your files have ${total} pages. Online orders can be up to ${maxPages} pages. For more, please talk to the shop.`
+            : '';
+    },
+
+    pdfCountText() {
+        const total = this.pdfTotal();
+
+        if (total === null) return '';
+        if (this.pageLimitProblem()) return this.pageLimitProblem();
+
+        return this.files.length === 1
+            ? `This PDF has ${total} ${total === 1 ? 'page' : 'pages'}. All of them are printed.`
+            : `Your files have ${total} pages in total. All of them are printed.`;
+    },
+
+    pagesHelp() {
+        return this.files.length ? unknownHint : 'Add your files above first: the pages of a PDF are counted for you.';
+    },
+
+    range() {
+        return parsePageRange(this.$root.querySelector('#page_range')?.value, maxPages);
+    },
+
+    rangeProblem() {
+        const value = (this.$root.querySelector('#page_range')?.value ?? '').trim();
+        const range = this.range();
+        const total = this.pdfTotal();
+
+        if (!value) return 'Enter the pages to print, for example 1-5, 8.';
+        if (!range) return RANGE_INVALID;
+        if (total !== null && this.files.length === 1 && range.highest > total) return `This PDF has ${total} ${total === 1 ? 'page' : 'pages'}. Choose pages from 1 to ${total}.`;
+        if (total !== null && range.count > total) return `Your files have ${total} pages in total. Choose at most ${total} pages.`;
+
+        return '';
+    },
+
+    rangeText() {
+        if (this.pageMode !== 'custom' || !(this.$root.querySelector('#page_range')?.value ?? '').trim()) return '';
+
+        const range = this.range();
+
+        return this.rangeProblem() || `That is ${range.count} ${range.count === 1 ? 'page' : 'pages'}.`;
+    },
+
+    // The number of pages the estimate and the summary use
+    pagesValue() {
+        if (this.pageMode === 'custom') return this.range()?.count ?? '';
+
+        return this.pdfTotal() ?? (this.$root.querySelector('#pages')?.value ?? '');
+    },
+
+    pagesProblem() {
+        if (!this.perPage) return '';
+        if (this.pageMode === 'custom') return this.rangeProblem();
+        if (this.counting()) return 'One moment: the pages of your PDF are still being counted.';
+        if (this.pdfTotal() !== null) return this.pageLimitProblem();
+
+        const pages = parseInt(this.$root.querySelector('#pages')?.value ?? '', 10);
+
+        return pages >= 1 && pages <= maxPages ? '' : 'Enter the number of pages in your file.';
+    },
+
+    pagesSummary() {
+        const pages = this.pagesValue();
+        const word = Number(pages) === 1 ? 'page' : 'pages';
+
+        if (this.pageMode === 'custom') {
+            const text = (this.$root.querySelector('#page_range')?.value ?? '').trim();
+
+            return text ? `Pages ${text} (${pages || '?'} ${word})` : 'Custom pages not set yet';
+        }
+
+        return pages === '' ? 'All pages' : `All pages (${pages} ${word})`;
     },
 
     totalBytes() {
@@ -706,6 +1021,26 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
             return;
         }
 
+        // Phase 10R: too many counted pages for one order get no price, only the reason
+        if (this.pageLimitProblem()) {
+            this.estimate = null;
+            this.estimateState = 'invalid';
+            this.estimateField = 'files';
+            this.estimateProblem = this.pageLimitProblem();
+
+            return;
+        }
+
+        // Phase 10R: custom pages past the end of the counted PDFs get no price, only the reason (the server refuses them too)
+        if (this.perPage && this.pageMode === 'custom' && this.range() && this.rangeProblem()) {
+            this.estimate = null;
+            this.estimateState = 'invalid';
+            this.estimateField = 'page_range';
+            this.estimateProblem = this.rangeProblem();
+
+            return;
+        }
+
         this.estimateState = 'loading';
         this.estimateTimer = setTimeout(() => this.fetchEstimate(), 250);
     },
@@ -713,7 +1048,11 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
     async fetchEstimate() {
         const params = new URLSearchParams({ service: this.serviceId, quantity: this.$refs.quantity.value });
 
-        if (this.perPage) params.set('pages', this.$root.querySelector('#pages').value);
+        if (this.perPage) {
+            params.set('page_mode', this.pageMode);
+            if (this.pageMode === 'custom') params.set('page_range', this.$root.querySelector('#page_range')?.value ?? '');
+            else params.set('pages', this.pagesValue());
+        }
         this.$root.querySelectorAll(`[data-service-options="${this.serviceId}"] input:checked`).forEach((input) => params.append(input.name, input.value));
 
         const seq = this.estimateSeq;
@@ -736,6 +1075,7 @@ Alpine.data('printingWizard', ({ start, rules, estimateUrl, maxFiles, maxTotalMb
             } else if (response.status === 422) {
                 this.estimate = null;
                 this.estimateState = 'invalid';
+                this.estimateField = Object.keys(body.errors ?? {})[0] ?? '';
                 this.estimateProblem = Object.values(body.errors ?? {}).flat()[0] ?? 'Check your choices to see an estimate.';
             } else {
                 this.estimateState = 'offline';

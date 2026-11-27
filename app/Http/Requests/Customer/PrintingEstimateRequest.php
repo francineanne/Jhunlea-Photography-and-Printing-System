@@ -5,6 +5,7 @@ namespace App\Http\Requests\Customer;
 use App\Enums\PricingType;
 use App\Models\PrintingService;
 use App\Services\PricingService;
+use App\Support\PageRange;
 use App\Support\PriceEstimate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -17,9 +18,19 @@ use InvalidArgumentException;
  * input and turns a refusal from PricingService into a message next to the right field.
  *
  * Options arrive as options[service id][group] = option id, so choices made under another service are simply not read.
+ *
+ * Phase 10R: pages for a per-page service are "All pages" (page_mode all, the default) or "Custom pages" (page_mode
+ * custom with page_range such as "1-5, 8", counted by PageRange). With All pages the count is the PDFs' own count when
+ * the server can read it (StorePrintingOrderRequest::knownPdfPages()); otherwise the customer types it, as before.
  */
 class PrintingEstimateRequest extends FormRequest
 {
+    public const PAGE_MODES = ['all', 'custom'];
+
+    public const RANGE_INVALID = 'Enter the pages like 1-5, 8: page numbers from 1, commas between them, and a dash for a range such as 2-4.';
+
+    public const UNKNOWN_PAGES_HINT = 'We could not count the pages of this file. Enter the number of pages; the shop will check it.';
+
     private ?PrintingService $chosenService = null;
 
     private ?PriceEstimate $estimate = null;
@@ -38,7 +49,12 @@ class PrintingEstimateRequest extends FormRequest
             'options.*' => ['nullable', 'array'],
             'options.*.*' => ['nullable', 'integer'],
             'quantity' => ['required', 'integer', 'min:1', 'max:'.config('printing.max_quantity')],
-            'pages' => [Rule::requiredIf(fn () => $this->service()?->pricing_type === PricingType::PerPage), 'nullable', 'integer', 'min:1', 'max:'.config('printing.max_pages')],
+            'page_mode' => ['nullable', Rule::in(self::PAGE_MODES)],
+            'page_range' => [Rule::requiredIf(fn () => $this->perPage() && $this->customPages()), 'nullable', 'string', 'max:'.PageRange::MAX_LENGTH],
+            // Typed only when it is needed: All pages and no count the server can read. Otherwise it is not read at all
+            'pages' => $this->pagesNeedTyping()
+                ? ['required', 'integer', 'min:1', 'max:'.config('printing.max_pages')]
+                : ['nullable'],
         ];
     }
 
@@ -54,20 +70,29 @@ class PrintingEstimateRequest extends FormRequest
             'pages.required' => 'Enter the number of pages in your file.',
             'pages.min' => 'Your file needs at least 1 page.',
             'pages.max' => 'You can order up to :max pages at once. For more, please talk to the shop.',
+            'page_mode.in' => 'Choose All pages or Custom pages.',
+            'page_range.required' => 'Enter the pages to print, for example 1-5, 8.',
+            'page_range.string' => self::RANGE_INVALID,
+            'page_range.max' => 'The pages to print can be up to :max characters.',
         ];
     }
 
     /** @return array<string, string> */
     public function attributes(): array
     {
-        return ['quantity' => 'number of copies', 'pages' => 'number of pages'];
+        return ['quantity' => 'number of copies', 'pages' => 'number of pages', 'page_range' => 'pages to print'];
     }
 
     /** @return array<int, \Closure> */
     public function after(): array
     {
         return [function (Validator $validator) {
-            if ($validator->errors()->hasAny(['service', 'quantity', 'pages', 'options', 'options.*', 'options.*.*'])) {
+            // Custom pages: the text must be a real list of pages before anything is counted
+            if ($this->perPage() && $this->customPages() && ! $validator->errors()->has('page_range') && $this->pageRange() === null) {
+                $validator->errors()->add('page_range', self::RANGE_INVALID);
+            }
+        }, function (Validator $validator) {
+            if ($validator->errors()->hasAny(['service', 'quantity', 'pages', 'page_mode', 'page_range', 'files', 'options', 'options.*', 'options.*.*'])) {
                 return;
             }
 
@@ -124,10 +149,48 @@ class PrintingEstimateRequest extends FormRequest
         return (int) $this->input('quantity');
     }
 
-    /** Pages count only for services priced per page; every other service is worked out on 1. */
+    /**
+     * Pages count only for services priced per page; every other service is worked out on 1. Custom pages: the
+     * range's count. All pages: the PDFs' own count when known (whatever number the browser sent), else the typed one.
+     */
     public function pages(): int
     {
-        return $this->service()?->pricing_type === PricingType::PerPage ? (int) $this->input('pages') : 1;
+        if (! $this->perPage()) {
+            return 1;
+        }
+
+        if ($this->customPages()) {
+            return $this->pageRange()?->count() ?? 1;
+        }
+
+        return $this->knownPdfPages() ?? (int) $this->input('pages');
+    }
+
+    public function perPage(): bool
+    {
+        return $this->service()?->pricing_type === PricingType::PerPage;
+    }
+
+    public function customPages(): bool
+    {
+        return $this->input('page_mode') === 'custom';
+    }
+
+    public function pageRange(): ?PageRange
+    {
+        return PageRange::parse($this->input('page_range'));
+    }
+
+    /** The total page count of the uploaded files when every one is a PDF the server can count; the estimate has no files. */
+    public function knownPdfPages(): ?int
+    {
+        return null;
+    }
+
+    /** The customer must type the number of pages: a per-page service, All pages, and no count the server can read. */
+    public function pagesNeedTyping(): bool
+    {
+        return $this->perPage() && ! $this->customPages() && $this->knownPdfPages() === null;
     }
 
     /** Only set after validation passed. */

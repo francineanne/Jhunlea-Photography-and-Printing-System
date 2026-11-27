@@ -371,6 +371,12 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 ### 10Q — Small fixes from the live test (branch `phase-10q-small-fixes`) · built, naghihintay ng review
 - [x] Walang migration; walang binagong rule. Profile picture: ang Choose, Upload o Replace at Remove ay pantay sa itaas at pare-pareho ang taas (44px); hindi gumagalaw kapag pumili ng file. Chat: ang litrato ng customer at ng owner ay lumalabas na sa mga bubble (ThreadReader naglo-load na ng avatar), may regression test
 
+### 10R — Printing pages (branch `phase-10r-print-pages`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong presyo o rule ng owner. Step 2 ay Options na lang; ang copies at pages ay nasa step 3, pagkatapos ng files ("Files, copies and pages")
+- [x] All pages (default): binibilang ng server ang pages ng PDF (`PdfPageCounter`, walang library); ang bilang ng server ang nasusunod kahit iba ang pinadala ng browser; ang browser ay nagbibilang din para lang maipakita ("This PDF has 3 pages")
+- [x] Custom pages: "1-5, 8" (`PageRange`); bawat page ay hindi lalampas sa PDF (isang file) o ang bilang ay hindi lalampas sa total (ilang files); naka-save bilang unang linya ng notes "Pages to print: ..."
+- [x] Hindi PDF, o PDF na hindi mabasa o naka-encrypt: ita-type ng customer ang bilang ng pages, may paalala; may feature at unit tests
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

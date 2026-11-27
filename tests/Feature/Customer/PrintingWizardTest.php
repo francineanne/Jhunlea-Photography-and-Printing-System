@@ -171,8 +171,9 @@ class PrintingWizardTest extends TestCase
         // Phase 10G: the payment notice follows the 10B rules (was "Payment is made face-to-face at ...")
         $this->assertStringContainsString(PaymentRules::NOTICE, $html);
         // Step 1 is open; only the other steps carry the marker that hides them before Alpine starts
-        // (steps 2, 3 and 4, plus the pages field while no per-page service is chosen)
-        $this->assertSame(4, substr_count($html, 'data-js-hidden x-bind:data-js-hidden="false"'));
+        // (steps 2, 3 and 4, plus the pages field while no per-page service is chosen, plus, since 10R, the Custom pages
+        // box while All pages is chosen)
+        $this->assertSame(5, substr_count($html, 'data-js-hidden x-bind:data-js-hidden="false"'));
         $this->assertDoesNotMatchRegularExpression('/id="step-1"[^>]*data-js-hidden/', $html);
         $this->assertMatchesRegularExpression('/id="step-2"[^>]*data-js-hidden/', $html);
     }

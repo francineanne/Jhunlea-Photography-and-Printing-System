@@ -27,7 +27,7 @@ use Throwable;
 class PrintingOrderController extends Controller
 {
     /** Which wizard step holds each field, so a failed submit opens the step with the first problem. */
-    private const STEP_OF_FIELD = ['booking' => 1, 'service' => 1, 'options' => 2, 'quantity' => 2, 'pages' => 2, 'files' => 3, 'notes' => 3];
+    private const STEP_OF_FIELD = ['booking' => 1, 'service' => 1, 'options' => 2, 'files' => 3, 'quantity' => 3, 'pages' => 3, 'page_mode' => 3, 'page_range' => 3, 'notes' => 3];
 
     public function create(Request $request, OrderFileService $files, ShopSettings $settings): View
     {
@@ -58,6 +58,7 @@ class PrintingOrderController extends Controller
             'maxTotalMb' => $settings->printingMaxTotalMb(),
             'maxQuantity' => config('printing.max_quantity'),
             'maxPages' => config('printing.max_pages'),
+            'unknownPagesHint' => StorePrintingOrderRequest::UNKNOWN_PAGES_HINT,
             'startStep' => $this->firstStepWithError(session('errors')),
             'booking' => $booking,
             'bookingNotice' => $bookingNotice,

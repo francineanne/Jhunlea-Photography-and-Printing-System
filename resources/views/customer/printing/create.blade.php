@@ -5,8 +5,8 @@
 @php
     $steps = [
         1 => ['label' => 'Choose service', 'icon' => 'print'],
-        2 => ['label' => 'Options and copies', 'icon' => 'tune'],
-        3 => ['label' => 'Files and notes', 'icon' => 'cloud_upload'],
+        2 => ['label' => 'Options', 'icon' => 'tune'],
+        3 => ['label' => 'Files, copies and pages', 'icon' => 'cloud_upload'],
         4 => ['label' => 'Review and send', 'icon' => 'task_alt'],
     ];
     $hasOld = session()->hasOldInput();
@@ -15,6 +15,7 @@
     $fileErrors = collect($errors->getMessages())->filter(fn ($messages, $key) => str_starts_with($key, 'files'))->flatten()->unique();
     $allExtensions = $rules->pluck('extensions')->flatten()->unique()->values();
     $startPerPage = (bool) ($rules[$oldService]['perPage'] ?? false);
+    $oldMode = old('page_mode') === 'custom' ? 'custom' : 'all';
 @endphp
 
 @section('main')
@@ -70,7 +71,7 @@
             </x-ui.notice>
         </noscript>
         <form method="POST" action="{{ route('customer.printing.store') }}" enctype="multipart/form-data" novalidate
-            x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxTotalMb' => $maxTotalMb, 'maxQuantity' => $maxQuantity]))"
+            x-data="printingWizard(@js(['start' => $startStep, 'rules' => $rules, 'estimateUrl' => route('customer.printing.estimate'), 'maxFiles' => $maxFiles, 'maxTotalMb' => $maxTotalMb, 'maxQuantity' => $maxQuantity, 'maxPages' => $maxPages, 'unknownHint' => $unknownPagesHint]))"
             x-on:change="sync()" x-on:submit="submit($event)">
             @csrf
             @if ($booking)
@@ -148,11 +149,11 @@
                         @include('customer.printing._step-nav', ['number' => 1])
                     </section>
 
-                    {{-- Step 2: options, copies and pages --}}
+                    {{-- Step 2: options (Phase 10R: copies and pages moved to step 3, after the files) --}}
                     <section id="step-2" aria-labelledby="step-2-title" x-show="step === 2"
                         @if ($startStep !== 2) data-js-hidden x-bind:data-js-hidden="false" @endif
                         class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none">
-                        @include('customer.printing._step-header', ['number' => 2, 'title' => 'Options and copies', 'text' => 'Choose the options for your service and how many copies you need.', 'pill' => 'Estimate live'])
+                        @include('customer.printing._step-header', ['number' => 2, 'title' => 'Options', 'text' => 'Choose the options for your service. You add your files, copies and pages in the next step.', 'pill' => 'Estimate live'])
 
                         @if ($optionErrors->isNotEmpty())
                             <ul class="mb-4 space-y-1 rounded-control border border-status-red/30 bg-status-red-bg p-3 text-sm text-status-red" role="alert">
@@ -203,41 +204,14 @@
                             </fieldset>
                         @endforeach
 
-                        <div class="grid gap-5 border-t border-app-border pt-5 md:grid-cols-2">
-                            <x-ui.field id="quantity" label="Number of copies" :error="$errors->first('quantity')" :required="true"
-                                hint="Each copy is one full set of your file.">
-                                <div class="flex items-center gap-1 rounded-control border border-neutral-200 bg-app-card p-0.5 dark:border-neutral-700">
-                                    <button type="button" x-cloak x-on:click="changeCopies(-1)" aria-label="One copy fewer" aria-controls="quantity"
-                                        class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
-                                        <x-ui.icon name="remove" :size="18" />
-                                    </button>
-                                    <input id="quantity" type="number" name="quantity" value="{{ old('quantity', 1) }}" min="1" max="{{ $maxQuantity }}" step="1" inputmode="numeric" required
-                                        x-ref="quantity" x-on:input="sync()"
-                                        @if ($errors->has('quantity')) aria-invalid="true" aria-describedby="quantity-error" @else aria-describedby="quantity-hint" @endif
-                                        class="h-11 min-w-0 flex-1 rounded-[8px] bg-transparent text-center text-lg font-semibold tabular-nums field-focus">
-                                    <button type="button" x-cloak x-on:click="changeCopies(1)" aria-label="One copy more" aria-controls="quantity"
-                                        class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
-                                        <x-ui.icon name="add" :size="18" />
-                                    </button>
-                                </div>
-                            </x-ui.field>
-
-                            <div x-show="perPage" @unless ($startPerPage) data-js-hidden x-bind:data-js-hidden="false" @endunless>
-                                <x-ui.input id="pages" name="pages" type="number" label="Number of pages" min="1" :max="$maxPages" step="1" inputmode="numeric"
-                                    value="{{ old('pages', 1) }}" x-on:input="sync()"
-                                    hint="Estimate only. The shop confirms the final price after checking your file." />
-                                <p class="mt-1 text-xs text-app-text-2" x-show="false">Only used for services priced per page.</p>
-                            </div>
-                        </div>
-
                         @include('customer.printing._step-nav', ['number' => 2])
                     </section>
 
-                    {{-- Step 3: files and notes --}}
+                    {{-- Step 3: files, then copies and pages (counted from the PDFs when possible), then notes --}}
                     <section id="step-3" aria-labelledby="step-3-title" x-show="step === 3"
                         @if ($startStep !== 3) data-js-hidden x-bind:data-js-hidden="false" @endif
                         class="scroll-mt-28 rounded-card border border-app-border bg-app-card p-4 shadow-sm sm:p-6 dark:shadow-none">
-                        @include('customer.printing._step-header', ['number' => 3, 'title' => 'Files and notes', 'text' => 'Add the files to print. They stay private: only you and the shop can see them.', 'pill' => 'Up to '.$maxFiles.' files · '.$maxTotalMb.' MB'])
+                        @include('customer.printing._step-header', ['number' => 3, 'title' => 'Files, copies and pages', 'text' => 'Add the files to print, then the copies and pages. Your files stay private: only you and the shop can see them.', 'pill' => 'Up to '.$maxFiles.' files · '.$maxTotalMb.' MB'])
 
                         @if ($fileErrors->isNotEmpty())
                             <ul class="mb-4 space-y-1 rounded-control border border-status-red/30 bg-status-red-bg p-3 text-sm text-status-red" role="alert" id="files-error">
@@ -288,7 +262,7 @@
                                         </span>
                                         <span class="min-w-0 flex-1">
                                             <span class="block truncate text-sm font-semibold" x-text="file.name" x-bind:title="file.name"></span>
-                                            <span class="block text-xs" x-bind:class="file.error ? 'text-status-red' : 'text-app-text-2'" x-text="file.error || file.size"></span>
+                                            <span class="block text-xs" x-bind:class="file.error ? 'text-status-red' : 'text-app-text-2'" x-text="file.error || fileLine(file)"></span>
                                         </span>
                                         <button type="button" x-on:click="removeFile(index)" x-bind:aria-label="`Remove ${file.name}`"
                                             class="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-status-red transition-colors hover:bg-status-red-bg focus-ring sm:min-h-9">
@@ -297,6 +271,67 @@
                                     </li>
                                 </template>
                             </ul>
+                        </div>
+
+
+                        {{-- Phase 10R: copies and pages come after the files, so the pages of a PDF are counted, not guessed --}}
+                        <div class="mt-6 grid items-start gap-5 border-t border-app-border pt-5 md:grid-cols-2" data-copies-pages>
+                            <x-ui.field id="quantity" label="Number of copies" :error="$errors->first('quantity')" :required="true"
+                                hint="Each copy is one full set of your file.">
+                                <div class="flex items-center gap-1 rounded-control border border-neutral-200 bg-app-card p-0.5 dark:border-neutral-700">
+                                    <button type="button" x-cloak x-on:click="changeCopies(-1)" aria-label="One copy fewer" aria-controls="quantity"
+                                        class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
+                                        <x-ui.icon name="remove" :size="18" />
+                                    </button>
+                                    <input id="quantity" type="number" name="quantity" value="{{ old('quantity', 1) }}" min="1" max="{{ $maxQuantity }}" step="1" inputmode="numeric" required
+                                        x-ref="quantity" x-on:input="sync()"
+                                        @if ($errors->has('quantity')) aria-invalid="true" aria-describedby="quantity-error" @else aria-describedby="quantity-hint" @endif
+                                        class="h-11 min-w-0 flex-1 rounded-[8px] bg-transparent text-center text-lg font-semibold tabular-nums field-focus">
+                                    <button type="button" x-cloak x-on:click="changeCopies(1)" aria-label="One copy more" aria-controls="quantity"
+                                        class="grid size-11 shrink-0 place-items-center rounded-[8px] bg-neutral-100 transition-colors hover:bg-neutral-200 focus-ring dark:bg-white/10 dark:hover:bg-white/15">
+                                        <x-ui.icon name="add" :size="18" />
+                                    </button>
+                                </div>
+                            </x-ui.field>
+
+                            {{-- Phase 10R: All pages (counted from the PDFs by the server; typed only when it cannot count) or Custom pages --}}
+                            <fieldset class="min-w-0" x-show="perPage" @unless ($startPerPage) data-js-hidden x-bind:data-js-hidden="false" @endunless data-pages-choice>
+                                <legend class="mb-1.5 text-sm font-semibold">Pages to print</legend>
+                                <div class="grid grid-cols-2 gap-2">
+                                    @foreach (['all' => 'All pages', 'custom' => 'Custom pages'] as $mode => $modeLabel)
+                                        <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-control border border-app-border bg-neutral-50 px-3 text-sm font-semibold transition-[background-color,border-color,box-shadow] duration-300 hover:bg-neutral-100 has-checked:border-brand has-checked:bg-app-card has-checked:ring-2 has-checked:ring-brand has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand dark:bg-white/5 dark:hover:bg-white/10 dark:has-checked:bg-white/10">
+                                            <input type="radio" name="page_mode" value="{{ $mode }}" @checked($oldMode === $mode) class="size-4 shrink-0 accent-brand">
+                                            {{ $modeLabel }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @error('page_mode')
+                                    <p class="mt-1.5 text-sm text-status-red" role="alert">{{ $message }}</p>
+                                @enderror
+
+                                <div class="mt-3" x-show="pageMode === 'all'" @if ($oldMode === 'custom') data-js-hidden x-bind:data-js-hidden="false" @endif>
+                                    <p class="flex items-start gap-1.5 rounded-control p-3 text-sm" x-cloak x-show="pdfTotal() !== null" data-pdf-count
+                                        x-bind:class="pageLimitProblem() ? 'bg-status-red-bg text-status-red' : 'bg-status-green-bg text-status-green'" x-bind:role="pageLimitProblem() ? 'alert' : null">
+                                        <x-ui.icon name="check_circle" :size="18" class="shrink-0" x-show="!pageLimitProblem()" /><x-ui.icon name="error" :size="18" class="shrink-0" x-show="pageLimitProblem()" x-cloak /><span x-text="pdfCountText()"></span>
+                                    </p>
+                                    <p class="flex items-center gap-2 text-sm text-app-text-2" x-cloak x-show="pdfTotal() === null && counting()">
+                                        <x-ui.aperture-spinner :size="16" /> Counting the pages of your PDF…
+                                    </p>
+                                    <div x-show="pdfTotal() === null && !counting()">
+                                        <x-ui.input id="pages" name="pages" type="number" label="Number of pages" min="1" :max="$maxPages" step="1" inputmode="numeric" autocomplete="off"
+                                            value="{{ old('pages', 1) }}" x-on:input="sync()" :error="$errors->first('pages')" />
+                                        <p class="mt-1 text-sm text-app-text-2" x-cloak x-text="pagesHelp()"></p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3" x-show="pageMode === 'custom'" @if ($oldMode !== 'custom') data-js-hidden x-bind:data-js-hidden="false" @endif>
+                                    <x-ui.input id="page_range" name="page_range" label="Pages to print" placeholder="1-5, 8" maxlength="{{ \App\Support\PageRange::MAX_LENGTH }}" autocomplete="off"
+                                        value="{{ old('page_range') }}" x-on:input="sync()" :error="$errors->first('page_range')"
+                                        hint="Use commas between pages and a dash for a range, for example 1-5, 8." />
+                                    <p class="mt-1 text-sm font-semibold" x-cloak x-show="rangeLine" x-text="rangeLine" data-range-line
+                                        x-bind:class="rangeBad ? 'text-status-red' : 'text-app-text'"></p>
+                                </div>
+                            </fieldset>
                         </div>
 
                         <div class="mt-6">
