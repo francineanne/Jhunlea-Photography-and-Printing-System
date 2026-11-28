@@ -36,9 +36,11 @@ class PromptBuilder
 
         $history = array_slice($input->history, -max(0, (int) config($input->feature->isOwnerAssist() ? 'assistant.owner_assist_messages' : 'assistant.history_messages')));
 
-        $messages = $input->feature->isOwnerAssist()
-            ? [new ProviderMessage(ProviderMessage::USER, $this->transcript($this->ownerThread($history, $input->message)))]
-            : $this->conversation($history, $input->message);
+        $messages = match (true) {
+            $input->feature->isOwnerAssist() => [new ProviderMessage(ProviderMessage::USER, $this->transcript($this->ownerThread($history, $input->message)))],
+            $input->actor->isGuest() => $this->guestConversation($history, $input->message),
+            default => $this->conversation($history, $input->message),
+        };
 
         return new ProviderRequest(
             implode("\n\n", array_filter(array_intersect_key($sections, array_flip(self::STABLE)))),
@@ -178,6 +180,41 @@ class PromptBuilder
         }
 
         return $turns;
+    }
+
+    /** The heading of a guest's earlier messages; they are context, never questions to answer again (Phase 10T). */
+    public const GUEST_EARLIER = 'Earlier messages from this guest (already answered, context only, do not answer them again):';
+
+    public const GUEST_LATEST = 'Latest message (answer only this one):';
+
+    /**
+     * Phase 10T: a guest's request carries only their own earlier messages (Lumi's replies are never taken from the
+     * client), so merging them into the latest one made the model answer every old question again. They go in ONE user
+     * turn as a labelled context list, and the latest message is named as the only one to answer; a follow-up such as
+     * "magkano yun?" can still use the context. Only the guest's own words are read here.
+     *
+     * @param  list<ThreadMessage>  $history
+     * @return list<ProviderMessage>
+     */
+    private function guestConversation(array $history, string $message): array
+    {
+        $earlier = collect($history)
+            ->filter(fn (ThreadMessage $item) => $item->author === AssistantAuthor::Customer)
+            ->map(fn (ThreadMessage $item) => trim(preg_replace('/\s+/u', ' ', $this->redactor->redact($item->text)) ?? ''))
+            ->filter(fn (string $text) => $text !== '')
+            ->values();
+        $latest = $this->redactor->redact($message);
+
+        if ($earlier->isEmpty()) {
+            return [new ProviderMessage(ProviderMessage::USER, $latest)];
+        }
+
+        return [new ProviderMessage(ProviderMessage::USER, implode("\n", [
+            self::GUEST_EARLIER,
+            ...$earlier->map(fn (string $text) => '- '.$text)->all(),
+            self::GUEST_LATEST,
+            $latest,
+        ]))];
     }
 
     /**

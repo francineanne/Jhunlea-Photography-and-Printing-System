@@ -2,10 +2,12 @@
 
 namespace App\Services\Assistant\Owner\Tools;
 
+use App\Enums\BookingStatus;
 use App\Models\PhotographyBooking;
 use App\Models\PrintingOrder;
 use App\Services\Assistant\Owner\ToolResult;
 use App\Support\Money;
+use App\Support\PaymentRules;
 
 /**
  * The fields of one order or booking an owner tool may show (Phase 7E-3a): reference, customer NAME, service or
@@ -42,6 +44,8 @@ final class RecordFacts
     /** @return array<string, mixed> */
     public static function booking(PhotographyBooking $booking, ToolResult $result): array
     {
+        $awaiting = $booking->status === BookingStatus::AwaitingDownpayment;
+
         return array_filter([
             'reference' => $booking->reference_number,
             'customer' => $booking->customer?->name,
@@ -55,6 +59,9 @@ final class RecordFacts
             'estimated_price' => $booking->estimated_price === null ? null : $result->money(Money::toCents($booking->estimated_price)),
             'confirmed_price' => $booking->confirmed_price === null ? 'not set yet' : $result->money(Money::toCents($booking->confirmed_price)),
             'payment' => $booking->paymentStatus()->label(),
+            // Phase 10T: an awaiting booking holds its time but is not paid yet: what is due and by when (Manila time)
+            'downpayment_due' => $awaiting && $booking->confirmed_price !== null ? $result->money(app(PaymentRules::class)->downpaymentCents((string) $booking->confirmed_price)) : null,
+            'downpayment_deadline' => $awaiting && $booking->downpayment_due_at !== null ? $result->moment($booking->downpayment_due_at) : null,
             'wants_prints' => $booking->wants_prints ? 'yes' : null,
             'requested_on' => $result->moment($booking->created_at),
         ], fn ($value) => $value !== null);

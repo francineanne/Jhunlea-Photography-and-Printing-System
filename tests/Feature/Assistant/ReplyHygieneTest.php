@@ -70,6 +70,17 @@ class ReplyHygieneTest extends TestCase
         $this->assertSame('We are closed on Sundays. We open on Monday, 9:00 AM.', app(ResponseValidator::class)->plainText("We are closed on\u{00A0}Sundays.We open on Monday, 9:00AM."));
     }
 
+    /** Phase 10T: the shop's email stays whole; bare web addresses are still removed. */
+    public function test_an_email_keeps_its_domain_and_web_addresses_are_still_removed(): void
+    {
+        $validator = app(ResponseValidator::class);
+
+        $this->assertSame('Email us at jhunleastudio@gmail.com.', $validator->plainText('Email us at jhunleastudio@gmail.com.'));
+        $this->assertSame('Write to studio@mail.jhunlea.com today.', $validator->plainText('Write to studio@mail.jhunlea.com today.'));
+        $this->assertSame('See for prices.', $validator->plainText('See example.com for prices.'));
+        $this->assertSame('See for prices.', $validator->plainText('See https://example.com/prices for prices.'));
+    }
+
     public function test_a_dangling_colon_line_is_removed(): void
     {
         $this->assertSame('We print photos and documents.', ReplyCleanup::finish('We print photos and documents. Here are the options:', 'fallback'));

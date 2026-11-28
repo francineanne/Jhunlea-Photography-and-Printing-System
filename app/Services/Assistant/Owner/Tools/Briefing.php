@@ -49,12 +49,16 @@ class Briefing extends OwnerTool
             'awaiting_payment' => $result->money($overview['awaiting']['cents']),
             'awaiting_payment_count' => $result->count($overview['awaiting']['count']),
             'sessions_today' => $result->count($overview['shootCount']),
+            // Phase 10T: sessions_today is the dashboard's number (confirmed only); these also hold their time today
+            'sessions_today_awaiting_downpayment' => $result->count(PhotographyBooking::query()->where('status', BookingStatus::AwaitingDownpayment)
+                ->whereBetween('starts_at', [LocalTime::dayStartUtc($overview['today']), LocalTime::dayEndUtc($overview['today'])])->count()),
             'orders_to_review' => $result->count($overview['reviewCount']),
             'booking_requests' => $result->count($overview['requestCount']),
             'unanswered_messages' => $result->count($this->inbox->unansweredCount()),
             // Phase 8D: the counter's work, from the counter's own queries
             'ready_for_pickup_unpaid' => $result->count((clone $this->ledger->awaitingOrders())->where('status', PrintingOrderStatus::ReadyForPickup)->count()),
-            'walk_in_sessions_today_unpaid' => $result->count(PhotographyBooking::query()->where('source', RecordSource::WalkIn)->where('status', BookingStatus::Confirmed)
+            // Phase 10T: a walk-in session awaiting its downpayment holds its time and is not paid either
+            'walk_in_sessions_today_unpaid' => $result->count(PhotographyBooking::query()->where('source', RecordSource::WalkIn)->whereIn('status', [BookingStatus::Confirmed, BookingStatus::AwaitingDownpayment])
                 ->whereBetween('starts_at', [LocalTime::dayStartUtc($overview['today']), LocalTime::dayEndUtc($overview['today'])])
                 ->whereDoesntHave('recordedPayment')->count()),
             // Phase 10B: photoshoots waiting for their downpayment, and today's photoshoots with something left to pay

@@ -377,6 +377,12 @@ Core requirement na sinabi sa prof: manual ang pag-log ng shop ng walk-in at ng 
 - [x] Custom pages: "1-5, 8" (`PageRange`); bawat page ay hindi lalampas sa PDF (isang file) o ang bilang ay hindi lalampas sa total (ilang files); naka-save bilang unang linya ng notes "Pages to print: ..."
 - [x] Hindi PDF, o PDF na hindi mabasa o naka-encrypt: ita-type ng customer ang bilang ng pages, may paalala; may feature at unit tests
 
+### 10T — Lumi fixes (branch `phase-10t-lumi-fixes`) · built, naghihintay ng review
+- [x] Walang migration; walang binagong guard. Owner Ask Lumi: binibilang na ang photoshoot na "Awaiting downpayment" (default na "holding"; "confirmed" ay alias pa rin), may halaga at deadline ng downpayment, at hiwalay na bilang ng confirmed, awaiting, completed at naghihintay na request; hindi binibilang ang expired na request
+- [x] Briefing at counter: ang walk-in session ngayong araw na awaiting downpayment ay "not paid yet" din
+- [x] Guest Ask Lumi: ang mga naunang tanong ay "context" lang sa isang listahan, at ang pinakahuling tanong lang ang sinasagot
+- [x] Ang email ng shop ay hindi na napuputol sa sagot ni Lumi ("jhunleastudio@"): ang ResponseValidator ay hindi na nag-aalis ng domain ng email
+
 ---
 
 ## Mga kailangang itanong sa shop owner (bago mag-Phase 2)

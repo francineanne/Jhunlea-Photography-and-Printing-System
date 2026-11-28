@@ -44,7 +44,8 @@ class ResponseValidator
         $text = PlainText::repair(PlainText::spaces($text));
         $text = preg_replace('/!?\[([^\]]*)\]\([^)]*\)/u', '$1', $text) ?? '';
         $text = preg_replace('~\b(?:https?|ftp)://\S+|\bwww\.\S+~iu', '', $text) ?? '';
-        $text = preg_replace('~\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|ph|io|co|me|app|dev|info|biz|xyz|link|ly|gg|site|online|shop|store)\b(?:/\S*)?~iu', '', $text) ?? '';
+        // Phase 10T: never the domain of an email address (it turned "jhunleastudio@gmail.com" into "jhunleastudio@")
+        $text = preg_replace('~(?<![@.])\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:com|net|org|ph|io|co|me|app|dev|info|biz|xyz|link|ly|gg|site|online|shop|store)\b(?:/\S*)?~iu', '', $text) ?? '';
         $text = preg_replace('/\*\*|__|`+|^#{1,6}\s*/mu', '', $text) ?? '';
         $text = preg_replace('/[ \t]+/u', ' ', $text) ?? '';
         $text = preg_replace('/ *\n */u', "\n", $text) ?? '';

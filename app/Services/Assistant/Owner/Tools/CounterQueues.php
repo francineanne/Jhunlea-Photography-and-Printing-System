@@ -114,7 +114,8 @@ class CounterQueues extends OwnerTool
 
         if ($wants('walk_in_today')) {
             $sessions = PhotographyBooking::query()->with('customer:id,name')
-                ->where('source', RecordSource::WalkIn)->where('status', BookingStatus::Confirmed)
+                // Phase 10T: a walk-in session awaiting its downpayment is not paid yet either
+                ->where('source', RecordSource::WalkIn)->whereIn('status', [BookingStatus::Confirmed, BookingStatus::AwaitingDownpayment])
                 ->whereBetween('starts_at', [LocalTime::dayStartUtc($today), LocalTime::dayEndUtc($today)])
                 ->whereDoesntHave('recordedPayment')
                 ->orderBy('starts_at')->get();
@@ -124,6 +125,7 @@ class CounterQueues extends OwnerTool
                 $result->rows[] = array_filter([
                     'queue' => 'walk-in session today, not paid yet',
                     'reference' => $booking->reference_number,
+                    'status' => $booking->status->label(),
                     'customer' => $booking->customer?->name,
                     'session' => $result->moment($booking->starts_at),
                     'amount_due' => $booking->confirmed_price === null ? 'no confirmed price yet' : $result->money(Money::toCents($booking->confirmed_price)),
